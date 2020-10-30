@@ -1,0 +1,28 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>云计算 - 标签 - Shiori&#39;s Blog</title>
+        <link>https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/</link>
+        <description>云计算 - 标签 - Shiori&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 30 Oct 2020 09:32:39 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+    <title>StatefulSet 实践</title>
+    <link>https://KanShiori.github.io/statefulset-%E5%AE%9E%E8%B7%B5/</link>
+    <pubDate>Fri, 30 Oct 2020 09:32:39 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/statefulset-%E5%AE%9E%E8%B7%B5/</guid>
+    <description><![CDATA[Deployment 对于“无状态”的任务，已经能够做到副本控制，滚动升级功能了。但是 Deployment 无法适用于“有状态”的任务，因为其中 Pod 都是相同的，没有任何的对应关系。 而]]></description>
+</item><item>
+    <title>Deployment 实践</title>
+    <link>https://KanShiori.github.io/deployment-%E5%AE%9E%E8%B7%B5/</link>
+    <pubDate>Fri, 16 Oct 2020 16:08:05 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/deployment-%E5%AE%9E%E8%B7%B5/</guid>
+    <description><![CDATA[1 ReplicaSet Deploment 管理的是 ReplicaSet，所以先运行 ReplicaSet 观察。 ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。 1.1 部署 ReplicaSet 创建 manifest 文件。 调用 kubectl create 创建资源。]]></description>
+</item><item>
+    <title>虚拟机 k8s 集群搭建</title>
+    <link>https://KanShiori.github.io/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</link>
+    <pubDate>Thu, 15 Oct 2020 20:10:35 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</guid>
+    <description><![CDATA[1 虚拟机集群搭建 目标：创建 3 个虚拟机，用作一个 Master Node，两个 Work Node；当然，三个节点处于同一个网段。 具体步骤如下: 构建节点 构建三个虚拟机]]></description>
+</item></channel>
+</rss>
