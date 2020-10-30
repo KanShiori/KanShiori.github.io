@@ -163,12 +163,14 @@
 
 
 
+
     <br><img src="/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image1.png"/><br>
 
 
 </li>
 <li>搭建网络 <br>
 三个节点需要互相访问，所以将其位于 VirtualBox 创建的 Nat网络下，给予每个 Node  静态的 IP（10.0.2.10 - 10.0.2.12），为了方便访问，并设置 ssh 的 DNAT。
+
 
 
 
@@ -188,11 +190,13 @@
 
 
 
+
     <br><img src="/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image3.png"/><br>
 
 
 
 启动每个虚拟机，设置其 hostname，与网卡静态 IP。例如：
+
 
 
 
@@ -219,6 +223,7 @@
 
 
 
+
     <br><img src="/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image7.png"/><br>
 
 
@@ -231,11 +236,13 @@
 
 
 
+
     <br><img src="/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image8.png"/><br>
 
 
 
 还有最重要的，kubeadm 为集群生成一个【bootstrap token】，需要加入集群的节点都需要通过这个 token 加入。
+
 
 
 
@@ -257,11 +264,13 @@
 
 
 
+
     <br><img src="/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image11.png"/><br>
 
 
 </li>
 <li>kubectl 默认通过 8080 端口访问，无法执行。	设置 kubectl 的配置文件为 kubeadm 生成的 /etc/kubernetes/admin.conf。（其实就是配置公钥，或者将 admin.conf 移动到 ~/.kube/config 文件，作为默认配置。
+
 
 
 
@@ -294,6 +303,7 @@
 
 
 
+
     <br><img src="/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image14.png"/><br>
 
 
@@ -312,11 +322,13 @@
 
 
 
+
     <br><img src="/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image17.png"/><br>
 
 
 
 <code>kubectl describe node node-1</code> 可以看到，原因是因为没有设置正确的 Network Plugin：
+
 
 
 
@@ -347,6 +359,7 @@
 
 
 
+
     <br><img src="/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image19.png"/><br>
 
 
@@ -359,11 +372,13 @@
 
 
 
+
     <br><img src="/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image20.png"/><br>
 
 
 
 在节点上，可以看到 weave-net 对应的 pod ，包括两个容器：
+
 
 
 
@@ -398,11 +413,13 @@ $ kubectl apply -f https://raw.githubusercontent.com/rook/rook/master/cluster/ex
 
 
 
+
     <br><img src="/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image22.png"/><br>
 
 
 
 可以看到，Pod 也部署成功了：
+
 
 
 

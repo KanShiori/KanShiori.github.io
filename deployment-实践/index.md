@@ -9,7 +9,7 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 1. 创建 manifest 文件。
     {{< find_img "image1.png"  >}}
 2. 调用 `kubectl create` 创建资源。
-    {{< find_img "image3.png"  >}}
+<br>{{< find_img "image3.png" true >}}
     {{< find_img "image3.5.png"  >}}
 观察下 ReplicaSet 的事件，可以看到各个 Pod 的创建流程。
     {{< find_img "image4.png"  >}}
@@ -32,7 +32,7 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 可以看到，新的 Pod 在 Node-3 被运行：
 {{< find_img "image12.png"  >}}
 2. 依旧 `kubectl scale` 进行副本缩容，可以看到，两个 Pod 被停止: 
-{{< find_img "image13.5.png"  >}}
+<br>{{< find_img "image13.5.png" true >}}
 {{< find_img "image14.png"  >}}
 可以看到，ReplicaSet 启动和停止任务都是由 Scheduler 选择的，而不能认为的控制选择指定的 Pod，也就是说，所有的 Pod 应该被认为是“无状态的”，随时可能被停止。
 

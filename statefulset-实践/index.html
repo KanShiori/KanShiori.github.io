@@ -18,7 +18,7 @@
 <meta name="twitter:title" content="StatefulSet 实践"/>
 <meta name="twitter:description" content="使用 StatefulSet 进行副本控制"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/statefulset-%E5%AE%9E%E8%B7%B5/" /><link rel="prev" href="https://KanShiori.github.io/deployment-%E5%AE%9E%E8%B7%B5/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/statefulset-%E5%AE%9E%E8%B7%B5/" /><link rel="prev" href="https://KanShiori.github.io/deployment-%E5%AE%9E%E8%B7%B5/" /><link rel="next" href="https://KanShiori.github.io/daemonset-%E5%AE%9E%E8%B7%B5/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -151,6 +151,7 @@
 
 
 
+
     <br><img src="/statefulset-%E5%AE%9E%E8%B7%B5/img1.png"/><br>
 
 
@@ -164,11 +165,13 @@
 
 
 
+
     <br><img src="/statefulset-%E5%AE%9E%E8%B7%B5/img2.png"/><br>
 
 
 
 查看 Endpoint，可对应的 Endpoint 包含了 Node-1 Node-2 的 Pod 的地址了。并且 Endpoint 命名和Service 名字一样。
+
 
 
 
@@ -196,11 +199,13 @@
 
 
 
+
     <br><img src="/statefulset-%E5%AE%9E%E8%B7%B5/img4.png"/><br>
 
 
 </li>
 <li>创建对应的 StatefulSet 描述文件：
+
 
 
 
@@ -221,6 +226,7 @@
 
 
 
+
     <br><img src="/statefulset-%E5%AE%9E%E8%B7%B5/img6.png"/><br>
 
 
@@ -233,11 +239,13 @@
 
 
 
+
     <br><img src="/statefulset-%E5%AE%9E%E8%B7%B5/img7.png"/><br>
 
 
 </li>
 <li>观察创建出的 Pod，可以看到，其 Pod 命名不是加上随机字符串了，而是有序的数字：
+
 
 
 
@@ -258,6 +266,7 @@
 
 
 
+
     <br><img src="/statefulset-%E5%AE%9E%E8%B7%B5/img9.png"/><br>
 
 
@@ -270,11 +279,13 @@
 
 
 
+
     <br><img src="/statefulset-%E5%AE%9E%E8%B7%B5/img10.png"/><br>
 
 
 
 再次通过 web-0.nginx.default.svc.cluster.local 进行域名解析，还是能够正确的解析：
+
 
 
 
@@ -299,6 +310,7 @@
 
 
 
+
     <br><img src="/statefulset-%E5%AE%9E%E8%B7%B5/img12.png"/><br>
 
 
@@ -311,11 +323,13 @@
 
 
 
+
     <br><img src="/statefulset-%E5%AE%9E%E8%B7%B5/img13.png"/><br>
 
 
 
 创建后可以看到，StatefulSet 为 2 个 Pod 创建了对应的 PVC：
+
 
 
 
@@ -355,7 +369,8 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/deployment-%E5%AE%9E%E8%B7%B5/" class="prev" rel="prev" title="Deployment 实践"><i class="fas fa-angle-left fa-fw"></i>Deployment 实践</a></div>
+    <div class="post-nav"><a href="/deployment-%E5%AE%9E%E8%B7%B5/" class="prev" rel="prev" title="Deployment 实践"><i class="fas fa-angle-left fa-fw"></i>Deployment 实践</a>
+            <a href="/daemonset-%E5%AE%9E%E8%B7%B5/" class="next" rel="next" title="DaemonSet 实践">DaemonSet 实践<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 <div id="comments"><div id="valine" class="comment"></div><noscript>
                 Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.

@@ -164,11 +164,13 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image1.png"/><br>
 
 
 </li>
 <li>调用 <code>kubectl create</code> 创建资源。
+<br>
 
 
 
@@ -176,7 +178,8 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
-    <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image3.png"/><br>
+    <img src="/deployment-%E5%AE%9E%E8%B7%B5/image3.png"/>
+
 
 
 
@@ -199,6 +202,7 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image4.png"/><br>
 
 
@@ -206,6 +210,7 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 </ol>
 <h3 id="12-副本保证">1.2 副本保证</h3>
 <p>目前，3 个 Pod 都运行在了 Node-3 上：
+
 
 
 
@@ -226,11 +231,13 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image6.png"/><br>
 
 
 </li>
 <li>过了一段时间后，原来三个 Pod 变为 Terminating 状态，而新的 Pod 被创建被调度。
+
 
 
 
@@ -250,11 +257,13 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image8.png"/><br>
 
 
 </li>
 <li>恢复 Node-3 上线，kubelet 会同步任务，因此不会再次运行旧的三个 Pod。Pod 的状态也从 Terminating 变为被删除。
+
 
 
 
@@ -277,6 +286,7 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image11.5.png"/><br>
 
 
@@ -289,11 +299,13 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image12.png"/><br>
 
 
 </li>
 <li>依旧 <code>kubectl scale</code> 进行副本缩容，可以看到，两个 Pod 被停止:
+<br>
 
 
 
@@ -301,7 +313,8 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
-    <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image13.5.png"/><br>
+    <img src="/deployment-%E5%AE%9E%E8%B7%B5/image13.5.png"/>
+
 
 
 
@@ -330,6 +343,7 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image15.png"/><br>
 
 
@@ -342,11 +356,13 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image16.png"/><br>
 
 
 
 可以看到，Event 中打印的是对应的ReplicaSet 的自动被创建，所以Deployment 是创建 ReplicaSet 的。
+
 
 
 
@@ -373,11 +389,13 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image20.png"/><br>
 
 
 </li>
 <li>修改 Deployment 的配置文件，将 image 版本升级。
+
 
 
 
@@ -397,11 +415,13 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image22.png"/><br>
 
 
 
 通过 Deployment 的 Event 可以看到，旧版 ReplicaSet 的副本数逐渐减少，而新版本 ReplicaSet 副本数逐渐增加。这样使得集群中 Pod 会维持在一个最低数量（示例中为 3）
+
 
 
 
@@ -425,11 +445,13 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image24.png"/><br>
 
 
 
 通过 Event 看到，滚动升级停止在了最新版本的 Replicaset 的第一个副本部署。
+
 
 
 
@@ -455,11 +477,13 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image26.png"/><br>
 
 
 
 通过 &ndash;revision 参数，查看对应的命令细节。
+
 
 
 
@@ -479,11 +503,13 @@ ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。
 
 
 
+
     <br><img src="/deployment-%E5%AE%9E%E8%B7%B5/image28.png"/><br>
 
 
 
 事实上，回退也是一次“升级”，通过 history 可以看到一个新的部署记录：
+
 
 
 
