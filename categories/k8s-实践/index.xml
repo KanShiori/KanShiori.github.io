@@ -5,59 +5,59 @@
         <description>k8s 实践 - 分类 - Shiori&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 30 Oct 2020 16:14:11 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/k8s-%E5%AE%9E%E8%B7%B5/" rel="self" type="application/rss+xml" /><item>
     <title>PV PVC 与 StorageClass</title>
-    <link>https://KanShiori.github.io/pv-pvc-%E4%B8%8E-storageclass/</link>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/</link>
     <pubDate>Fri, 30 Oct 2020 16:14:11 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/pv-pvc-%E4%B8%8E-storageclass/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/</guid>
     <description><![CDATA[1 PV 与 PVC 目的：使用 NFS 做 PV，创建 Pod 使用该 PV Node-1 构建 nfs 服务，位于 &ldquo;/nfs&rdquo; 目录。 创建 PV，使用 nfs 类型。 声明、创建 PVC，使用上述指定的 StorageCl]]></description>
 </item><item>
     <title>RBAC 实践</title>
-    <link>https://KanShiori.github.io/rbac-%E5%AE%9E%E8%B7%B5/</link>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/</link>
     <pubDate>Fri, 30 Oct 2020 16:03:17 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/rbac-%E5%AE%9E%E8%B7%B5/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/</guid>
     <description><![CDATA[Kubernetes 中，通过 RBAC 机制来实现集群 Pod 中对 APIServer 的访问权限控制与授权。 RBAC 机制有三个最基本的概念： Role：一组规则，定义了对 API 对象的操作权限； Subjec]]></description>
 </item><item>
     <title>CRD 实践</title>
-    <link>https://KanShiori.github.io/crd-%E5%AE%9E%E8%B7%B5/</link>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/crd-%E5%AE%9E%E8%B7%B5/</link>
     <pubDate>Fri, 30 Oct 2020 15:57:36 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/crd-%E5%AE%9E%E8%B7%B5/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/crd-%E5%AE%9E%E8%B7%B5/</guid>
     <description><![CDATA[CRD 是 Kubernetes 可扩展性的第一个体现，因为 Kubernetes 提供的是一个编排的框架，因此不止可以对 Pod 进行编排，也支持通过 CRD 对你自定义的类型的编排。 1 CRD 构建 目的：通过 CRD]]></description>
 </item><item>
     <title>Job CronJob 实践</title>
-    <link>https://KanShiori.github.io/job-cronjob-%E5%AE%9E%E8%B7%B5/</link>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/job-cronjob-%E5%AE%9E%E8%B7%B5/</link>
     <pubDate>Fri, 30 Oct 2020 15:33:36 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/job-cronjob-%E5%AE%9E%E8%B7%B5/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/job-cronjob-%E5%AE%9E%E8%B7%B5/</guid>
     <description><![CDATA[Job 用于运行一次性的任务，即“离线任务”。CronJob 在 Job 之上提供了周期性任务支持。 1 Job 目的：部署 Job 任务，使用并行运行（Batch）的功能。]]></description>
 </item><item>
     <title>DaemonSet 实践</title>
-    <link>https://KanShiori.github.io/daemonset-%E5%AE%9E%E8%B7%B5/</link>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/daemonset-%E5%AE%9E%E8%B7%B5/</link>
     <pubDate>Fri, 30 Oct 2020 15:26:30 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/daemonset-%E5%AE%9E%E8%B7%B5/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/daemonset-%E5%AE%9E%E8%B7%B5/</guid>
     <description><![CDATA[DaemonSet 会为匹配的 Node 运行一个 Daemon Pod，与 Deployment 类最大不同，DaemonSet 没有副本的概念。 目的：部署 DaemonSet，试用 toleration 与 nodeAffini]]></description>
 </item><item>
     <title>StatefulSet 实践</title>
-    <link>https://KanShiori.github.io/statefulset-%E5%AE%9E%E8%B7%B5/</link>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/statefulset-%E5%AE%9E%E8%B7%B5/</link>
     <pubDate>Fri, 30 Oct 2020 09:32:39 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/statefulset-%E5%AE%9E%E8%B7%B5/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/statefulset-%E5%AE%9E%E8%B7%B5/</guid>
     <description><![CDATA[Deployment 对于“无状态”的任务，已经能够做到副本控制，滚动升级功能了。但是 Deployment 无法适用于“有状态”的任务，因为其中 Pod 都是相同的，没有任何的对应关系。 而]]></description>
 </item><item>
     <title>Deployment 实践</title>
-    <link>https://KanShiori.github.io/deployment-%E5%AE%9E%E8%B7%B5/</link>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/deployment-%E5%AE%9E%E8%B7%B5/</link>
     <pubDate>Fri, 16 Oct 2020 16:08:05 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/deployment-%E5%AE%9E%E8%B7%B5/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/deployment-%E5%AE%9E%E8%B7%B5/</guid>
     <description><![CDATA[1 ReplicaSet Deploment 管理的是 ReplicaSet，所以先运行 ReplicaSet 观察。 ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。 1.1 部署 ReplicaSet 创建 manifest 文件。 调用 kubectl create 创建资源。]]></description>
 </item><item>
     <title>虚拟机 k8s 集群搭建</title>
-    <link>https://KanShiori.github.io/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</link>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</link>
     <pubDate>Thu, 15 Oct 2020 20:10:35 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</guid>
     <description><![CDATA[1 虚拟机集群搭建 目标：创建 3 个虚拟机，用作一个 Master Node，两个 Work Node；当然，三个节点处于同一个网段。 具体步骤如下: 构建节点 构建三个虚拟机]]></description>
 </item></channel>
 </rss>
