@@ -12,24 +12,6 @@
         }
     },
     {
-        "title": "Documentation",
-        "uri": "categories/documentation",
-        "content": "",
-        "objectID": "categories/documentation"
-    },
-    {
-        "title": "Documentation",
-        "uri": "categories/documentation",
-        "content": "",
-        "objectID": "categories/documentation"
-    },
-    {
-        "title": "文档",
-        "uri": "categories/documentation",
-        "content": "",
-        "objectID": "categories/documentation"
-    },
-    {
         "title": "CRD 实践",
         "uri": "posts/cloud_computing/k8s_practice/crd-实践",
         "content": "CRD   Kubernetes               Kubernetes                     Pod            CRD              1 CRD          CRD               CRD manifest                       CRD                CR                           kubectl apply    CR    CRD      Kubernetes                       kubectl apply                    Kubernetes                      CRNetwork                               CR                     kubectl   Client       Controller             CR                             k8s_practice    k8s                        2             Kubernetes         API                                                    main                                  k8s_practice Controller              Informer     Event    CR Sync     Controller           Informer     APIServer     CR     Cache      CR Event    Event Handler  Event Handler Informer     Event                workQueue       Workers      Event                             main                Informer Controller    Controller            Controller                 CR                          HandleAdd                       CR       Controller         Sync              CR    example crnetwork 2    Controller            Controller                   example crnetwork 2    Controller            Controller                  3             Pod TODO",
@@ -172,29 +154,5 @@
         "categories": [
             "k8s 实践"
         ]
-    },
-    {
-        "title": "配置",
-        "uri": "tags/configuration",
-        "content": "",
-        "objectID": "tags/configuration"
-    },
-    {
-        "title": "contenu",
-        "uri": "tags/content",
-        "content": "",
-        "objectID": "tags/content"
-    },
-    {
-        "title": "内容",
-        "uri": "tags/content",
-        "content": "",
-        "objectID": "tags/content"
-    },
-    {
-        "title": "安装",
-        "uri": "tags/installation",
-        "content": "",
-        "objectID": "tags/installation"
     }
 ]
