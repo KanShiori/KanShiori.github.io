@@ -154,5 +154,24 @@
         "categories": [
             "k8s 实践"
         ]
+    },
+    {
+        "title": "制作虚拟机镜像",
+        "uri": "posts/cloud_computing/vm/制作虚拟机镜像",
+        "content": "libvirt         domain          domain                         virsh define   start    virt install                centos       KVM         1   ISO                                                1 1                  ISO            ISO                                              ISO     virt install                                  virt install   name guest1_fromiso   memory 2048   vcpus 2     disk size 8   location CentOS 7 x86_64 DVD 2003 iso     os type Linux   os variant centos7 0   virt type kvm     boot menu on   graphics none   console pty   extra args  console ttyS0                                location      iso       boot menu on                         console pty   extra args  console ttyS0                   graphics none           network bridge virbr0             libvirt       bridge             libvirt            dhcp                    libvirt                    disk size 8 disk                      8G   qcow2                     var lib libvirt images                                                   domain                             virsh list Id Name State 18 guest1_fromiso running 1 2                                             RedHat     kickstart                                        KICKSTART INSTALLATIONS 2    Cloud Image                                                                                                            hostname          cloud init                                                 cloud init     2 1 cloud init                             cloud init              cloud init                            hostname ssh key password     1       metadata            cloud init     userdata    cloud init                  yaml      datasource cloud init                                  NoCloud datasource    2       cloud init           Generator        systemd     generator         cloud init target target                  unit                 cloud init        generator     cloud init          etc cloud cloud init disabled                proc cmdline      cloud init disabled                   KERNEL_CMDLINE             target       unit      Local   cloud init local service             local    datasource                               metadata                      dhcp eth0       etc cloud cloud cfg            network   config  disabled              Init Config Final       service   cloud init service cloud config service  cloud final service     local                     metadata    etc cloud cloud cfg                      module       cloud init                         cloud init clean               var log cloud init log     cloud init          2 2                      cloud image               wget https   mirrors ustc edu cn centos cloud centos 7 images CentOS 7 x86_64 GenericCloud 2003 qcow2                      virt install                     virt install                                                           virt customize  a CentOS 7 x86_64 GenericCloud 2003 qcow2   root password password yourpassword         cloud init      datasource                 NoCloud         s       disk        user data   meta date        cat meta data instance id  guest1 local hostname  guest1   cat user data  cloud config chpasswd  expire  false list    root  password1 ssh_pwauth  True    disk       userdata   metadata        genisoimage  output seed iso  volid cidata  joliet  rock user data meta data             virt install   memory 2048   vcpus 2   name guest2     disk CentOS 7 x86_64 GenericCloud 2003 qcow2   disk seed iso     os type Linux   os variant centos7 0   virt type kvm     graphics none   network default     import              disk CentOS 7 x86_64 GenericCloud 2003 qcow2          import                                 disk seed iso    cloud init datasource                   cloud init                                       CentOS 7 x86_64 GenericCloud 2003 qcow2                  libvirt              etc libvirt qemu guest1 xml     CREATING GUESTS VIRT INSTALL KICKSTART INSTALLATIONS cloud init Documentation",
+        "objectID": "posts/cloud_computing/vm/制作虚拟机镜像",
+        "date": "2020-10-31T09:47:42.000Z",
+        "description": "制作虚拟机镜像",
+        "weight": 4,
+        "draft": false,
+        "author": "Shiori",
+        "tags": [
+            "虚拟机",
+            "KVM",
+            "云计算"
+        ],
+        "categories": [
+            "VM"
+        ]
     }
 ]
