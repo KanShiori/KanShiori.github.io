@@ -1,7 +1,7 @@
 # 制作虚拟机镜像
 
 
-中心思想：通过 libvirt 运行一个虚拟机（domain），并保存其对应的 domain 的镜像文件与配置文件，然后就可以在其他机器通过 `virsh define + start` 或者 `virt-install` 启动。
+中心思想：通过 libvirt 运行一个虚拟机（domain），并保存其对应的 domain 的镜像文件与配置文件，然后就可以在其他机器通过 `virsh define + start` 或者 `virt-install` 启动。<br>
 说明：下面环境都是在 centos 上制作基于 KVM 的虚拟机镜像。
 
 ## 1 从 ISO 镜像安装
@@ -33,8 +33,8 @@ Id    Name                           State
 18    guest1_fromiso                 running
 ```
 
-## 1.2 自动安装
-可以看到，手动安装需要人为在菜单中选择、配置，这不适用于多个虚拟机的安装。而 RedHat 创建了 kickstart 安装方法，使得整个虚拟机安装流程变得自动化。
+### 1.2 自动安装
+可以看到，手动安装需要人为在菜单中选择、配置，这不适用于多个虚拟机的安装。而 RedHat 创建了 kickstart 安装方法，使得整个虚拟机安装流程变得自动化。<br>
 这块不了解，具体见红帽官方文档：[KICKSTART INSTALLATIONS](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/installation_guide/ch-kickstart2#s1-kickstart2-whatis)
 
 
