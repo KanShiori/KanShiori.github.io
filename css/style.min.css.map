@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "style.min.css",
-	"sourceRoot": "/home/kanshiori/ShareDir/private/Practice/Blog",
+	"sourceRoot": "/home/kanshiori/ShareDir/WorkSpace/Private/Practice/Blog",
 	"sources": [
 		"themes/LoveIt/assets/css/style.scss",
 		"themes/LoveIt/assets/css/_variables.scss",

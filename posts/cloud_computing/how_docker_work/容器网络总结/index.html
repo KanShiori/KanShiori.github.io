@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>容器网络总结 - Shiori&#39;s Blog</title><meta name="Description" content="描述 docker 下容器网络模型与实现"><meta property="og:title" content="容器网络总结" />
+<meta property="og:description" content="描述 docker 下容器网络模型与实现" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/" />
+<meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+<meta property="article:published_time" content="2020-11-06T20:40:51+08:00" />
+<meta property="article:modified_time" content="2020-11-06T20:40:51+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="容器网络总结"/>
+<meta name="twitter:description" content="描述 docker 下容器网络模型与实现"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "容器网络总结",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/how_docker_work\/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "docker, container","wordcount":  2987 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/how_docker_work\/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93\/","datePublished": "2020-11-06T20:40:51+08:00","dateModified": "2020-11-06T20:40:51+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": "描述 docker 下容器网络模型与实现"
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/" title="">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">容器网络总结</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/docker-%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/"><i class="far fa-folder fa-fw"></i>Docker 原理总结</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-06">2020-11-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2987 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;<span id="/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="容器网络总结">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-概览">1 概览</a></li>
+    <li><a href="#2-背景知识">2 背景知识</a></li>
+    <li><a href="#3-bridge-网络">3 Bridge 网络</a>
+      <ul>
+        <li><a href="#31-创建删除-bridge-网络">3.1 创建/删除 Bridge 网络</a>
+          <ul>
+            <li><a href="#1-创建网络">(1) 创建网络</a></li>
+            <li><a href="#删除网络">删除网络</a></li>
+          </ul>
+        </li>
+        <li><a href="#32-启动容器后的网络">3.2 启动容器后的网络</a></li>
+        <li><a href="#33-bridge-网络总结">3.3 bridge 网络总结</a></li>
+      </ul>
+    </li>
+    <li><a href="#host-网络">Host 网络</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-概览">1 概览</h2>
+<p>docker 容器网络目前包含 5 中模式，包括：</p>
+<ul>
+<li><strong><code>bridge</code></strong>：默认的网络模式，使用 bridge 虚拟网卡 + iptables 实现一个内地内网，所有容器都处于该内网内，并且可以相互访问；</li>
+<li><strong><code>host</code></strong>：与宿主机处于同一个 net namespace，使用宿主机网络环境；</li>
+<li><strong><code>overlay</code></strong>：在多个 docker daemon 之间建立 overlay 网络，使得不同 docker daemon 的容器之间可以相互通信；</li>
+<li><strong><code>macvlan</code></strong>：使用 macvlan 虚拟网卡，将容器物理地址暴露在宿主机局域网中，你可以认为就是一台同局域网的物理机；</li>
+<li><strong><code>none</code></strong>：不进行任何网络配置，通常与自定义网络 driver 配合使用；</li>
+</ul>
+<p>除了上述模式之外，其实 docker 还支持使用自定义的网络插件，这块不了解，具体见官方文档。<br>
+下面所有示例都在虚拟机 ubuntu 20.04 与内核 5.4.0-52-generic 中完成，docker 版本如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">$docker</span> version
+Client:
+ Version:           19.03.8
+ API version:       1.40
+ Go version:        go1.13.8
+ Git commit:        afacb8b7f0
+ Built:             Wed Oct <span class="m">14</span> 19:43:43 <span class="m">2020</span>
+ OS/Arch:           linux/amd64
+ Experimental:      <span class="nb">false</span>
+
+Server:
+ Engine:
+  Version:          19.03.8
+  API version:      1.40 <span class="o">(</span>minimum version 1.12<span class="o">)</span>
+  Go version:       go1.13.8
+  Git commit:       afacb8b7f0
+  Built:            Wed Oct <span class="m">14</span> 16:41:21 <span class="m">2020</span>
+  OS/Arch:          linux/amd64
+  Experimental:     <span class="nb">false</span>
+ containerd:
+  Version:          1.3.3-0ubuntu2
+  GitCommit:
+ runc:
+  Version:          spec: 1.0.1-dev
+  GitCommit:
+ docker-init:
+  Version:          0.18.0
+  GitCommit:
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="2-背景知识">2 背景知识</h2>
+<h2 id="3-bridge-网络">3 Bridge 网络</h2>
+<h3 id="31-创建删除-bridge-网络">3.1 创建/删除 Bridge 网络</h3>
+<h4 id="1-创建网络">(1) 创建网络</h4>
+<p>先试着创建一个自定义的 bridge 网络，观察 docker 会对应创建哪些东西。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ docker network create --driver<span class="o">=</span>bridge <span class="se">\
+</span><span class="se"></span>	--subnet<span class="o">=</span>192.168.100.0/24 <span class="se">\
+</span><span class="se"></span>	--ip-range<span class="o">=</span>192.168.100.0/26 <span class="se">\
+</span><span class="se"></span>	--gateway<span class="o">=</span>192.168.100.1 <span class="se">\
+</span><span class="se"></span>	--opt com.docker.network.bridge.name<span class="o">=</span>mybr0 <span class="se">\
+</span><span class="se"></span>	mybridge0
+2e61a7dc333c1bc61d9cb86503ce4cd5a7435977ea2f9b7cc97fc71ae0e2bb93
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>--driver=bridge</code> 指定创建的网络 driver；</li>
+<li><code>--subnet=192.168.100.0/24</code> 指定对应 bridge 网络的网段；</li>
+<li><code>--ip-range=192.168.100.0/26</code> 指定运行分配给容器的 ip 范围，当然，这个是要在指定的网段内的；</li>
+<li><code>--gateway=192.168.100.1</code> 指定该内网的网关 IP；</li>
+<li><code>--opt com.docker.network.bridge.name=mybr0</code> 指定创建虚拟 bridge 网卡的命名；</li>
+<li><code>mybridge0</code> 为创建的 docker network 的命名；</li>
+</ul>
+<p>通过 <code>ifconfig</code> 可以看到，bridge 网络创建会对应创建一个 <strong><code>bridge 网络设备</code></strong>，作为整个内网的 &lsquo;交换机&rsquo;。其 IP 就是指定的 gateway IP。
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw"></i>推荐阅读<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">bridge 网卡推荐阅读：<a href="https://segmentfault.com/a/1190000009491002" target="_blank" rel="noopener noreffer">Linux虚拟网络设备之bridge(桥)</a></div>
+        </div>
+    </div></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ ifconfig
+…
+mybr0: <span class="nv">flags</span><span class="o">=</span>4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu <span class="m">1500</span>
+        inet 192.168.100.1  netmask 255.255.255.0  broadcast 192.168.100.255
+        ether 02:42:46:8a:cf:34  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
+        RX packets <span class="m">0</span>  bytes <span class="m">0</span> <span class="o">(</span>0.0 B<span class="o">)</span>
+        RX errors <span class="m">0</span>  dropped <span class="m">0</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
+        TX packets <span class="m">0</span>  bytes <span class="m">0</span> <span class="o">(</span>0.0 B<span class="o">)</span>
+        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
+…
+
+$ brctl show
+bridge name     bridge id               STP enabled     interfaces
+mybr0           8000.0242efdb0984       no
+</code></pre></td></tr></table>
+</div>
+</div><p>但是与虚拟机网络中的 bridge 网卡不同，该 bridge 不会连接任何的物理网卡，仅仅是作为内网的 &lsquo;交换机&rsquo; 使用。但是，毕竟内网是虚拟的，没有实际与物理网络连接，如何访问外网呢？<br>
+答案是，<strong>通过内核 iptables 进行 NAT，然后将包从实际的物理网卡上发送与接受</strong>。因此还有一部分的改变在于 iptables，主要会建立的是 nat 与 filter 表的规则。<br>
+先看 nat 表的相关规则（下面输出中省略了不相关规则）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$  iptables -t nat -L  -nv
+Chain PREROUTING <span class="o">(</span>policy ACCEPT <span class="m">2</span> packets, <span class="m">88</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DOCKER     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ADDRTYPE match dst-type LOCAL
+
+Chain INPUT <span class="o">(</span>policy ACCEPT <span class="m">2</span> packets, <span class="m">88</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+
+Chain OUTPUT <span class="o">(</span>policy ACCEPT <span class="m">124</span> packets, <span class="m">8797</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DOCKER     all  --  *      *       0.0.0.0/0           !127.0.0.0/8          ADDRTYPE match dst-type LOCAL
+
+Chain POSTROUTING <span class="o">(</span>policy ACCEPT <span class="m">124</span> packets, <span class="m">8797</span> bytes<span class="o">)</span>
+target                prot opt in     out     <span class="nb">source</span>               destination
+MASQUERADE  all     --   *      !mybr0  192.168.100.0/24     0.0.0.0/0
+
+Chain DOCKER <span class="o">(</span><span class="m">2</span> references<span class="o">)</span>
+target       prot opt in     out     <span class="nb">source</span>               destination
+RETURN     all  --  mybr0  *       0.0.0.0/0            0.0.0.0/0
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>PREROUTING 与 OUTPUT 链中规则，使得所有入和出的包都会经过 <strong>DOCKER</strong> 链；</li>
+<li>POSTROUTING 链中，将 mybridge0 网络（192.168.100.0/24）的内网 ip 通过 <strong>MASQUERADE</strong> 行为进行伪装（可以简单认为内网 ip 会变为当前网卡的 ip）；<br>
+当然，如果包发往的是 mybr0 网卡，说明是 mybridge0 网络内部通信，就不需要进行 MASQUERADE 伪装（!mybr0）；</li>
+</ul>
+<p>当容器发包时，会通过 mybr0 网卡转发进入内核栈，因此在 filter 表中，相关的规则都是针对于 &ldquo;in=mybr0&rdquo;。看一下 filter 表的规则：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ iptables -t filter -L  -nv
+Chain INPUT <span class="o">(</span>policy ACCEPT <span class="m">61774</span> packets, 79M bytes<span class="o">)</span>
+
+Chain FORWARD <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DOCKER-USER  all  --  *      *       0.0.0.0/0            0.0.0.0/0
+DOCKER-ISOLATION-STAGE-1  all  --  *      *       0.0.0.0/0            0.0.0.0/0
+ACCEPT     all  --  *      mybr0   0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+DOCKER     all  --  *      mybr0   0.0.0.0/0            0.0.0.0/0
+ACCEPT     all  --  mybr0  !mybr0  0.0.0.0/0            0.0.0.0/0
+ACCEPT     all  --  mybr0  mybr0   0.0.0.0/0            0.0.0.0/0
+
+Chain OUTPUT <span class="o">(</span>policy ACCEPT <span class="m">42290</span> packets, 55M bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+
+Chain DOCKER <span class="o">(</span><span class="m">2</span> references<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+
+Chain DOCKER-ISOLATION-STAGE-1 <span class="o">(</span><span class="m">1</span> references<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DOCKER-ISOLATION-STAGE-2  all  --  mybr0  !mybr0  0.0.0.0/0            0.0.0.0/0
+RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0
+
+Chain DOCKER-ISOLATION-STAGE-2 <span class="o">(</span><span class="m">2</span> references<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DROP       all  --  *      mybr0   0.0.0.0/0            0.0.0.0/0
+RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0
+
+Chain DOCKER-USER <span class="o">(</span><span class="m">1</span> references<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>FORWARD -&gt; DOCKER-ISOLATION-STAGE-1 -&gt; DOCKER-ISOLATION-STAGE-2 表明允许包从 mybr0 进入并转发（即容器可以向外正常发包）；</li>
+<li>FORWARD 中对 mybr0 进入的包设置了 <strong>conntrack</strong>，使得能够收到连接建立后的正常的回包；</li>
+</ul>
+<h4 id="删除网络">删除网络</h4>
+<p>通过 <code>docker network remove</code> 删除网络时，会发现对应的 bridge 网卡与 iptables 规则都被删除。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ docker network remove 5a17670afb6f
+5a17670afb6f
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="32-启动容器后的网络">3.2 启动容器后的网络</h3>
+<p>下面看下容器启停后，带来的网络变化。先启动最简单的一个容器，指定使用网络为上面创建的 mybridge0。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ docker run -dt --rm --network<span class="o">=</span>mybridge0 --name br0_container ubuntu
+676f7f9eab12a20fb3a975fa99cc2c92433a9581b5774ea58e63d447d86aa5ad
+$ docker inspect 676f7f9eab12
+…
+        <span class="s2">&#34;Networks&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;mybridge0&#34;</span>: <span class="o">{</span>
+                    <span class="s2">&#34;IPAMConfig&#34;</span>: null,
+                    <span class="s2">&#34;Links&#34;</span>: null,
+                    <span class="s2">&#34;Aliases&#34;</span>: <span class="o">[</span>
+                        <span class="s2">&#34;882cac3e472f&#34;</span>
+                    <span class="o">]</span>,
+                    <span class="s2">&#34;NetworkID&#34;</span>: <span class="s2">&#34;af1dbf619ac62be1ad8a6b63696d3e6edff77cceab6cd0ee78de4b51e0d33683&#34;</span>,
+                    <span class="s2">&#34;EndpointID&#34;</span>: <span class="s2">&#34;56cd85c5121d7d14146fcacc75599f6c56034e758e81f405a51437276ac6ac9f&#34;</span>,
+                    <span class="s2">&#34;Gateway&#34;</span>: <span class="s2">&#34;192.168.100.1&#34;</span>,
+                    <span class="s2">&#34;IPAddress&#34;</span>: <span class="s2">&#34;192.168.100.2&#34;</span>,
+                    <span class="s2">&#34;IPPrefixLen&#34;</span>: 24,
+                    <span class="s2">&#34;IPv6Gateway&#34;</span>: <span class="s2">&#34;&#34;</span>,
+                    <span class="s2">&#34;GlobalIPv6Address&#34;</span>: <span class="s2">&#34;&#34;</span>,
+                    <span class="s2">&#34;GlobalIPv6PrefixLen&#34;</span>: 0,
+                    <span class="s2">&#34;MacAddress&#34;</span>: <span class="s2">&#34;02:42:c0:a8:64:02&#34;</span>,
+                    <span class="s2">&#34;DriverOpts&#34;</span>: null
+                <span class="o">}</span>
+            <span class="o">}</span>
+…
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>--network=mybridge0</code> 表明以 mybridge0 网络启动容器；</li>
+<li>观察容器具体参数，可以看到，容器被随机分配 mybridge0 设置的 ip-range 一个 ip，并且 gateway 就是 mybridge0 网络的网关地址；</li>
+</ul>
+<p>观察网络设备，可以看到一个 <strong><code>veth-pair 设备</code></strong> 出现在宿主机上，并且连接到了 mybr0 网卡：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ ifconfig
+…
+vethef6b174: <span class="nv">flags</span><span class="o">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">1500</span>
+        inet6 fe80::e8ad:86ff:fefe:14ca  prefixlen <span class="m">64</span>  scopeid 0x20&lt;link&gt;
+        ether ea:ad:86:fe:14:ca  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
+        RX packets <span class="m">0</span>  bytes <span class="m">0</span> <span class="o">(</span>0.0 B<span class="o">)</span>
+        RX errors <span class="m">0</span>  dropped <span class="m">0</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
+        TX packets <span class="m">23</span>  bytes <span class="m">1882</span> <span class="o">(</span>1.8 KB<span class="o">)</span>
+        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
+…
+
+$ brctl show
+bridge name     bridge id               STP enabled     interfaces
+mybr0           8000.0242efdb0984       no              vethef6b174
+</code></pre></td></tr></table>
+</div>
+</div><p>veth-pair 都是成对出现的，可以简单被看做一个通道，一端发入的包会从另一端发出，并进入内核协议栈。不过，在 bridge 网络环境下，veth5b480f8 连接到 mybr0，所以所有从 veth5b480f8 发出的包都会被 mybr0 接手转发（相当于就是一根网线插入了交换机）。
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw"></i>推荐阅读<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">veth-pair 设备了解推荐文章：<a href="https://segmentfault.com/a/1190000009251098" target="_blank" rel="noopener noreffer">Linux虚拟网络设备之veth</a></div>
+        </div>
+    </div>
+可以进入容器 namespace，看一下容器内的 veth 设备。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ docker <span class="nb">exec</span> -it br0_container bash
+
+<span class="c1"># 以下在容器 namesapce 环境执行</span>
+root@676f7f9eab12:/# ifconfig
+eth0: <span class="nv">flags</span><span class="o">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">1500</span>
+        inet 192.168.100.2  netmask 255.255.255.0  broadcast 192.168.100.255
+        ether 02:42:c0:a8:64:02  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
+        RX packets <span class="m">1928</span>  bytes <span class="m">21609413</span> <span class="o">(</span>21.6 MB<span class="o">)</span>
+        RX errors <span class="m">0</span>  dropped <span class="m">0</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
+        TX packets <span class="m">1817</span>  bytes <span class="m">102779</span> <span class="o">(</span>102.7 KB<span class="o">)</span>
+        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
+root@676f7f9eab12:/sys/class/net/eth0# ethtool -i eth0
+driver: veth
+version: 1.0
+firmware-version:
+expansion-rom-version:
+bus-info:
+supports-statistics: yes
+supports-test: no
+supports-eeprom-access: no
+supports-register-dump: no
+supports-priv-flags: no
+root@676f7f9eab12:~# cat /sys/class/net/eth0/iflink
+<span class="m">15</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>在容器内的仅仅有一个 eth0 网卡，ip 设置为了容器的 ip。但是其实这个网卡就是 veth 设备改了名字；</li>
+<li>通过 <code>ethtool -i eth0</code> 命令看到，其对应 driver 是 veth，并且 <em>/sys/class/net/eth0/iflink</em> 文件表明了对端的 veth 网卡编号为 15（即宿主机看到的 veth 网卡设备）；</li>
+</ul>
+<p>现在，我们试着启动容器并添加一个 tcp 端口映射。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ docker run -dt --rm <span class="se">\ </span>
+    --network<span class="o">=</span>mybridge0 --publish 12211:8080 <span class="se">\
+</span><span class="se"></span>    --name br0_container ubuntu
+2502f7397a37e2ab482f8a9152d1ed968dd2e2825c71eb2a6737e4900f7236c1
+</code></pre></td></tr></table>
+</div>
+</div><p>而这个端口映射，就是将宿主机的 12211 端口映射给容器的 8080，所以所有发往宿主机的 12211 端口的包，都会被修改端口并转发到容器内部。这也是通过 iptables 实现的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">iptables -t nat -L  -nv
+Chain PREROUTING <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DOCKER     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ADDRTYPE match dst-type LOCAL
+
+Chain INPUT <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+
+Chain OUTPUT <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DOCKER     all  --  *      *       0.0.0.0/0           !127.0.0.0/8          ADDRTYPE match dst-type LOCAL
+
+Chain POSTROUTING <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
+ pkts bytes target     prot opt in     out     <span class="nb">source</span>               destination
+   <span class="m">10</span>   <span class="m">617</span> MASQUERADE  all  --  *      !mybr0  192.168.100.0/24     0.0.0.0/0
+    <span class="m">0</span>     <span class="m">0</span> MASQUERADE  tcp  --  *      *       192.168.100.2        192.168.100.2        tcp dpt:8080
+
+Chain DOCKER <span class="o">(</span><span class="m">2</span> references<span class="o">)</span>
+ pkts bytes target     prot opt in     out     <span class="nb">source</span>               destination
+    <span class="m">0</span>     <span class="m">0</span> RETURN     all  --  mybr0  *       0.0.0.0/0            0.0.0.0/0
+    <span class="m">0</span>     <span class="m">0</span> DNAT       tcp  --  !mybr0 *       0.0.0.0/0            0.0.0.0/0            tcp dpt:12211 to:192.168.100.2:8080
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>PREROUTING  -&gt; DOCKER 链中，所有不是从 mybr0 进入的包，并且发往 tcp 12211 端口的包，都会被 <strong>DNAT</strong> 为发往 192.168.100.2:8080。这样就实现了端口映射的功能。</li>
+</ul>
+<h3 id="33-bridge-网络总结">3.3 bridge 网络总结</h3>
+<p>中心思想：bridge 网络使用 bridge 网卡创建了一个本地的内网，而 bridge 网卡 + iptables 规则成为了这个内网的 &lsquo;<strong>路由器</strong>'。其中:</p>
+<ul>
+<li>bridge 网卡作为二层的交换机，bridge 网卡 ip 作为路由器的网关 ip。</li>
+<li>iptables 规则实现了 brdige 网卡与物理网络的连接</li>
+<li>宿主机内核栈实现了这个 &lsquo;路由器&rsquo; 的路由功能。</li>
+</ul>
+<p>下图展示了整个 bridge 网络的模型（图片来自网络）：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/img1.png"/><br>
+
+
+
+其中比较关键的点：</p>
+<ol>
+<li>veth pair 设备将容器 net namespace 连接到 bridge 网卡（可以看做将 veth pair 作为网线插到了 bridge 这个 &lsquo;路由器&rsquo; 上）。</li>
+<li>iptables 实现了 bridge 网卡与物理网络的 &lsquo;连接&rsquo;。
+bridge 网卡收到的包，经过 iptables 的 MASQUERADE 将包进行地址转换，并经过内核协议栈的路由通过物理网卡发送到物理网络。而回包通过 conntrack 机制正常接收与逆地址转换。</li>
+<li>容器与宿主机的端口映射，也是通过 iptables 的 DNAT 实现的。</li>
+</ol>
+<h2 id="host-网络">Host 网络</h2>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://docs.docker.com/network/" target="_blank" rel="noopener noreffer">Docker 容器网络官方文档</a></li>
+<li><a href="https://segmentfault.com/a/1190000009491002" target="_blank" rel="noopener noreffer">Linux虚拟网络设备之bridge(桥)</a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2020-11-06</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/" data-title="容器网络总结"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/" data-title="容器网络总结"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/" data-title="容器网络总结"><i class="fab fa-evernote fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/docker/">docker</a>,&nbsp;<a href="/tags/container/">container</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/" class="prev" rel="prev" title="制作虚拟机镜像"><i class="fas fa-angle-left fa-fw"></i>制作虚拟机镜像</a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.76.5">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2020</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{"valine":{"appId":"MmnKVcBz9AcNPahAcxxe8B6A-gzGzoHsz","appKey":"R3UuooucP5zsSKK77zNspvlL","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"你的评论 ...","recordIP":true,"serverURLs":"https://mmnkvcbz.lc-cn-n1-shared.com","visitor":true}},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
