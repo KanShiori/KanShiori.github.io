@@ -149,8 +149,8 @@
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><p>中心思想：通过 libvirt 运行一个虚拟机（domain），并保存其对应的 domain 的镜像文件与配置文件，然后就可以在其他机器通过 <code>virsh define + start</code> 或者 <code>virt-install</code> 启动。<br>
-说明：下面环境都是在 centos 上制作基于 KVM 的虚拟机镜像。</p>
+            </div><div class="content" id="content"><p>中心思想：通过 libvirt 运行一个虚拟机（domain），并保存其对应的 domain 的镜像文件与配置文件，然后就可以在其他机器通过 <code>virsh define + start</code> 或者 <code>virt-install</code> 启动。</p>
+<p>说明：下面环境都是在 centos 上制作基于 KVM 的虚拟机镜像。</p>
 <h2 id="1-从-iso-镜像安装">1 从 ISO 镜像安装</h2>
 <p>最基本的安装方式，通过安装并运行一个新的虚拟机，然后得到对应的配置文件与镜像文件。</p>
 <h3 id="11-手动安装">1.1 手动安装</h3>
@@ -212,15 +212,15 @@ Id    Name                           State
 </code></pre></td></tr></table>
 </div>
 </div><h3 id="12-自动安装">1.2 自动安装</h3>
-<p>可以看到，手动安装需要人为在菜单中选择、配置，这不适用于多个虚拟机的安装。而 RedHat 创建了 kickstart 安装方法，使得整个虚拟机安装流程变得自动化。<br>
-这块不了解，具体见红帽官方文档：<a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/installation_guide/ch-kickstart2#s1-kickstart2-whatis" target="_blank" rel="noopener noreffer">KICKSTART INSTALLATIONS</a></p>
+<p>可以看到，手动安装需要人为在菜单中选择、配置，这不适用于多个虚拟机的安装。而 RedHat 创建了 kickstart 安装方法，使得整个虚拟机安装流程变得自动化。</p>
+<p>这块不了解，具体见红帽官方文档：<a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/installation_guide/ch-kickstart2#s1-kickstart2-whatis" target="_blank" rel="noopener noreffer">KICKSTART INSTALLATIONS</a></p>
 <h2 id="2-使用-cloud-image">2 使用 Cloud Image</h2>
-<p>当然，上面制作过程中耗时都在安装系统上了，而各个云厂商的虚拟机数量那么多，肯定不会一台台去安装操作系统了。所以，目前最常见的都是直接下载已经安装过系统的虚拟机镜像文件。<br>
-但是这样的虚拟机是没有特殊配置的，例如密码、hostname 都是一致的，所以 <strong>cloud-init</strong> 出现，用于在第一次启动虚拟机时进行系统的配置。<br>
-所以，最快速的制作方法就是：虚拟机镜像文件 + cloud-init 配置。<br></p>
+<p>当然，上面制作过程中耗时都在安装系统上了，而各个云厂商的虚拟机数量那么多，肯定不会一台台去安装操作系统了。所以，目前最常见的都是直接下载已经安装过系统的虚拟机镜像文件。</p>
+<p>但是这样的虚拟机是没有特殊配置的，例如密码、hostname 都是一致的，所以 <strong>cloud-init</strong> 出现，用于在第一次启动虚拟机时进行系统的配置。</p>
+<p>所以，最快速的制作方法就是：虚拟机镜像文件 + cloud-init 配置。</p>
 <h3 id="21-cloud-init">2.1 cloud-init</h3>
-<p>下面内容都来自于文档，这里仅为自己做个记录。<br>
-首先明确 cloud init 的功能：系统第一次启动时，cloud init 相关的进程会根据配置信息去进行系统的配置，包括：设置 hostname、ssh key、password 等；</p>
+<p>下面内容都来自于文档，这里仅为自己做个记录。</p>
+<p>首先明确 cloud init 的功能：系统第一次启动时，cloud init 相关的进程会根据配置信息去进行系统的配置，包括：设置 hostname、ssh key、password 等；</p>
 <h4 id="1-基本概念">(1) 基本概念</h4>
 <ul>
 <li><strong>metadata</strong>：包含服务器信息，用于 cloud-init 配置；</li>

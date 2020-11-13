@@ -171,9 +171,9 @@
 <li><strong><code>macvlan</code></strong>：使用 macvlan 虚拟网卡，将容器物理地址暴露在宿主机局域网中，你可以认为就是一台同局域网的物理机；</li>
 <li><strong><code>none</code></strong>：不进行任何网络配置，通常与自定义网络 driver 配合使用；</li>
 </ul>
-<p>除了上述模式之外，每个容器也可以加入其它容器的网络中（通过加入对应的 net namespace）。<br>
-docker 还支持使用自定义的网络插件，这块不了解，具体见官方文档。<br>
-下面所有示例都在虚拟机 ubuntu 20.04 与内核 5.4.0-52-generic 中完成，docker 版本如下：</p>
+<p>除了上述模式之外，每个容器也可以加入其它容器的网络中（通过加入对应的 net namespace）。</p>
+<p>docker 还支持使用自定义的网络插件，这块不了解，具体见官方文档。</p>
+<p>下面所有示例都在虚拟机 ubuntu 20.04 与内核 5.4.0-52-generic 中完成，docker 版本如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -240,10 +240,10 @@ Server:
 <h3 id="21-cgroup-与-namespace">2.1 cgroup 与 namespace</h3>
 <p>这部分网上知识很多，这里就不复制别人的了。</p>
 <h3 id="22-docker-如何使用-net-namespace">2.2 docker 如何使用 net namespace</h3>
-<p><strong><code>namespace</code></strong> 用于各个进程间的环境的隔离，而容器运行（非 host 与 container 模式）的就是处于一个独立的 net namespace。<br>
-当处于一个 net namespace 时，可以认为，内核协议栈、iptables(net_filter)、网络设备等与其他 net namespace 都是隔离的。（这里只是说可以这么认为，但是真正还是只有一个内核，内核为 namespace 做了逻辑上的隔离）<br>
-在容器运行之间，docker 就会创建容器对应的 net namespace，并构建好对应的网络，然后将其 &lsquo;持久化&rsquo;（因为默认 namespace 是随着进程消失而消失的，如果想进程消失而 namespace 存在，那么需要将其 mount 到一个文件上）。<br>
-例如，当我们创建了一个容器后，可以看到这么一个挂载：</p>
+<p><strong><code>namespace</code></strong> 用于各个进程间的环境的隔离，而容器运行（非 host 与 container 模式）的就是处于一个独立的 net namespace。</p>
+<p>当处于一个 net namespace 时，可以认为，内核协议栈、iptables(net_filter)、网络设备等与其他 net namespace 都是隔离的。（这里只是说可以这么认为，但是真正还是只有一个内核，内核为 namespace 做了逻辑上的隔离）</p>
+<p>在容器运行之间，docker 就会创建容器对应的 net namespace，并构建好对应的网络，然后将其 &lsquo;持久化&rsquo;（因为默认 namespace 是随着进程消失而消失的，如果想进程消失而 namespace 存在，那么需要将其 mount 到一个文件上）。</p>
+<p>例如，当我们创建了一个容器后，可以看到这么一个挂载：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -279,11 +279,11 @@ $ ls -lhi /run/docker/netns/9779108cb6b0
 <span class="m">4026532287</span> -r--r--r-- <span class="m">1</span> root root <span class="m">0</span> Nov  <span class="m">6</span> 19:47 /run/docker/netns/9779108cb6b0
 </code></pre></td></tr></table>
 </div>
-</div><p>在容器被删除后，对应  net namespace 就会被销毁。<br>
-而各个网络模式最大的不同，就是在于 namespace 创建后，对应的 &ldquo;构建网络&rdquo; 的操作了。</p>
+</div><p>在容器被删除后，对应  net namespace 就会被销毁。</p>
+<p>而各个网络模式最大的不同，就是在于 namespace 创建后，对应的 &ldquo;构建网络&rdquo; 的操作了。</p>
 <h3 id="23-bridge-虚拟网络设备">2.3 bridge 虚拟网络设备</h3>
-<p><strong><code>bridge 网络设备</code></strong> 相当于一个 &ldquo;交换机&rdquo;，让任何其他网络设备链接上 bridge 时，所有包的都会无条件经过 bridge 转发，而链接的网络设备就变成了一根 &ldquo;网线&rdquo;。<br>
-不过与真实的交换机不同，brdige 网卡可以被赋值 IP，当 bridge 拥有 IP 后，它就与内核协议栈连接了，因此接收到的包可以到达内核协议栈的 IP 层处理，也就会经过 net_filter 处理。<br>
+<p><strong><code>bridge 网络设备</code></strong> 相当于一个 &ldquo;交换机&rdquo;，让任何其他网络设备链接上 bridge 时，所有包的都会无条件经过 bridge 转发，而链接的网络设备就变成了一根 &ldquo;网线&rdquo;。</p>
+<p>不过与真实的交换机不同，brdige 网卡可以被赋值 IP，当 bridge 拥有 IP 后，它就与内核协议栈连接了，因此接收到的包可以到达内核协议栈的 IP 层处理，也就会经过 net_filter 处理。
 <div class="details admonition tip open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-lightbulb fa-fw"></i>推荐阅读<i class="details-icon fas fa-angle-right fa-fw"></i>
@@ -293,8 +293,8 @@ $ ls -lhi /run/docker/netns/9779108cb6b0
         </div>
     </div></p>
 <h3 id="24-veth-pair-虚拟网络设备">2.4 veth-pair 虚拟网络设备</h3>
-<p><strong><code>veth-pair 设备</code></strong> 总是成对的出现，当数据包进入一端 veth 设备时，会从另一端 veth 设备出。veth-pair 两个设备可以处于不同的 net namespace，也就可以实现不同 net namespace 间数据传输。<br>
-默认下，veth 设备链接的两端是内核协议栈。不过 veth 设备链接上 bridge，这样另一端发送的数据都会由 bridge 处理。<br>
+<p><strong><code>veth-pair 设备</code></strong> 总是成对的出现，当数据包进入一端 veth 设备时，会从另一端 veth 设备出。veth-pair 两个设备可以处于不同的 net namespace，也就可以实现不同 net namespace 间数据传输。</p>
+<p>默认下，veth 设备链接的两端是内核协议栈。不过 veth 设备链接上 bridge，这样另一端发送的数据都会由 bridge 处理。</p>
 <div class="details admonition tip open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-lightbulb fa-fw"></i>推荐阅读<i class="details-icon fas fa-angle-right fa-fw"></i>
@@ -302,10 +302,10 @@ $ ls -lhi /run/docker/netns/9779108cb6b0
         <div class="details-content">
             <div class="admonition-content">veth-pair 设备了解推荐文章：<a href="https://segmentfault.com/a/1190000009251098" target="_blank" rel="noopener noreffer">Linux虚拟网络设备之veth</a></div>
         </div>
-    </div></p>
+    </div>
 <h3 id="25-macvlan-虚拟网络设备">2.5 macvlan 虚拟网络设备</h3>
-<p><strong><code>macvlan 网络设备</code></strong> 可以有 mac 地址与 ip 地址，用于将 net namespace 连接到宿主机的物理网络中，相当于，容器直接连接着物理网络。<br>
-macvlan 网络设备有着多种的模式，包括：bridge、private 等，这影响着各个 macvlan 网络设备之间的通信。
+<p><strong><code>macvlan 网络设备</code></strong> 可以有 mac 地址与 ip 地址，用于将 net namespace 连接到宿主机的物理网络中，相当于，容器直接连接着物理网络。</p>
+<p>macvlan 网络设备有着多种的模式，包括：bridge、private 等，这影响着各个 macvlan 网络设备之间的通信。
 更过 macvlan 网络设备推荐文章：<a href="https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/" target="_blank" rel="noopener noreffer">Linux interfaces for virtual networking</a></p>
 <h2 id="3-bridge-网络">3 Bridge 网络</h2>
 <h3 id="31-创建删除-bridge-网络">3.1 创建/删除 Bridge 网络</h3>
@@ -374,9 +374,9 @@ bridge name     bridge id               STP enabled     interfaces
 mybr0           8000.0242efdb0984       no
 </code></pre></td></tr></table>
 </div>
-</div><p>但是与虚拟机网络中的 bridge 网卡不同，该 bridge 不会连接任何的物理网卡，仅仅是作为内网的 &lsquo;交换机&rsquo; 使用。但是，毕竟内网是虚拟的，没有实际与物理网络连接，如何访问外网呢？<br>
-答案是，<strong>通过内核 iptables 进行 NAT，然后将包从实际的物理网卡上发送与接受</strong>。因此还有一部分的改变在于 iptables，主要会建立的是 nat 与 filter 表的规则。<br>
-先看 nat 表的相关规则（下面输出中省略了不相关规则）：</p>
+</div><p>但是与虚拟机网络中的 bridge 网卡不同，该 bridge 不会连接任何的物理网卡，仅仅是作为内网的 &lsquo;交换机&rsquo; 使用。但是，毕竟内网是虚拟的，没有实际与物理网络连接，如何访问外网呢？</p>
+<p>答案是，<strong>通过内核 iptables 进行 NAT，然后将包从实际的物理网卡上发送与接受</strong>。因此还有一部分的改变在于 iptables，主要会建立的是 nat 与 filter 表的规则。</p>
+<p>先看 nat 表的相关规则（下面输出中省略了不相关规则）：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -606,8 +606,8 @@ bridge name     bridge id               STP enabled     interfaces
 mybr0           8000.0242efdb0984       no              vethef6b174
 </code></pre></td></tr></table>
 </div>
-</div><p>veth-pair 都是成对出现的，可以简单被看做一个通道，一端发入的包会从另一端发出，并进入内核协议栈。不过，在 bridge 网络环境下，veth5b480f8 连接到 mybr0，所以所有从 veth5b480f8 发出的包都会被 mybr0 接手转发（相当于就是一根网线插入了交换机）。<br>
-可以进入容器 namespace，看一下容器内的 veth 设备。</p>
+</div><p>veth-pair 都是成对出现的，可以简单被看做一个通道，一端发入的包会从另一端发出，并进入内核协议栈。不过，在 bridge 网络环境下，veth5b480f8 连接到 mybr0，所以所有从 veth5b480f8 发出的包都会被 mybr0 接手转发（相当于就是一根网线插入了交换机）。</p>
+<p>可以进入容器 namespace，看一下容器内的 veth 设备。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -801,9 +801,9 @@ $ ls -lhi  /run/docker/netns/default
 </code></pre></td></tr></table>
 </div>
 </div><h2 id="5-macvlan-网络">5 macvlan 网络</h2>
-<p>macvlan 网络使用 macvlan 虚拟网络设备，将容器 net namespace 网络暴露在与当前宿主机同级的局域网内，相当于容器就是当前网络内的一台 &ldquo;主机&rdquo;。<br>
-macvlan 网络设备也包括多种模式：bridge mode、802.1q trunk bridge mode。下面示例都是基于普通的 brdige mode。<br>
-因为 macvlan 网络在虚拟机网络下不太好验证，所以下面例子来自于一台物理机上。</p>
+<p>macvlan 网络使用 macvlan 虚拟网络设备，将容器 net namespace 网络暴露在与当前宿主机同级的局域网内，相当于容器就是当前网络内的一台 &ldquo;主机&rdquo;。</p>
+<p>macvlan 网络设备也包括多种模式：bridge mode、802.1q trunk bridge mode。下面示例都是基于普通的 brdige mode。</p>
+<p>因为 macvlan 网络在虚拟机网络下不太好验证，所以下面例子来自于一台物理机上。</p>
 <h3 id="51--创建删除-macvlan-网络">5.1  创建/删除 macvlan 网络</h3>
 <p>通过 <code>docker network create</code> 创建 macvlan 网络。</p>
 <div class="highlight"><div class="chroma">
@@ -892,8 +892,8 @@ From 192.168.67.139 <span class="nv">icmp_seq</span><span class="o">=</span><spa
 From 192.168.67.139 <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> Destination Host Unreachable
 </code></pre></td></tr></table>
 </div>
-</div><p>因此，换个思路，静态 IP 不行，就通过 DHCP 获取一个 IP 尝试是否能够连通网络。<br>
-在删除静态 IP 之后，调用 <code>dhclient</code> 从上层路由器获取一个 IP。</p>
+</div><p>因此，换个思路，静态 IP 不行，就通过 DHCP 获取一个 IP 尝试是否能够连通网络。</p>
+<p>在删除静态 IP 之后，调用 <code>dhclient</code> 从上层路由器获取一个 IP。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -990,8 +990,8 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 192.168.9.0     0.0.0.0         255.255.255.0   U     <span class="m">0</span>      <span class="m">0</span>        <span class="m">0</span> eth0
 </code></pre></td></tr></table>
 </div>
-</div><p>可以看到，DHCP 获得的 IP 与宿主机都不是同一个网段的，并且网关地址也不是同一个，因此上层连着交换机有多个网段（这块不太理解了）。<br>
-但是，测试后是可以 ping 通网关，并且可以访问外网的：</p>
+</div><p>可以看到，DHCP 获得的 IP 与宿主机都不是同一个网段的，并且网关地址也不是同一个，因此上层连着交换机有多个网段（这块不太理解了）。</p>
+<p>但是，测试后是可以 ping 通网关，并且可以访问外网的：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1

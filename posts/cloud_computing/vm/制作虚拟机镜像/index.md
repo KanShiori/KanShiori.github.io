@@ -1,7 +1,8 @@
 # 制作虚拟机镜像
 
 
-中心思想：通过 libvirt 运行一个虚拟机（domain），并保存其对应的 domain 的镜像文件与配置文件，然后就可以在其他机器通过 `virsh define + start` 或者 `virt-install` 启动。<br>
+中心思想：通过 libvirt 运行一个虚拟机（domain），并保存其对应的 domain 的镜像文件与配置文件，然后就可以在其他机器通过 `virsh define + start` 或者 `virt-install` 启动。
+
 说明：下面环境都是在 centos 上制作基于 KVM 的虚拟机镜像。
 
 ## 1 从 ISO 镜像安装
@@ -34,23 +35,30 @@ Id    Name                           State
 ```
 
 ### 1.2 自动安装
-可以看到，手动安装需要人为在菜单中选择、配置，这不适用于多个虚拟机的安装。而 RedHat 创建了 kickstart 安装方法，使得整个虚拟机安装流程变得自动化。<br>
+可以看到，手动安装需要人为在菜单中选择、配置，这不适用于多个虚拟机的安装。而 RedHat 创建了 kickstart 安装方法，使得整个虚拟机安装流程变得自动化。
+
 这块不了解，具体见红帽官方文档：[KICKSTART INSTALLATIONS](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/installation_guide/ch-kickstart2#s1-kickstart2-whatis)
 
 
 
 ## 2 使用 Cloud Image
-当然，上面制作过程中耗时都在安装系统上了，而各个云厂商的虚拟机数量那么多，肯定不会一台台去安装操作系统了。所以，目前最常见的都是直接下载已经安装过系统的虚拟机镜像文件。<br>
-但是这样的虚拟机是没有特殊配置的，例如密码、hostname 都是一致的，所以 **cloud-init** 出现，用于在第一次启动虚拟机时进行系统的配置。<br>
-所以，最快速的制作方法就是：虚拟机镜像文件 + cloud-init 配置。<br>
+当然，上面制作过程中耗时都在安装系统上了，而各个云厂商的虚拟机数量那么多，肯定不会一台台去安装操作系统了。所以，目前最常见的都是直接下载已经安装过系统的虚拟机镜像文件。
+
+但是这样的虚拟机是没有特殊配置的，例如密码、hostname 都是一致的，所以 **cloud-init** 出现，用于在第一次启动虚拟机时进行系统的配置。
+
+所以，最快速的制作方法就是：虚拟机镜像文件 + cloud-init 配置。
+
 
 ### 2.1 cloud-init
-下面内容都来自于文档，这里仅为自己做个记录。<br>
+下面内容都来自于文档，这里仅为自己做个记录。
+
 首先明确 cloud init 的功能：系统第一次启动时，cloud init 相关的进程会根据配置信息去进行系统的配置，包括：设置 hostname、ssh key、password 等；
+
 #### (1) 基本概念
 * **metadata**：包含服务器信息，用于 cloud-init 配置；
 * **userdata**：包含 cloud-init 系统配置信息，可以是 文件，脚本，yaml 文件等；
 * **datasource**：cloud-init 读取配置数据的来源，包含大部分云厂商，当然，也可以来自本地的文件([NoCloud datasource](https://cloudinit.readthedocs.io/en/latest/topics/datasources/nocloud.html))；
+
 #### (2) 运行过程
 cloud init 设置包括五个阶段：
 1. Generator

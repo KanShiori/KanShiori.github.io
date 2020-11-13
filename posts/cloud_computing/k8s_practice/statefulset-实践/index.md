@@ -55,7 +55,8 @@ StatefulSet 会使用 HeadlessService 的概念，首先来部署 HeadlessServic
     {{< find_img "img13.png"  >}}
 创建后可以看到，StatefulSet 为 2 个 Pod 创建了对应的 PVC：
     {{< find_img "img14.png"  >}}
-可以看到，PVC 是和名字对应的，格式为 [volume name]-[pod name]，因此，PVC 与 Pod 名字的映射关系是固定的。<br>
+可以看到，PVC 是和名字对应的，格式为 [volume name]-[pod name]，因此，PVC 与 Pod 名字的映射关系是固定的。
+
 所以这就实现了，当旧 Pod 删除，新 Pod 被创建后，因为其 Pod Name 没有变，所以就找到了旧 Pod 使用 PVC。
 
 

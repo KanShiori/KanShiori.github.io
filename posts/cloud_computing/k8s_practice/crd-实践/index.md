@@ -23,9 +23,12 @@ CRD 是 Kubernetes 可扩展性的第一个体现，因为 Kubernetes 提供的�
 
 
 ## 2 编写自定义控制器
-因为 Kubernetes 中是基于声明式 API 的业务实现，所以需要控制器来“监控”对象变化，执行对应的操作。<br>
-编写自动以控制器主要有三个过程：编写 main 函数、编写自定义控制器定义，编写控制器业务逻辑。<br>
+因为 Kubernetes 中是基于声明式 API 的业务实现，所以需要控制器来“监控”对象变化，执行对应的操作。
+
+编写自动以控制器主要有三个过程：编写 main 函数、编写自定义控制器定义，编写控制器业务逻辑。
+
 整个实践代码见：[k8s_practice](https://github.com/KanShiori/k8s_practice)
+
 1. Controller 代码编写。主要逻辑：处理 Informer 通知的 Event，执行 CR Sync 操作。<br>
 Controller 主要包含三个部分：
     * **Informer**：包含从 APIServer 同步的 CR 对象的 Cache，并且处理 CR Event，调用 Event Handler。

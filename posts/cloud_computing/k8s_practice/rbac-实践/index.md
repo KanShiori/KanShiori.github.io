@@ -1,7 +1,8 @@
 # RBAC 实践
 
 
-Kubernetes 中，通过 RBAC 机制来实现集群 Pod 中对 APIServer 的访问权限控制与授权。<br>
+Kubernetes 中，通过 RBAC 机制来实现集群 Pod 中对 APIServer 的访问权限控制与授权。
+
 RBAC 机制有三个最基本的概念：
 1. **Role**：一组规则，定义了对 API 对象的操作权限；
 2. **Subject**：被作用者，集群内部常常使用的是 ServiceAccount；
