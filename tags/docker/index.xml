@@ -3,7 +3,14 @@
         <title>docker - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/docker/</link>
         <description>docker - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 06 Nov 2020 20:40:51 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/docker/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 13 Nov 2020 15:45:03 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/docker/" rel="self" type="application/rss+xml" /><item>
+    <title>容器启停原理总结</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E5%90%AF%E5%81%9C%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/</link>
+    <pubDate>Fri, 13 Nov 2020 15:45:03 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E5%90%AF%E5%81%9C%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/</guid>
+    <description><![CDATA[目的：描述容器启停背后的步骤，但是不涉及源码。 示例的基于 ubuntu 20.04.1 LTS 虚拟机运行，docker 版本如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22]]></description>
+</item><item>
     <title>容器网络总结</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/</link>
     <pubDate>Fri, 06 Nov 2020 20:40:51 &#43;0800</pubDate>
