@@ -3,9 +3,16 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 13 Nov 2020 15:45:03 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 28 Nov 2020 17:29:39 &#43;0800</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>KVM 虚拟机的存储与网络</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</link>
+    <pubDate>Sat, 28 Nov 2020 17:29:39 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</guid>
+    <description><![CDATA[本文主要总结一些遇到的虚拟机使用存储与网络的方式，在不断更新中 ~ 下面所有的虚拟机启动都使用 libvirt，通过修改其配置文件来设置网络或者存]]></description>
+</item><item>
     <title>容器启停原理总结</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E5%90%AF%E5%81%9C%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/</link>
     <pubDate>Fri, 13 Nov 2020 15:45:03 &#43;0800</pubDate>
@@ -68,12 +75,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/statefulset-%E5%AE%9E%E8%B7%B5/</guid>
     <description><![CDATA[Deployment 对于“无状态”的任务，已经能够做到副本控制，滚动升级功能了。但是 Deployment 无法适用于“有状态”的任务，因为其中 Pod 都是相同的，没有任何的对应关系。 而]]></description>
-</item><item>
-    <title>Deployment 实践</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/deployment-%E5%AE%9E%E8%B7%B5/</link>
-    <pubDate>Fri, 16 Oct 2020 16:08:05 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/deployment-%E5%AE%9E%E8%B7%B5/</guid>
-    <description><![CDATA[1 ReplicaSet Deploment 管理的是 ReplicaSet，所以先运行 ReplicaSet 观察。 ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。 1.1 部署 ReplicaSet 创建 manifest 文件。 调用 kubectl create 创建资源。]]></description>
 </item></channel>
 </rss>
