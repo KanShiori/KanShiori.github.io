@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Go 内存模型 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Go 内存模型" />
+<meta property="og:description" content="本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于《Go 学习笔记》。 下面代码都是基于 go 1.15.6。 1 Linux 内存模型 所有语言的内存管理，在 Linux" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" />
+<meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+<meta property="article:published_time" content="2020-12-26T18:28:41+08:00" />
+<meta property="article:modified_time" content="2020-12-26T18:28:41+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="Go 内存模型"/>
+<meta name="twitter:description" content="本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于《Go 学习笔记》。 下面代码都是基于 go 1.15.6。 1 Linux 内存模型 所有语言的内存管理，在 Linux"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Go 内存模型",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  3288 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B\/","datePublished": "2020-12-26T18:28:41+08:00","dateModified": "2020-12-26T18:28:41+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/" title="">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Go 内存模型</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw"></i>Golang</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-12-26">2020-12-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3288 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;<span id="/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" class="leancloud_visitors" data-flag-title="Go 内存模型">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-linux-内存模型">1 Linux 内存模型</a></li>
+    <li><a href="#2-pc-与-sp">2 PC 与 SP</a>
+      <ul>
+        <li><a href="#21-pc">2.1 PC</a></li>
+        <li><a href="#22-sp">2.2 SP</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-goroutine-栈">3 Goroutine 栈</a>
+      <ul>
+        <li><a href="#31-新-g-的栈">3.1 新 G 的栈</a></li>
+        <li><a href="#32-栈的分配">3.2 栈的分配</a></li>
+        <li><a href="#33-栈的扩容">3.3 栈的扩容</a>
+          <ul>
+            <li><a href="#331-扩容判断">3.3.1 扩容判断</a></li>
+            <li><a href="#332-扩容">3.3.2 扩容</a></li>
+          </ul>
+        </li>
+        <li><a href="#34-栈的释放">3.4 栈的释放</a></li>
+        <li><a href="#35-栈的切换">3.5 栈的切换</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于《Go 学习笔记》。
+下面代码都是基于 go 1.15.6。</p>
+<h2 id="1-linux-内存模型">1 Linux 内存模型</h2>
+<p>所有语言的内存管理，在 Linux 上都是在以基本的进程内存模型基础上实现的，首先需要知道 Linux 进程内存布局。</p>
+<p>在进程角度，看到的所有内存就是 <strong><code>虚拟地址空间</code></strong> ，整个是一个线性的存储地址。其中一部分高地址区域用户态无法访问，是内核地址空间。而另一部分就是由栈、mmap、堆等内存区域组成的用户地址空间。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/img1.png"/><br>
+
+
+
+上面进程可以自己分配与管理的进程，就是 mmap 与 堆，对应的系统调用为 <strong><code>mmap()</code></strong> 与 <strong><code>brk()</code></strong>，因此所有语言的内存管理都是基于这两个内存区域在进一步实现的（包括 glibc 的 malloc() 与 free()）。</p>
+<p>mmap 最基本有两个用途：</p>
+<ul>
+<li><code>文件映射</code> ：申请一块内存区域，映射到文件系统上一个文件（这也是 page_cache 的基本原理，所以他们在内核中都使用 address_space 实现）</li>
+<li><code>匿名映射</code> ：申请一块内存区域，但是没有映射到具体文件，相当于分配了一块内存区域（可以用于父子进程共享、或者自己管理内存的分配等功能）</li>
+</ul>
+<p>而所有在内存上所说的地址，包括代码指令地址、变量地址都是上面地址空间的一个地址。</p>
+<h2 id="2-pc-与-sp">2 PC 与 SP</h2>
+<p>Goroutine 将进程的切换变为了协程间的切换，那么就需要<strong>在用户空间负责执行代码与协程上下文的保留与切换</strong>。因此，有两个关键的寄存器：PC 与 SP。</p>
+<h3 id="21-pc">2.1 PC</h3>
+<p><strong><code>程序计数器（Program Counter，PC）</code></strong> 是 CPU 中的一个寄存器，<strong>保存着下一个 CPU 执行的指令的位置</strong>。顺序执行指令时，PC = PC + 1（一个指令）。而调用函数或者条件跳转时，会将跳到的指令地址设置到 PC 中。</p>
+<p>所以，可以想到，当需要切换执行的 goroutine，调用 JMP 指令跳转到 G 对应的代码。</p>
+<h3 id="22-sp">2.2 SP</h3>
+<p><strong><code>SP</code></strong> 是<strong>保存栈顶地址的寄存器</strong>，我们平时所说的临时变量在栈上，就是将临时变量的值写入 SP 保存的内存地址，然后 SP 保存的地址减小（栈是从高地址向低地址变化），然后临时变量销毁时，SP 地址又变为高地址。</p>
+<p>不过，因为 goroutine 切换时，必须要保存当前 goroutine 的上下文，也就是栈里的变量。因此，goroutine 栈肯定是不能使用 Linux 进程栈了（因为进程栈有上限，也无法实现“保存”这种功能）。所以所说的协程栈，都是基于 mmap 申请内存空间（基于 Go 内存管理，内存管理基于 mmap），然后切换时修改 SP 寄存器地址实现的。</p>
+<p>这也是为什么 goroutine 栈可以“无限大”的原因了。</p>
+<h2 id="3-goroutine-栈">3 Goroutine 栈</h2>
+<p>整体的一个 G 的栈如下图所示：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/img2.png"/><br>
+
+
+</p>
+<ul>
+<li><code>stack.lo</code>： G 栈的最大低地址（也就是上限）；</li>
+<li><code>stack.hi</code>：G 栈的初始地址；</li>
+<li><code>stackguard0</code>：阈值地址，用于判断 G 栈是否需要扩容；</li>
+<li>StackGuard：常量，栈的保护区，也就是预留的地址；</li>
+<li>StackSmall：常量，用于小函数调用的优化；</li>
+</ul>
+<p>先看一下 g 的实现中包含的 stack 属性（runtime/runtime2.go），其实注释写的就很明白了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">g</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// Stack parameters.
+</span><span class="c1"></span>	<span class="c1">// stack describes the actual stack memory: [stack.lo, stack.hi).
+</span><span class="c1"></span>	<span class="c1">// stackguard0 is the stack pointer compared in the Go stack growth prologue.
+</span><span class="c1"></span>	<span class="c1">// It is stack.lo+StackGuard normally, but can be StackPreempt to trigger a preemption.
+</span><span class="c1"></span>	<span class="c1">// stackguard1 is the stack pointer compared in the C stack growth prologue.
+</span><span class="c1"></span>	<span class="c1">// It is stack.lo+StackGuard on g0 and gsignal stacks.
+</span><span class="c1"></span>	<span class="c1">// It is ~0 on other goroutine stacks, to trigger a call to morestackc (and crash).
+</span><span class="c1"></span>	<span class="nx">stack</span>       <span class="nx">stack</span>   <span class="c1">// offset known to runtime/cgo
+</span><span class="c1"></span>	<span class="nx">stackguard0</span> <span class="kt">uintptr</span> <span class="c1">// offset known to liblink
+</span><span class="c1"></span>    <span class="nx">stackguard1</span> <span class="kt">uintptr</span> <span class="c1">// offset known to liblink
+</span><span class="c1"></span>
+    <span class="c1">// ...
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>stack</code> 属性就是 G 对应的栈了（这也表明了不是使用的进程栈）；</li>
+</ul>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">stack 与 stackguard0 属性一定要在 g 结构的开头，因为汇编中会使用指定的偏移(0x10)来获取对应的值;</div>
+        </div>
+    </div>
+<p>具体看一下 stack 结构（runtime/runtime2.go）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Stack describes a Go execution stack.
+</span><span class="c1">// The bounds of the stack are exactly [lo, hi),
+</span><span class="c1">// with no implicit data structures on either side.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">stack</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">lo</span> <span class="kt">uintptr</span>
+	<span class="nx">hi</span> <span class="kt">uintptr</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="31-新-g-的栈">3.1 新 G 的栈</h3>
+<p>在 <strong>malg</strong> 函数中，可以看到对于新 G 的栈的分配（一开始为 2KB）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Allocate a new g, with a stack big enough for stacksize bytes.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">malg</span><span class="p">(</span><span class="nx">stacksize</span> <span class="kt">int32</span><span class="p">)</span> <span class="o">*</span><span class="nx">g</span> <span class="p">{</span>
+	<span class="nx">newg</span> <span class="o">:=</span> <span class="nb">new</span><span class="p">(</span><span class="nx">g</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">stacksize</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nx">stacksize</span> <span class="p">=</span> <span class="nf">round2</span><span class="p">(</span><span class="nx">_StackSystem</span> <span class="o">+</span> <span class="nx">stacksize</span><span class="p">)</span>
+		
+		<span class="c1">// 在公共的 goroutine(g0) 上调用函数
+</span><span class="c1"></span>		<span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		    <span class="c1">// 分配一个 stack
+</span><span class="c1"></span>			<span class="nx">newg</span><span class="p">.</span><span class="nx">stack</span> <span class="p">=</span> <span class="nf">stackalloc</span><span class="p">(</span><span class="nb">uint32</span><span class="p">(</span><span class="nx">stacksize</span><span class="p">))</span>
+		<span class="p">})</span>
+		
+		<span class="c1">// 设置 stackguard0 地址
+</span><span class="c1"></span>		<span class="nx">newg</span><span class="p">.</span><span class="nx">stackguard0</span> <span class="p">=</span> <span class="nx">newg</span><span class="p">.</span><span class="nx">stack</span><span class="p">.</span><span class="nx">lo</span> <span class="o">+</span> <span class="nx">_StackGuard</span>
+		<span class="nx">newg</span><span class="p">.</span><span class="nx">stackguard1</span> <span class="p">=</span> <span class="p">^</span><span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+		<span class="c1">// Clear the bottom word of the stack. We record g
+</span><span class="c1"></span>		<span class="c1">// there on gsignal stack during VDSO on ARM and ARM64.
+</span><span class="c1"></span>		<span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="kt">uintptr</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">newg</span><span class="p">.</span><span class="nx">stack</span><span class="p">.</span><span class="nx">lo</span><span class="p">))</span> <span class="p">=</span> <span class="mi">0</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">newg</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>注意 <strong>systemstack</strong>，用于将当前栈切换到 M 的 g0 协程栈上执行命令。</p>
+<p>Why? 因为 G 用于执行用户逻辑，而某些管理操作不方便在 G 栈上执行（例如 G 可能中途停止，垃圾回收时 G 栈空间也有可能被回收），所以需要执行管理命令时，都会通过 systemstack 方法将线程栈切换为 g0 的栈执行，与用户逻辑隔离。</p>
+</div>
+        </div>
+    </div>
+<h3 id="32-栈的分配">3.2 栈的分配</h3>
+<p><strong>stackalloc</strong> 函数用于分配一个栈，无论是给新 G 还是扩容栈时都会用到，因此栈空间的分配与回收是一个比较频繁的操作，所以栈空间采取了缓存复用的方式。</p>
+<p>主要逻辑如下：</p>
+<ol>
+<li>如果分配的栈空间不大，就走<code>缓存复用</code>这种方式分配。没有可以复用的就创建；</li>
+<li>如果分配的栈空间很大（大于 32KB），就直接从 heap 分配；</li>
+</ol>
+<p>这里主要关注第 1 中方式，会调用 <strong>stackpoolalloc</strong> 函数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Allocates a stack from the free pool. Must be called with
+</span><span class="c1">// stackpool[order].item.mu held.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">stackpoolalloc</span><span class="p">(</span><span class="nx">order</span> <span class="kt">uint8</span><span class="p">)</span> <span class="nx">gclinkptr</span> <span class="p">{</span>
+	<span class="nx">list</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">stackpool</span><span class="p">[</span><span class="nx">order</span><span class="p">].</span><span class="nx">item</span><span class="p">.</span><span class="nx">span</span>
+    <span class="nx">s</span> <span class="o">:=</span> <span class="nx">list</span><span class="p">.</span><span class="nx">first</span>
+    
+	<span class="c1">// ...
+</span><span class="c1"></span>    
+    <span class="k">if</span> <span class="nx">s</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="c1">// 没有可以复用的栈，走内存管理创建
+</span><span class="c1"></span>		<span class="nx">s</span> <span class="p">=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nf">allocManual</span><span class="p">(</span><span class="nx">_StackCacheSize</span><span class="o">&gt;&gt;</span><span class="nx">_PageShift</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">stacks_inuse</span><span class="p">)</span>
+		<span class="c1">// ... 
+</span><span class="c1"></span>	<span class="p">}</span>
+	<span class="nx">x</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">manualFreeList</span>
+	<span class="k">if</span> <span class="nx">x</span><span class="p">.</span><span class="nf">ptr</span><span class="p">()</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nf">throw</span><span class="p">(</span><span class="s">&#34;span has no free stacks&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+    <span class="nx">s</span><span class="p">.</span><span class="nx">manualFreeList</span> <span class="p">=</span> <span class="nx">x</span><span class="p">.</span><span class="nf">ptr</span><span class="p">().</span><span class="nx">next</span>
+    
+	<span class="c1">// ...
+</span><span class="c1"></span>	<span class="k">return</span> <span class="nx">x</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到，首先尝试从 stackpool 缓存的空闲的 stack 获取，如果没有则走 Go 内存管理申请一个。</p>
+<p>再接下来就是 Go 内存管理模块负责的事了，不深入下去。底层创建都是使用 mmap 系统调用实现的，这里可以看下使用的参数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Don&#39;t split the stack as this method may be invoked without a valid G, which
+</span><span class="c1">// prevents us from allocating more stack.
+</span><span class="c1">//go:nosplit
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">sysAlloc</span><span class="p">(</span><span class="nx">n</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">sysStat</span> <span class="o">*</span><span class="kt">uint64</span><span class="p">)</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span> <span class="p">{</span>
+	<span class="nx">p</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">mmap</span><span class="p">(</span><span class="kc">nil</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">_PROT_READ</span><span class="p">|</span><span class="nx">_PROT_WRITE</span><span class="p">,</span> <span class="nx">_MAP_ANON</span><span class="p">|</span><span class="nx">_MAP_PRIVATE</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">_EACCES</span> <span class="p">{</span>
+			<span class="nb">print</span><span class="p">(</span><span class="s">&#34;runtime: mmap: access denied\n&#34;</span><span class="p">)</span>
+			<span class="nf">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">_EAGAIN</span> <span class="p">{</span>
+			<span class="nb">print</span><span class="p">(</span><span class="s">&#34;runtime: mmap: too much locked memory (check &#39;ulimit -l&#39;).\n&#34;</span><span class="p">)</span>
+			<span class="nf">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+	<span class="nf">mSysStatInc</span><span class="p">(</span><span class="nx">sysStat</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+	<span class="k">return</span> <span class="nx">p</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过 mmap 调用的参数可以看到，申请了一个系统分配的匿名内存映射。</p>
+<h3 id="33-栈的扩容">3.3 栈的扩容</h3>
+<h4 id="331-扩容判断">3.3.1 扩容判断</h4>
+<p>Go 编译器会在执行函数前，插入一些汇编指令，其中一个功能就是<strong>检查 G 栈是否需要扩容</strong>。看一个函数调用的实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">$ go build -gcflags &#34;-l&#34; -o test main.go
+$ go tool objump -s &#34;main\.test&#34; test
+TEXT main.test(SB) /root/yusihao/onething/BizImages/main.go
+  main.go:3 0x45dc80 MOVQ FS:0xfffffff8, CX  // CX 为当前 G 地址		
+  main.go:3 0x45dc89 CMPQ 0x10(CX), SP  // CX+0x10 执行 g.stackguard0 属性，与 SP 指针地址比较	
+  main.go:3 0x45dc8d JBE 0x45dccf	  // 如果 SP &lt;=stackguard0  跳转到 0x45dccf，也就是调用 runtime.morestack_noctxt(SB) 函数	
+  main.go:3 0x45dc8f SUBQ $0x18, SP	
+
+  // ...
+
+  main.go:5 0x45dcce RET  // 函数执行结束，RET 返回，不会执行后面两个指令				
+  main.go:3 0x45dccf CALL runtime.morestack_noctxt(SB)  // 执行栈扩容	
+  main.go:3 0x45dcd4 MP main.test(SB) // 执行结束后，重新执行当前函数	
+</code></pre></td></tr></table>
+</div>
+</div><p>逻辑很简单，如果 SP &lt;= stackguard0，那么就执行栈的扩容，扩容结束重新执行当前函数。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>上面比较 SP 时候，没有考虑当前函数调用使用的空间大小。Why?</p>
+<p>因为测试程序这个函数中使用的空间比较小，而 stackguard0  与 stack.lo 有一段<strong>保护区</strong>，所以编译器允许这里 &ldquo;溢出&rdquo; 一些，所以这里就没有让 SP 考虑函数使用空间。</p>
+<p>如果函数中使用的空间大过保护区时，比较时就会让 SP 减去当前函数使用空间再比较了。</p>
+</div>
+        </div>
+    </div></p>
+<h4 id="332-扩容">3.3.2 扩容</h4>
+<p>扩容逻辑大致分为三步：</p>
+<ol>
+<li>分配一个 2x 新栈；</li>
+<li>拷贝当前栈数据至新栈；</li>
+<li>&ldquo;释放&quot;掉旧栈；</li>
+</ol>
+<p>具体会调用 newstack 函数（runtime/stack.go），过程很复杂，只看一下关键点：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Called from runtime·morestack when more stack is needed.
+</span><span class="c1">// Allocate larger stack and relocate to new stack.
+</span><span class="c1">// Stack growth is multiplicative, for constant amortized cost.
+</span><span class="c1">//
+</span><span class="c1">// g-&gt;atomicstatus will be Grunning or Gscanrunning upon entry.
+</span><span class="c1">// If the scheduler is trying to stop this g, then it will set preemptStop.
+</span><span class="c1">//
+</span><span class="c1">// This must be nowritebarrierrec because it can be called as part of
+</span><span class="c1">// stack growth from other nowritebarrierrec functions, but the
+</span><span class="c1">// compiler doesn&#39;t check this.
+</span><span class="c1">//
+</span><span class="c1">//go:nowritebarrierrec
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">newstack</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">thisg</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">()</span>
+    <span class="nx">gp</span> <span class="o">:=</span> <span class="nx">thisg</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">curg</span>
+    
+    <span class="c1">// ...
+</span><span class="c1"></span>
+	<span class="c1">// 新栈大小为当前两倍
+</span><span class="c1"></span>	<span class="nx">oldsize</span> <span class="o">:=</span> <span class="nx">gp</span><span class="p">.</span><span class="nx">stack</span><span class="p">.</span><span class="nx">hi</span> <span class="o">-</span> <span class="nx">gp</span><span class="p">.</span><span class="nx">stack</span><span class="p">.</span><span class="nx">lo</span>
+    <span class="nx">newsize</span> <span class="o">:=</span> <span class="nx">oldsize</span> <span class="o">*</span> <span class="mi">2</span>
+    
+    <span class="c1">// ...
+</span><span class="c1"></span>
+	<span class="c1">// 改变 G 状态为 copy stack，gc 会跳过该状态的 G
+</span><span class="c1"></span>	<span class="nf">casgstatus</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">_Grunning</span><span class="p">,</span> <span class="nx">_Gcopystack</span><span class="p">)</span>
+
+    <span class="c1">// 分配新栈，拷贝数据，释放旧站
+</span><span class="c1"></span>	<span class="c1">// The concurrent GC will not scan the stack while we are doing the copy since
+</span><span class="c1"></span>	<span class="c1">// the gp is in a Gcopystack status.
+</span><span class="c1"></span>	<span class="nf">copystack</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">newsize</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">stackDebug</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="p">{</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s">&#34;stack grow done\n&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nf">casgstatus</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">_Gcopystack</span><span class="p">,</span> <span class="nx">_Grunning</span><span class="p">)</span>
+	<span class="c1">// 执行 G 代码
+</span><span class="c1"></span>	<span class="nf">gogo</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">gp</span><span class="p">.</span><span class="nx">sched</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Copies gp&#39;s stack to a new stack of a different size.
+</span><span class="c1">// Caller must have changed gp status to Gcopystack.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">copystack</span><span class="p">(</span><span class="nx">gp</span> <span class="o">*</span><span class="nx">g</span><span class="p">,</span> <span class="nx">newsize</span> <span class="kt">uintptr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 创建新 stack
+</span><span class="c1"></span>	<span class="nx">new</span> <span class="o">:=</span> <span class="nf">stackalloc</span><span class="p">(</span><span class="nb">uint32</span><span class="p">(</span><span class="nx">newsize</span><span class="p">))</span>
+	<span class="c1">// ...
+</span><span class="c1"></span>	<span class="c1">// 拷贝数据
+</span><span class="c1"></span>	<span class="nf">memmove</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">new</span><span class="p">.</span><span class="nx">hi</span><span class="o">-</span><span class="nx">ncopy</span><span class="p">),</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">old</span><span class="p">.</span><span class="nx">hi</span><span class="o">-</span><span class="nx">ncopy</span><span class="p">),</span> <span class="nx">ncopy</span><span class="p">)</span>
+	<span class="c1">// ...
+</span><span class="c1"></span>	<span class="nx">gp</span><span class="p">.</span><span class="nx">stack</span> <span class="p">=</span> <span class="nx">new</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">stackguard0</span> <span class="p">=</span> <span class="nx">new</span><span class="p">.</span><span class="nx">lo</span> <span class="o">+</span> <span class="nx">_StackGuard</span> 
+	<span class="c1">// 释放旧 stack
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">stackPoisonCopy</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nf">fillstack</span><span class="p">(</span><span class="nx">old</span><span class="p">,</span> <span class="mh">0xfc</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nf">stackfree</span><span class="p">(</span><span class="nx">old</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="34-栈的释放">3.4 栈的释放</h3>
+<p>stackfree 栈的释放与申请相反，放入 stackpool，或者直接调用内存管理删除，重点还是内存管理的活，所以这里不展开。</p>
+<h3 id="35-栈的切换">3.5 栈的切换</h3>
+<p>切换应该是属于 goroutine 调度的内容，不过这里可以关注一下栈时如何切换的。
+当 M 执行的 G 需要切换，或者一个新创建 G 执行时，最后都会调用 execute() 函数，而 execute() 函数会调用 gogo 汇编实现的函数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">// func gogo(buf *gobuf)
+// restore state from Gobuf; longjmp
+TEXT runtime·gogo(SB), NOSPLIT, $16-8
+	MOVQ	buf+0(FP), BX		// gobuf
+	MOVQ	gobuf_g(BX), DX
+	MOVQ	0(DX), CX		// make sure g != nil
+	get_tls(CX)
+	MOVQ	DX, g(CX)
+	MOVQ	gobuf_sp(BX), SP	// restore SP
+	MOVQ	gobuf_ret(BX), AX
+	MOVQ	gobuf_ctxt(BX), DX
+	MOVQ	gobuf_bp(BX), BP
+	MOVQ	$0, gobuf_sp(BX)	// clear to help garbage collector
+	MOVQ	$0, gobuf_ret(BX)
+	MOVQ	$0, gobuf_ctxt(BX)
+	MOVQ	$0, gobuf_bp(BX)
+	MOVQ	gobuf_pc(BX), BX
+	JMP	BX
+</code></pre></td></tr></table>
+</div>
+</div><p><code>gobuf</code> 中保存着要执行的 G 的 sp、pc 指针，可以看到通过将对应 gobuf.sp 写入到 SP 寄存器中，也就是将使用的栈切换为了 G 的栈。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2020-12-26</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" data-title="Go 内存模型"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" data-title="Go 内存模型"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" data-title="Go 内存模型"><i class="fab fa-evernote fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/golang/">Golang</a>,&nbsp;<a href="/tags/golang-%E5%8E%9F%E7%90%86/">Golang 原理</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/" class="prev" rel="prev" title="KVM 虚拟机的存储与网络"><i class="fas fa-angle-left fa-fw"></i>KVM 虚拟机的存储与网络</a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.76.5">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2020</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":25},"comment":{"valine":{"appId":"MmnKVcBz9AcNPahAcxxe8B6A-gzGzoHsz","appKey":"R3UuooucP5zsSKK77zNspvlL","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"你的评论 ...","recordIP":true,"serverURLs":"https://mmnkvcbz.lc-cn-n1-shared.com","visitor":true}},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

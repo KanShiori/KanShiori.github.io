@@ -3,7 +3,14 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 28 Nov 2020 17:29:39 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 26 Dec 2020 18:28:41 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>Go 内存模型</title>
+    <link>https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</link>
+    <pubDate>Sat, 26 Dec 2020 18:28:41 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</guid>
+    <description><![CDATA[本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于《Go 学习笔记》。 下面代码都是基于 go 1.15.6。 1 Linux 内存模型 所有语言的内存管理，在 Linux]]></description>
+</item><item>
     <title>KVM 虚拟机的存储与网络</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</link>
     <pubDate>Sat, 28 Nov 2020 17:29:39 &#43;0800</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/daemonset-%E5%AE%9E%E8%B7%B5/</guid>
     <description><![CDATA[DaemonSet 会为匹配的 Node 运行一个 Daemon Pod，与 Deployment 类最大不同，DaemonSet 没有副本的概念。 目的：部署 DaemonSet，试用 toleration 与 nodeAffini]]></description>
-</item><item>
-    <title>StatefulSet 实践</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/statefulset-%E5%AE%9E%E8%B7%B5/</link>
-    <pubDate>Fri, 30 Oct 2020 09:32:39 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/statefulset-%E5%AE%9E%E8%B7%B5/</guid>
-    <description><![CDATA[Deployment 对于“无状态”的任务，已经能够做到副本控制，滚动升级功能了。但是 Deployment 无法适用于“有状态”的任务，因为其中 Pod 都是相同的，没有任何的对应关系。 而]]></description>
 </item></channel>
 </rss>
