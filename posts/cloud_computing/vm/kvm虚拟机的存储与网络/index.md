@@ -9,7 +9,7 @@
 ## 1 virtio 概述
 KVM 在 IO 虚拟化方面，传统的方式是使用 QEMU 纯软件方式模拟网卡、磁盘。
 
-KVM 中，可以在客户机使用 **`半虚拟化驱动（Paravirtualized Drivers），PV Drivers`** 来提高客户机性能。
+KVM 中，可以在客户机使用 [半虚拟化驱动]^(Paravirtualized Drivers) 来提高客户机性能。
 
 目前，采用的是 virtio 这个设备驱动标准框架。
 
@@ -33,8 +33,8 @@ QEMU 模拟 I/O 设备的优点：可以通过软件模拟出各种设备，兼�
 其 virtio 基本结构如下：
 {{< find_img "img2.png" >}}
 
-* **`前端驱动（fronded，如 virtio-blk、virtio-net 等)`** 是在客户机中的驱动模块；
-* **`后端处理程序（backend）`** 在 QEMU 中实现，执行具体的 I/O 操作；
+* [前端驱动]^(fronded) 是在客户机中的驱动模块，如 virtio-blk、virtio-net 等；
+* [后端处理程序]^(backend) 在 QEMU 中实现，执行具体的 I/O 操作；
 * **`virtio`** 是虚拟队列接口，在逻辑上将前端驱动附加到后端处理程序，虚拟队列实际上被实现为跨越客户机操作系统和 Hypervisor 的衔接点，该衔接点可以用任意方式实现，前提是前后端都遵循标准实现。
     一个前端驱动可以有 0 或多个队列，例如 virtio-net 使用两个虚拟队列（接受+发送）。
 * **`virtio-ring`** 实现了环形缓冲区（ring buffer），用于保存前端驱动和后端处理程序执行的信息。
@@ -102,14 +102,15 @@ irqbypass              16384  8 vfio_pci,kvm
 ```
 
 ### 2.2 SR-IOV 
-VT-d 技术只能讲一个物理设备分配给一个客户机使用，为了让多个虚拟机共享同一个物理设备，PCI_SIG 组织发布了 **`SR-IOV（Single Root I/O Virtualizaiton and Sharing）`** 规范，该规范定义了标准化机制，用以原生的支持多个共享的设备（不一定网卡）。
+VT-d 技术只能讲一个物理设备分配给一个客户机使用，为了让多个虚拟机共享同一个物理设备，PCI_SIG 组织发布了 
+[SR-IOV]^(Single Root I/O Virtualizaiton and Sharing) 规范，该规范定义了标准化机制，用以原生的支持多个共享的设备（不一定网卡）。
 
 目前，SR-IOV 最广泛应用在以太网设备的虚拟化方面。
 
 SR-IOV 引入了两个新的 function：
 
-* **`Physical Function（PF，物理功能）`** ：PF 是一个普通的 PCI-e 设备（带有 SR-IOV 功能），在宿主机中配置和管理其他 VF，本身也可以作为独立 function 使用；
-* **`Virtual Function（VF，虚拟功能）`** ：由 PF 衍生的 "轻量级" PCI-e 功能，可以分配到客户机中作为独立 function 使用；
+* [PF 物理功能]^(Physical Function) ：PF 是一个普通的 PCI-e 设备（带有 SR-IOV 功能），在宿主机中配置和管理其他 VF，本身也可以作为独立 function 使用；
+* [VF 虚拟功能]^(Virtual Function) ：由 PF 衍生的 "轻量级" PCI-e 功能，可以分配到客户机中作为独立 function 使用；
 
 SR-IOV 为客户机中使用的 VF 提供了独立的内存空间、中断、DMA 流，从而不需要 Hypervisor 介入数据传输。
 {{< find_img "img3.png" >}}

@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/vm\/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "虚拟机, KVM, 云计算","wordcount":  6835 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "虚拟机, KVM, 云计算","wordcount":  6811 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/vm\/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C\/","datePublished": "2020-11-28T17:29:39+08:00","dateModified": "2020-11-28T17:29:39+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">KVM 虚拟机的存储与网络</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/vm/"><i class="far fa-folder fa-fw"></i>VM</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-28">2020-11-28</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 6835 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-28">2020-11-28</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 6811 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 14 分钟&nbsp;<span id="/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/" class="leancloud_visitors" data-flag-title="KVM 虚拟机的存储与网络">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -186,7 +186,7 @@
 <p>下面所有的虚拟机启动都使用 libvirt，通过修改其配置文件来设置网络或者存储，省略了虚拟机的启动、停止等操作命令。</p>
 <h2 id="1-virtio-概述">1 virtio 概述</h2>
 <p>KVM 在 IO 虚拟化方面，传统的方式是使用 QEMU 纯软件方式模拟网卡、磁盘。</p>
-<p>KVM 中，可以在客户机使用 <strong><code>半虚拟化驱动（Paravirtualized Drivers），PV Drivers</code></strong> 来提高客户机性能。</p>
+<p>KVM 中，可以在客户机使用 <strong><ruby>半虚拟化驱动<rt>Paravirtualized Drivers</rt></ruby></strong> 来提高客户机性能。</p>
 <p>目前，采用的是 virtio 这个设备驱动标准框架。</p>
 <h3 id="11-全模拟-io-设备基本原理">1.1 全模拟 I/O 设备基本原理</h3>
 <p>纯软件模拟 I/O 如下图所示：
@@ -228,8 +228,8 @@
 
 </p>
 <ul>
-<li><strong><code>前端驱动（fronded，如 virtio-blk、virtio-net 等)</code></strong> 是在客户机中的驱动模块；</li>
-<li><strong><code>后端处理程序（backend）</code></strong> 在 QEMU 中实现，执行具体的 I/O 操作；</li>
+<li><strong><ruby>前端驱动<rt>fronded</rt></ruby></strong> 是在客户机中的驱动模块，如 virtio-blk、virtio-net 等；</li>
+<li><strong><ruby>后端处理程序<rt>backend</rt></ruby></strong> 在 QEMU 中实现，执行具体的 I/O 操作；</li>
 <li><strong><code>virtio</code></strong> 是虚拟队列接口，在逻辑上将前端驱动附加到后端处理程序，虚拟队列实际上被实现为跨越客户机操作系统和 Hypervisor 的衔接点，该衔接点可以用任意方式实现，前提是前后端都遵循标准实现。
 一个前端驱动可以有 0 或多个队列，例如 virtio-net 使用两个虚拟队列（接受+发送）。</li>
 <li><strong><code>virtio-ring</code></strong> 实现了环形缓冲区（ring buffer），用于保存前端驱动和后端处理程序执行的信息。
@@ -310,12 +310,13 @@ irqbypass              <span class="m">16384</span>  <span class="m">8</span> vf
 </code></pre></td></tr></table>
 </div>
 </div><h3 id="22-sr-iov">2.2 SR-IOV</h3>
-<p>VT-d 技术只能讲一个物理设备分配给一个客户机使用，为了让多个虚拟机共享同一个物理设备，PCI_SIG 组织发布了 <strong><code>SR-IOV（Single Root I/O Virtualizaiton and Sharing）</code></strong> 规范，该规范定义了标准化机制，用以原生的支持多个共享的设备（不一定网卡）。</p>
+<p>VT-d 技术只能讲一个物理设备分配给一个客户机使用，为了让多个虚拟机共享同一个物理设备，PCI_SIG 组织发布了
+<strong><ruby>SR-IOV<rt>Single Root I/O Virtualizaiton and Sharing</rt></ruby></strong> 规范，该规范定义了标准化机制，用以原生的支持多个共享的设备（不一定网卡）。</p>
 <p>目前，SR-IOV 最广泛应用在以太网设备的虚拟化方面。</p>
 <p>SR-IOV 引入了两个新的 function：</p>
 <ul>
-<li><strong><code>Physical Function（PF，物理功能）</code></strong> ：PF 是一个普通的 PCI-e 设备（带有 SR-IOV 功能），在宿主机中配置和管理其他 VF，本身也可以作为独立 function 使用；</li>
-<li><strong><code>Virtual Function（VF，虚拟功能）</code></strong> ：由 PF 衍生的 &ldquo;轻量级&rdquo; PCI-e 功能，可以分配到客户机中作为独立 function 使用；</li>
+<li><strong><ruby>PF 物理功能<rt>Physical Function</rt></ruby></strong> ：PF 是一个普通的 PCI-e 设备（带有 SR-IOV 功能），在宿主机中配置和管理其他 VF，本身也可以作为独立 function 使用；</li>
+<li><strong><ruby>VF 虚拟功能<rt>Virtual Function</rt></ruby></strong> ：由 PF 衍生的 &ldquo;轻量级&rdquo; PCI-e 功能，可以分配到客户机中作为独立 function 使用；</li>
 </ul>
 <p>SR-IOV 为客户机中使用的 VF 提供了独立的内存空间、中断、DMA 流，从而不需要 Hypervisor 介入数据传输。
 
@@ -1104,7 +1105,7 @@ bound to 192.168.1.105 -- renewal in <span class="m">3423</span> seconds.
             </noscript></div></article></div>
             </main><footer class="footer">
         <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.76.5">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2020</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
 
