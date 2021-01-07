@@ -6,7 +6,7 @@
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
         <title>Go 内存模型 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Go 内存模型" />
-<meta property="og:description" content="本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于《Go 学习笔记》。 下面代码都是基于 go 1.15.6。 1 Linux 内存模型 所有语言的内存管理，在 Linux" />
+<meta property="og:description" content="本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。 所以学习的书籍与文章见 参考。 下面代码都是基于 go 1.1" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" />
 <meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -16,7 +16,7 @@
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
 <meta name="twitter:title" content="Go 内存模型"/>
-<meta name="twitter:description" content="本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于《Go 学习笔记》。 下面代码都是基于 go 1.15.6。 1 Linux 内存模型 所有语言的内存管理，在 Linux"/>
+<meta name="twitter:description" content="本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。 所以学习的书籍与文章见 参考。 下面代码都是基于 go 1.1"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
 <meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  8831 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  12978 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B\/","datePublished": "2021-01-05T18:28:41+08:00","dateModified": "2021-01-05T18:28:41+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Go 内存模型</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw"></i>Golang</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-05">2021-01-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 8831 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 18 分钟&nbsp;<span id="/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" class="leancloud_visitors" data-flag-title="Go 内存模型">
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-05">2021-01-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 12978 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 26 分钟&nbsp;<span id="/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" class="leancloud_visitors" data-flag-title="Go 内存模型">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
@@ -172,12 +172,30 @@
             <li><a href="#442-mcentral-扩容">4.4.2 mcentral 扩容</a></li>
           </ul>
         </li>
+        <li><a href="#45-mheap">4.5 mheap</a>
+          <ul>
+            <li><a href="#451-虚拟内存布局">4.5.1 虚拟内存布局</a></li>
+            <li><a href="#452-mheap-初始化">4.5.2 mheap 初始化</a></li>
+            <li><a href="#453-mheap-分配-mspan">4.5.3 mheap 分配 mspan</a></li>
+            <li><a href="#454-mheap-扩容">4.5.4 mheap 扩容</a></li>
+          </ul>
+        </li>
+        <li><a href="#46-总结">4.6 总结</a></li>
       </ul>
     </li>
+    <li><a href="#5-对象分配流程">5 对象分配流程</a>
+      <ul>
+        <li><a href="#51-tiny-object-分配">5.1 tiny object 分配</a></li>
+        <li><a href="#52-object-分配">5.2 object 分配</a></li>
+        <li><a href="#53-large-object-分配">5.3 large object 分配</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><p>本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于《Go 学习笔记》。
-下面代码都是基于 go 1.15.6。</p>
+            </div><div class="content" id="content"><p>本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。</p>
+<p>所以学习的书籍与文章见 <a href="#reference" rel=""><strong>参考</strong></a>。</p>
+<p>下面代码都是基于 go 1.15.6。</p>
 <h2 id="1-linux-内存模型">1 Linux 内存模型</h2>
 <p>所有语言的内存管理，在 Linux 上都是在以基本的进程内存模型基础上实现的，首先需要知道 Linux 进程内存布局。</p>
 <p>在进程角度，看到的所有内存就是 <strong><ruby>虚拟地址空间<rt>virtual address space</rt></ruby></strong> ，整个是一个线性的存储地址。其中一部分高地址区域用户态无法访问，是内核地址空间。而另一部分就是由栈、mmap、堆等内存区域组成的用户地址空间。
@@ -297,8 +315,9 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="31-新-g-的栈">3.1 新 G 的栈</h3>
-<p>在 <strong>malg</strong> 函数中，可以看到对于新 G 的栈的分配（一开始为 2KB）：</p>
+</div><p><a id="new-g-stack"></a></p>
+<h3 id="31-新-g-的栈">3.1 新 G 的栈</h3>
+<p>在 <strong><code>malg</code></strong> 函数中，可以看到对于新 G 的栈的分配（一开始为 2KB）：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -415,7 +434,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>可以看到，首先尝试从 stackpool 缓存的空闲的 stack 获取，如果没有则走 Go 内存管理申请一个。</p>
+</div><p>可以看到，<strong>首先尝试从 stackpool 缓存的空闲的 stack 获取，如果没有则走 Go 内存管理申请一个。</strong></p>
 <p>再接下来就是 Go 内存管理模块负责的事了，<del>不深入下去</del>（后面再说）。底层创建都是使用 mmap 系统调用实现的，这里可以看下使用的参数：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -516,9 +535,9 @@
 <ol>
 <li>分配一个 2x 新栈；</li>
 <li>拷贝当前栈数据至新栈；</li>
-<li>&ldquo;释放&quot;掉旧栈；
-从上面扩容判断可以看到，会调用 morestack 的汇编代码：</li>
+<li>&ldquo;释放&quot;掉旧栈；</li>
 </ol>
+<p>从上面扩容判断可以看到，会调用 <strong><code>morestack</code></strong> 的汇编代码：<a id="morestack"></a></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -630,10 +649,10 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>可以看到 g0，gsignal 的栈都不会扩容</li>
-<li>在 g0 栈上会调用 newstack() 函数</li>
+<li>可以看到 <strong>g0，gsignal 的栈都不会扩容</strong></li>
+<li>在 g0 栈上会调用 <code>newstack()</code> 函数</li>
 </ul>
-<p>调用的 newstack 函数（runtime/stack.go），过程很复杂，只看一下关键点：</p>
+<p>调用的 <strong><code>newstack()</code></strong> 函数（runtime/stack.go），过程很复杂，只看一下关键点：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -833,14 +852,15 @@
 <span class="nx">mp</span><span class="p">.</span><span class="nx">g0</span><span class="p">.</span><span class="nx">m</span> <span class="p">=</span> <span class="nx">mp</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>可以看到，m 的 g0 属性还是使用的 <code>malg()</code> 函数去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。</p>
-<p>不过，g0 的栈还是有些不同的，不会进行栈的扩容（因为仅仅内部管理时用到，不需要进行自动扩容），在栈扩容的 morestack 汇编代码里可以看到。</p>
+</div><p>可以看到，m 的 g0 属性还是使用的 <a href="#new-g-stack" rel=""><strong>malg() 函数</strong></a> 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。</p>
+<p>不过，g0 的栈还是有些不同的，不会进行栈的扩容（因为仅仅内部管理时用到，不需要进行自动扩容），在栈扩容的 <a href="#morestack" rel=""><strong>morestack 汇编代码</strong></a>里可以看到。</p>
 <h2 id="4-内存模型">4 内存模型</h2>
 <h3 id="41-概览">4.1 概览</h3>
 <p>Golang 内存管理包含四个组件：</p>
 <ol>
 <li><strong><code>object</code></strong> ：object 代表用户代码申请的一个对象，没有实际的数据结构，而是在 mspan 中以逻辑切分的方式分配；</li>
-<li><strong><code>runtime.mspan</code></strong> ：内存管理的最小单元；</li>
+<li>page：切分内存的单元，mheap 将内存以 8KB page 切分，然后组合成为 mspan；</li>
+<li><strong><code>runtime.mspan</code></strong> ：内存管理的最小单元，由多个 8KB 大小的 page 构成，按照固定大小来切分为多个 object；</li>
 <li><strong><code>runtime.mcache</code></strong> ：单个 P 对应的 mspan 的<strong>缓存</strong>，无锁分配；</li>
 <li><strong><code>runtime.mcentral</code></strong> ：按照不同大小的 mspan 分组的管理链表，为 mcache 提供空闲 mspan</li>
 <li><strong><code>runtime.mheap</code></strong> ：保存闲置的 mspan 与 largerspan 链表，与操作系统申请与释放内存；</li>
@@ -855,7 +875,7 @@
         </div>
     </div></p>
 <h3 id="42-mspan">4.2 mspan</h3>
-<p>所有的 mspan 会以 list 的方式构建，而不同的模块（mcache、mcentral）通过引用指针，来不同方式来组织不同的 mspan。</p>
+<p>每个 mspan 由多个 8KB 的 page 组成，所有的 mspan 会以 list 的方式构建，而不同的模块（mcache、mcentral）通过引用指针，来不同方式来组织不同的 mspan。</p>
 <p>每个 mspan 管理多个固定大小的 object，通过编号(index)方式来寻找 object 的地址。</p>
 <p>结构如下图所示：
 
@@ -1147,6 +1167,7 @@
 <li><strong><code>tiny</code></strong> <strong><code>tinyoffset</code></strong> ：用于小对象（&lt;16）的分配。tiny 指向当前为 tiny object 准备的 span 的起始地址，tinyoffset 指向对象使用的偏移地址；</li>
 <li><strong><code>alloc</code></strong> ：最重要的属性，保存着不同大小的 mspan 各一个。目前，包含固定 64 类 sizeclass：0、8 … 32768；</li>
 </ul>
+<p><a id="mcache-alloc_mspan"></a></p>
 <h4 id="431-mspan-的分配">4.3.1 mspan 的分配</h4>
 <p>先看下 tiny object 分配，在分配一个 object 时，如果大小小于 16 字节时，就会走 tiny object 逻辑。</p>
 <div class="highlight"><div class="chroma">
@@ -1195,90 +1216,52 @@
 </span><span class="lnt">42
 </span><span class="lnt">43
 </span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Tiny allocator.
-</span><span class="c1">//
-</span><span class="c1">// Tiny allocator combines several tiny allocation requests
-</span><span class="c1">// into a single memory block. The resulting memory block
-</span><span class="c1">// is freed when all subobjects are unreachable. The subobjects
-</span><span class="c1">// must be noscan (don&#39;t have pointers), this ensures that
-</span><span class="c1">// the amount of potentially wasted memory is bounded.
-</span><span class="c1">//
-</span><span class="c1">// Size of the memory block used for combining (maxTinySize) is tunable.
-</span><span class="c1">// Current setting is 16 bytes, which relates to 2x worst case memory
-</span><span class="c1">// wastage (when all but one subobjects are unreachable).
-</span><span class="c1">// 8 bytes would result in no wastage at all, but provides less
-</span><span class="c1">// opportunities for combining.
-</span><span class="c1">// 32 bytes provides more opportunities for combining,
-</span><span class="c1">// but can lead to 4x worst case wastage.
-</span><span class="c1">// The best case winning is 8x regardless of block size.
-</span><span class="c1">//
-</span><span class="c1">// Objects obtained from tiny allocator must not be freed explicitly.
-</span><span class="c1">// So when an object will be freed explicitly, we ensure that
-</span><span class="c1">// its size &gt;= maxTinySize.
-</span><span class="c1">//
-</span><span class="c1">// SetFinalizer has a special case for objects potentially coming
-</span><span class="c1">// from tiny allocator, it such case it allows to set finalizers
-</span><span class="c1">// for an inner byte of a memory block.
-</span><span class="c1">//
-</span><span class="c1">// The main targets of tiny allocator are small strings and
-</span><span class="c1">// standalone escaping variables. On a json benchmark
-</span><span class="c1">// the allocator reduces number of allocations by ~12% and
-</span><span class="c1">// reduces heap size by ~20%.
-</span><span class="c1"></span><span class="nx">off</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">tinyoffset</span>
-<span class="c1">// Align tiny pointer for required (conservative) alignment.
-</span><span class="c1"></span><span class="k">if</span> <span class="nx">size</span><span class="o">&amp;</span><span class="mi">7</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-        <span class="nx">off</span> <span class="p">=</span> <span class="nf">alignUp</span><span class="p">(</span><span class="nx">off</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
-<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">size</span><span class="o">&amp;</span><span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-        <span class="nx">off</span> <span class="p">=</span> <span class="nf">alignUp</span><span class="p">(</span><span class="nx">off</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">size</span><span class="o">&amp;</span><span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-        <span class="nx">off</span> <span class="p">=</span> <span class="nf">alignUp</span><span class="p">(</span><span class="nx">off</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">mallocgc</span><span class="p">(</span><span class="nx">size</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">typ</span> <span class="o">*</span><span class="nx">_type</span><span class="p">,</span> <span class="nx">needzero</span> <span class="kt">bool</span><span class="p">)</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">size</span> <span class="o">&lt;=</span> <span class="nx">maxSmallSize</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">noscan</span> <span class="o">&amp;&amp;</span> <span class="nx">size</span> <span class="p">&lt;</span> <span class="nx">maxTinySize</span> <span class="p">{</span>
+			<span class="nx">off</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">tinyoffset</span>
+			<span class="c1">// Align tiny pointer for required (conservative) alignment.
+</span><span class="c1"></span>			<span class="k">if</span> <span class="nx">size</span><span class="o">&amp;</span><span class="mi">7</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+				<span class="nx">off</span> <span class="p">=</span> <span class="nf">alignUp</span><span class="p">(</span><span class="nx">off</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">size</span><span class="o">&amp;</span><span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+				<span class="nx">off</span> <span class="p">=</span> <span class="nf">alignUp</span><span class="p">(</span><span class="nx">off</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">size</span><span class="o">&amp;</span><span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+				<span class="nx">off</span> <span class="p">=</span> <span class="nf">alignUp</span><span class="p">(</span><span class="nx">off</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="nx">off</span><span class="o">+</span><span class="nx">size</span> <span class="o">&lt;=</span> <span class="nx">maxTinySize</span> <span class="o">&amp;&amp;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">tiny</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+				<span class="c1">// The object fits into existing tiny block.
+</span><span class="c1"></span>				<span class="nx">x</span> <span class="p">=</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">tiny</span> <span class="o">+</span> <span class="nx">off</span><span class="p">)</span>
+				<span class="nx">c</span><span class="p">.</span><span class="nx">tinyoffset</span> <span class="p">=</span> <span class="nx">off</span> <span class="o">+</span> <span class="nx">size</span>
+				<span class="nx">c</span><span class="p">.</span><span class="nx">local_tinyallocs</span><span class="o">++</span>
+				<span class="nx">mp</span><span class="p">.</span><span class="nx">mallocing</span> <span class="p">=</span> <span class="mi">0</span>
+				<span class="nf">releasem</span><span class="p">(</span><span class="nx">mp</span><span class="p">)</span>
+				<span class="k">return</span> <span class="nx">x</span>
+			<span class="p">}</span>
+			<span class="c1">// Allocate a new maxTinySize block.
+</span><span class="c1"></span>			<span class="nx">span</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">alloc</span><span class="p">[</span><span class="nx">tinySpanClass</span><span class="p">]</span>
+			<span class="nx">v</span> <span class="o">:=</span> <span class="nf">nextFreeFast</span><span class="p">(</span><span class="nx">span</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nx">v</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+				<span class="nx">v</span><span class="p">,</span> <span class="nx">span</span><span class="p">,</span> <span class="nx">shouldhelpgc</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">nextFree</span><span class="p">(</span><span class="nx">tinySpanClass</span><span class="p">)</span>
+			<span class="p">}</span>
+			<span class="nx">x</span> <span class="p">=</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span>
+			<span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="kt">uint64</span><span class="p">)(</span><span class="nx">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="p">=</span> <span class="mi">0</span>
+			<span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="kt">uint64</span><span class="p">)(</span><span class="nx">x</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="mi">0</span>
+			<span class="c1">// See if we need to replace the existing tiny block with the new one
+</span><span class="c1"></span>			<span class="c1">// based on amount of remaining free space.
+</span><span class="c1"></span>			<span class="k">if</span> <span class="nx">size</span> <span class="p">&lt;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">tinyoffset</span> <span class="o">||</span> <span class="nx">c</span><span class="p">.</span><span class="nx">tiny</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+				<span class="nx">c</span><span class="p">.</span><span class="nx">tiny</span> <span class="p">=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+				<span class="nx">c</span><span class="p">.</span><span class="nx">tinyoffset</span> <span class="p">=</span> <span class="nx">size</span>
+			<span class="p">}</span>
+			<span class="nx">size</span> <span class="p">=</span> <span class="nx">maxTinySize</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="o">...</span>
+		<span class="p">}</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="o">...</span>
+	<span class="p">}</span>
 <span class="p">}</span>
-<span class="k">if</span> <span class="nx">off</span><span class="o">+</span><span class="nx">size</span> <span class="o">&lt;=</span> <span class="nx">maxTinySize</span> <span class="o">&amp;&amp;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">tiny</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
-        <span class="c1">// The object fits into existing tiny block.
-</span><span class="c1"></span>        <span class="nx">x</span> <span class="p">=</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">tiny</span> <span class="o">+</span> <span class="nx">off</span><span class="p">)</span>
-        <span class="nx">c</span><span class="p">.</span><span class="nx">tinyoffset</span> <span class="p">=</span> <span class="nx">off</span> <span class="o">+</span> <span class="nx">size</span>
-        <span class="nx">c</span><span class="p">.</span><span class="nx">local_tinyallocs</span><span class="o">++</span>
-        <span class="nx">mp</span><span class="p">.</span><span class="nx">mallocing</span> <span class="p">=</span> <span class="mi">0</span>
-        <span class="nf">releasem</span><span class="p">(</span><span class="nx">mp</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nx">x</span>
-<span class="p">}</span>
-<span class="c1">// Allocate a new maxTinySize block.
-</span><span class="c1"></span><span class="nx">span</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">alloc</span><span class="p">[</span><span class="nx">tinySpanClass</span><span class="p">]</span>
-<span class="nx">v</span> <span class="o">:=</span> <span class="nf">nextFreeFast</span><span class="p">(</span><span class="nx">span</span><span class="p">)</span>
-<span class="k">if</span> <span class="nx">v</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-        <span class="nx">v</span><span class="p">,</span> <span class="nx">span</span><span class="p">,</span> <span class="nx">shouldhelpgc</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">nextFree</span><span class="p">(</span><span class="nx">tinySpanClass</span><span class="p">)</span>
-<span class="p">}</span>
-<span class="nx">x</span> <span class="p">=</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span>
-<span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="kt">uint64</span><span class="p">)(</span><span class="nx">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="p">=</span> <span class="mi">0</span>
-<span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="kt">uint64</span><span class="p">)(</span><span class="nx">x</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="mi">0</span>
-<span class="c1">// See if we need to replace the existing tiny block with the new one
-</span><span class="c1">// based on amount of remaining free space.
-</span><span class="c1"></span><span class="k">if</span> <span class="nx">size</span> <span class="p">&lt;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">tinyoffset</span> <span class="o">||</span> <span class="nx">c</span><span class="p">.</span><span class="nx">tiny</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-        <span class="nx">c</span><span class="p">.</span><span class="nx">tiny</span> <span class="p">=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
-        <span class="nx">c</span><span class="p">.</span><span class="nx">tinyoffset</span> <span class="p">=</span> <span class="nx">size</span>
-<span class="p">}</span>
-<span class="nx">size</span> <span class="p">=</span> <span class="nx">maxTinySize</span>
 </code></pre></td></tr></table>
 </div>
 </div><ol>
@@ -1373,8 +1356,9 @@
 <li>如果 mspan 没有空闲空间了（freeIndex == s.nelems），那么走 <code>c.refill()</code> <strong>重新向 mcentral 申请一个 有空闲空间 mspan</strong>；</li>
 <li><code>mspan.nextFreeIndex()</code> 下一个 index，并计算出对应的内存地址返回；</li>
 </ol>
+<p><a id="mcache-alloc"></a></p>
 <h4 id="432-mspan-的获取">4.3.2 mspan 的获取</h4>
-<p>前面分配 object 中可以看到，当 mcache 当前大小的 mspan 没有空闲空间后，就会通过 <strong><code>c.refill()</code></strong> 向 mcentral 重新申请一个 mspan（runtime/mcache.go）：</p>
+<p>前面分配 object 中可以看到，当 mcache 当前大小的 mspan 没有空闲空间后，就会通过 <strong><code>c.refill()</code></strong> <strong>向 mcentral 重新申请一个 mspan</strong>（runtime/mcache.go）：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -1535,7 +1519,7 @@
         </div>
     </div>
 <h4 id="441-从-mcentral-申请-mspan">4.4.1 从 mcentral 申请 mspan</h4>
-<p>在 mcache 中，可以看到 mcache 通过调用 <code>mcentral.cacheSpan()</code> 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 <code>mcentral.oldCacheSpan()</code> 方法中。</p>
+<p><a href="#mcache-alloc" rel=""><strong>在 mcache 中</strong></a>，可以看到 mcache 通过调用 <code>mcentral.cacheSpan()</code> 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 <code>mcentral.oldCacheSpan()</code> 方法中。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -1733,6 +1717,7 @@
 <li>还是没有，通过 <code>mcentral.grow()</code> 向 mheap 申请新的 mspan，mheap 中都没有，return nil；</li>
 <li>找到空闲 mspan 后，会放置到 empty 链表尾部，并返回；</li>
 </ol>
+<p><a id="mcentral-grow"></a></p>
 <h4 id="442-mcentral-扩容">4.4.2 mcentral 扩容</h4>
 <p>在 mcentral 没有任何空闲 mspan 给 mcache 时，就会调用 <code>mcentral.grow()</code> 申请新的 mspan。</p>
 <div class="highlight"><div class="chroma">
@@ -1779,6 +1764,911 @@
 <li>通过 <code>mheap.alloc()</code> 申请一个指大小的 mspan；</li>
 <li>执行 <code>mheapBit.initSpan()</code> 初始化 mspan；</li>
 </ol>
+<h3 id="45-mheap">4.5 mheap</h3>
+<p>mheap 是最核心的组件了，runtime 只存在一个 mheap 对象，分配、初始化 mspan 都从 mheap 开始。</p>
+<p>mheap 直接与虚拟内存打交道，并将在虚拟内存上创建 mspan 提供给上层使用。</p>
+<p>mheap 的功能可以看做两个方面：</p>
+<ol>
+<li>与下层（虚拟内存）：<strong>内存管理</strong>（类似文件系统）。申请虚拟内存得到多个 heaparena，每个 heaparena 将可用内存区域切分为 page 单元，以倍数组成 mspan 分配给上层；</li>
+<li>与上层：<strong>提供创建 mspan 的接口</strong>。通过 mcentral 分类不同大小的 mspan，或者大内存需要直接走 mspan 分配；</li>
+</ol>
+<p>其数据结构很大，省略了部分不会提到的属性（runtime/mheap.go），<strong><code>mheap_</code></strong> 就是 heap 的单实例对象：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">mheap_</span> <span class="nx">mheap</span>
+
+<span class="c1">// Main malloc heap.
+</span><span class="c1">// The heap itself is the &#34;free&#34; and &#34;scav&#34; treaps,
+</span><span class="c1">// but all the other global data is here too.
+</span><span class="c1">//
+</span><span class="c1">// mheap must not be heap-allocated because it contains mSpanLists,
+</span><span class="c1">// which must not be heap-allocated.
+</span><span class="c1">//
+</span><span class="c1">//go:notinheap
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">mheap</span> <span class="kd">struct</span> <span class="p">{</span>
+		<span class="c1">// arenas is the heap arena map. It points to the metadata for
+</span><span class="c1"></span>		<span class="c1">// the heap for every arena frame of the entire usable virtual
+</span><span class="c1"></span>		<span class="c1">// address space.
+</span><span class="c1"></span>		<span class="c1">//
+</span><span class="c1"></span>		<span class="c1">// Use arenaIndex to compute indexes into this array.
+</span><span class="c1"></span>		<span class="c1">//
+</span><span class="c1"></span>		<span class="c1">// For regions of the address space that are not backed by the
+</span><span class="c1"></span>		<span class="c1">// Go heap, the arena map contains nil.
+</span><span class="c1"></span>		<span class="c1">//
+</span><span class="c1"></span>		<span class="c1">// Modifications are protected by mheap_.lock. Reads can be
+</span><span class="c1"></span>		<span class="c1">// performed without locking; however, a given entry can
+</span><span class="c1"></span>		<span class="c1">// transition from nil to non-nil at any time when the lock
+</span><span class="c1"></span>		<span class="c1">// isn&#39;t held. (Entries never transitions back to nil.)
+</span><span class="c1"></span>		<span class="c1">//
+</span><span class="c1"></span>		<span class="c1">// In general, this is a two-level mapping consisting of an L1
+</span><span class="c1"></span>		<span class="c1">// map and possibly many L2 maps. This saves space when there
+</span><span class="c1"></span>		<span class="c1">// are a huge number of arena frames. However, on many
+</span><span class="c1"></span>		<span class="c1">// platforms (even 64-bit), arenaL1Bits is 0, making this
+</span><span class="c1"></span>		<span class="c1">// effectively a single-level map. In this case, arenas[0]
+</span><span class="c1"></span>		<span class="c1">// will never be nil.
+</span><span class="c1"></span>		<span class="nx">arenas</span> <span class="p">[</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">arenaL1Bits</span><span class="p">]</span><span class="o">*</span><span class="p">[</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">arenaL2Bits</span><span class="p">]</span><span class="o">*</span><span class="nx">heapArena</span>
+		
+		<span class="c1">// central free lists for small size classes.
+</span><span class="c1"></span>		<span class="c1">// the padding makes sure that the mcentrals are
+</span><span class="c1"></span>		<span class="c1">// spaced CacheLinePadSize bytes apart, so that each mcentral.lock
+</span><span class="c1"></span>		<span class="c1">// gets its own cache line.
+</span><span class="c1"></span>		<span class="c1">// central is indexed by spanClass.
+</span><span class="c1"></span>		<span class="nx">central</span> <span class="p">[</span><span class="nx">numSpanClasses</span><span class="p">]</span><span class="kd">struct</span> <span class="p">{</span>
+				<span class="nx">mcentral</span> <span class="nx">mcentral</span>
+				<span class="nx">pad</span>      <span class="p">[</span><span class="nx">cpu</span><span class="p">.</span><span class="nx">CacheLinePadSize</span> <span class="o">-</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">mcentral</span><span class="p">{})</span><span class="o">%</span><span class="nx">cpu</span><span class="p">.</span><span class="nx">CacheLinePadSize</span><span class="p">]</span><span class="kt">byte</span>
+		<span class="p">}</span>
+		
+		<span class="nx">pages</span>     <span class="nx">pageAlloc</span> <span class="c1">// page allocation data structure
+</span><span class="c1"></span>		
+		<span class="nx">spanalloc</span>             <span class="nx">fixalloc</span> <span class="c1">// allocator for span*
+</span><span class="c1"></span>		<span class="nx">cachealloc</span>            <span class="nx">fixalloc</span> <span class="c1">// allocator for mcache*
+</span><span class="c1"></span>		<span class="nx">specialfinalizeralloc</span> <span class="nx">fixalloc</span> <span class="c1">// allocator for specialfinalizer*
+</span><span class="c1"></span>		<span class="nx">specialprofilealloc</span>   <span class="nx">fixalloc</span> <span class="c1">// allocator for specialprofile*
+</span><span class="c1"></span>		<span class="nx">speciallock</span>           <span class="nx">mutex</span>    <span class="c1">// lock for special record allocators.
+</span><span class="c1"></span>		<span class="nx">arenaHintAlloc</span>        <span class="nx">fixalloc</span> <span class="c1">// allocator for arenaHints
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong><code>arenas</code></strong> ：内存管理的元信息数组，对于虚拟内存的逻辑切割与管理就靠这个数组了；</li>
+<li><strong><code>central</code></strong>  ：按照大小分类的各个 mcentral 对象；</li>
+<li><code>pages</code> ：在 arena 区域上用于分配空闲的 pages，依旧使用空闲链表；</li>
+<li><code>spanalloc</code>、<code>cachealloc</code> 等 ：各个数据结构的空闲链表分配器，通过连接空闲的 mspan、mcache 等对象，调用 fixalloc.alloc() 函数就获取下一个空闲的内存空间；</li>
+</ul>
+<h4 id="451-虚拟内存布局">4.5.1 虚拟内存布局</h4>
+<p>网上大部分文章还是说 mheap 管理的虚拟内存以 spans+bitmap+arena 管理，如下图：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/img6.png"/><br>
+
+
+</p>
+<p>但是从 go 1.11 开始，Go 开始使稀疏内存方式管理，即管理相互之间不连续的连续的内存区域，如下图（<strong>图片来自 《Golang 设计与实现》</strong>）：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/img7.png"/><br>
+
+
+</p>
+<p>使用的就是 <code>mheap.arenas</code>，一个二维的 heapArena 数组。</p>
+<p>不同平台的 heapArena 管理的 arena 大小不同，在 Linux 64bit 平台下，每个 heapArena 管理着 64MB 的 arena 内存区域。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Currently, we balance these as follows:
+</span><span class="c1">//
+</span><span class="c1">//       Platform  Addr bits  Arena size  L1 entries   L2 entries
+</span><span class="c1">// --------------  ---------  ----------  ----------  -----------
+</span><span class="c1">//       */64-bit         48        64MB           1    4M (32MB)
+</span><span class="c1">// windows/64-bit         48         4MB          64    1M  (8MB)
+</span><span class="c1">//       */32-bit         32         4MB           1  1024  (4KB)
+</span><span class="c1">//     */mips(le)         31         4MB           1   512  (2KB)
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>这里不太好理解，但是我觉可以简单理解就是，将原来的 spans+bitmap+arena 管理方式，变为了<strong>多个 spans+bitmap+arena 实现</strong>。而不同 arena 之间的地址不是连续的。</p>
+<p>但是为什么要用二维数组？目前不知道，但是 Linux x86-64 架构上一维数组大小为 1，就是相当于 1 维数组。</p>
+</div>
+        </div>
+    </div>
+<p><strong><code>heapArena</code></strong> 数据结构如下（runtime/mheap.go）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// A heapArena stores metadata for a heap arena. heapArenas are stored
+</span><span class="c1">// outside of the Go heap and accessed via the mheap_.arenas index.
+</span><span class="c1">//
+</span><span class="c1">//go:notinheap
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">heapArena</span> <span class="kd">struct</span> <span class="p">{</span>
+        <span class="c1">// bitmap stores the pointer/scalar bitmap for the words in
+</span><span class="c1"></span>        <span class="c1">// this arena. See mbitmap.go for a description. Use the
+</span><span class="c1"></span>        <span class="c1">// heapBits type to access this.
+</span><span class="c1"></span>        <span class="nx">bitmap</span> <span class="p">[</span><span class="nx">heapArenaBitmapBytes</span><span class="p">]</span><span class="kt">byte</span>
+
+        <span class="c1">// spans maps from virtual address page ID within this arena to *mspan.
+</span><span class="c1"></span>        <span class="c1">// For allocated spans, their pages map to the span itself.
+</span><span class="c1"></span>        <span class="c1">// For free spans, only the lowest and highest pages map to the span itself.
+</span><span class="c1"></span>        <span class="c1">// Internal pages map to an arbitrary span.
+</span><span class="c1"></span>        <span class="c1">// For pages that have never been allocated, spans entries are nil.
+</span><span class="c1"></span>        <span class="c1">//
+</span><span class="c1"></span>        <span class="c1">// Modifications are protected by mheap.lock. Reads can be
+</span><span class="c1"></span>        <span class="c1">// performed without locking, but ONLY from indexes that are
+</span><span class="c1"></span>        <span class="c1">// known to contain in-use or stack spans. This means there
+</span><span class="c1"></span>        <span class="c1">// must not be a safe-point between establishing that an
+</span><span class="c1"></span>        <span class="c1">// address is live and looking it up in the spans array.
+</span><span class="c1"></span>        <span class="nx">spans</span> <span class="p">[</span><span class="nx">pagesPerArena</span><span class="p">]</span><span class="o">*</span><span class="nx">mspan</span>
+
+        <span class="c1">// pageInUse is a bitmap that indicates which spans are in
+</span><span class="c1"></span>        <span class="c1">// state mSpanInUse. This bitmap is indexed by page number,
+</span><span class="c1"></span>        <span class="c1">// but only the bit corresponding to the first page in each
+</span><span class="c1"></span>        <span class="c1">// span is used.
+</span><span class="c1"></span>        <span class="c1">//
+</span><span class="c1"></span>        <span class="c1">// Reads and writes are atomic.
+</span><span class="c1"></span>        <span class="nx">pageInUse</span> <span class="p">[</span><span class="nx">pagesPerArena</span> <span class="o">/</span> <span class="mi">8</span><span class="p">]</span><span class="kt">uint8</span>
+
+        <span class="c1">// pageMarks is a bitmap that indicates which spans have any
+</span><span class="c1"></span>        <span class="c1">// marked objects on them. Like pageInUse, only the bit
+</span><span class="c1"></span>        <span class="c1">// corresponding to the first page in each span is used.
+</span><span class="c1"></span>        <span class="c1">//
+</span><span class="c1"></span>        <span class="c1">// Writes are done atomically during marking. Reads are
+</span><span class="c1"></span>        <span class="c1">// non-atomic and lock-free since they only occur during
+</span><span class="c1"></span>        <span class="c1">// sweeping (and hence never race with writes).
+</span><span class="c1"></span>        <span class="c1">//
+</span><span class="c1"></span>        <span class="c1">// This is used to quickly find whole spans that can be freed.
+</span><span class="c1"></span>        <span class="c1">//
+</span><span class="c1"></span>        <span class="c1">// TODO(austin): It would be nice if this was uint64 for
+</span><span class="c1"></span>        <span class="c1">// faster scanning, but we don&#39;t have 64-bit atomic bit
+</span><span class="c1"></span>        <span class="c1">// operations.
+</span><span class="c1"></span>        <span class="nx">pageMarks</span> <span class="p">[</span><span class="nx">pagesPerArena</span> <span class="o">/</span> <span class="mi">8</span><span class="p">]</span><span class="kt">uint8</span>
+
+        <span class="c1">// pageSpecials is a bitmap that indicates which spans have
+</span><span class="c1"></span>        <span class="c1">// specials (finalizers or other). Like pageInUse, only the bit
+</span><span class="c1"></span>        <span class="c1">// corresponding to the first page in each span is used.
+</span><span class="c1"></span>        <span class="c1">//
+</span><span class="c1"></span>        <span class="c1">// Writes are done atomically whenever a special is added to
+</span><span class="c1"></span>        <span class="c1">// a span and whenever the last special is removed from a span.
+</span><span class="c1"></span>        <span class="c1">// Reads are done atomically to find spans containing specials
+</span><span class="c1"></span>        <span class="c1">// during marking.
+</span><span class="c1"></span>        <span class="nx">pageSpecials</span> <span class="p">[</span><span class="nx">pagesPerArena</span> <span class="o">/</span> <span class="mi">8</span><span class="p">]</span><span class="kt">uint8</span>
+
+        <span class="c1">// zeroedBase marks the first byte of the first page in this
+</span><span class="c1"></span>        <span class="c1">// arena which hasn&#39;t been used yet and is therefore already
+</span><span class="c1"></span>        <span class="c1">// zero. zeroedBase is relative to the arena base.
+</span><span class="c1"></span>        <span class="c1">// Increases monotonically until it hits heapArenaBytes.
+</span><span class="c1"></span>        <span class="c1">//
+</span><span class="c1"></span>        <span class="c1">// This field is sufficient to determine if an allocation
+</span><span class="c1"></span>        <span class="c1">// needs to be zeroed because the page allocator follows an
+</span><span class="c1"></span>        <span class="c1">// address-ordered first-fit policy.
+</span><span class="c1"></span>        <span class="c1">//
+</span><span class="c1"></span>        <span class="c1">// Read atomically and written with an atomic CAS.
+</span><span class="c1"></span>        <span class="nx">zeroedBase</span> <span class="kt">uintptr</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>bitmap</code>：表示该 arena 区域中哪些地址保存了对象，每个字节的前 4bit 的每个 bit 表示一个 8B 内存（4个指针大小）是否被扫描，后 4bit 每个 bit 表示是否包含指针。<br>
+因此，一个字节就代表了 32B（4个指针，每个 8B）内存的状态。<strong>（图片来自《知乎：图解Go语言内存分配》）</strong></li>
+<li><code>spans</code>：每个 mspan 对应的指针，因为管理 64 MB，所以数组长度为 8192（64MB / 8KB）。<br>
+其数组编号就是对应的 page 编号，例如 spans[0] 就代表第一个 page 内存区域大小，执行对应的 mspan 。当然，mspan 可能有多个 page 组成，那么对应的多个数组项就指向的同一个 mspan 对象。</li>
+<li><code>zeroedBase</code> 记录管理的 arena 的内存基地址。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/img8.png"/><br>
+
+
+</li>
+</ul>
+<p>在一个 heapAreana 空间下，对于任意一个内存地址 addr，(addr - zeroedBase)/8KB 我们能够计算出对应的 page 编号，那么通过 heapAreana.spans[index] 就可以找到对应的 mspan。</p>
+<h4 id="452-mheap-初始化">4.5.2 mheap 初始化</h4>
+<p>在 runtime 初始化时，会镜像 mheap 的初始化，执行 <code>mheap.init()</code> 函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Initialize the heap.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">h</span> <span class="o">*</span><span class="nx">mheap</span><span class="p">)</span> <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">,</span> <span class="nx">lockRankMheap</span><span class="p">)</span>
+        <span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">sweepSpans</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">spineLock</span><span class="p">,</span> <span class="nx">lockRankSpine</span><span class="p">)</span>
+        <span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">sweepSpans</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">spineLock</span><span class="p">,</span> <span class="nx">lockRankSpine</span><span class="p">)</span>
+        <span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">speciallock</span><span class="p">,</span> <span class="nx">lockRankMheapSpecial</span><span class="p">)</span>
+
+        <span class="nx">h</span><span class="p">.</span><span class="nx">spanalloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">mspan</span><span class="p">{}),</span> <span class="nx">recordspan</span><span class="p">,</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">h</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">mspan_sys</span><span class="p">)</span>
+        <span class="nx">h</span><span class="p">.</span><span class="nx">cachealloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">mcache</span><span class="p">{}),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">mcache_sys</span><span class="p">)</span>
+        <span class="nx">h</span><span class="p">.</span><span class="nx">specialfinalizeralloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">specialfinalizer</span><span class="p">{}),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">other_sys</span><span class="p">)</span>
+        <span class="nx">h</span><span class="p">.</span><span class="nx">specialprofilealloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">specialprofile</span><span class="p">{}),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">other_sys</span><span class="p">)</span>
+        <span class="nx">h</span><span class="p">.</span><span class="nx">arenaHintAlloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">arenaHint</span><span class="p">{}),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">other_sys</span><span class="p">)</span>
+
+        <span class="c1">// Don&#39;t zero mspan allocations. Background sweeping can
+</span><span class="c1"></span>        <span class="c1">// inspect a span concurrently with allocating it, so it&#39;s
+</span><span class="c1"></span>        <span class="c1">// important that the span&#39;s sweepgen survive across freeing
+</span><span class="c1"></span>        <span class="c1">// and re-allocating a span to prevent background sweeping
+</span><span class="c1"></span>        <span class="c1">// from improperly cas&#39;ing it from 0.
+</span><span class="c1"></span>        <span class="c1">//
+</span><span class="c1"></span>        <span class="c1">// This is safe because mspan contains no heap pointers.
+</span><span class="c1"></span>        <span class="nx">h</span><span class="p">.</span><span class="nx">spanalloc</span><span class="p">.</span><span class="nx">zero</span> <span class="p">=</span> <span class="kc">false</span>
+
+        <span class="c1">// h-&gt;mapcache needs no init
+</span><span class="c1"></span>
+        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">h</span><span class="p">.</span><span class="nx">central</span> <span class="p">{</span>
+                <span class="nx">h</span><span class="p">.</span><span class="nx">central</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">mcentral</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nf">spanClass</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span>
+        <span class="p">}</span>
+
+        <span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">gc_sys</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>初始化各个类型的空闲链表分配器：<code>spanalloc</code>、<code>cachealloc</code> 等；</li>
+<li>初始化各个 <code>mcentral</code>；</li>
+<li>初始化 <code>page alloctor</code>；</li>
+</ol>
+<p><a id="mheap-alloc_mspan"></a></p>
+<h4 id="453-mheap-分配-mspan">4.5.3 mheap 分配 mspan</h4>
+<p>在 <a href="#mcentral-grow" rel=""><strong>mcentral 扩容流程</strong></a>中看到，会调用 <code>mheap.alloc()</code> 申请一个新的 mspan。</p>
+<p>而之前说的 large object 分配，也是直接会走 <code>mheap.alloc()</code> 分配到一个合适大小的 mspan，然后分配 object。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span><span class="lnt">93
+</span><span class="lnt">94
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// alloc allocates a new span of npage pages from the GC&#39;d heap.
+</span><span class="c1">//
+</span><span class="c1">// spanclass indicates the span&#39;s size class and scannability.
+</span><span class="c1">//
+</span><span class="c1">// If needzero is true, the memory for the returned span will be zeroed.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">h</span> <span class="o">*</span><span class="nx">mheap</span><span class="p">)</span> <span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">spanclass</span> <span class="nx">spanClass</span><span class="p">,</span> <span class="nx">needzero</span> <span class="kt">bool</span><span class="p">)</span> <span class="o">*</span><span class="nx">mspan</span> <span class="p">{</span>
+        <span class="c1">// Don&#39;t do any operations that lock the heap on the G stack.
+</span><span class="c1"></span>        <span class="c1">// It might trigger stack growth, and the stack growth code needs
+</span><span class="c1"></span>        <span class="c1">// to be able to allocate heap.
+</span><span class="c1"></span>        <span class="kd">var</span> <span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span>
+        <span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+                <span class="c1">// To prevent excessive heap growth, before allocating n pages
+</span><span class="c1"></span>                <span class="c1">// we need to sweep and reclaim at least n pages.
+</span><span class="c1"></span>                <span class="k">if</span> <span class="nx">h</span><span class="p">.</span><span class="nx">sweepdone</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                        <span class="nx">h</span><span class="p">.</span><span class="nf">reclaim</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="nx">s</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nf">allocSpan</span><span class="p">(</span><span class="nx">npages</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">spanclass</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">heap_inuse</span><span class="p">)</span>
+        <span class="p">})</span>
+
+        <span class="k">if</span> <span class="nx">s</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="nx">needzero</span> <span class="o">&amp;&amp;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">needzero</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+                        <span class="nf">memclrNoHeapPointers</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()),</span> <span class="nx">s</span><span class="p">.</span><span class="nx">npages</span><span class="o">&lt;&lt;</span><span class="nx">_PageShift</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="nx">s</span><span class="p">.</span><span class="nx">needzero</span> <span class="p">=</span> <span class="mi">0</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">s</span>
+<span class="p">}</span>
+
+<span class="c1">// allocSpan allocates an mspan which owns npages worth of memory.
+</span><span class="c1">//
+</span><span class="c1">// If manual == false, allocSpan allocates a heap span of class spanclass
+</span><span class="c1">// and updates heap accounting. If manual == true, allocSpan allocates a
+</span><span class="c1">// manually-managed span (spanclass is ignored), and the caller is
+</span><span class="c1">// responsible for any accounting related to its use of the span. Either
+</span><span class="c1">// way, allocSpan will atomically add the bytes in the newly allocated
+</span><span class="c1">// span to *sysStat.
+</span><span class="c1">//
+</span><span class="c1">// The returned span is fully initialized.
+</span><span class="c1">//
+</span><span class="c1">// h must not be locked.
+</span><span class="c1">//
+</span><span class="c1">// allocSpan must be called on the system stack both because it acquires
+</span><span class="c1">// the heap lock and because it must block GC transitions.
+</span><span class="c1">//
+</span><span class="c1">//go:systemstack
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">h</span> <span class="o">*</span><span class="nx">mheap</span><span class="p">)</span> <span class="nf">allocSpan</span><span class="p">(</span><span class="nx">npages</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">manual</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">spanclass</span> <span class="nx">spanClass</span><span class="p">,</span> <span class="nx">sysStat</span> <span class="o">*</span><span class="kt">uint64</span><span class="p">)</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Function-global state.
+</span><span class="c1"></span>        <span class="nx">gp</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">()</span>
+        <span class="nx">base</span><span class="p">,</span> <span class="nx">scav</span> <span class="o">:=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1">// If the allocation is small enough, try the page cache!
+</span><span class="c1"></span>        <span class="nx">pp</span> <span class="o">:=</span> <span class="nx">gp</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">p</span><span class="p">.</span><span class="nf">ptr</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nx">pp</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">npages</span> <span class="p">&lt;</span> <span class="nx">pageCachePages</span><span class="o">/</span><span class="mi">4</span> <span class="p">{</span>
+                <span class="nx">c</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">pp</span><span class="p">.</span><span class="nx">pcache</span>
+
+        <span class="c1">// If the cache is empty, refill it.
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nf">empty</span><span class="p">()</span> <span class="p">{</span>
+                <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+                <span class="o">*</span><span class="nx">c</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">allocToCache</span><span class="p">()</span>
+                <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="c1">// Try to allocate from the cache.
+</span><span class="c1"></span>        <span class="nx">base</span><span class="p">,</span> <span class="nx">scav</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">base</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="nx">s</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nf">tryAllocMSpan</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nx">s</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">gcBlackenEnabled</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">manual</span> <span class="o">||</span> <span class="nx">spanclass</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">goto</span> <span class="nx">HaveSpan</span>
+        <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="k">if</span> <span class="nx">base</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="c1">// Try to acquire a base address.
+</span><span class="c1"></span>                <span class="nx">base</span><span class="p">,</span> <span class="nx">scav</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nx">base</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">!</span><span class="nx">h</span><span class="p">.</span><span class="nf">grow</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+                                <span class="k">return</span> <span class="kc">nil</span>
+                        <span class="p">}</span>
+                        <span class="nx">base</span><span class="p">,</span> <span class="nx">scav</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nx">base</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                                <span class="nf">throw</span><span class="p">(</span><span class="s">&#34;grew heap, but no adequate free space found&#34;</span><span class="p">)</span>
+                        <span class="p">}</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="err">…</span> 
+<span class="nx">HaveSpan</span><span class="p">:</span>
+        <span class="c1">// 初始化 mspan
+</span><span class="c1"></span>        <span class="err">…</span>
+        <span class="k">return</span> <span class="nx">s</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>函数很长，这里只保留了最关键的步骤：</p>
+<ol>
+<li>小内存，从当前 <code>p.pcache</code>（pageCache结构）获取一个内存区域（又是一个缓存~）；</li>
+<li><code>p.pcache</code> 中没有获取到，从 p.mspancache 中获取  mspan（还是缓存~）；</li>
+<li>内存比较大（large mspan），或者上面还是没有获取到，那么只能从 mheap 中获取了，加锁操作：
+<ol>
+<li>从 <code>pagealloc.alloc()</code> 获取内存；</li>
+<li>没有获取到，<code>mheap.grow()</code> 进行堆扩容，再尝试一次；</li>
+</ol>
+</li>
+<li>还是没有，panic !</li>
+</ol>
+<p>最后获取到之后，就会走 mspan 的初始化流程，包括初始 mspan 数据结构，记录 mspan 指针到 <code>mheap.arenas</code> 等行为。</p>
+<h4 id="454-mheap-扩容">4.5.4 mheap 扩容</h4>
+<p>扩容的逻辑更加复杂，目前先不细致的分析了。</p>
+<p>这里可以看一下申请内存使用的方式：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">sysReserve</span><span class="p">(</span><span class="nx">v</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">uintptr</span><span class="p">)</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span> <span class="p">{</span>
+        <span class="nx">p</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">mmap</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">_PROT_NONE</span><span class="p">,</span> <span class="nx">_MAP_ANON</span><span class="p">|</span><span class="nx">_MAP_PRIVATE</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kc">nil</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">p</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">sysMap</span><span class="p">(</span><span class="nx">v</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">sysStat</span> <span class="o">*</span><span class="kt">uint64</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">mSysStatInc</span><span class="p">(</span><span class="nx">sysStat</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+
+        <span class="nx">p</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">mmap</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">_PROT_READ</span><span class="p">|</span><span class="nx">_PROT_WRITE</span><span class="p">,</span> <span class="nx">_MAP_ANON</span><span class="p">|</span><span class="nx">_MAP_FIXED</span><span class="p">|</span><span class="nx">_MAP_PRIVATE</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">_ENOMEM</span> <span class="p">{</span>
+                <span class="nf">throw</span><span class="p">(</span><span class="s">&#34;runtime: out of memory&#34;</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="nx">p</span> <span class="o">!=</span> <span class="nx">v</span> <span class="o">||</span> <span class="nx">err</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="nf">throw</span><span class="p">(</span><span class="s">&#34;runtime: cannot map pages in arena address space&#34;</span><span class="p">)</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>会先调用 <code>sysReserve()</code> 来申请内存，但是不使用，预备状态；</li>
+<li>经过地址检查后，<code>sysMap()</code> 将其转为可读可写，就可以使用该内存了；</li>
+</ol>
+<h3 id="46-总结">4.6 总结</h3>
+<p>粗略地看完整个内存模型后，大概内存的结构如下：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/img9.png"/><br>
+
+
+</p>
+<p>其中比较核心的就是：<strong>内存被切分为 page，多个 page 组成不同大小的 mspan，而在 mspan 上又分割为固定大小的 object</strong>。</p>
+<p>而上层的 mcache、mcentral 只是以不同的方式组织 mspan，<strong>通过多级缓存的思想，使得并发的获取一个可用的 mspan 更快</strong>。</p>
+<ul>
+<li>mcache 将一部分 mspan 独立于 P 所有，使得不需要加锁既可以获取 mspan；</li>
+<li>mcentral 以大小来分类 mspan，将各个大小的 mspan 请求独立，缩小了锁的粒度；</li>
+</ul>
+<p>mheap 作为最底层，就好像文件系统一样，管理着整个内存分配的骨架。而与上层的交互就是靠 mspan 作为单位。</p>
+<h2 id="5-对象分配流程">5 对象分配流程</h2>
+<p>前面一直提到的，对象的分配分为三类：</p>
+<ul>
+<li><strong><code>tiny object</code></strong> <code>(0, 16B)</code>: 使用 tiny allocator 分配，使用 mcahe 一个独立的 mspan，挤压式的；</li>
+<li><strong><code>object</code></strong> <code>[16B, 32KB]</code>: 使用 mcache 分配；</li>
+<li><strong><code>large object</code></strong> <code>(32KB, +∞)</code>: 直接通过 mheap 分配；</li>
+</ul>
+<p>所有的分配逻辑在 <code>mallocgc()</code> 开始分叉，下面分别看下具体的分配代码。</p>
+<h3 id="51-tiny-object-分配">5.1 tiny object 分配</h3>
+<p>tiny object 分配的代码在 <a href="#mcache-alloc_mspan" rel=""><strong>mspan 分配</strong></a>中已经说明了，这里再理一下大致步骤：</p>
+<ol>
+<li>不包含指针(noscan)并且小于 16B 的对象才走微小对象分配；</li>
+<li>tiny object 分配仅仅是增大 mcache.tinyoffset 的值，所以是不同大小 tiny object 挤压在一个 mspan 中；</li>
+<li>如果当前的 mspan 没有空间了，通过 mcache.nextFree() 来获取新的指定大小的 mspan，而获取的流程就是前面所说的（走 mcentral-&gt;mheap);</li>
+</ol>
+<h3 id="52-object-分配">5.2 object 分配</h3>
+<p>普通大小 object 分配流程就很简单了:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">mallocgc</span><span class="p">(</span><span class="nx">size</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">typ</span> <span class="o">*</span><span class="nx">_type</span><span class="p">,</span> <span class="nx">needzero</span> <span class="kt">bool</span><span class="p">)</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">size</span> <span class="o">&lt;=</span> <span class="nx">maxSmallSize</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">noscan</span> <span class="o">&amp;&amp;</span> <span class="nx">size</span> <span class="p">&lt;</span> <span class="nx">maxTinySize</span> <span class="p">{</span>
+			<span class="o">...</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">sizeclass</span> <span class="kt">uint8</span>
+			<span class="k">if</span> <span class="nx">size</span> <span class="o">&lt;=</span> <span class="nx">smallSizeMax</span><span class="o">-</span><span class="mi">8</span> <span class="p">{</span>
+				<span class="nx">sizeclass</span> <span class="p">=</span> <span class="nx">size_to_class8</span><span class="p">[</span><span class="nf">divRoundUp</span><span class="p">(</span><span class="nx">size</span><span class="p">,</span> <span class="nx">smallSizeDiv</span><span class="p">)]</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">sizeclass</span> <span class="p">=</span> <span class="nx">size_to_class128</span><span class="p">[</span><span class="nf">divRoundUp</span><span class="p">(</span><span class="nx">size</span><span class="o">-</span><span class="nx">smallSizeMax</span><span class="p">,</span> <span class="nx">largeSizeDiv</span><span class="p">)]</span>
+			<span class="p">}</span>
+			<span class="nx">size</span> <span class="p">=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">class_to_size</span><span class="p">[</span><span class="nx">sizeclass</span><span class="p">])</span>
+			<span class="nx">spc</span> <span class="o">:=</span> <span class="nf">makeSpanClass</span><span class="p">(</span><span class="nx">sizeclass</span><span class="p">,</span> <span class="nx">noscan</span><span class="p">)</span>
+			<span class="nx">span</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">alloc</span><span class="p">[</span><span class="nx">spc</span><span class="p">]</span>
+			<span class="nx">v</span> <span class="o">:=</span> <span class="nf">nextFreeFast</span><span class="p">(</span><span class="nx">span</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nx">v</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+				<span class="nx">v</span><span class="p">,</span> <span class="nx">span</span><span class="p">,</span> <span class="nx">shouldhelpgc</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">nextFree</span><span class="p">(</span><span class="nx">spc</span><span class="p">)</span>
+			<span class="p">}</span>
+			<span class="nx">x</span> <span class="p">=</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nx">needzero</span> <span class="o">&amp;&amp;</span> <span class="nx">span</span><span class="p">.</span><span class="nx">needzero</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+				<span class="nf">memclrNoHeapPointers</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">v</span><span class="p">),</span> <span class="nx">size</span><span class="p">)</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="o">...</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>计算出对应的 sizeclass；</li>
+<li>从 <code>mcache.alloc[]</code> 得到对应的 mspan。如果没有，通过 <code>nextFree()</code> 申请；</li>
+<li>调用 <code>memclrNoHeapPointers()</code> 清理空闲内存中所有数据；</li>
+</ol>
+<h3 id="53-large-object-分配">5.3 large object 分配</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">mallocgc</span><span class="p">(</span><span class="nx">size</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">typ</span> <span class="o">*</span><span class="nx">_type</span><span class="p">,</span> <span class="nx">needzero</span> <span class="kt">bool</span><span class="p">)</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">size</span> <span class="o">&lt;=</span> <span class="nx">maxSmallSize</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">noscan</span> <span class="o">&amp;&amp;</span> <span class="nx">size</span> <span class="p">&lt;</span> <span class="nx">maxTinySize</span> <span class="p">{</span>
+			<span class="o">...</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="o">...</span>
+		<span class="p">}</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">shouldhelpgc</span> <span class="p">=</span> <span class="kc">true</span>
+		<span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">span</span> <span class="p">=</span> <span class="nf">largeAlloc</span><span class="p">(</span><span class="nx">size</span><span class="p">,</span> <span class="nx">needzero</span><span class="p">,</span> <span class="nx">noscan</span><span class="p">)</span>
+		<span class="p">})</span>
+		<span class="nx">span</span><span class="p">.</span><span class="nx">freeindex</span> <span class="p">=</span> <span class="mi">1</span>
+		<span class="nx">span</span><span class="p">.</span><span class="nx">allocCount</span> <span class="p">=</span> <span class="mi">1</span>
+		<span class="nx">x</span> <span class="p">=</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">span</span><span class="p">.</span><span class="nf">base</span><span class="p">())</span>
+		<span class="nx">size</span> <span class="p">=</span> <span class="nx">span</span><span class="p">.</span><span class="nx">elemsize</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">largeAlloc</span><span class="p">(</span><span class="nx">size</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">needzero</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">noscan</span> <span class="kt">bool</span><span class="p">)</span> <span class="o">*</span><span class="nx">mspan</span> <span class="p">{</span>
+	<span class="c1">// print(&#34;largeAlloc size=&#34;, size, &#34;\n&#34;)
+</span><span class="c1"></span>
+	<span class="k">if</span> <span class="nx">size</span><span class="o">+</span><span class="nx">_PageSize</span> <span class="p">&lt;</span> <span class="nx">size</span> <span class="p">{</span>
+		<span class="nf">throw</span><span class="p">(</span><span class="s">&#34;out of memory&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">npages</span> <span class="o">:=</span> <span class="nx">size</span> <span class="o">&gt;&gt;</span> <span class="nx">_PageShift</span>
+	<span class="k">if</span> <span class="nx">size</span><span class="o">&amp;</span><span class="nx">_PageMask</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nx">npages</span><span class="o">++</span>
+	<span class="p">}</span>
+
+	<span class="c1">// Deduct credit for this span allocation and sweep if
+</span><span class="c1"></span>	<span class="c1">// necessary. mHeap_Alloc will also sweep npages, so this only
+</span><span class="c1"></span>	<span class="c1">// pays the debt down to npage pages.
+</span><span class="c1"></span>	<span class="nf">deductSweepCredit</span><span class="p">(</span><span class="nx">npages</span><span class="o">*</span><span class="nx">_PageSize</span><span class="p">,</span> <span class="nx">npages</span><span class="p">)</span>
+
+	<span class="nx">spc</span> <span class="o">:=</span> <span class="nf">makeSpanClass</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">noscan</span><span class="p">)</span>
+	<span class="nx">s</span> <span class="o">:=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span><span class="p">,</span> <span class="nx">spc</span><span class="p">,</span> <span class="nx">needzero</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">s</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nf">throw</span><span class="p">(</span><span class="s">&#34;out of memory&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">go115NewMCentralImpl</span> <span class="p">{</span>
+		<span class="c1">// Put the large span in the mcentral swept list so that it&#39;s
+</span><span class="c1"></span>		<span class="c1">// visible to the background sweeper.
+</span><span class="c1"></span>		<span class="nx">mheap_</span><span class="p">.</span><span class="nx">central</span><span class="p">[</span><span class="nx">spc</span><span class="p">].</span><span class="nx">mcentral</span><span class="p">.</span><span class="nf">fullSwept</span><span class="p">(</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">).</span><span class="nf">push</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">s</span><span class="p">.</span><span class="nx">limit</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()</span> <span class="o">+</span> <span class="nx">size</span>
+	<span class="nf">heapBitsForAddr</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()).</span><span class="nf">initSpan</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+	<span class="k">return</span> <span class="nx">s</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>large object 会切换到系统栈，然后走 mheap 申请；</li>
+<li>计算对象需要的 page 数量，然后调用 mheap.alloc() 申请空闲的 mspan；</li>
+</ol>
+<p>而 <a href="#mheap-alloc_mspan" rel=""><strong>mheap.alloc()</strong></a> 就是 mcentral 申请 mspan 的方法。</p>
+<h2 id="参考">参考</h2>
+<p><a id="reference"></a></p>
+<ul>
+<li><a href="https://github.com/qyuhen/book" target="_blank" rel="noopener noreffer">《Golang 学习笔记》</a></li>
+<li><a href="https://medium.com/@ankur_anand/a-visual-guide-to-golang-memory-allocator-from-ground-up-e132258453ed" target="_blank" rel="noopener noreffer">Blog：Go 内存管理可视化</a></li>
+<li><a href="https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-memory-allocator/#71-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%99%A8" target="_blank" rel="noopener noreffer">《Golang 设计与实现》：内存分配器</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/59125443" target="_blank" rel="noopener noreffer">知乎：图解Go语言内存分配</a></li>
+</ul>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">

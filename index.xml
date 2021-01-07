@@ -11,7 +11,7 @@
     <pubDate>Tue, 05 Jan 2021 18:28:41 &#43;0800</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</guid>
-    <description><![CDATA[本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于《Go 学习笔记》。 下面代码都是基于 go 1.15.6。 1 Linux 内存模型 所有语言的内存管理，在 Linux]]></description>
+    <description><![CDATA[本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。 所以学习的书籍与文章见 参考。 下面代码都是基于 go 1.1]]></description>
 </item><item>
     <title>KVM 虚拟机的存储与网络</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</link>
