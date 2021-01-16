@@ -6,7 +6,7 @@
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
         <title>Go 内存管理总结 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Go 内存管理总结" />
-<meta property="og:description" content="本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。 所以学习的书籍与文章见 参考。 下面代码都是基于 go 1.1" />
+<meta property="og:description" content="总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" />
 <meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -16,7 +16,7 @@
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
 <meta name="twitter:title" content="Go 内存管理总结"/>
-<meta name="twitter:description" content="本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。 所以学习的书籍与文章见 参考。 下面代码都是基于 go 1.1"/>
+<meta name="twitter:description" content="总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
 <meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/" /><link rel="next" href="https://KanShiori.github.io/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  12999 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  15464 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93\/","datePublished": "2021-01-05T18:28:41+08:00","dateModified": "2021-01-05T18:28:41+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Go 内存管理总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw"></i>Golang</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-05">2021-01-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 12999 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 26 分钟&nbsp;<span id="/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Go 内存管理总结">
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-05">2021-01-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 15464 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 31 分钟&nbsp;<span id="/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Go 内存管理总结">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
@@ -192,11 +192,20 @@
         <li><a href="#53-large-object-分配">5.3 large object 分配</a></li>
       </ul>
     </li>
+    <li><a href="#6-内存的释放">6 内存的释放</a>
+      <ul>
+        <li><a href="#61-释放操作">6.1 释放操作</a></li>
+        <li><a href="#62-释放时机">6.2 释放时机</a></li>
+      </ul>
+    </li>
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><p>本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。</p>
-<p>所以学习的书籍与文章见 <a href="#reference" rel=""><strong>参考</strong></a>。</p>
+            </div><div class="content" id="content"><blockquote>
+<p><strong>总结系列的文章</strong>是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。</p>
+</blockquote>
+<p>本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。</p>
+<p>所以学习的书籍与文章见 <a href="#%e5%8f%82%e8%80%83" rel=""><strong>参考</strong></a>。</p>
 <p>下面代码都是基于 go 1.15.6。</p>
 <h2 id="1-linux-内存模型">1 Linux 内存模型</h2>
 <p>所有语言的内存管理，在 Linux 上都是在以基本的进程内存模型基础上实现的，首先需要知道 Linux 进程内存布局。</p>
@@ -317,8 +326,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p><a id="new-g-stack"></a></p>
-<h3 id="31-新-g-的栈">3.1 新 G 的栈</h3>
+</div><h3 id="31-新-g-的栈">3.1 新 G 的栈</h3>
 <p>在 <strong><code>malg</code></strong> 函数中，可以看到对于新 G 的栈的分配（一开始为 2KB）：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -854,7 +862,7 @@
 <span class="nx">mp</span><span class="p">.</span><span class="nx">g0</span><span class="p">.</span><span class="nx">m</span> <span class="p">=</span> <span class="nx">mp</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>可以看到，m 的 g0 属性还是使用的 <a href="#new-g-stack" rel=""><strong>malg() 函数</strong></a> 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。</p>
+</div><p>可以看到，m 的 g0 属性还是使用的 <a href="#31-%e6%96%b0-g-%e7%9a%84%e6%a0%88" rel=""><strong>malg() 函数</strong></a> 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。</p>
 <p>不过，g0 的栈还是有些不同的，不会进行栈的扩容（因为仅仅内部管理时用到，不需要进行自动扩容），在栈扩容的 <a href="#morestack" rel=""><strong>morestack 汇编代码</strong></a>里可以看到。</p>
 <h2 id="4-内存模型">4 内存模型</h2>
 <h3 id="41-概览">4.1 概览</h3>
@@ -961,6 +969,8 @@
 <li><strong><code>freeindex</code></strong> ：下一个空闲的 object 的编号，如果 freeindex == nelem，表明没有空闲 object 可以分配</li>
 <li>nelems ：当前 span 中分配的 object 的上限；</li>
 <li><strong><code>allocCache</code></strong> ：freeindex 的 cache，通过 bitmap 的方式记录对应编号的 object 内存是否是空闲的；</li>
+<li><strong><code>allocBits</code></strong> : 通过 bitmap 标识哪些编号的 object 是分配出去的；</li>
+<li><strong><code>gcmarkBits</code></strong> : 经过 GC 后，gcmarkBits 标识出的 object 就是被 mark 的，没有 mark 的变为垃圾对象清除；</li>
 <li><strong><code>sweepgen</code></strong> ：mspan 的状态, 见注释；</li>
 <li>spanclass ：mspan 大小类别；</li>
 <li>allocCount ：已经分配的 object 数量；</li>
@@ -1082,7 +1092,247 @@
 </div>
 </div><p>注意：目前跳过了 &ldquo;nextFreeFast&rdquo; 实现，该获取 span 比 &ldquo;nextFree&rdquo; 更快，使用了 <code>mspan.allocCache</code>。</p>
 <h4 id="422-mspan-的清理">4.2.2 mspan 的清理</h4>
-<p>TODO</p>
+<p>mspan.sweep() 用于进行一个 mspan 的清理，我们先看下旧版本的实现 mspan.oldSweep()：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Sweep frees or collects finalizers for blocks not marked in the mark phase.
+</span><span class="c1">// It clears the mark bits in preparation for the next GC round.
+</span><span class="c1">// Returns true if the span was returned to heap.
+</span><span class="c1">// If preserve=true, don&#39;t return it to heap nor relink in mcentral lists;
+</span><span class="c1">// caller takes care of it.
+</span><span class="c1">//
+</span><span class="c1">// For !go115NewMCentralImpl.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span><span class="p">)</span> <span class="nf">oldSweep</span><span class="p">(</span><span class="nx">preserve</span> <span class="kt">bool</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+	<span class="c1">// It&#39;s critical that we enter this function with preemption disabled,
+</span><span class="c1"></span>	<span class="c1">// GC must not start while we are in the middle of this function.
+</span><span class="c1"></span>	<span class="nx">_g_</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">()</span>
+
+	<span class="o">...</span>
+
+	<span class="nx">spc</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">spanclass</span>
+	<span class="nx">size</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">elemsize</span>
+	<span class="nx">res</span> <span class="o">:=</span> <span class="kc">false</span>
+
+	<span class="nx">c</span> <span class="o">:=</span> <span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">p</span><span class="p">.</span><span class="nf">ptr</span><span class="p">().</span><span class="nx">mcache</span>
+	<span class="nx">freeToHeap</span> <span class="o">:=</span> <span class="kc">false</span>
+
+	<span class="c1">// The allocBits indicate which unmarked objects don&#39;t need to be
+</span><span class="c1"></span>	<span class="c1">// processed since they were free at the end of the last GC cycle
+</span><span class="c1"></span>	<span class="c1">// and were not allocated since then.
+</span><span class="c1"></span>	<span class="c1">// If the allocBits index is &gt;= s.freeindex and the bit
+</span><span class="c1"></span>	<span class="c1">// is not marked then the object remains unallocated
+</span><span class="c1"></span>	<span class="c1">// since the last GC.
+</span><span class="c1"></span>	<span class="c1">// This situation is analogous to being on a freelist.
+</span><span class="c1"></span>
+	<span class="c1">// Unlink &amp; free special records for any objects we&#39;re about to free.
+</span><span class="c1"></span>	<span class="c1">// Two complications here:
+</span><span class="c1"></span>	<span class="c1">// 1. An object can have both finalizer and profile special records.
+</span><span class="c1"></span>	<span class="c1">//    In such case we need to queue finalizer for execution,
+</span><span class="c1"></span>	<span class="c1">//    mark the object as live and preserve the profile special.
+</span><span class="c1"></span>	<span class="c1">// 2. A tiny object can have several finalizers setup for different offsets.
+</span><span class="c1"></span>	<span class="c1">//    If such object is not marked, we need to queue all finalizers at once.
+</span><span class="c1"></span>	<span class="c1">// Both 1 and 2 are possible at the same time.
+</span><span class="c1"></span>	<span class="nx">hadSpecials</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">specials</span> <span class="o">!=</span> <span class="kc">nil</span>
+	<span class="nx">specialp</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">specials</span>
+	<span class="nx">special</span> <span class="o">:=</span> <span class="o">*</span><span class="nx">specialp</span>
+	<span class="c1">// 收集 mspan.specials 中对象
+</span><span class="c1"></span>
+	<span class="o">...</span>
+
+	<span class="c1">// Count the number of free objects in this span.
+</span><span class="c1"></span>	<span class="nx">nalloc</span> <span class="o">:=</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nf">countAlloc</span><span class="p">())</span>  <span class="c1">// 通过 mspan.gcmarkBits 得到正在使用的 object 数量
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">spc</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">nalloc</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nx">s</span><span class="p">.</span><span class="nx">needzero</span> <span class="p">=</span> <span class="mi">1</span>
+		<span class="nx">freeToHeap</span> <span class="p">=</span> <span class="kc">true</span>  <span class="c1">// 如果是 large object 并且没有任何使用着对象, 那么标记还给 heap
+</span><span class="c1"></span>	<span class="p">}</span>
+	<span class="nx">nfreed</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">allocCount</span> <span class="o">-</span> <span class="nx">nalloc</span> <span class="c1">// 得到需要回收的 object 数量
+</span><span class="c1"></span>
+	<span class="nx">s</span><span class="p">.</span><span class="nx">allocCount</span> <span class="p">=</span> <span class="nx">nalloc</span>
+	<span class="nx">wasempty</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">nextFreeIndex</span><span class="p">()</span> <span class="o">==</span> <span class="nx">s</span><span class="p">.</span><span class="nx">nelems</span>
+	<span class="nx">s</span><span class="p">.</span><span class="nx">freeindex</span> <span class="p">=</span> <span class="mi">0</span> <span class="c1">// reset allocation index to start of span.
+</span><span class="c1"></span>
+	<span class="c1">// allocBits 与 gcmarkBits 交换
+</span><span class="c1"></span>	<span class="c1">// gcmarkBits becomes the allocBits.
+</span><span class="c1"></span>	<span class="c1">// get a fresh cleared gcmarkBits in preparation for next GC
+</span><span class="c1"></span>	<span class="nx">s</span><span class="p">.</span><span class="nx">allocBits</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">gcmarkBits</span>
+	<span class="nx">s</span><span class="p">.</span><span class="nx">gcmarkBits</span> <span class="p">=</span> <span class="nf">newMarkBits</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">nelems</span><span class="p">)</span>
+
+	<span class="c1">// Initialize alloc bits cache.
+</span><span class="c1"></span>	<span class="nx">s</span><span class="p">.</span><span class="nf">refillAllocCache</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+	<span class="c1">// We need to set s.sweepgen = h.sweepgen only when all blocks are swept,
+</span><span class="c1"></span>	<span class="c1">// because of the potential for a concurrent free/SetFinalizer.
+</span><span class="c1"></span>	<span class="c1">// But we need to set it before we make the span available for allocation
+</span><span class="c1"></span>	<span class="c1">// (return it to heap or mcentral), because allocation code assumes that a
+</span><span class="c1"></span>	<span class="c1">// span is already swept if available for allocation.
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">freeToHeap</span> <span class="o">||</span> <span class="nx">nfreed</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="c1">// Serialization point.
+</span><span class="c1"></span>		<span class="c1">// At this point the mark bits are cleared and allocation ready
+</span><span class="c1"></span>		<span class="c1">// to go so release the span.
+</span><span class="c1"></span>		<span class="nx">atomic</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">,</span> <span class="nx">sweepgen</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 小对象, 通过调用 mcentral.freespan 
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">nfreed</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">spc</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nx">c</span><span class="p">.</span><span class="nx">local_nsmallfree</span><span class="p">[</span><span class="nx">spc</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()]</span> <span class="o">+=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">nfreed</span><span class="p">)</span>
+		<span class="nx">res</span> <span class="p">=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">central</span><span class="p">[</span><span class="nx">spc</span><span class="p">].</span><span class="nx">mcentral</span><span class="p">.</span><span class="nf">freeSpan</span><span class="p">(</span><span class="nx">s</span><span class="p">,</span> <span class="nx">preserve</span><span class="p">,</span> <span class="nx">wasempty</span><span class="p">)</span>
+		<span class="c1">// mcentral.freeSpan updates sweepgen
+</span><span class="c1"></span>	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">freeToHeap</span> <span class="p">{</span>
+		<span class="c1">// Free large span to heap
+</span><span class="c1"></span>
+		<span class="c1">// NOTE(rsc,dvyukov): The original implementation of efence
+</span><span class="c1"></span>		<span class="c1">// in CL 22060046 used sysFree instead of sysFault, so that
+</span><span class="c1"></span>		<span class="c1">// the operating system would eventually give the memory
+</span><span class="c1"></span>		<span class="c1">// back to us again, so that an efence program could run
+</span><span class="c1"></span>		<span class="c1">// longer without running out of memory. Unfortunately,
+</span><span class="c1"></span>		<span class="c1">// calling sysFree here without any kind of adjustment of the
+</span><span class="c1"></span>		<span class="c1">// heap data structures means that when the memory does
+</span><span class="c1"></span>		<span class="c1">// come back to us, we have the wrong metadata for it, either in
+</span><span class="c1"></span>		<span class="c1">// the mspan structures or in the garbage collection bitmap.
+</span><span class="c1"></span>		<span class="c1">// Using sysFault here means that the program will run out of
+</span><span class="c1"></span>		<span class="c1">// memory fairly quickly in efence mode, but at least it won&#39;t
+</span><span class="c1"></span>		<span class="c1">// have mysterious crashes due to confused memory reuse.
+</span><span class="c1"></span>		<span class="c1">// It should be possible to switch back to sysFree if we also
+</span><span class="c1"></span>		<span class="c1">// implement and then call some kind of mheap.deleteSpan.
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">debug</span><span class="p">.</span><span class="nx">efence</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+			<span class="nx">s</span><span class="p">.</span><span class="nx">limit</span> <span class="p">=</span> <span class="mi">0</span> <span class="c1">// prevent mlookup from finding this span
+</span><span class="c1"></span>			<span class="nf">sysFault</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()),</span> <span class="nx">size</span><span class="p">)</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">mheap_</span><span class="p">.</span><span class="nf">freeSpan</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nx">c</span><span class="p">.</span><span class="nx">local_nlargefree</span><span class="o">++</span>
+		<span class="nx">c</span><span class="p">.</span><span class="nx">local_largefree</span> <span class="o">+=</span> <span class="nx">size</span>
+		<span class="nx">res</span> <span class="p">=</span> <span class="kc">true</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="p">!</span><span class="nx">res</span> <span class="p">{</span>
+		<span class="c1">// The span has been swept and is still in-use, so put
+</span><span class="c1"></span>		<span class="c1">// it on the swept in-use list.
+</span><span class="c1"></span>		<span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepSpans</span><span class="p">[</span><span class="nx">sweepgen</span><span class="o">/</span><span class="mi">2</span><span class="o">%</span><span class="mi">2</span><span class="p">].</span><span class="nf">push</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">res</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到，经过 GC 的 <code>mspan.gcmarkBits</code> 会变为 <code>mspan.allocBits</code>，标识哪些 object 是可以使用的，而没有使用的 object 后面就会被新的覆盖了。
+而调用 <code>mcentral.freeSpan()</code> 或者 <code>mheap_.freeSpan()</code> 接口，是为了其结构的调整，或者对于完全空的 mspan 真正回收内存。</p>
 <h3 id="43-mcache">4.3 mcache</h3>
 <p>每个 P 拥有一个 mcache，mcache 中保存着具有空闲空间的 mspan，用于分配 object 时，不需要加锁即可从 mspan 分配对象。</p>
 <p>有两种 object 走 mcache 分配：</p>
@@ -1169,7 +1419,6 @@
 <li><strong><code>tiny</code></strong> <strong><code>tinyoffset</code></strong> ：用于小对象（&lt;16）的分配。tiny 指向当前为 tiny object 准备的 span 的起始地址，tinyoffset 指向对象使用的偏移地址；</li>
 <li><strong><code>alloc</code></strong> ：最重要的属性，保存着不同大小的 mspan 各一个。目前，包含固定 64 类 sizeclass：0、8 … 32768；</li>
 </ul>
-<p><a id="mcache-alloc_mspan"></a></p>
 <h4 id="431-mspan-的分配">4.3.1 mspan 的分配</h4>
 <p>先看下 tiny object 分配，在分配一个 object 时，如果大小小于 16 字节时，就会走 tiny object 逻辑。</p>
 <div class="highlight"><div class="chroma">
@@ -1358,7 +1607,6 @@
 <li>如果 mspan 没有空闲空间了（freeIndex == s.nelems），那么走 <code>c.refill()</code> <strong>重新向 mcentral 申请一个 有空闲空间 mspan</strong>；</li>
 <li><code>mspan.nextFreeIndex()</code> 下一个 index，并计算出对应的内存地址返回；</li>
 </ol>
-<p><a id="mcache-alloc"></a></p>
 <h4 id="432-mspan-的获取">4.3.2 mspan 的获取</h4>
 <p>前面分配 object 中可以看到，当 mcache 当前大小的 mspan 没有空闲空间后，就会通过 <strong><code>c.refill()</code></strong> <strong>向 mcentral 重新申请一个 mspan</strong>（runtime/mcache.go）：</p>
 <div class="highlight"><div class="chroma">
@@ -1523,7 +1771,7 @@
         </div>
     </div>
 <h4 id="441-从-mcentral-申请-mspan">4.4.1 从 mcentral 申请 mspan</h4>
-<p><a href="#mcache-alloc" rel=""><strong>在 mcache 中</strong></a>，可以看到 mcache 通过调用 <code>mcentral.cacheSpan()</code> 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 <code>mcentral.oldCacheSpan()</code> 方法中。</p>
+<p>在 <a href="#432-mspan-%e7%9a%84%e8%8e%b7%e5%8f%96" rel=""><strong>mcache的获取</strong></a> 中，可以看到 mcache 通过调用 <code>mcentral.cacheSpan()</code> 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 <code>mcentral.oldCacheSpan()</code> 方法中。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -1632,85 +1880,85 @@
 </span><span class="c1">//
 </span><span class="c1">// For !go115NewMCentralImpl.
 </span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">mcentral</span><span class="p">)</span> <span class="nf">oldCacheSpan</span><span class="p">()</span> <span class="o">*</span><span class="nx">mspan</span> <span class="p">{</span>
-        <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
-        <span class="nx">sg</span> <span class="o">:=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepgen</span>
+	<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+	<span class="nx">sg</span> <span class="o">:=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepgen</span>
         
 <span class="nx">retry</span><span class="p">:</span>
-        <span class="kd">var</span> <span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span>
-        <span class="c1">// 走 nonempty 链表找
-</span><span class="c1"></span>        <span class="k">for</span> <span class="nx">s</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">nonempty</span><span class="p">.</span><span class="nx">first</span><span class="p">;</span> <span class="nx">s</span> <span class="o">!=</span> <span class="kc">nil</span><span class="p">;</span> <span class="nx">s</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">next</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span> <span class="o">==</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">Cas</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">,</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-                        <span class="nx">c</span><span class="p">.</span><span class="nx">nonempty</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
-                        <span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nf">insertBack</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
-                        <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
-                        <span class="nx">s</span><span class="p">.</span><span class="nf">sweep</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
-                        <span class="k">goto</span> <span class="nx">havespan</span>
-                <span class="p">}</span>
-                <span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span> <span class="o">==</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">1</span> <span class="p">{</span>
-                        <span class="c1">// the span is being swept by background sweeper, skip
-</span><span class="c1"></span>                        <span class="k">continue</span>
-                <span class="p">}</span>
-                <span class="c1">// we have a nonempty span that does not require sweeping, allocate from it
-</span><span class="c1"></span>                <span class="nx">c</span><span class="p">.</span><span class="nx">nonempty</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
-                <span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nf">insertBack</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
-                <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
-                <span class="k">goto</span> <span class="nx">havespan</span>
-        <span class="p">}</span>
+	<span class="kd">var</span> <span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span>
+	<span class="c1">// 走 nonempty 链表找
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">s</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">nonempty</span><span class="p">.</span><span class="nx">first</span><span class="p">;</span> <span class="nx">s</span> <span class="o">!=</span> <span class="kc">nil</span><span class="p">;</span> <span class="nx">s</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">next</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span> <span class="o">==</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">Cas</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">,</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">c</span><span class="p">.</span><span class="nx">nonempty</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+			<span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nf">insertBack</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+			<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+			<span class="nx">s</span><span class="p">.</span><span class="nf">sweep</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+			<span class="k">goto</span> <span class="nx">havespan</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span> <span class="o">==</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">1</span> <span class="p">{</span>
+			<span class="c1">// the span is being swept by background sweeper, skip
+</span><span class="c1"></span>			<span class="k">continue</span>
+		<span class="p">}</span>
+		<span class="c1">// we have a nonempty span that does not require sweeping, allocate from it
+</span><span class="c1"></span>		<span class="nx">c</span><span class="p">.</span><span class="nx">nonempty</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+		<span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nf">insertBack</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+		<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="k">goto</span> <span class="nx">havespan</span>
+	<span class="p">}</span>
 
-        <span class="c1">// 走 empty 链表找
-</span><span class="c1"></span>        <span class="k">for</span> <span class="nx">s</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nx">first</span><span class="p">;</span> <span class="nx">s</span> <span class="o">!=</span> <span class="kc">nil</span><span class="p">;</span> <span class="nx">s</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">next</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span> <span class="o">==</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">Cas</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">,</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-                        <span class="c1">// we have an empty span that requires sweeping,
-</span><span class="c1"></span>                        <span class="c1">// sweep it and see if we can free some space in it
-</span><span class="c1"></span>                        <span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
-                        <span class="c1">// swept spans are at the end of the list
-</span><span class="c1"></span>                        <span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nf">insertBack</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
-                        <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
-                        <span class="nx">s</span><span class="p">.</span><span class="nf">sweep</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
-                        <span class="nx">freeIndex</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">nextFreeIndex</span><span class="p">()</span>
-                        <span class="k">if</span> <span class="nx">freeIndex</span> <span class="o">!=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">nelems</span> <span class="p">{</span>
-                                <span class="nx">s</span><span class="p">.</span><span class="nx">freeindex</span> <span class="p">=</span> <span class="nx">freeIndex</span>
-                                <span class="k">goto</span> <span class="nx">havespan</span>
-                        <span class="p">}</span>
-                        <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
-                        <span class="c1">// the span is still empty after sweep
-</span><span class="c1"></span>                        <span class="c1">// it is already in the empty list, so just retry
-</span><span class="c1"></span>                        <span class="k">goto</span> <span class="nx">retry</span>
-                <span class="p">}</span>
-                <span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span> <span class="o">==</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">1</span> <span class="p">{</span>
-                        <span class="c1">// the span is being swept by background sweeper, skip
-</span><span class="c1"></span>                        <span class="k">continue</span>
-                <span class="p">}</span>
-                <span class="c1">// already swept empty span,
-</span><span class="c1"></span>                <span class="c1">// all subsequent ones must also be either swept or in process of sweeping
-</span><span class="c1"></span>                <span class="k">break</span>
-        <span class="p">}</span>
-        <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+	<span class="c1">// 走 empty 链表找
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">s</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nx">first</span><span class="p">;</span> <span class="nx">s</span> <span class="o">!=</span> <span class="kc">nil</span><span class="p">;</span> <span class="nx">s</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">next</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span> <span class="o">==</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">Cas</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">,</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+			<span class="c1">// we have an empty span that requires sweeping,
+</span><span class="c1"></span>			<span class="c1">// sweep it and see if we can free some space in it
+</span><span class="c1"></span>			<span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+			<span class="c1">// swept spans are at the end of the list
+</span><span class="c1"></span>			<span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nf">insertBack</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+			<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+			<span class="nx">s</span><span class="p">.</span><span class="nf">sweep</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+			<span class="nx">freeIndex</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">nextFreeIndex</span><span class="p">()</span>
+			<span class="k">if</span> <span class="nx">freeIndex</span> <span class="o">!=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">nelems</span> <span class="p">{</span>
+				<span class="nx">s</span><span class="p">.</span><span class="nx">freeindex</span> <span class="p">=</span> <span class="nx">freeIndex</span>
+				<span class="k">goto</span> <span class="nx">havespan</span>
+			<span class="p">}</span>
+			<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+			<span class="c1">// the span is still empty after sweep
+</span><span class="c1"></span>			<span class="c1">// it is already in the empty list, so just retry
+</span><span class="c1"></span>			<span class="k">goto</span> <span class="nx">retry</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span> <span class="o">==</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">1</span> <span class="p">{</span>
+			 <span class="c1">// the span is being swept by background sweeper, skip
+</span><span class="c1"></span>			 <span class="k">continue</span>
+		<span class="p">}</span>
+		<span class="c1">// already swept empty span,
+</span><span class="c1"></span>		<span class="c1">// all subsequent ones must also be either swept or in process of sweeping
+</span><span class="c1"></span>		<span class="k">break</span>
+	<span class="p">}</span>
+	<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
 
-        <span class="c1">// 向 heap 申请新的 mspan
-</span><span class="c1"></span>        <span class="c1">// Replenish central list if empty.
-</span><span class="c1"></span>        <span class="nx">s</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">grow</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nx">s</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
-                <span class="k">return</span> <span class="kc">nil</span>
-        <span class="p">}</span>
-        <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
-        <span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nf">insertBack</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
-        <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+	<span class="c1">// 向 heap 申请新的 mspan
+</span><span class="c1"></span>	<span class="c1">// Replenish central list if empty.
+</span><span class="c1"></span>	<span class="nx">s</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">grow</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">s</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+	<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+	<span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nf">insertBack</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+	<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
 
-        <span class="c1">// At this point s is a non-empty span, queued at the end of the empty list,
-</span><span class="c1"></span>        <span class="c1">// c is unlocked.
+	<span class="c1">// At this point s is a non-empty span, queued at the end of the empty list,
+</span><span class="c1"></span>	<span class="c1">// c is unlocked.
 </span><span class="c1"></span><span class="nx">havespan</span><span class="p">:</span>
-        <span class="err">…</span>
-        <span class="nx">freeByteBase</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">freeindex</span> <span class="o">&amp;^</span> <span class="p">(</span><span class="mi">64</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="nx">whichByte</span> <span class="o">:=</span> <span class="nx">freeByteBase</span> <span class="o">/</span> <span class="mi">8</span>
-        <span class="c1">// Init alloc bits cache.
-</span><span class="c1"></span>        <span class="nx">s</span><span class="p">.</span><span class="nf">refillAllocCache</span><span class="p">(</span><span class="nx">whichByte</span><span class="p">)</span>
+	<span class="err">…</span>
+	<span class="nx">freeByteBase</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">freeindex</span> <span class="o">&amp;^</span> <span class="p">(</span><span class="mi">64</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+	<span class="nx">whichByte</span> <span class="o">:=</span> <span class="nx">freeByteBase</span> <span class="o">/</span> <span class="mi">8</span>
+	<span class="c1">// Init alloc bits cache.
+</span><span class="c1"></span>	<span class="nx">s</span><span class="p">.</span><span class="nf">refillAllocCache</span><span class="p">(</span><span class="nx">whichByte</span><span class="p">)</span>
 
-        <span class="c1">// Adjust the allocCache so that s.freeindex corresponds to the low bit in
-</span><span class="c1"></span>        <span class="c1">// s.allocCache.
-</span><span class="c1"></span>        <span class="nx">s</span><span class="p">.</span><span class="nx">allocCache</span> <span class="o">&gt;&gt;=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">freeindex</span> <span class="o">%</span> <span class="mi">64</span>
+	<span class="c1">// Adjust the allocCache so that s.freeindex corresponds to the low bit in
+</span><span class="c1"></span>	<span class="c1">// s.allocCache.
+</span><span class="c1"></span>	<span class="nx">s</span><span class="p">.</span><span class="nx">allocCache</span> <span class="o">&gt;&gt;=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">freeindex</span> <span class="o">%</span> <span class="mi">64</span>
 
-        <span class="k">return</span> <span class="nx">s</span>
+	<span class="k">return</span> <span class="nx">s</span>
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
@@ -1721,7 +1969,6 @@
 <li>还是没有，通过 <code>mcentral.grow()</code> 向 mheap 申请新的 mspan，mheap 中都没有，return nil；</li>
 <li>找到空闲 mspan 后，会放置到 empty 链表尾部，并返回；</li>
 </ol>
-<p><a id="mcentral-grow"></a></p>
 <h4 id="442-mcentral-扩容">4.4.2 mcentral 扩容</h4>
 <p>在 mcentral 没有任何空闲 mspan 给 mcache 时，就会调用 <code>mcentral.grow()</code> 申请新的 mspan。</p>
 <div class="highlight"><div class="chroma">
@@ -1747,20 +1994,20 @@
 <td class="lntd">
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// grow allocates a new empty span from the heap and initializes it for c&#39;s size class.
 </span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">mcentral</span><span class="p">)</span> <span class="nf">grow</span><span class="p">()</span> <span class="o">*</span><span class="nx">mspan</span> <span class="p">{</span>
-        <span class="nx">npages</span> <span class="o">:=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">class_to_allocnpages</span><span class="p">[</span><span class="nx">c</span><span class="p">.</span><span class="nx">spanclass</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()])</span>
-        <span class="nx">size</span> <span class="o">:=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">class_to_size</span><span class="p">[</span><span class="nx">c</span><span class="p">.</span><span class="nx">spanclass</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()])</span>
+	 <span class="nx">npages</span> <span class="o">:=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">class_to_allocnpages</span><span class="p">[</span><span class="nx">c</span><span class="p">.</span><span class="nx">spanclass</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()])</span>
+	 <span class="nx">size</span> <span class="o">:=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">class_to_size</span><span class="p">[</span><span class="nx">c</span><span class="p">.</span><span class="nx">spanclass</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()])</span>
 
-        <span class="nx">s</span> <span class="o">:=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">spanclass</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nx">s</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
-                <span class="k">return</span> <span class="kc">nil</span>
-        <span class="p">}</span>
+	 <span class="nx">s</span> <span class="o">:=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">spanclass</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+	 <span class="k">if</span> <span class="nx">s</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		 <span class="k">return</span> <span class="kc">nil</span>
+	 <span class="p">}</span>
 
-        <span class="c1">// Use division by multiplication and shifts to quickly compute:
-</span><span class="c1"></span>        <span class="c1">// n := (npages &lt;&lt; _PageShift) / size
-</span><span class="c1"></span>        <span class="nx">n</span> <span class="o">:=</span> <span class="p">(</span><span class="nx">npages</span> <span class="o">&lt;&lt;</span> <span class="nx">_PageShift</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">divShift</span> <span class="o">*</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">divMul</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">divShift2</span>
-        <span class="nx">s</span><span class="p">.</span><span class="nx">limit</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()</span> <span class="o">+</span> <span class="nx">size</span><span class="o">*</span><span class="nx">n</span>
-        <span class="nf">heapBitsForAddr</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()).</span><span class="nf">initSpan</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nx">s</span>
+	 <span class="c1">// Use division by multiplication and shifts to quickly compute:
+</span><span class="c1"></span>	 <span class="c1">// n := (npages &lt;&lt; _PageShift) / size
+</span><span class="c1"></span>	 <span class="nx">n</span> <span class="o">:=</span> <span class="p">(</span><span class="nx">npages</span> <span class="o">&lt;&lt;</span> <span class="nx">_PageShift</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">divShift</span> <span class="o">*</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">divMul</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">divShift2</span>
+	 <span class="nx">s</span><span class="p">.</span><span class="nx">limit</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()</span> <span class="o">+</span> <span class="nx">size</span><span class="o">*</span><span class="nx">n</span>
+	 <span class="nf">heapBitsForAddr</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()).</span><span class="nf">initSpan</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+	 <span class="k">return</span> <span class="nx">s</span>
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
@@ -1769,7 +2016,114 @@
 <li>执行 <code>mheapBit.initSpan()</code> 初始化 mspan；</li>
 </ol>
 <h4 id="443-mcentral-回收-mspan">4.4.3 mcentral 回收 mspan</h4>
-<p>TODO</p>
+<p>前面 <a href="#422-mspan-%e7%9a%84%e6%b8%85%e7%90%86" rel=""><strong>mspan.sweep()</strong></a> 时看到，通过调用 mcentral.freeSpan() 调整其 mspan:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// freeSpan updates c and s after sweeping s.
+</span><span class="c1">// It sets s&#39;s sweepgen to the latest generation,
+</span><span class="c1">// and, based on the number of free objects in s,
+</span><span class="c1">// moves s to the appropriate list of c or returns it
+</span><span class="c1">// to the heap.
+</span><span class="c1">// freeSpan reports whether s was returned to the heap.
+</span><span class="c1">// If preserve=true, it does not move s (the caller
+</span><span class="c1">// must take care of it).
+</span><span class="c1">//
+</span><span class="c1">// For !go115NewMCentralImpl.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">mcentral</span><span class="p">)</span> <span class="nf">freeSpan</span><span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span><span class="p">,</span> <span class="nx">preserve</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">wasempty</span> <span class="kt">bool</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+	<span class="nx">s</span><span class="p">.</span><span class="nx">needzero</span> <span class="p">=</span> <span class="mi">1</span>
+
+	<span class="k">if</span> <span class="nx">preserve</span> <span class="p">{</span>
+		<span class="c1">// preserve is set only when called from (un)cacheSpan above,
+</span><span class="c1"></span>		<span class="c1">// the span must be in the empty list.
+</span><span class="c1"></span>		<span class="k">if</span> <span class="p">!</span><span class="nx">s</span><span class="p">.</span><span class="nf">inList</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nf">throw</span><span class="p">(</span><span class="s">&#34;can&#39;t preserve unlinked span&#34;</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nx">atomic</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">,</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">)</span>
+		<span class="k">return</span> <span class="kc">false</span>
+	<span class="p">}</span>
+
+	<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+
+	<span class="c1">// 如果 mspan 完全空, 调整链表项
+</span><span class="c1"></span>	<span class="c1">// Move to nonempty if necessary.
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">wasempty</span> <span class="p">{</span>
+		<span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+		<span class="nx">c</span><span class="p">.</span><span class="nx">nonempty</span><span class="p">.</span><span class="nf">insert</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c1">// delay updating sweepgen until here. This is the signal that
+</span><span class="c1"></span>	<span class="c1">// the span may be used in an mcache, so it must come after the
+</span><span class="c1"></span>	<span class="c1">// linked list operations above (actually, just after the
+</span><span class="c1"></span>	<span class="c1">// lock of c above.)
+</span><span class="c1"></span>	<span class="nx">atomic</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">,</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">)</span>
+
+	<span class="c1">// 还有 object 正在使用, 返回
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">allocCount</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="k">return</span> <span class="kc">false</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 没有 object 了, 也就是空的 mspan 尝试返回给 mheap
+</span><span class="c1"></span>	<span class="nx">c</span><span class="p">.</span><span class="nx">nonempty</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+	<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+	<span class="nx">mheap_</span><span class="p">.</span><span class="nf">freeSpan</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+	<span class="k">return</span> <span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>所谓的回收 mspan 仅仅对于 mspan 完全空闲情况下，调用 mheap.freeSpan() 尝试回收。非空的 mspan 其实没有啥操作。</p>
 <h3 id="45-mheap">4.5 mheap</h3>
 <p>mheap 是最核心的组件了，runtime 只存在一个 mheap 对象，分配、初始化 mspan 都从 mheap 开始。</p>
 <p>mheap 直接与虚拟内存打交道，并将在虚拟内存上创建 mspan 提供给上层使用。</p>
@@ -1846,46 +2200,46 @@
 </span><span class="c1">//
 </span><span class="c1">//go:notinheap
 </span><span class="c1"></span><span class="kd">type</span> <span class="nx">mheap</span> <span class="kd">struct</span> <span class="p">{</span>
-		<span class="c1">// arenas is the heap arena map. It points to the metadata for
-</span><span class="c1"></span>		<span class="c1">// the heap for every arena frame of the entire usable virtual
-</span><span class="c1"></span>		<span class="c1">// address space.
-</span><span class="c1"></span>		<span class="c1">//
-</span><span class="c1"></span>		<span class="c1">// Use arenaIndex to compute indexes into this array.
-</span><span class="c1"></span>		<span class="c1">//
-</span><span class="c1"></span>		<span class="c1">// For regions of the address space that are not backed by the
-</span><span class="c1"></span>		<span class="c1">// Go heap, the arena map contains nil.
-</span><span class="c1"></span>		<span class="c1">//
-</span><span class="c1"></span>		<span class="c1">// Modifications are protected by mheap_.lock. Reads can be
-</span><span class="c1"></span>		<span class="c1">// performed without locking; however, a given entry can
-</span><span class="c1"></span>		<span class="c1">// transition from nil to non-nil at any time when the lock
-</span><span class="c1"></span>		<span class="c1">// isn&#39;t held. (Entries never transitions back to nil.)
-</span><span class="c1"></span>		<span class="c1">//
-</span><span class="c1"></span>		<span class="c1">// In general, this is a two-level mapping consisting of an L1
-</span><span class="c1"></span>		<span class="c1">// map and possibly many L2 maps. This saves space when there
-</span><span class="c1"></span>		<span class="c1">// are a huge number of arena frames. However, on many
-</span><span class="c1"></span>		<span class="c1">// platforms (even 64-bit), arenaL1Bits is 0, making this
-</span><span class="c1"></span>		<span class="c1">// effectively a single-level map. In this case, arenas[0]
-</span><span class="c1"></span>		<span class="c1">// will never be nil.
-</span><span class="c1"></span>		<span class="nx">arenas</span> <span class="p">[</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">arenaL1Bits</span><span class="p">]</span><span class="o">*</span><span class="p">[</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">arenaL2Bits</span><span class="p">]</span><span class="o">*</span><span class="nx">heapArena</span>
-		
-		<span class="c1">// central free lists for small size classes.
-</span><span class="c1"></span>		<span class="c1">// the padding makes sure that the mcentrals are
-</span><span class="c1"></span>		<span class="c1">// spaced CacheLinePadSize bytes apart, so that each mcentral.lock
-</span><span class="c1"></span>		<span class="c1">// gets its own cache line.
-</span><span class="c1"></span>		<span class="c1">// central is indexed by spanClass.
-</span><span class="c1"></span>		<span class="nx">central</span> <span class="p">[</span><span class="nx">numSpanClasses</span><span class="p">]</span><span class="kd">struct</span> <span class="p">{</span>
-				<span class="nx">mcentral</span> <span class="nx">mcentral</span>
-				<span class="nx">pad</span>      <span class="p">[</span><span class="nx">cpu</span><span class="p">.</span><span class="nx">CacheLinePadSize</span> <span class="o">-</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">mcentral</span><span class="p">{})</span><span class="o">%</span><span class="nx">cpu</span><span class="p">.</span><span class="nx">CacheLinePadSize</span><span class="p">]</span><span class="kt">byte</span>
-		<span class="p">}</span>
-		
-		<span class="nx">pages</span>     <span class="nx">pageAlloc</span> <span class="c1">// page allocation data structure
-</span><span class="c1"></span>		
-		<span class="nx">spanalloc</span>             <span class="nx">fixalloc</span> <span class="c1">// allocator for span*
-</span><span class="c1"></span>		<span class="nx">cachealloc</span>            <span class="nx">fixalloc</span> <span class="c1">// allocator for mcache*
-</span><span class="c1"></span>		<span class="nx">specialfinalizeralloc</span> <span class="nx">fixalloc</span> <span class="c1">// allocator for specialfinalizer*
-</span><span class="c1"></span>		<span class="nx">specialprofilealloc</span>   <span class="nx">fixalloc</span> <span class="c1">// allocator for specialprofile*
-</span><span class="c1"></span>		<span class="nx">speciallock</span>           <span class="nx">mutex</span>    <span class="c1">// lock for special record allocators.
-</span><span class="c1"></span>		<span class="nx">arenaHintAlloc</span>        <span class="nx">fixalloc</span> <span class="c1">// allocator for arenaHints
+	<span class="c1">// arenas is the heap arena map. It points to the metadata for
+</span><span class="c1"></span>	<span class="c1">// the heap for every arena frame of the entire usable virtual
+</span><span class="c1"></span>	<span class="c1">// address space.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// Use arenaIndex to compute indexes into this array.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// For regions of the address space that are not backed by the
+</span><span class="c1"></span>	<span class="c1">// Go heap, the arena map contains nil.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// Modifications are protected by mheap_.lock. Reads can be
+</span><span class="c1"></span>	<span class="c1">// performed without locking; however, a given entry can
+</span><span class="c1"></span>	<span class="c1">// transition from nil to non-nil at any time when the lock
+</span><span class="c1"></span>	<span class="c1">// isn&#39;t held. (Entries never transitions back to nil.)
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// In general, this is a two-level mapping consisting of an L1
+</span><span class="c1"></span>	<span class="c1">// map and possibly many L2 maps. This saves space when there
+</span><span class="c1"></span>	<span class="c1">// are a huge number of arena frames. However, on many
+</span><span class="c1"></span>	<span class="c1">// platforms (even 64-bit), arenaL1Bits is 0, making this
+</span><span class="c1"></span>	<span class="c1">// effectively a single-level map. In this case, arenas[0]
+</span><span class="c1"></span>	<span class="c1">// will never be nil.
+</span><span class="c1"></span>	<span class="nx">arenas</span> <span class="p">[</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">arenaL1Bits</span><span class="p">]</span><span class="o">*</span><span class="p">[</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">arenaL2Bits</span><span class="p">]</span><span class="o">*</span><span class="nx">heapArena</span>
+			
+	<span class="c1">// central free lists for small size classes.
+</span><span class="c1"></span>	<span class="c1">// the padding makes sure that the mcentrals are
+</span><span class="c1"></span>	<span class="c1">// spaced CacheLinePadSize bytes apart, so that each mcentral.lock
+</span><span class="c1"></span>	<span class="c1">// gets its own cache line.
+</span><span class="c1"></span>	<span class="c1">// central is indexed by spanClass.
+</span><span class="c1"></span>	<span class="nx">central</span> <span class="p">[</span><span class="nx">numSpanClasses</span><span class="p">]</span><span class="kd">struct</span> <span class="p">{</span>
+			<span class="nx">mcentral</span> <span class="nx">mcentral</span>
+			<span class="nx">pad</span>      <span class="p">[</span><span class="nx">cpu</span><span class="p">.</span><span class="nx">CacheLinePadSize</span> <span class="o">-</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">mcentral</span><span class="p">{})</span><span class="o">%</span><span class="nx">cpu</span><span class="p">.</span><span class="nx">CacheLinePadSize</span><span class="p">]</span><span class="kt">byte</span>
+	<span class="p">}</span>
+			
+	<span class="nx">pages</span>     <span class="nx">pageAlloc</span> <span class="c1">// page allocation data structure
+</span><span class="c1"></span>			
+	<span class="nx">spanalloc</span>             <span class="nx">fixalloc</span> <span class="c1">// allocator for span*
+</span><span class="c1"></span>	<span class="nx">cachealloc</span>            <span class="nx">fixalloc</span> <span class="c1">// allocator for mcache*
+</span><span class="c1"></span>	<span class="nx">specialfinalizeralloc</span> <span class="nx">fixalloc</span> <span class="c1">// allocator for specialfinalizer*
+</span><span class="c1"></span>	<span class="nx">specialprofilealloc</span>   <span class="nx">fixalloc</span> <span class="c1">// allocator for specialprofile*
+</span><span class="c1"></span>	<span class="nx">speciallock</span>           <span class="nx">mutex</span>    <span class="c1">// lock for special record allocators.
+</span><span class="c1"></span>	<span class="nx">arenaHintAlloc</span>        <span class="nx">fixalloc</span> <span class="c1">// allocator for arenaHints
 </span><span class="c1"></span><span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
@@ -2034,73 +2388,73 @@
 </span><span class="c1">//
 </span><span class="c1">//go:notinheap
 </span><span class="c1"></span><span class="kd">type</span> <span class="nx">heapArena</span> <span class="kd">struct</span> <span class="p">{</span>
-        <span class="c1">// bitmap stores the pointer/scalar bitmap for the words in
-</span><span class="c1"></span>        <span class="c1">// this arena. See mbitmap.go for a description. Use the
-</span><span class="c1"></span>        <span class="c1">// heapBits type to access this.
-</span><span class="c1"></span>        <span class="nx">bitmap</span> <span class="p">[</span><span class="nx">heapArenaBitmapBytes</span><span class="p">]</span><span class="kt">byte</span>
+	<span class="c1">// bitmap stores the pointer/scalar bitmap for the words in
+</span><span class="c1"></span>	<span class="c1">// this arena. See mbitmap.go for a description. Use the
+</span><span class="c1"></span>	<span class="c1">// heapBits type to access this.
+</span><span class="c1"></span>	<span class="nx">bitmap</span> <span class="p">[</span><span class="nx">heapArenaBitmapBytes</span><span class="p">]</span><span class="kt">byte</span>
 
-        <span class="c1">// spans maps from virtual address page ID within this arena to *mspan.
-</span><span class="c1"></span>        <span class="c1">// For allocated spans, their pages map to the span itself.
-</span><span class="c1"></span>        <span class="c1">// For free spans, only the lowest and highest pages map to the span itself.
-</span><span class="c1"></span>        <span class="c1">// Internal pages map to an arbitrary span.
-</span><span class="c1"></span>        <span class="c1">// For pages that have never been allocated, spans entries are nil.
-</span><span class="c1"></span>        <span class="c1">//
-</span><span class="c1"></span>        <span class="c1">// Modifications are protected by mheap.lock. Reads can be
-</span><span class="c1"></span>        <span class="c1">// performed without locking, but ONLY from indexes that are
-</span><span class="c1"></span>        <span class="c1">// known to contain in-use or stack spans. This means there
-</span><span class="c1"></span>        <span class="c1">// must not be a safe-point between establishing that an
-</span><span class="c1"></span>        <span class="c1">// address is live and looking it up in the spans array.
-</span><span class="c1"></span>        <span class="nx">spans</span> <span class="p">[</span><span class="nx">pagesPerArena</span><span class="p">]</span><span class="o">*</span><span class="nx">mspan</span>
+	<span class="c1">// spans maps from virtual address page ID within this arena to *mspan.
+</span><span class="c1"></span>	<span class="c1">// For allocated spans, their pages map to the span itself.
+</span><span class="c1"></span>	<span class="c1">// For free spans, only the lowest and highest pages map to the span itself.
+</span><span class="c1"></span>	<span class="c1">// Internal pages map to an arbitrary span.
+</span><span class="c1"></span>	<span class="c1">// For pages that have never been allocated, spans entries are nil.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// Modifications are protected by mheap.lock. Reads can be
+</span><span class="c1"></span>	<span class="c1">// performed without locking, but ONLY from indexes that are
+</span><span class="c1"></span>	<span class="c1">// known to contain in-use or stack spans. This means there
+</span><span class="c1"></span>	<span class="c1">// must not be a safe-point between establishing that an
+</span><span class="c1"></span>	<span class="c1">// address is live and looking it up in the spans array.
+</span><span class="c1"></span>	<span class="nx">spans</span> <span class="p">[</span><span class="nx">pagesPerArena</span><span class="p">]</span><span class="o">*</span><span class="nx">mspan</span>
 
-        <span class="c1">// pageInUse is a bitmap that indicates which spans are in
-</span><span class="c1"></span>        <span class="c1">// state mSpanInUse. This bitmap is indexed by page number,
-</span><span class="c1"></span>        <span class="c1">// but only the bit corresponding to the first page in each
-</span><span class="c1"></span>        <span class="c1">// span is used.
-</span><span class="c1"></span>        <span class="c1">//
-</span><span class="c1"></span>        <span class="c1">// Reads and writes are atomic.
-</span><span class="c1"></span>        <span class="nx">pageInUse</span> <span class="p">[</span><span class="nx">pagesPerArena</span> <span class="o">/</span> <span class="mi">8</span><span class="p">]</span><span class="kt">uint8</span>
+	<span class="c1">// pageInUse is a bitmap that indicates which spans are in
+</span><span class="c1"></span>	<span class="c1">// state mSpanInUse. This bitmap is indexed by page number,
+</span><span class="c1"></span>	<span class="c1">// but only the bit corresponding to the first page in each
+</span><span class="c1"></span>	<span class="c1">// span is used.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// Reads and writes are atomic.
+</span><span class="c1"></span>	<span class="nx">pageInUse</span> <span class="p">[</span><span class="nx">pagesPerArena</span> <span class="o">/</span> <span class="mi">8</span><span class="p">]</span><span class="kt">uint8</span>
 
-        <span class="c1">// pageMarks is a bitmap that indicates which spans have any
-</span><span class="c1"></span>        <span class="c1">// marked objects on them. Like pageInUse, only the bit
-</span><span class="c1"></span>        <span class="c1">// corresponding to the first page in each span is used.
-</span><span class="c1"></span>        <span class="c1">//
-</span><span class="c1"></span>        <span class="c1">// Writes are done atomically during marking. Reads are
-</span><span class="c1"></span>        <span class="c1">// non-atomic and lock-free since they only occur during
-</span><span class="c1"></span>        <span class="c1">// sweeping (and hence never race with writes).
-</span><span class="c1"></span>        <span class="c1">//
-</span><span class="c1"></span>        <span class="c1">// This is used to quickly find whole spans that can be freed.
-</span><span class="c1"></span>        <span class="c1">//
-</span><span class="c1"></span>        <span class="c1">// TODO(austin): It would be nice if this was uint64 for
-</span><span class="c1"></span>        <span class="c1">// faster scanning, but we don&#39;t have 64-bit atomic bit
-</span><span class="c1"></span>        <span class="c1">// operations.
-</span><span class="c1"></span>        <span class="nx">pageMarks</span> <span class="p">[</span><span class="nx">pagesPerArena</span> <span class="o">/</span> <span class="mi">8</span><span class="p">]</span><span class="kt">uint8</span>
+	<span class="c1">// pageMarks is a bitmap that indicates which spans have any
+</span><span class="c1"></span>	<span class="c1">// marked objects on them. Like pageInUse, only the bit
+</span><span class="c1"></span>	<span class="c1">// corresponding to the first page in each span is used.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// Writes are done atomically during marking. Reads are
+</span><span class="c1"></span>	<span class="c1">// non-atomic and lock-free since they only occur during
+</span><span class="c1"></span>	<span class="c1">// sweeping (and hence never race with writes).
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// This is used to quickly find whole spans that can be freed.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// TODO(austin): It would be nice if this was uint64 for
+</span><span class="c1"></span>	<span class="c1">// faster scanning, but we don&#39;t have 64-bit atomic bit
+</span><span class="c1"></span>	<span class="c1">// operations.
+</span><span class="c1"></span>	<span class="nx">pageMarks</span> <span class="p">[</span><span class="nx">pagesPerArena</span> <span class="o">/</span> <span class="mi">8</span><span class="p">]</span><span class="kt">uint8</span>
 
-        <span class="c1">// pageSpecials is a bitmap that indicates which spans have
-</span><span class="c1"></span>        <span class="c1">// specials (finalizers or other). Like pageInUse, only the bit
-</span><span class="c1"></span>        <span class="c1">// corresponding to the first page in each span is used.
-</span><span class="c1"></span>        <span class="c1">//
-</span><span class="c1"></span>        <span class="c1">// Writes are done atomically whenever a special is added to
-</span><span class="c1"></span>        <span class="c1">// a span and whenever the last special is removed from a span.
-</span><span class="c1"></span>        <span class="c1">// Reads are done atomically to find spans containing specials
-</span><span class="c1"></span>        <span class="c1">// during marking.
-</span><span class="c1"></span>        <span class="nx">pageSpecials</span> <span class="p">[</span><span class="nx">pagesPerArena</span> <span class="o">/</span> <span class="mi">8</span><span class="p">]</span><span class="kt">uint8</span>
+	<span class="c1">// pageSpecials is a bitmap that indicates which spans have
+</span><span class="c1"></span>	<span class="c1">// specials (finalizers or other). Like pageInUse, only the bit
+</span><span class="c1"></span>	<span class="c1">// corresponding to the first page in each span is used.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// Writes are done atomically whenever a special is added to
+</span><span class="c1"></span>	<span class="c1">// a span and whenever the last special is removed from a span.
+</span><span class="c1"></span>	<span class="c1">// Reads are done atomically to find spans containing specials
+</span><span class="c1"></span>	<span class="c1">// during marking.
+</span><span class="c1"></span>	<span class="nx">pageSpecials</span> <span class="p">[</span><span class="nx">pagesPerArena</span> <span class="o">/</span> <span class="mi">8</span><span class="p">]</span><span class="kt">uint8</span>
 
-        <span class="c1">// zeroedBase marks the first byte of the first page in this
-</span><span class="c1"></span>        <span class="c1">// arena which hasn&#39;t been used yet and is therefore already
-</span><span class="c1"></span>        <span class="c1">// zero. zeroedBase is relative to the arena base.
-</span><span class="c1"></span>        <span class="c1">// Increases monotonically until it hits heapArenaBytes.
-</span><span class="c1"></span>        <span class="c1">//
-</span><span class="c1"></span>        <span class="c1">// This field is sufficient to determine if an allocation
-</span><span class="c1"></span>        <span class="c1">// needs to be zeroed because the page allocator follows an
-</span><span class="c1"></span>        <span class="c1">// address-ordered first-fit policy.
-</span><span class="c1"></span>        <span class="c1">//
-</span><span class="c1"></span>        <span class="c1">// Read atomically and written with an atomic CAS.
-</span><span class="c1"></span>        <span class="nx">zeroedBase</span> <span class="kt">uintptr</span>
+	<span class="c1">// zeroedBase marks the first byte of the first page in this
+</span><span class="c1"></span>	<span class="c1">// arena which hasn&#39;t been used yet and is therefore already
+</span><span class="c1"></span>	<span class="c1">// zero. zeroedBase is relative to the arena base.
+</span><span class="c1"></span>	<span class="c1">// Increases monotonically until it hits heapArenaBytes.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// This field is sufficient to determine if an allocation
+</span><span class="c1"></span>	<span class="c1">// needs to be zeroed because the page allocator follows an
+</span><span class="c1"></span>	<span class="c1">// address-ordered first-fit policy.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// Read atomically and written with an atomic CAS.
+</span><span class="c1"></span>	<span class="nx">zeroedBase</span> <span class="kt">uintptr</span>
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li><code>bitmap</code>：表示该 arena 区域中哪些地址保存了对象，每个字节的前 4bit 的每个 bit 表示一个 8B 内存（4个指针大小）是否被扫描，后 4bit 每个 bit 表示是否包含指针。<br>
+<li><code>bitmap</code>：表示该 arena 区域中哪些地址保存了对象，<strong>每个字节的前 4bit 的每个 bit 表示一个 8B 内存（4个指针大小）是否被扫描，后 4bit 每个 bit 表示是否包含指针</strong>。<br>
 因此，一个字节就代表了 32B（4个指针，每个 8B）内存的状态。<strong>（图片来自《知乎：图解Go语言内存分配》）</strong></li>
 <li><code>spans</code>：每个 mspan 对应的指针，因为管理 64 MB，所以数组长度为 8192（64MB / 8KB）。<br>
 其数组编号就是对应的 page 编号，例如 spans[0] 就代表第一个 page 内存区域大小，执行对应的 mspan 。当然，mspan 可能有多个 page 组成，那么对应的多个数组项就指向的同一个 mspan 对象。</li>
@@ -2118,7 +2472,15 @@
 
 </li>
 </ul>
-<p>在一个 heapAreana 空间下，对于任意一个内存地址 addr，(addr - zeroedBase)/8KB 我们能够计算出对应的 page 编号，那么通过 heapAreana.spans[index] 就可以找到对应的 mspan。</p>
+<p>在一个 heapAreana 空间下，<strong>对于任意一个内存地址 addr，(addr - zeroedBase)/8KB 我们能够计算出对应的 page 编号，那么通过 heapAreana.spans[index] 就可以找到对应的 mspan</strong>。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">这个非常重要，在垃圾收集和许多地方都需要通过一个内存地址得到其对应的 mspan。</div>
+        </div>
+    </div></p>
 <h4 id="452-mheap-初始化">4.5.2 mheap 初始化</h4>
 <p>在 runtime 初始化时，会镜像 mheap 的初始化，执行 <code>mheap.init()</code> 函数：</p>
 <div class="highlight"><div class="chroma">
@@ -2157,33 +2519,33 @@
 <td class="lntd">
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Initialize the heap.
 </span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">h</span> <span class="o">*</span><span class="nx">mheap</span><span class="p">)</span> <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">,</span> <span class="nx">lockRankMheap</span><span class="p">)</span>
-        <span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">sweepSpans</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">spineLock</span><span class="p">,</span> <span class="nx">lockRankSpine</span><span class="p">)</span>
-        <span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">sweepSpans</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">spineLock</span><span class="p">,</span> <span class="nx">lockRankSpine</span><span class="p">)</span>
-        <span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">speciallock</span><span class="p">,</span> <span class="nx">lockRankMheapSpecial</span><span class="p">)</span>
+	<span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">,</span> <span class="nx">lockRankMheap</span><span class="p">)</span>
+	<span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">sweepSpans</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">spineLock</span><span class="p">,</span> <span class="nx">lockRankSpine</span><span class="p">)</span>
+	<span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">sweepSpans</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">spineLock</span><span class="p">,</span> <span class="nx">lockRankSpine</span><span class="p">)</span>
+	<span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">speciallock</span><span class="p">,</span> <span class="nx">lockRankMheapSpecial</span><span class="p">)</span>
 
-        <span class="nx">h</span><span class="p">.</span><span class="nx">spanalloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">mspan</span><span class="p">{}),</span> <span class="nx">recordspan</span><span class="p">,</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">h</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">mspan_sys</span><span class="p">)</span>
-        <span class="nx">h</span><span class="p">.</span><span class="nx">cachealloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">mcache</span><span class="p">{}),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">mcache_sys</span><span class="p">)</span>
-        <span class="nx">h</span><span class="p">.</span><span class="nx">specialfinalizeralloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">specialfinalizer</span><span class="p">{}),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">other_sys</span><span class="p">)</span>
-        <span class="nx">h</span><span class="p">.</span><span class="nx">specialprofilealloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">specialprofile</span><span class="p">{}),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">other_sys</span><span class="p">)</span>
-        <span class="nx">h</span><span class="p">.</span><span class="nx">arenaHintAlloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">arenaHint</span><span class="p">{}),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">other_sys</span><span class="p">)</span>
+	<span class="nx">h</span><span class="p">.</span><span class="nx">spanalloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">mspan</span><span class="p">{}),</span> <span class="nx">recordspan</span><span class="p">,</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">h</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">mspan_sys</span><span class="p">)</span>
+	<span class="nx">h</span><span class="p">.</span><span class="nx">cachealloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">mcache</span><span class="p">{}),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">mcache_sys</span><span class="p">)</span>
+	<span class="nx">h</span><span class="p">.</span><span class="nx">specialfinalizeralloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">specialfinalizer</span><span class="p">{}),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">other_sys</span><span class="p">)</span>
+	<span class="nx">h</span><span class="p">.</span><span class="nx">specialprofilealloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">specialprofile</span><span class="p">{}),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">other_sys</span><span class="p">)</span>
+	<span class="nx">h</span><span class="p">.</span><span class="nx">arenaHintAlloc</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">arenaHint</span><span class="p">{}),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">other_sys</span><span class="p">)</span>
 
-        <span class="c1">// Don&#39;t zero mspan allocations. Background sweeping can
-</span><span class="c1"></span>        <span class="c1">// inspect a span concurrently with allocating it, so it&#39;s
-</span><span class="c1"></span>        <span class="c1">// important that the span&#39;s sweepgen survive across freeing
-</span><span class="c1"></span>        <span class="c1">// and re-allocating a span to prevent background sweeping
-</span><span class="c1"></span>        <span class="c1">// from improperly cas&#39;ing it from 0.
-</span><span class="c1"></span>        <span class="c1">//
-</span><span class="c1"></span>        <span class="c1">// This is safe because mspan contains no heap pointers.
-</span><span class="c1"></span>        <span class="nx">h</span><span class="p">.</span><span class="nx">spanalloc</span><span class="p">.</span><span class="nx">zero</span> <span class="p">=</span> <span class="kc">false</span>
+	<span class="c1">// Don&#39;t zero mspan allocations. Background sweeping can
+</span><span class="c1"></span>	<span class="c1">// inspect a span concurrently with allocating it, so it&#39;s
+</span><span class="c1"></span>	<span class="c1">// important that the span&#39;s sweepgen survive across freeing
+</span><span class="c1"></span>	<span class="c1">// and re-allocating a span to prevent background sweeping
+</span><span class="c1"></span>	<span class="c1">// from improperly cas&#39;ing it from 0.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// This is safe because mspan contains no heap pointers.
+</span><span class="c1"></span>	<span class="nx">h</span><span class="p">.</span><span class="nx">spanalloc</span><span class="p">.</span><span class="nx">zero</span> <span class="p">=</span> <span class="kc">false</span>
 
-        <span class="c1">// h-&gt;mapcache needs no init
+	<span class="c1">// h-&gt;mapcache needs no init
 </span><span class="c1"></span>
-        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">h</span><span class="p">.</span><span class="nx">central</span> <span class="p">{</span>
-                <span class="nx">h</span><span class="p">.</span><span class="nx">central</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">mcentral</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nf">spanClass</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span>
-        <span class="p">}</span>
+	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">h</span><span class="p">.</span><span class="nx">central</span> <span class="p">{</span>
+		<span class="nx">h</span><span class="p">.</span><span class="nx">central</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">mcentral</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="nf">spanClass</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span>
+	<span class="p">}</span>
 
-        <span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">gc_sys</span><span class="p">)</span>
+	<span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">gc_sys</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
@@ -2192,9 +2554,8 @@
 <li>初始化各个 <code>mcentral</code>；</li>
 <li>初始化 <code>page alloctor</code>；</li>
 </ol>
-<p><a id="mheap-alloc_mspan"></a></p>
 <h4 id="453-mheap-分配-mspan">4.5.3 mheap 分配 mspan</h4>
-<p>在 <a href="#mcentral-grow" rel=""><strong>mcentral 扩容流程</strong></a>中看到，会调用 <code>mheap.alloc()</code> 申请一个新的 mspan。</p>
+<p>在 <a href="#442-mcentral-%e6%89%a9%e5%ae%b9" rel=""><strong>mcentral 扩容流程</strong></a>中看到，会调用 <code>mheap.alloc()</code> 申请一个新的 mspan。</p>
 <p>而之前说的 large object 分配，也是直接会走 <code>mheap.alloc()</code> 分配到一个合适大小的 mspan，然后分配 object。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -2290,8 +2651,6 @@
 </span><span class="lnt">90
 </span><span class="lnt">91
 </span><span class="lnt">92
-</span><span class="lnt">93
-</span><span class="lnt">94
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// alloc allocates a new span of npage pages from the GC&#39;d heap.
@@ -2300,26 +2659,26 @@
 </span><span class="c1">//
 </span><span class="c1">// If needzero is true, the memory for the returned span will be zeroed.
 </span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">h</span> <span class="o">*</span><span class="nx">mheap</span><span class="p">)</span> <span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">spanclass</span> <span class="nx">spanClass</span><span class="p">,</span> <span class="nx">needzero</span> <span class="kt">bool</span><span class="p">)</span> <span class="o">*</span><span class="nx">mspan</span> <span class="p">{</span>
-        <span class="c1">// Don&#39;t do any operations that lock the heap on the G stack.
-</span><span class="c1"></span>        <span class="c1">// It might trigger stack growth, and the stack growth code needs
-</span><span class="c1"></span>        <span class="c1">// to be able to allocate heap.
-</span><span class="c1"></span>        <span class="kd">var</span> <span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span>
-        <span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-                <span class="c1">// To prevent excessive heap growth, before allocating n pages
-</span><span class="c1"></span>                <span class="c1">// we need to sweep and reclaim at least n pages.
-</span><span class="c1"></span>                <span class="k">if</span> <span class="nx">h</span><span class="p">.</span><span class="nx">sweepdone</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-                        <span class="nx">h</span><span class="p">.</span><span class="nf">reclaim</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span>
-                <span class="p">}</span>
-                <span class="nx">s</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nf">allocSpan</span><span class="p">(</span><span class="nx">npages</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">spanclass</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">heap_inuse</span><span class="p">)</span>
-        <span class="p">})</span>
+	<span class="c1">// Don&#39;t do any operations that lock the heap on the G stack.
+</span><span class="c1"></span>	<span class="c1">// It might trigger stack growth, and the stack growth code needs
+</span><span class="c1"></span>	<span class="c1">// to be able to allocate heap.
+</span><span class="c1"></span>	<span class="kd">var</span> <span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span>
+	<span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="c1">// To prevent excessive heap growth, before allocating n pages
+</span><span class="c1"></span>		<span class="c1">// we need to sweep and reclaim at least n pages.
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">h</span><span class="p">.</span><span class="nx">sweepdone</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+			<span class="nx">h</span><span class="p">.</span><span class="nf">reclaim</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nx">s</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nf">allocSpan</span><span class="p">(</span><span class="nx">npages</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">spanclass</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">heap_inuse</span><span class="p">)</span>
+	<span class="p">})</span>
 
-        <span class="k">if</span> <span class="nx">s</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="nx">needzero</span> <span class="o">&amp;&amp;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">needzero</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
-                        <span class="nf">memclrNoHeapPointers</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()),</span> <span class="nx">s</span><span class="p">.</span><span class="nx">npages</span><span class="o">&lt;&lt;</span><span class="nx">_PageShift</span><span class="p">)</span>
-                <span class="p">}</span>
-                <span class="nx">s</span><span class="p">.</span><span class="nx">needzero</span> <span class="p">=</span> <span class="mi">0</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="nx">s</span>
+	<span class="k">if</span> <span class="nx">s</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">needzero</span> <span class="o">&amp;&amp;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">needzero</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		 	<span class="nf">memclrNoHeapPointers</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()),</span> <span class="nx">s</span><span class="p">.</span><span class="nx">npages</span><span class="o">&lt;&lt;</span><span class="nx">_PageShift</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nx">s</span><span class="p">.</span><span class="nx">needzero</span> <span class="p">=</span> <span class="mi">0</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">s</span>
 <span class="p">}</span>
 
 <span class="c1">// allocSpan allocates an mspan which owns npages worth of memory.
@@ -2340,53 +2699,51 @@
 </span><span class="c1">//
 </span><span class="c1">//go:systemstack
 </span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">h</span> <span class="o">*</span><span class="nx">mheap</span><span class="p">)</span> <span class="nf">allocSpan</span><span class="p">(</span><span class="nx">npages</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">manual</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">spanclass</span> <span class="nx">spanClass</span><span class="p">,</span> <span class="nx">sysStat</span> <span class="o">*</span><span class="kt">uint64</span><span class="p">)</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Function-global state.
-</span><span class="c1"></span>        <span class="nx">gp</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">()</span>
-        <span class="nx">base</span><span class="p">,</span> <span class="nx">scav</span> <span class="o">:=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+	<span class="c1">// Function-global state.
+</span><span class="c1"></span>	<span class="nx">gp</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">()</span>
+	<span class="nx">base</span><span class="p">,</span> <span class="nx">scav</span> <span class="o">:=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-        <span class="c1">// If the allocation is small enough, try the page cache!
-</span><span class="c1"></span>        <span class="nx">pp</span> <span class="o">:=</span> <span class="nx">gp</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">p</span><span class="p">.</span><span class="nf">ptr</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nx">pp</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">npages</span> <span class="p">&lt;</span> <span class="nx">pageCachePages</span><span class="o">/</span><span class="mi">4</span> <span class="p">{</span>
-                <span class="nx">c</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">pp</span><span class="p">.</span><span class="nx">pcache</span>
+	<span class="c1">// If the allocation is small enough, try the page cache!
+</span><span class="c1"></span>	<span class="nx">pp</span> <span class="o">:=</span> <span class="nx">gp</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">p</span><span class="p">.</span><span class="nf">ptr</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">pp</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">npages</span> <span class="p">&lt;</span> <span class="nx">pageCachePages</span><span class="o">/</span><span class="mi">4</span> <span class="p">{</span>
+	        <span class="nx">c</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">pp</span><span class="p">.</span><span class="nx">pcache</span>
 
-        <span class="c1">// If the cache is empty, refill it.
-</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nf">empty</span><span class="p">()</span> <span class="p">{</span>
-                <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
-                <span class="o">*</span><span class="nx">c</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">allocToCache</span><span class="p">()</span>
-                <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
-        <span class="p">}</span>
+	<span class="c1">// If the cache is empty, refill it.
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nf">empty</span><span class="p">()</span> <span class="p">{</span>
+	        <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+	        <span class="o">*</span><span class="nx">c</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">allocToCache</span><span class="p">()</span>
+	        <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+	<span class="p">}</span>
 
-        <span class="c1">// Try to allocate from the cache.
-</span><span class="c1"></span>        <span class="nx">base</span><span class="p">,</span> <span class="nx">scav</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nx">base</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
-                <span class="nx">s</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nf">tryAllocMSpan</span><span class="p">()</span>
+	<span class="c1">// Try to allocate from the cache.
+</span><span class="c1"></span>	<span class="nx">base</span><span class="p">,</span> <span class="nx">scav</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">base</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+	        <span class="nx">s</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nf">tryAllocMSpan</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="nx">s</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">gcBlackenEnabled</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">manual</span> <span class="o">||</span> <span class="nx">spanclass</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">goto</span> <span class="nx">HaveSpan</span>
-        <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="p">}</span>
-        
-        <span class="k">if</span> <span class="nx">base</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-                <span class="c1">// Try to acquire a base address.
-</span><span class="c1"></span>                <span class="nx">base</span><span class="p">,</span> <span class="nx">scav</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nx">base</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-                        <span class="k">if</span> <span class="p">!</span><span class="nx">h</span><span class="p">.</span><span class="nf">grow</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span> <span class="p">{</span>
-                                <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
-                                <span class="k">return</span> <span class="kc">nil</span>
-                        <span class="p">}</span>
-                        <span class="nx">base</span><span class="p">,</span> <span class="nx">scav</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="nx">base</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-                                <span class="nf">throw</span><span class="p">(</span><span class="s">&#34;grew heap, but no adequate free space found&#34;</span><span class="p">)</span>
-                        <span class="p">}</span>
-                <span class="p">}</span>
-        <span class="p">}</span>
-        
-        <span class="err">…</span> 
+	<span class="k">if</span> <span class="nx">s</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">gcBlackenEnabled</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">manual</span> <span class="o">||</span> <span class="nx">spanclass</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+	        <span class="k">goto</span> <span class="nx">HaveSpan</span>
+	<span class="p">}</span>
+	        
+	<span class="k">if</span> <span class="nx">base</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="c1">// Try to acquire a base address.
+</span><span class="c1"></span>		<span class="nx">base</span><span class="p">,</span> <span class="nx">scav</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">base</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">!</span><span class="nx">h</span><span class="p">.</span><span class="nf">grow</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+				<span class="k">return</span> <span class="kc">nil</span>
+			<span class="p">}</span>
+			<span class="nx">base</span><span class="p">,</span> <span class="nx">scav</span> <span class="p">=</span> <span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">alloc</span><span class="p">(</span><span class="nx">npages</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nx">base</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+			 	<span class="nf">throw</span><span class="p">(</span><span class="s">&#34;grew heap, but no adequate free space found&#34;</span><span class="p">)</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	        
+	<span class="err">…</span> 
 <span class="nx">HaveSpan</span><span class="p">:</span>
-        <span class="c1">// 初始化 mspan
-</span><span class="c1"></span>        <span class="err">…</span>
-        <span class="k">return</span> <span class="nx">s</span>
+	<span class="c1">// 初始化 mspan
+</span><span class="c1"></span>	<span class="err">…</span>
+	<span class="k">return</span> <span class="nx">s</span>
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
@@ -2404,7 +2761,130 @@
 </ol>
 <p>最后获取到之后，就会走 mspan 的初始化流程，包括初始 mspan 数据结构，记录 mspan 指针到 <code>mheap.arenas</code> 等行为。</p>
 <h4 id="454-mheap-回收-mspan">4.5.4 mheap 回收 mspan</h4>
-<p>TODO</p>
+<p>所有的回收 mspan 操作最后殊途同归，会走到 <code>mheap.freeSpan()</code> 函数:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Free the span back into the heap.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">h</span> <span class="o">*</span><span class="nx">mheap</span><span class="p">)</span> <span class="nf">freeSpan</span><span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">c</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">().</span><span class="nx">m</span><span class="p">.</span><span class="nx">p</span><span class="p">.</span><span class="nf">ptr</span><span class="p">().</span><span class="nx">mcache</span>
+		<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="nx">h</span><span class="p">.</span><span class="nf">freeSpanLocked</span><span class="p">(</span><span class="nx">s</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+		<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+	<span class="p">})</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">h</span> <span class="o">*</span><span class="nx">mheap</span><span class="p">)</span> <span class="nf">freeSpanLocked</span><span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span><span class="p">,</span> <span class="nx">acctinuse</span><span class="p">,</span> <span class="nx">acctidle</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+	<span class="o">...</span>
+
+	<span class="c1">// Mark the space as free.
+</span><span class="c1"></span>	<span class="nx">h</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nf">free</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">(),</span> <span class="nx">s</span><span class="p">.</span><span class="nx">npages</span><span class="p">)</span>
+
+	<span class="c1">// Free the span structure. We no longer have a use for it.
+</span><span class="c1"></span>	<span class="nx">s</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="nx">mSpanDead</span><span class="p">)</span>
+	<span class="nx">h</span><span class="p">.</span><span class="nf">freeMSpanLocked</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// free returns npages worth of memory starting at base back to the page heap.
+</span><span class="c1">//
+</span><span class="c1">// s.mheapLock must be held.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">pageAlloc</span><span class="p">)</span> <span class="nf">free</span><span class="p">(</span><span class="nx">base</span><span class="p">,</span> <span class="nx">npages</span> <span class="kt">uintptr</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// If we&#39;re freeing pages below the s.searchAddr, update searchAddr.
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nx">offAddr</span><span class="p">{</span><span class="nx">base</span><span class="p">});</span> <span class="nx">b</span><span class="p">.</span><span class="nf">lessThan</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">searchAddr</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">s</span><span class="p">.</span><span class="nx">searchAddr</span> <span class="p">=</span> <span class="nx">b</span>
+	<span class="p">}</span>
+	<span class="c1">// Update the free high watermark for the scavenger.
+</span><span class="c1"></span>	<span class="nx">limit</span> <span class="o">:=</span> <span class="nx">base</span> <span class="o">+</span> <span class="nx">npages</span><span class="o">*</span><span class="nx">pageSize</span> <span class="o">-</span> <span class="mi">1</span>
+	<span class="k">if</span> <span class="nx">offLimit</span> <span class="o">:=</span> <span class="p">(</span><span class="nx">offAddr</span><span class="p">{</span><span class="nx">limit</span><span class="p">});</span> <span class="nx">s</span><span class="p">.</span><span class="nx">scav</span><span class="p">.</span><span class="nx">freeHWM</span><span class="p">.</span><span class="nf">lessThan</span><span class="p">(</span><span class="nx">offLimit</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">s</span><span class="p">.</span><span class="nx">scav</span><span class="p">.</span><span class="nx">freeHWM</span> <span class="p">=</span> <span class="nx">offLimit</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">npages</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+		<span class="c1">// Fast path: we&#39;re clearing a single bit, and we know exactly
+</span><span class="c1"></span>		<span class="c1">// where it is, so mark it directly.
+</span><span class="c1"></span>		<span class="nx">i</span> <span class="o">:=</span> <span class="nf">chunkIndex</span><span class="p">(</span><span class="nx">base</span><span class="p">)</span>
+		<span class="nx">s</span><span class="p">.</span><span class="nf">chunkOf</span><span class="p">(</span><span class="nx">i</span><span class="p">).</span><span class="nf">free1</span><span class="p">(</span><span class="nf">chunkPageIndex</span><span class="p">(</span><span class="nx">base</span><span class="p">))</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="c1">// Slow path: we&#39;re clearing more bits so we may need to iterate.
+</span><span class="c1"></span>		<span class="nx">sc</span><span class="p">,</span> <span class="nx">ec</span> <span class="o">:=</span> <span class="nf">chunkIndex</span><span class="p">(</span><span class="nx">base</span><span class="p">),</span> <span class="nf">chunkIndex</span><span class="p">(</span><span class="nx">limit</span><span class="p">)</span>
+		<span class="nx">si</span><span class="p">,</span> <span class="nx">ei</span> <span class="o">:=</span> <span class="nf">chunkPageIndex</span><span class="p">(</span><span class="nx">base</span><span class="p">),</span> <span class="nf">chunkPageIndex</span><span class="p">(</span><span class="nx">limit</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="nx">sc</span> <span class="o">==</span> <span class="nx">ec</span> <span class="p">{</span>
+			<span class="c1">// The range doesn&#39;t cross any chunk boundaries.
+</span><span class="c1"></span>			<span class="nx">s</span><span class="p">.</span><span class="nf">chunkOf</span><span class="p">(</span><span class="nx">sc</span><span class="p">).</span><span class="nf">free</span><span class="p">(</span><span class="nx">si</span><span class="p">,</span> <span class="nx">ei</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="nx">si</span><span class="p">)</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="c1">// The range crosses at least one chunk boundary.
+</span><span class="c1"></span>			<span class="nx">s</span><span class="p">.</span><span class="nf">chunkOf</span><span class="p">(</span><span class="nx">sc</span><span class="p">).</span><span class="nf">free</span><span class="p">(</span><span class="nx">si</span><span class="p">,</span> <span class="nx">pallocChunkPages</span><span class="o">-</span><span class="nx">si</span><span class="p">)</span>
+			<span class="k">for</span> <span class="nx">c</span> <span class="o">:=</span> <span class="nx">sc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">c</span> <span class="p">&lt;</span> <span class="nx">ec</span><span class="p">;</span> <span class="nx">c</span><span class="o">++</span> <span class="p">{</span>
+				<span class="nx">s</span><span class="p">.</span><span class="nf">chunkOf</span><span class="p">(</span><span class="nx">c</span><span class="p">).</span><span class="nf">freeAll</span><span class="p">()</span>
+			<span class="p">}</span>
+			<span class="nx">s</span><span class="p">.</span><span class="nf">chunkOf</span><span class="p">(</span><span class="nx">ec</span><span class="p">).</span><span class="nf">free</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">ei</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="nx">s</span><span class="p">.</span><span class="nf">update</span><span class="p">(</span><span class="nx">base</span><span class="p">,</span> <span class="nx">npages</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>清理操作将对应的 page 标记为未使用的，这样之后新的 mspan 创建时可以复用。</p>
 <h4 id="455-mheap-扩容">4.5.5 mheap 扩容</h4>
 <p>扩容的逻辑更加复杂，目前先不细致的分析了。</p>
 <p>这里可以看一下申请内存使用的方式：</p>
@@ -2432,23 +2912,23 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">sysReserve</span><span class="p">(</span><span class="nx">v</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">uintptr</span><span class="p">)</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span> <span class="p">{</span>
-        <span class="nx">p</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">mmap</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">_PROT_NONE</span><span class="p">,</span> <span class="nx">_MAP_ANON</span><span class="p">|</span><span class="nx">_MAP_PRIVATE</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
-                <span class="k">return</span> <span class="kc">nil</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="nx">p</span>
+	<span class="nx">p</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">mmap</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">_PROT_NONE</span><span class="p">,</span> <span class="nx">_MAP_ANON</span><span class="p">|</span><span class="nx">_MAP_PRIVATE</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">p</span>
 <span class="p">}</span>
 
 <span class="kd">func</span> <span class="nf">sysMap</span><span class="p">(</span><span class="nx">v</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">sysStat</span> <span class="o">*</span><span class="kt">uint64</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nf">mSysStatInc</span><span class="p">(</span><span class="nx">sysStat</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+	<span class="nf">mSysStatInc</span><span class="p">(</span><span class="nx">sysStat</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
 
-        <span class="nx">p</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">mmap</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">_PROT_READ</span><span class="p">|</span><span class="nx">_PROT_WRITE</span><span class="p">,</span> <span class="nx">_MAP_ANON</span><span class="p">|</span><span class="nx">_MAP_FIXED</span><span class="p">|</span><span class="nx">_MAP_PRIVATE</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">_ENOMEM</span> <span class="p">{</span>
-                <span class="nf">throw</span><span class="p">(</span><span class="s">&#34;runtime: out of memory&#34;</span><span class="p">)</span>
-        <span class="p">}</span>
-        <span class="k">if</span> <span class="nx">p</span> <span class="o">!=</span> <span class="nx">v</span> <span class="o">||</span> <span class="nx">err</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
-                <span class="nf">throw</span><span class="p">(</span><span class="s">&#34;runtime: cannot map pages in arena address space&#34;</span><span class="p">)</span>
-        <span class="p">}</span>
+	<span class="nx">p</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">mmap</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">_PROT_READ</span><span class="p">|</span><span class="nx">_PROT_WRITE</span><span class="p">,</span> <span class="nx">_MAP_ANON</span><span class="p">|</span><span class="nx">_MAP_FIXED</span><span class="p">|</span><span class="nx">_MAP_PRIVATE</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">_ENOMEM</span> <span class="p">{</span>
+		<span class="nf">throw</span><span class="p">(</span><span class="s">&#34;runtime: out of memory&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">p</span> <span class="o">!=</span> <span class="nx">v</span> <span class="o">||</span> <span class="nx">err</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nf">throw</span><span class="p">(</span><span class="s">&#34;runtime: cannot map pages in arena address space&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
@@ -2486,7 +2966,7 @@
 </ul>
 <p>所有的分配逻辑在 <code>mallocgc()</code> 开始分叉，下面分别看下具体的分配代码。</p>
 <h3 id="51-tiny-object-分配">5.1 tiny object 分配</h3>
-<p>tiny object 分配的代码在 <a href="#mcache-alloc_mspan" rel=""><strong>mspan 分配</strong></a>中已经说明了，这里再理一下大致步骤：</p>
+<p>tiny object 分配的代码在 <a href="#431-mspan-%e7%9a%84%e5%88%86%e9%85%8d" rel=""><strong>mspan 分配</strong></a>中已经说明了，这里再理一下大致步骤：</p>
 <ol>
 <li>不包含指针(noscan)并且小于 16B 的对象才走微小对象分配；</li>
 <li>tiny object 分配仅仅是增大 mcache.tinyoffset 的值，所以是不同大小 tiny object 挤压在一个 mspan 中；</li>
@@ -2668,9 +3148,142 @@
 <li>large object 会切换到系统栈，然后走 mheap 申请；</li>
 <li>计算对象需要的 page 数量，然后调用 mheap.alloc() 申请空闲的 mspan；</li>
 </ol>
-<p>而 <a href="#mheap-alloc_mspan" rel=""><strong>mheap.alloc()</strong></a> 就是 mcentral 申请 mspan 的方法。</p>
+<p>而 <a href="#453-mheap-%e5%88%86%e9%85%8d-mspan" rel=""><strong>mheap.alloc()</strong></a> 就是 mcentral 申请 mspan 的方法。</p>
+<h2 id="6-内存的释放">6 内存的释放</h2>
+<h3 id="61-释放操作">6.1 释放操作</h3>
+<p>前面 <a href="#454-mheap-%e5%9b%9e%e6%94%b6-mspan" rel=""><strong>4.5.4 mheap 回收 mspan</strong></a> 中看到，mheap 不会真正的释放内存，而是等待其被复用。但是不可能一直扩展内存，而不释放。</p>
+<p>释放内存由 <code>mheap.page</code> 的 <code>pageAlloc.scavenge()</code> 函数负责（runtime/mgcscavenge.go）:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// scavenge scavenges nbytes worth of free pages, starting with the
+</span><span class="c1">// highest address first. Successive calls continue from where it left
+</span><span class="c1">// off until the heap is exhausted. Call scavengeStartGen to bring it
+</span><span class="c1">// back to the top of the heap.
+</span><span class="c1">//
+</span><span class="c1">// Returns the amount of memory scavenged in bytes.
+</span><span class="c1">//
+</span><span class="c1">// s.mheapLock must be held, but may be temporarily released if
+</span><span class="c1">// mayUnlock == true.
+</span><span class="c1">//
+</span><span class="c1">// Must run on the system stack because s.mheapLock must be held.
+</span><span class="c1">//
+</span><span class="c1">//go:systemstack
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">pageAlloc</span><span class="p">)</span> <span class="nf">scavenge</span><span class="p">(</span><span class="nx">nbytes</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">mayUnlock</span> <span class="kt">bool</span><span class="p">)</span> <span class="kt">uintptr</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="p">(</span>
+		<span class="nx">addrs</span> <span class="nx">addrRange</span>
+		<span class="nx">gen</span>   <span class="kt">uint32</span>
+	<span class="p">)</span>
+	<span class="nx">released</span> <span class="o">:=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+	<span class="k">for</span> <span class="nx">released</span> <span class="p">&lt;</span> <span class="nx">nbytes</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">addrs</span><span class="p">.</span><span class="nf">size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+			<span class="c1">// 通过标记选出一部分需要释放的内存区域
+</span><span class="c1"></span>			<span class="k">if</span> <span class="nx">addrs</span><span class="p">,</span> <span class="nx">gen</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">scavengeReserve</span><span class="p">();</span> <span class="nx">addrs</span><span class="p">.</span><span class="nf">size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+				<span class="k">break</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="c1">// 释放内存
+</span><span class="c1"></span>		<span class="nx">r</span><span class="p">,</span> <span class="nx">a</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">scavengeOne</span><span class="p">(</span><span class="nx">addrs</span><span class="p">,</span> <span class="nx">nbytes</span><span class="o">-</span><span class="nx">released</span><span class="p">,</span> <span class="nx">mayUnlock</span><span class="p">)</span>
+		<span class="nx">released</span> <span class="o">+=</span> <span class="nx">r</span>
+		<span class="nx">addrs</span> <span class="p">=</span> <span class="nx">a</span>
+	<span class="p">}</span>
+	<span class="c1">// Only unreserve the space which hasn&#39;t been scavenged or searched
+</span><span class="c1"></span>	<span class="c1">// to ensure we always make progress.
+</span><span class="c1"></span>	<span class="nx">s</span><span class="p">.</span><span class="nf">scavengeUnreserve</span><span class="p">(</span><span class="nx">addrs</span><span class="p">,</span> <span class="nx">gen</span><span class="p">)</span>
+	<span class="k">return</span> <span class="nx">released</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>释放的流程比较复杂，没有研究过看不懂，目前知道下最后会调用 <code>sysUnused()</code> 函数释放（runtime/mem_linux.go）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">sysUnused</span><span class="p">(</span><span class="nx">v</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">uintptr</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// huge page 处理
+</span><span class="c1"></span>	<span class="o">...</span>
+
+	<span class="kd">var</span> <span class="nx">advise</span> <span class="kt">uint32</span>
+	<span class="k">if</span> <span class="nx">debug</span><span class="p">.</span><span class="nx">madvdontneed</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nx">advise</span> <span class="p">=</span> <span class="nx">_MADV_DONTNEED</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">advise</span> <span class="p">=</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">adviseUnused</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">errno</span> <span class="o">:=</span> <span class="nf">madvise</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nb">int32</span><span class="p">(</span><span class="nx">advise</span><span class="p">));</span> <span class="nx">advise</span> <span class="o">==</span> <span class="nx">_MADV_FREE</span> <span class="o">&amp;&amp;</span> <span class="nx">errno</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="c1">// MADV_FREE was added in Linux 4.5. Fall back to MADV_DONTNEED if it is
+</span><span class="c1"></span>		<span class="c1">// not supported.
+</span><span class="c1"></span>		<span class="nx">atomic</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">adviseUnused</span><span class="p">,</span> <span class="nx">_MADV_DONTNEED</span><span class="p">)</span>
+		<span class="nf">madvise</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">_MADV_DONTNEED</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>通过系统调用 <strong><code>madvise()</code></strong> 告知操作系统某段内存不适用，建议内核回收对应物理内存。<br>
+当然，内核在物理内存充足情况下可能不会实际回收内存，以减少无谓的回收消耗。<br>
+而当再次使用此内存块时，会引发缺页异常，内核会自动重新关联物理内存页。</li>
+</ul>
+<h3 id="62-释放时机">6.2 释放时机</h3>
+<p><code>scavenge()</code> 有两个地方会被调用:</p>
+<ol>
+<li><strong>周期性的触发</strong>（每 5 min?）；</li>
+<li><strong>mheap 扩容时</strong> 或者 <strong>调用 <a href="https://pkg.go.dev/runtime/debug#FreeOSMemory" target="_blank" rel="noopener noreffer">runtime/debug.FreeOSMemory()</a> 主动触发</strong>；</li>
+</ol>
 <h2 id="参考">参考</h2>
-<p><a id="reference"></a></p>
 <ul>
 <li><a href="https://github.com/qyuhen/book" target="_blank" rel="noopener noreffer">《Golang 学习笔记》</a></li>
 <li><a href="https://medium.com/@ankur_anand/a-visual-guide-to-golang-memory-allocator-from-ground-up-e132258453ed" target="_blank" rel="noopener noreffer">Blog：Go 内存管理可视化</a></li>
@@ -2702,7 +3315,7 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/" class="prev" rel="prev" title="KVM 虚拟机的存储与网络"><i class="fas fa-angle-left fa-fw"></i>KVM 虚拟机的存储与网络</a>
+    <div class="post-nav"><a href="/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/" class="prev" rel="prev" title="KVM 虚拟机的存储与网络总结"><i class="fas fa-angle-left fa-fw"></i>KVM 虚拟机的存储与网络总结</a>
             <a href="/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/" class="next" rel="next" title="Go 垃圾收集总结">Go 垃圾收集总结<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 <div id="comments"><div id="valine" class="comment"></div><noscript>

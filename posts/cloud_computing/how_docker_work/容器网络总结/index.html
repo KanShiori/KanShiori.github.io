@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/how_docker_work\/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "docker, container","wordcount":  5423 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "docker, container","wordcount":  5491 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/how_docker_work\/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93\/","datePublished": "2020-11-06T20:40:51+08:00","dateModified": "2020-11-06T20:40:51+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">容器网络总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/docker-%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/"><i class="far fa-folder fa-fw"></i>Docker 原理总结</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-06">2020-11-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 5423 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-06">2020-11-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 5491 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 11 分钟&nbsp;<span id="/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="容器网络总结">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -162,7 +162,11 @@
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><h2 id="1-概览">1 概览</h2>
+            </div><div class="content" id="content"><blockquote>
+<p><strong>总结系列的文章</strong>是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。</p>
+</blockquote>
+<p>本文是对自己使用过的 docker 使用的网络模式的原理的总结。</p>
+<h2 id="1-概览">1 概览</h2>
 <p>docker 容器网络目前包含 5 中模式，包括：</p>
 <ul>
 <li><strong><code>bridge</code></strong>：默认的网络模式，使用 bridge 虚拟网卡 + iptables 实现一个内地内网，所有容器都处于该内网内，并且可以相互访问；</li>
@@ -305,8 +309,8 @@ $ ls -lhi /run/docker/netns/9779108cb6b0
     </div>
 <h3 id="25-macvlan-虚拟网络设备">2.5 macvlan 虚拟网络设备</h3>
 <p><strong><code>macvlan 网络设备</code></strong> 可以有 mac 地址与 ip 地址，用于将 net namespace 连接到宿主机的物理网络中，相当于，容器直接连接着物理网络。</p>
-<p>macvlan 网络设备有着多种的模式，包括：bridge、private 等，这影响着各个 macvlan 网络设备之间的通信。
-更过 macvlan 网络设备推荐文章：<a href="https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/" target="_blank" rel="noopener noreffer">Linux interfaces for virtual networking</a></p>
+<p>macvlan 网络设备有着多种的模式，包括：bridge、private 等，这影响着各个 macvlan 网络设备之间的通信。</p>
+<p>更多 macvlan 网络设备推荐文章：<a href="https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/" target="_blank" rel="noopener noreffer">Linux interfaces for virtual networking</a></p>
 <h2 id="3-bridge-网络">3 Bridge 网络</h2>
 <h3 id="31-创建删除-bridge-网络">3.1 创建/删除 Bridge 网络</h3>
 <h4 id="1-创建网络">(1) 创建网络</h4>

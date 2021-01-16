@@ -6,7 +6,7 @@
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
         <title>Go 垃圾收集总结 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Go 垃圾收集总结" />
-<meta property="og:description" content="1 背景知识 1.1 术语 垃圾回收算法有一些基本的术语，首先需要知道对应的含义： Mutator：具有“改变对象”的意思，GC 中就是改动对象间引用关系的" />
+<meta property="og:description" content="总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 垃圾收集的一个总结，基本内容来源于网络的学习" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/" />
 <meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -16,7 +16,7 @@
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
 <meta name="twitter:title" content="Go 垃圾收集总结"/>
-<meta name="twitter:description" content="1 背景知识 1.1 术语 垃圾回收算法有一些基本的术语，首先需要知道对应的含义： Mutator：具有“改变对象”的意思，GC 中就是改动对象间引用关系的"/>
+<meta name="twitter:description" content="总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 垃圾收集的一个总结，基本内容来源于网络的学习"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
 <meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/" /><link rel="prev" href="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  4568 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  7471 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93\/","datePublished": "2021-01-14T20:40:47+08:00","dateModified": "2021-01-14T20:40:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Go 垃圾收集总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw"></i>Golang</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-14">2021-01-14</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 4568 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 10 分钟&nbsp;<span id="/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Go 垃圾收集总结">
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-14">2021-01-14</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 7471 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 15 分钟&nbsp;<span id="/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Go 垃圾收集总结">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
@@ -133,13 +133,16 @@
       <ul>
         <li><a href="#11-术语">1.1 术语</a></li>
         <li><a href="#12-三色标记算法">1.2 三色标记算法</a></li>
-        <li><a href="#13-屏障技术">1.3 屏障技术</a></li>
-        <li><a href="#131-插入写屏障">1.3.1 插入写屏障</a></li>
-        <li><a href="#132-删除写屏障">1.3.2 删除写屏障</a></li>
-        <li><a href="#133-go-中的屏障">1.3.3 Go 中的屏障</a></li>
+        <li><a href="#13-屏障技术">1.3 屏障技术</a>
+          <ul>
+            <li><a href="#131-插入写屏障">1.3.1 插入写屏障</a></li>
+            <li><a href="#132-删除写屏障">1.3.2 删除写屏障</a></li>
+            <li><a href="#133-go-中的屏障">1.3.3 Go 中的屏障</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
-    <li><a href="#go-中的三色标记算法">Go 中的三色标记算法</a>
+    <li><a href="#2-三色标记算法实现">2 三色标记算法实现</a>
       <ul>
         <li><a href="#21-标记">2.1 标记</a>
           <ul>
@@ -155,9 +158,30 @@
         <li><a href="#22-写屏障">2.2 写屏障</a></li>
       </ul>
     </li>
+    <li><a href="#3-内存清理">3 内存清理</a>
+      <ul>
+        <li><a href="#31-阻塞清理">3.1 阻塞清理</a></li>
+        <li><a href="#32-并发清理">3.2 并发清理</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-标记流程">4 标记流程</a>
+      <ul>
+        <li><a href="#41-gc-触发">4.1 GC 触发</a></li>
+        <li><a href="#42-gc-开始">4.2 GC 开始</a></li>
+        <li><a href="#43-标记结束">4.3 标记结束</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+    <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><h2 id="1-背景知识">1 背景知识</h2>
+            </div><div class="content" id="content"><blockquote>
+<p><strong>总结系列的文章</strong>是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。</p>
+</blockquote>
+<p>本文是对 Golang 垃圾收集的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。</p>
+<p>所以学习的书籍与文章见 <a href="#%e5%8f%82%e8%80%83" rel=""><strong>参考</strong></a>。</p>
+<p>下面代码都是基于 go 1.15.6。</p>
+<h2 id="1-背景知识">1 背景知识</h2>
 <h3 id="11-术语">1.1 术语</h3>
 <p>垃圾回收算法有一些基本的术语，首先需要知道对应的含义：</p>
 <ul>
@@ -167,19 +191,19 @@
 </ul>
 <h3 id="12-三色标记算法">1.2 三色标记算法</h3>
 <p>三色标记算法是 GC <strong><ruby>标记清除算法<rt>Mark-Sweep</rt></ruby></strong> 的一种，也是 Golang 中使用的算法。
-<div class="details admonition note open">
+<div class="details admonition tip open">
         <div class="details-summary admonition-title">
-            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+            <i class="icon fas fa-lightbulb fa-fw"></i>推荐阅读<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">推荐阅读：</div>
+            <div class="admonition-content">推荐阅读文章，写的非常详细：<a href="https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-garbage-collector/#72-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8" target="_blank" rel="noopener noreffer"><strong>垃圾收集器</strong></a></div>
         </div>
     </div></p>
 <p>首先，三色标记算法的最基本逻辑为：</p>
 <ol>
 <li>标记的最开始，<strong>所有对象默认为<code>白色</code></strong>；</li>
 <li>将 <strong><code>根对象</code>标记为灰色</strong>，放入灰色集合；</li>
-<li>从<code>灰色集合</code>中取出灰色对象，将其<strong>子对象标记为<code>灰色</code></strong>，加入灰色集合，该灰色对象标记为黑色；</li>
+<li>从 <strong><code>灰色集合</code></strong> 中取出灰色对象，将其<strong>子对象标记为<code>灰色</code></strong>，加入灰色集合，该灰色对象标记为黑色；</li>
 <li>重复第 3 步，直到灰色集合为空；</li>
 <li><strong>清理所有的白色对象</strong>；</li>
 </ol>
@@ -198,7 +222,7 @@
 </p>
 <p>但是，仅仅是普通的三色标记算法要求执行时，Mutator 不能同时运行。因为如果 Mutator 并行时，某个扫描过的结点的引用关系变化，就可能导致<strong><ruby>悬挂指针<rt>dangling pointer</rt></ruby></strong>问题。</p>
 <p>例如，上图中第 3 步将 A 指向 D，那么 D 还是无法被标记，被错误回收。</p>
-<p>而想要让 Mutator 同时运行时，标记的结果还保持正确，那么每个时刻标记的结果要满足<strong><ruby>三色不变性<rt>Tri-color invariant</rt></ruby></strong></p>
+<p>而想要让 Mutator 同时运行时，标记的结果还保持正确，那么每个时刻标记的结果要满足<strong><ruby>三色不变性<rt>Tri-color invariant</rt></ruby></strong> <a id="三色不变性"></a></p>
 <ul>
 <li><strong><code>强三色不变性</code></strong>：<strong>黑色对象不会指向白色对象，只会指向灰色对象或者黑色对象</strong>。<br>
 因为黑色对象不会再被扫描，如果黑色对象指向白色对象，那么肯定该白色对象会被错误回收。<br>
@@ -217,7 +241,7 @@
             <div class="admonition-content">这里的屏障技术似乎和我知道的 CPU 的屏障技术含义不太类似，<strong>更像是<code>回调函数</code></strong>，也挺困惑</div>
         </div>
     </div></p>
-<h3 id="131-插入写屏障">1.3.1 插入写屏障</h3>
+<h4 id="131-插入写屏障">1.3.1 插入写屏障</h4>
 <p>Dijkstra 提出的 <strong><code>插入写屏障</code></strong>，在更新对象指针时，将其被指向的对象重新加入扫描集合（三色标记中也就是变为灰色），这样接下来还是能够被扫描。
 
 
@@ -237,7 +261,7 @@
 <li>对象指针变动时，没有考虑旧的指针引用。例如 <code>*field</code> 原来的对象 oldobj 已经扫描成黑色了，那么 <code>*field = newobj</code> 变动后，可能 oldobj 变为垃圾对象，只有等到下一轮标记时才会被回收。</li>
 <li>TODO</li>
 </ul>
-<h3 id="132-删除写屏障">1.3.2 删除写屏障</h3>
+<h4 id="132-删除写屏障">1.3.2 删除写屏障</h4>
 <p>Yuasa 提出的 <strong><code>删除写屏障</code></strong>，让老对象的引用被删除时，将白色的老对象涂成灰色，这样删除写屏障就可以保证弱三色不变性。
 
 
@@ -251,7 +275,7 @@
 
 
 </p>
-<h3 id="133-go-中的屏障">1.3.3 Go 中的屏障</h3>
+<h4 id="133-go-中的屏障">1.3.3 Go 中的屏障</h4>
 <p>Go 中使用 <strong><code>混合写屏障</code></strong>，即插入写屏障与删除写屏障都开启，并且在标记阶段开始后，将创建的所有新对象都标记为黑色，防止新分配的对象被错误的回收。</p>
 <p>具体操作为：</p>
 <ol>
@@ -260,7 +284,7 @@
 <li>被删除的对象标记为灰色。</li>
 <li>被添加的对象标记为灰色。</li>
 </ol>
-<h2 id="go-中的三色标记算法">Go 中的三色标记算法</h2>
+<h2 id="2-三色标记算法实现">2 三色标记算法实现</h2>
 <p>我们先不看整个的流程实现，而是从核心的标记算法入手。</p>
 <h3 id="21-标记">2.1 标记</h3>
 <h4 id="211-并发标记框架">2.1.1 并发标记框架</h4>
@@ -372,7 +396,7 @@
 <li>黑色对象 -&gt; 不在 gcWork 中，但是被 mark 的 object；</li>
 <li>白色对象 -&gt; 不在 gcWork 中，没有被 mark 的 object；</li>
 </ul>
-<p>每个 P 会对应一个标记使用的 groutine，执行 <code>gcDrain()</code> 函数（runtime/mgcmark.go）：</p>
+<p>每个 P 会对应一个标记使用的 groutine，执行 <strong><code>gcDrain()</code></strong> 函数（runtime/mgcmark.go）：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">  1
@@ -734,7 +758,7 @@
             <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">在 <a href="" rel=""><strong>Go 内存管理总结</strong></a> 中说过，<strong>任意的内存地址，都可以通过公式得到其对应的 mspan 的地址</strong>，这也可以用于判断一个地址是否是存在与 mheap 上的。</div>
+            <div class="admonition-content">在 <a href="https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#451-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80" target="_blank" rel="noopener noreffer"><strong>Go 内存管理总结</strong></a> 中说过，<strong>任意的内存地址，都可以通过公式得到其对应的 mspan 的地址</strong>，这也可以用于判断一个地址是否是存在与 mheap 上的。</div>
         </div>
     </div></p>
 <p>所有扫描到的 object 地址通过 <code>greyobject()</code> 函数进行 mark 并放入 gcWork。</p>
@@ -884,7 +908,7 @@
             <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">在 <a href="" rel=""><strong>Go 内存管理总结</strong></a> 中看到，<strong>对于 heap 中每 8 个字节，通过存在对应 bit 位标识是否指针，以及是否被 mark</strong>；</div>
+            <div class="admonition-content">在 <a href="https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#451-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80" target="_blank" rel="noopener noreffer"><strong>Go 内存管理总结</strong></a> 中看到，<strong>对于 heap 中每 8 个字节，通过存在对应 bit 位标识是否指针，以及是否被 mark</strong>；</div>
         </div>
     </div></p>
 <p><code>greyobject()</code> 用于将该 object 标记，并放入 gcWork 中：</p>
@@ -997,6 +1021,692 @@
 <li>被添加的对象标记为灰色。</li>
 </ol>
 <p>当开始 GC 时，全局变量 <code>runtime.writeBarrier.enabled</code> 变为 true，所有的写操作都会经过 <code>writebarrier()</code> 的操作。</p>
+<h2 id="3-内存清理">3 内存清理</h2>
+<p>内存清理与标记就是完全分隔的逻辑了，通过判断对象是否被标记就可决定是否将其内存回收。</p>
+<p><strong><code>gcSweep()</code></strong> 函数用于在 GC 标记结束后执行清理（src/runtime/mgc.go）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// gcSweep must be called on the system stack because it acquires the heap
+</span><span class="c1">// lock. See mheap for details.
+</span><span class="c1">//
+</span><span class="c1">// The world must be stopped.
+</span><span class="c1">//
+</span><span class="c1">//go:systemstack
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">gcSweep</span><span class="p">(</span><span class="nx">mode</span> <span class="nx">gcMode</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+        <span class="c1">// 关键的 sweepgen 变量
+</span><span class="c1"></span>        <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepgen</span> <span class="o">+=</span> <span class="mi">2</span>
+        <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepdone</span> <span class="p">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="p">!</span><span class="nx">go115NewMCentralImpl</span> <span class="o">&amp;&amp;</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepSpans</span><span class="p">[</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepgen</span><span class="o">/</span><span class="mi">2</span><span class="o">%</span><span class="mi">2</span><span class="p">].</span><span class="nx">index</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="c1">// We should have drained this list during the last
+</span><span class="c1"></span>                <span class="c1">// sweep phase. We certainly need to start this phase
+</span><span class="c1"></span>                <span class="c1">// with an empty swept list.
+</span><span class="c1"></span>                <span class="nf">throw</span><span class="p">(</span><span class="s">&#34;non-empty swept list&#34;</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="nx">mheap_</span><span class="p">.</span><span class="nx">pagesSwept</span> <span class="p">=</span> <span class="mi">0</span>
+        <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepArenas</span> <span class="p">=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">allArenas</span>
+        <span class="nx">mheap_</span><span class="p">.</span><span class="nx">reclaimIndex</span> <span class="p">=</span> <span class="mi">0</span>
+        <span class="nx">mheap_</span><span class="p">.</span><span class="nx">reclaimCredit</span> <span class="p">=</span> <span class="mi">0</span>
+        <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nx">go115NewMCentralImpl</span> <span class="p">{</span>
+                <span class="nx">sweep</span><span class="p">.</span><span class="nx">centralIndex</span><span class="p">.</span><span class="nf">clear</span><span class="p">()</span>
+        <span class="p">}</span>
+
+	    <span class="c1">// 阻塞清理
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">!</span><span class="nx">_ConcurrentSweep</span> <span class="o">||</span> <span class="nx">mode</span> <span class="o">==</span> <span class="nx">gcForceBlockMode</span> <span class="p">{</span>
+                <span class="c1">// Special case synchronous sweep.
+</span><span class="c1"></span>                <span class="c1">// Record that no proportional sweeping has to happen.
+</span><span class="c1"></span>                <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+                <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepPagesPerByte</span> <span class="p">=</span> <span class="mi">0</span>
+                <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+                
+                <span class="c1">// 清理 span !
+</span><span class="c1"></span>                <span class="c1">// Sweep all spans eagerly.
+</span><span class="c1"></span>                <span class="k">for</span> <span class="nf">sweepone</span><span class="p">()</span> <span class="o">!=</span> <span class="p">^</span><span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">sweep</span><span class="p">.</span><span class="nx">npausesweep</span><span class="o">++</span>
+                <span class="p">}</span>
+                
+                <span class="c1">// Free workbufs eagerly.
+</span><span class="c1"></span>                <span class="nf">prepareFreeWorkbufs</span><span class="p">()</span>
+                <span class="k">for</span> <span class="nf">freeSomeWbufs</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+                <span class="p">}</span>
+                <span class="c1">// All &#34;free&#34; events for this mark/sweep cycle have
+</span><span class="c1"></span>                <span class="c1">// now happened, so we can make this profile cycle
+</span><span class="c1"></span>                <span class="c1">// available immediately.
+</span><span class="c1"></span>                <span class="nf">mProf_NextCycle</span><span class="p">()</span>
+                <span class="nf">mProf_Flush</span><span class="p">()</span>
+                <span class="k">return</span>
+        <span class="p">}</span>
+ 
+	      <span class="c1">// 后台清理（并发清理）
+</span><span class="c1"></span>        <span class="c1">// Background sweep.
+</span><span class="c1"></span>        <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">sweep</span><span class="p">.</span><span class="nx">parked</span> <span class="p">{</span>
+                <span class="nx">sweep</span><span class="p">.</span><span class="nx">parked</span> <span class="p">=</span> <span class="kc">false</span>
+                <span class="nf">ready</span><span class="p">(</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">g</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>不断执行 <code>sweepone()</code> 来清理 mspan；</li>
+<li>启动后台并发清理；</li>
+</ol>
+<h3 id="31-阻塞清理">3.1 阻塞清理</h3>
+<p>通过不断执行 <code>sweepone()</code> 来进行 mspan 的清理，<code>sweepone()</code> 从 heap 得到一个 mspan 并清理（src/runtime/mgcsweep.go）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// sweepone sweeps some unswept heap span and returns the number of pages returned
+</span><span class="c1">// to the heap, or ^uintptr(0) if there was nothing to sweep.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">sweepone</span><span class="p">()</span> <span class="kt">uintptr</span> <span class="p">{</span>
+  <span class="err">…</span>
+  
+  <span class="c1">// 得到一个被清理的 mspan
+</span><span class="c1"></span>  <span class="kd">var</span> <span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span>
+  <span class="nx">sg</span> <span class="o">:=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepgen</span>
+  <span class="k">for</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="nx">go115NewMCentralImpl</span> <span class="p">{</span>
+                  <span class="nx">s</span> <span class="p">=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nf">nextSpanForSweep</span><span class="p">()</span>
+          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                  <span class="nx">s</span> <span class="p">=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepSpans</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="nx">sg</span><span class="o">/</span><span class="mi">2</span><span class="o">%</span><span class="mi">2</span><span class="p">].</span><span class="nf">pop</span><span class="p">()</span>
+          <span class="p">}</span>
+          <span class="k">if</span> <span class="nx">s</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+                  <span class="nx">atomic</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepdone</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                  <span class="k">break</span>
+          <span class="p">}</span>
+          <span class="c1">// 设置标记
+</span><span class="c1"></span>          <span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span> <span class="o">==</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">Cas</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">,</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                  <span class="k">break</span>
+          <span class="p">}</span>
+  <span class="p">}</span> 
+  <span class="c1">// 清理 mspan
+</span><span class="c1"></span>  <span class="nx">npages</span> <span class="o">:=</span> <span class="p">^</span><span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+  <span class="k">if</span> <span class="nx">s</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+          <span class="nx">npages</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">npages</span>
+          <span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nf">sweep</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+                  <span class="c1">// Whole span was freed. Count it toward the
+</span><span class="c1"></span>                  <span class="c1">// page reclaimer credit since these pages can
+</span><span class="c1"></span>                  <span class="c1">// now be used for span allocation.
+</span><span class="c1"></span>                  <span class="nx">atomic</span><span class="p">.</span><span class="nf">Xadduintptr</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">reclaimCredit</span><span class="p">,</span> <span class="nx">npages</span><span class="p">)</span>
+          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                  <span class="c1">// Span is still in-use, so this returned no
+</span><span class="c1"></span>                  <span class="c1">// pages to the heap and the span needs to
+</span><span class="c1"></span>                  <span class="c1">// move to the swept in-use list.
+</span><span class="c1"></span>                  <span class="nx">npages</span> <span class="p">=</span> <span class="mi">0</span>
+          <span class="p">}</span>
+  <span class="p">}</span> 
+  <span class="err">…</span>
+  
+  <span class="k">return</span> <span class="nx">npages</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>最终的回收工作靠 <code>mspan.sweep()</code> 完成，这给在 <a href="https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#451-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80" target="_blank" rel="noopener noreffer"><strong>Go 内存管理总结</strong></a> 中可以看到具体实现，大致就是将 GC 后没有被 mark 的 object 记录为可用，以后续申请使用覆盖。如果整个 mspan 变回空，就由 mheap 回收其对应的 page。</p>
+<h3 id="32-并发清理">3.2 并发清理</h3>
+<p>并发清理就是一个死循环，被唤醒后开始执行清理任务。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">bgsweep</span><span class="p">(</span><span class="nx">c</span> <span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">sweep</span><span class="p">.</span><span class="nx">g</span> <span class="p">=</span> <span class="nf">getg</span><span class="p">()</span>
+
+	<span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">,</span> <span class="nx">lockRankSweep</span><span class="p">)</span>
+	<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+	<span class="nx">sweep</span><span class="p">.</span><span class="nx">parked</span> <span class="p">=</span> <span class="kc">true</span>
+	<span class="nx">c</span> <span class="o">&lt;-</span> <span class="mi">1</span>
+	<span class="nf">goparkunlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">,</span> <span class="nx">waitReasonGCSweepWait</span><span class="p">,</span> <span class="nx">traceEvGoBlock</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="c1">// 依旧通过 sweepone() 清理
+</span><span class="c1"></span>		<span class="k">for</span> <span class="nf">sweepone</span><span class="p">()</span> <span class="o">!=</span> <span class="p">^</span><span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">sweep</span><span class="p">.</span><span class="nx">nbgsweep</span><span class="o">++</span>
+			<span class="nf">Gosched</span><span class="p">()</span>
+		<span class="p">}</span>
+		<span class="k">for</span> <span class="nf">freeSomeWbufs</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nf">Gosched</span><span class="p">()</span>
+		<span class="p">}</span>
+		<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="k">if</span> <span class="p">!</span><span class="nf">isSweepDone</span><span class="p">()</span> <span class="p">{</span>
+			<span class="c1">// This can happen if a GC runs between
+</span><span class="c1"></span>			<span class="c1">// gosweepone returning ^0 above
+</span><span class="c1"></span>			<span class="c1">// and the lock being acquired.
+</span><span class="c1"></span>			<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+			<span class="k">continue</span>
+		<span class="p">}</span>
+		
+		<span class="c1">// 等待唤醒
+</span><span class="c1"></span>		<span class="nx">sweep</span><span class="p">.</span><span class="nx">parked</span> <span class="p">=</span> <span class="kc">true</span>
+		<span class="nf">goparkunlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">,</span> <span class="nx">waitReasonGCSweepWait</span><span class="p">,</span> <span class="nx">traceEvGoBlock</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>依旧是通过不断执行 <code>sweepone()</code> 进行清理。</p>
+<h2 id="4-标记流程">4 标记流程</h2>
+<p>下面来看如何触发的 GC 以及 GC 的大致流程。</p>
+<h3 id="41-gc-触发">4.1 GC 触发</h3>
+<p>GC 有三个点会被触发：</p>
+<ol>
+<li>runtime 启动后会启动一个后台 gourtine，被唤醒后就会执行 GC，而<strong>唤醒操作由 sysmon 负责执行</strong>。<br>
+sysmon 会根据系统情况决定是否触发。</li>
+<li><strong>分配新 object 时</strong>（<a href="https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#52-object-%E5%88%86%E9%85%8D" target="_blank" rel="noopener noreffer"><strong>mallocgc() 函数</strong></a>），如果 mcache 需要重新刷新，或者是分配的是 large object，那么也会触发一次 GC。</li>
+<li>通过接口 <strong>runtime.GC() 主动触发</strong>。</li>
+</ol>
+<p>所有的触发都会使用 <code>gcTrigger.test()</code> 进行条件检测（runtime/mgc.go）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// test reports whether the trigger condition is satisfied, meaning
+</span><span class="c1">// that the exit condition for the _GCoff phase has been met. The exit
+</span><span class="c1">// condition should be tested when allocating.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="nx">gcTrigger</span><span class="p">)</span> <span class="nf">test</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">!</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">enablegc</span> <span class="o">||</span> <span class="nx">panicking</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">gcphase</span> <span class="o">!=</span> <span class="nx">_GCoff</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kc">false</span>
+        <span class="p">}</span>
+        <span class="k">switch</span> <span class="nx">t</span><span class="p">.</span><span class="nx">kind</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="nx">gcTriggerHeap</span><span class="p">:</span>
+                <span class="c1">// 由 heap 触发，也就是分配 object 时触发
+</span><span class="c1"></span>                <span class="c1">// Non-atomic access to heap_live for performance. If
+</span><span class="c1"></span>                <span class="c1">// we are going to trigger on this, this thread just
+</span><span class="c1"></span>                <span class="c1">// atomically wrote heap_live anyway and we&#39;ll see our
+</span><span class="c1"></span>                <span class="c1">// own write.
+</span><span class="c1"></span>                <span class="k">return</span> <span class="nx">memstats</span><span class="p">.</span><span class="nx">heap_live</span> <span class="o">&gt;=</span> <span class="nx">memstats</span><span class="p">.</span><span class="nx">gc_trigger</span>
+        <span class="k">case</span> <span class="nx">gcTriggerTime</span><span class="p">:</span>
+                <span class="c1">// 由 sysmon 周期性触发
+</span><span class="c1"></span>                <span class="k">if</span> <span class="nx">gcpercent</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
+                        <span class="k">return</span> <span class="kc">false</span>
+                <span class="p">}</span>
+                <span class="nx">lastgc</span> <span class="o">:=</span> <span class="nb">int64</span><span class="p">(</span><span class="nx">atomic</span><span class="p">.</span><span class="nf">Load64</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">last_gc_nanotime</span><span class="p">))</span>
+                <span class="k">return</span> <span class="nx">lastgc</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">now</span><span class="o">-</span><span class="nx">lastgc</span> <span class="p">&gt;</span> <span class="nx">forcegcperiod</span>
+        <span class="k">case</span> <span class="nx">gcTriggerCycle</span><span class="p">:</span>
+                <span class="c1">// 通过 runtime.GC() 主动触发
+</span><span class="c1"></span>                <span class="c1">// t.n &gt; work.cycles, but accounting for wraparound.
+</span><span class="c1"></span>                <span class="k">return</span> <span class="nb">int32</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">n</span><span class="o">-</span><span class="nx">work</span><span class="p">.</span><span class="nx">cycles</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对应的条件为：</p>
+<ol>
+<li>sysmon 周期性触发：<strong>触发间隔大于 2min</strong>；</li>
+<li>分配 object 触发：<strong>堆内存的分配达到控制计算的触发堆大小</strong>；</li>
+<li>runtime.GC() <strong>主动触发</strong>：当前没有正在 GC，则触发；</li>
+</ol>
+<h3 id="42-gc-开始">4.2 GC 开始</h3>
+<p>所有触发 GC 后调用的都是 <strong><code>gcStart()</code></strong> 函数（runtime/mgc.go）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// gcStart starts the GC. It transitions from _GCoff to _GCmark (if
+</span><span class="c1">// debug.gcstoptheworld == 0) or performs all of GC (if
+</span><span class="c1">// debug.gcstoptheworld != 0).
+</span><span class="c1">//
+</span><span class="c1">// This may return without performing this transition in some cases,
+</span><span class="c1">// such as when called on a system stack or with locks held.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">gcStart</span><span class="p">(</span><span class="nx">trigger</span> <span class="nx">gcTrigger</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Since this is called from malloc and malloc is called in
+</span><span class="c1"></span>  <span class="c1">// the guts of a number of libraries that might be holding
+</span><span class="c1"></span>  <span class="c1">// locks, don&#39;t attempt to start GC in non-preemptible or
+</span><span class="c1"></span>  <span class="c1">// potentially unstable situations.
+</span><span class="c1"></span>  <span class="nx">mp</span> <span class="o">:=</span> <span class="nf">acquirem</span><span class="p">()</span>
+  <span class="k">if</span> <span class="nx">gp</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">();</span> <span class="nx">gp</span> <span class="o">==</span> <span class="nx">mp</span><span class="p">.</span><span class="nx">g0</span> <span class="o">||</span> <span class="nx">mp</span><span class="p">.</span><span class="nx">locks</span> <span class="p">&gt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="nx">mp</span><span class="p">.</span><span class="nx">preemptoff</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+    <span class="nf">releasem</span><span class="p">(</span><span class="nx">mp</span><span class="p">)</span>
+    <span class="k">return</span>
+  <span class="p">}</span>
+  <span class="nf">releasem</span><span class="p">(</span><span class="nx">mp</span><span class="p">)</span>
+  <span class="nx">mp</span> <span class="p">=</span> <span class="kc">nil</span>
+
+  <span class="c1">// 再次验证是否条件，并不断调用 sweepone() 来完成上一次垃圾收集的收尾工作
+</span><span class="c1"></span>  <span class="c1">// Pick up the remaining unswept/not being swept spans concurrently
+</span><span class="c1"></span>  <span class="c1">//
+</span><span class="c1"></span>  <span class="c1">// This shouldn&#39;t happen if we&#39;re being invoked in background
+</span><span class="c1"></span>  <span class="c1">// mode since proportional sweep should have just finished
+</span><span class="c1"></span>  <span class="c1">// sweeping everything, but rounding errors, etc, may leave a
+</span><span class="c1"></span>  <span class="c1">// few spans unswept. In forced mode, this is necessary since
+</span><span class="c1"></span>  <span class="c1">// GC can be forced at any point in the sweeping cycle.
+</span><span class="c1"></span>  <span class="c1">//
+</span><span class="c1"></span>  <span class="c1">// We check the transition condition continuously here in case
+</span><span class="c1"></span>  <span class="c1">// this G gets delayed in to the next GC cycle.
+</span><span class="c1"></span>  <span class="k">for</span> <span class="nx">trigger</span><span class="p">.</span><span class="nf">test</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="nf">sweepone</span><span class="p">()</span> <span class="o">!=</span> <span class="p">^</span><span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">sweep</span><span class="p">.</span><span class="nx">nbgsweep</span><span class="o">++</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Perform GC initialization and the sweep termination
+</span><span class="c1"></span>  <span class="c1">// transition.
+</span><span class="c1"></span>  <span class="nf">semacquire</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">work</span><span class="p">.</span><span class="nx">startSema</span><span class="p">)</span>
+  <span class="c1">// Re-check transition condition under transition lock.
+</span><span class="c1"></span>  <span class="k">if</span> <span class="p">!</span><span class="nx">trigger</span><span class="p">.</span><span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nf">semrelease</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">work</span><span class="p">.</span><span class="nx">startSema</span><span class="p">)</span>
+    <span class="k">return</span>
+  <span class="p">}</span>
+
+  <span class="c1">// 获取 STW 的锁
+</span><span class="c1"></span>  <span class="c1">// Ok, we&#39;re doing it! Stop everybody else
+</span><span class="c1"></span>  <span class="nf">semacquire</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">gcsema</span><span class="p">)</span>
+  <span class="nf">semacquire</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">worldsema</span><span class="p">)</span>
+
+  <span class="c1">// 每个 P 分配一个 G，准备开始执行后台的标记工作
+</span><span class="c1"></span>  <span class="nf">gcBgMarkStartWorkers</span><span class="p">()</span>
+
+  <span class="c1">// 执行 STW !
+</span><span class="c1"></span>  <span class="nf">systemstack</span><span class="p">(</span><span class="nx">stopTheWorldWithSema</span><span class="p">)</span>
+  <span class="c1">// Finish sweep before we start concurrent scan.
+</span><span class="c1"></span>  <span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nf">finishsweep_m</span><span class="p">()</span>
+  <span class="p">})</span>
+
+  <span class="c1">// 修改 GC 状态，进入标记
+</span><span class="c1"></span>  <span class="nf">setGCPhase</span><span class="p">(</span><span class="nx">_GCmark</span><span class="p">)</span>
+
+  <span class="c1">// 初始化标记所需状态
+</span><span class="c1"></span>  <span class="nf">gcBgMarkPrepare</span><span class="p">()</span> 
+  <span class="c1">// 计算 Data、BSS、Stack 等需要扫描的数量
+</span><span class="c1"></span>  <span class="nf">gcMarkRootPrepare</span><span class="p">()</span>
+
+  <span class="c1">// 直接标记 tiny object
+</span><span class="c1"></span>  <span class="nf">gcMarkTinyAllocs</span><span class="p">()</span>
+
+  <span class="c1">// 可以开始运行标记
+</span><span class="c1"></span>  <span class="nx">atomic</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">gcBlackenEnabled</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+          
+  <span class="c1">// STW 结束，G 开始进行并行标记
+</span><span class="c1"></span>  <span class="c1">// Concurrent mark.
+</span><span class="c1"></span>  <span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">now</span> <span class="p">=</span> <span class="nf">startTheWorldWithSema</span><span class="p">(</span><span class="nx">trace</span><span class="p">.</span><span class="nx">enabled</span><span class="p">)</span>
+    <span class="nx">work</span><span class="p">.</span><span class="nx">pauseNS</span> <span class="o">+=</span> <span class="nx">now</span> <span class="o">-</span> <span class="nx">work</span><span class="p">.</span><span class="nx">pauseStart</span>
+    <span class="nx">work</span><span class="p">.</span><span class="nx">tMark</span> <span class="p">=</span> <span class="nx">now</span>
+  <span class="p">})</span>
+
+  <span class="c1">// 释放锁
+</span><span class="c1"></span>  <span class="nf">semrelease</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">worldsema</span><span class="p">)</span>
+  <span class="nf">releasem</span><span class="p">(</span><span class="nx">mp</span><span class="p">)</span>
+     
+	<span class="k">if</span> <span class="nx">mode</span> <span class="o">!=</span> <span class="nx">gcBackgroundMode</span> <span class="p">{</span>
+		<span class="nf">Gosched</span><span class="p">()</span>
+	<span class="p">}</span>
+	<span class="nf">semrelease</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">work</span><span class="p">.</span><span class="nx">startSema</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>该函数比较复杂，大致分为下面几个步骤：</p>
+<ol>
+<li>主动进入休眠状态，并<strong>等待唤醒</strong>；</li>
+<li>根据 P.gcMarkWorkerMode <strong>决定标记的策略</strong>；</li>
+<li>调用 <a href="#212-groutine-%e6%a0%87%e8%ae%b0%e6%b5%81%e7%a8%8b" rel=""><strong>gcDrain()</strong></a> 进行标记</li>
+<li>所有标记任务完成后，调用 <code>gcMarkDone()</code> 完成标记阶段；</li>
+</ol>
+<p>因为标记阶段是与用户进程并发的，所以会涉及到执行垃圾收集还是普通程序的问题。为此，每个垃圾收集的 G 有着不同的标记策略，其依赖于 P.gcMarkWorkerMode（由一个独立的 G 计算出不同模式的 P 的数量并设置）。</p>
+<p>其包含三种标记策略：</p>
+<ul>
+<li><strong>gcMarkWorkerDedicatedMode</strong>：P 专门用于标记对象，不会被抢占；</li>
+<li><strong>gcMarkWorkerFractionalMode</strong>：当垃圾收集后台 CPU 使用率达不到 25%，会启动该类型工作协程帮助垃圾收集达到利用率目标，因为只占用一个 CPU 部分资源，可以被抢占；</li>
+<li><strong>gcMarkWorkerIdleMode</strong>：当 P 没有可以执行的 G 时，会运行垃圾收集标记任务直到被抢占；</li>
+</ul>
+<h3 id="43-标记结束">4.3 标记结束</h3>
+<p>当每个标记 Groutine 结束后，都会调用 <code>gcMarkDone()</code>，但是等待所有标记结束后，<strong>只有一个 groutine 会真正执行结束逻辑</strong>（runtime/mgc.go）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">gcMarkDone</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// 第一个获取到锁的才会执行 gcMarkDone()
+</span><span class="c1"></span>	<span class="c1">// Ensure only one thread is running the ragged barrier at a
+</span><span class="c1"></span>	<span class="c1">// time.
+</span><span class="c1"></span>	<span class="nf">semacquire</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">work</span><span class="p">.</span><span class="nx">markDoneSema</span><span class="p">)</span>
+
+<span class="nx">top</span><span class="p">:</span>
+	<span class="c1">// 后续的 gouroute 会串行的在这里退出
+</span><span class="c1"></span>	<span class="k">if</span> <span class="p">!(</span><span class="nx">gcphase</span> <span class="o">==</span> <span class="nx">_GCmark</span> <span class="o">&amp;&amp;</span> <span class="nx">work</span><span class="p">.</span><span class="nx">nwait</span> <span class="o">==</span> <span class="nx">work</span><span class="p">.</span><span class="nx">nproc</span> <span class="o">&amp;&amp;</span> <span class="p">!</span><span class="nf">gcMarkWorkAvailable</span><span class="p">(</span><span class="kc">nil</span><span class="p">))</span> <span class="p">{</span>
+		<span class="nf">semrelease</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">work</span><span class="p">.</span><span class="nx">markDoneSema</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	
+	<span class="c1">// 循环等待所有标记结束
+</span><span class="c1"></span>	<span class="nx">gcMarkDoneFlushed</span> <span class="p">=</span> <span class="mi">0</span>
+	<span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">gp</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">().</span><span class="nx">m</span><span class="p">.</span><span class="nx">curg</span>
+		<span class="nf">casgstatus</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">_Grunning</span><span class="p">,</span> <span class="nx">_Gwaiting</span><span class="p">)</span>
+		<span class="nf">forEachP</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">_p_</span> <span class="o">*</span><span class="nx">p</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nf">wbBufFlush1</span><span class="p">(</span><span class="nx">_p_</span><span class="p">)</span>
+			<span class="nx">_p_</span><span class="p">.</span><span class="nx">gcw</span><span class="p">.</span><span class="nf">dispose</span><span class="p">()</span>
+			<span class="k">if</span> <span class="nx">_p_</span><span class="p">.</span><span class="nx">gcw</span><span class="p">.</span><span class="nx">flushedWork</span> <span class="p">{</span>
+				<span class="nx">atomic</span><span class="p">.</span><span class="nf">Xadd</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">gcMarkDoneFlushed</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+				<span class="nx">_p_</span><span class="p">.</span><span class="nx">gcw</span><span class="p">.</span><span class="nx">flushedWork</span> <span class="p">=</span> <span class="kc">false</span>
+			<span class="p">}</span>
+		<span class="p">})</span>
+		<span class="nf">casgstatus</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">_Gwaiting</span><span class="p">,</span> <span class="nx">_Grunning</span><span class="p">)</span>
+	<span class="p">})</span>
+
+	<span class="k">if</span> <span class="nx">gcMarkDoneFlushed</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">goto</span> <span class="nx">top</span>
+	<span class="p">}</span>
+	<span class="err">…</span>
+	
+	<span class="c1">// Perform mark termination. This will restart the world.
+</span><span class="c1"></span>	<span class="nf">gcMarkTermination</span><span class="p">(</span><span class="nx">nextTriggerRatio</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在一大堆判断标记结束的逻辑后，调用 <strong><code>gcMarkTermination()</code></strong> 进入标记终止阶段。</p>
+<p>在 <code>gcMarkTermination()</code> 会关闭混合写屏障，决定触发垃圾收集的 heap 阈值，并进行相关信息的统计，然后调用 <a href="#3-%e5%86%85%e5%ad%98%e6%b8%85%e7%90%86" rel=""><strong>gcSweep()</strong></a> 进行阻塞式清理。</p>
+<h2 id="总结">总结</h2>
+<p>垃圾回收真的很复杂，上面省略了大量的细节，也有可能理解错误的情况。但是忽略掉繁琐的细节，需要完全明白的有几个点：</p>
+<ul>
+<li><a href="#12-%e4%b8%89%e8%89%b2%e6%a0%87%e8%ae%b0%e7%ae%97%e6%b3%95" rel=""><strong><strong>三色标记算法的步骤</strong></strong></a></li>
+<li><a href="#%e4%b8%89%e8%89%b2%e4%b8%8d%e5%8f%98%e6%80%a7" rel=""><strong><strong>强三色不变性概念，以及为什么需要</strong></strong></a></li>
+<li><a href="#13-%e5%b1%8f%e9%9a%9c%e6%8a%80%e6%9c%af" rel=""><strong><strong>写屏障的作用，以及 Go 使用的混合写屏障</strong></strong></a></li>
+<li><a href="#41-gc-%e8%a7%a6%e5%8f%91" rel=""><strong><strong>GC 触发的时机与条件</strong></strong></a></li>
+<li><a href="#211-%e5%b9%b6%e5%8f%91%e6%a0%87%e8%ae%b0%e6%a1%86%e6%9e%b6" rel=""><strong><strong>GC 并发标记的实现</strong></strong></a></li>
+<li><a href="#212-groutine-%e6%a0%87%e8%ae%b0%e6%b5%81%e7%a8%8b" rel=""><strong><strong>GC 标记的实现，与内存管理的协同</strong></strong></a></li>
+<li><a href="#3-%e5%86%85%e5%ad%98%e6%b8%85%e7%90%86" rel=""><strong><strong>内存清理的时机</strong></strong></a></li>
+</ul>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://github.com/qyuhen/book" target="_blank" rel="noopener noreffer">《Golang 学习笔记》</a></li>
+<li><a href="https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-garbage-collector/#72-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8" target="_blank" rel="noopener noreffer">《Golang 设计与实现》：内存分配器</a></li>
+</ul>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">

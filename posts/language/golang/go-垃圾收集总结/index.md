@@ -1,5 +1,12 @@
 # Go 垃圾收集总结
 
+> **总结系列的文章**是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。
+
+本文是对 Golang 垃圾收集的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。
+
+所以学习的书籍与文章见 [**参考**](#参考)。
+
+下面代码都是基于 go 1.15.6。
 
 ## 1 背景知识
 
@@ -11,14 +18,14 @@
 
 ### 1.2 三色标记算法
 三色标记算法是 GC [标记清除算法]^(Mark-Sweep) 的一种，也是 Golang 中使用的算法。
-{{< admonition note Note>}}
-推荐阅读：
+{{< admonition tip 推荐阅读>}}
+推荐阅读文章，写的非常详细：[**垃圾收集器**](https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-garbage-collector/#72-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8)
 {{< /admonition >}}
 
 首先，三色标记算法的最基本逻辑为：
 1. 标记的最开始，**所有对象默认为`白色`**；
 1. 将 **`根对象`标记为灰色**，放入灰色集合；
-1. 从`灰色集合`中取出灰色对象，将其**子对象标记为`灰色`**，加入灰色集合，该灰色对象标记为黑色；
+1. 从 **`灰色集合`** 中取出灰色对象，将其**子对象标记为`灰色`**，加入灰色集合，该灰色对象标记为黑色；
 1. 重复第 3 步，直到灰色集合为空；
 1. **清理所有的白色对象**；
 
@@ -29,7 +36,7 @@
 
 例如，上图中第 3 步将 A 指向 D，那么 D 还是无法被标记，被错误回收。
 
-而想要让 Mutator 同时运行时，标记的结果还保持正确，那么每个时刻标记的结果要满足[三色不变性]^(Tri-color invariant)
+而想要让 Mutator 同时运行时，标记的结果还保持正确，那么每个时刻标记的结果要满足[三色不变性]^(Tri-color invariant) <a id="三色不变性"></a>
 * **`强三色不变性`**：**黑色对象不会指向白色对象，只会指向灰色对象或者黑色对象**。<br>
   因为黑色对象不会再被扫描，如果黑色对象指向白色对象，那么肯定该白色对象会被错误回收。<br>
   当然，除非这种情况能够满足弱三色不变性。
@@ -44,7 +51,7 @@ Go 中使用了写屏障，即**在用户程序更新对象指针时，执行一
 这里的屏障技术似乎和我知道的 CPU 的屏障技术含义不太类似，**更像是`回调函数`**，也挺困惑
 {{< /admonition >}}
 
-### 1.3.1 插入写屏障
+#### 1.3.1 插入写屏障
 Dijkstra 提出的 **`插入写屏障`**，在更新对象指针时，将其被指向的对象重新加入扫描集合（三色标记中也就是变为灰色），这样接下来还是能够被扫描。
 {{< find_img "img2.png" >}}
 
@@ -54,11 +61,11 @@ Dijkstra 提出的 **`插入写屏障`**，在更新对象指针时，将其被�
 * 对象指针变动时，没有考虑旧的指针引用。例如 `*field` 原来的对象 oldobj 已经扫描成黑色了，那么 `*field = newobj` 变动后，可能 oldobj 变为垃圾对象，只有等到下一轮标记时才会被回收。
 * TODO
 
-### 1.3.2 删除写屏障
+#### 1.3.2 删除写屏障
 Yuasa 提出的 **`删除写屏障`**，让老对象的引用被删除时，将白色的老对象涂成灰色，这样删除写屏障就可以保证弱三色不变性。
 {{< find_img "img3.png" >}}
 
-### 1.3.3 Go 中的屏障
+#### 1.3.3 Go 中的屏障
 Go 中使用 **`混合写屏障`**，即插入写屏障与删除写屏障都开启，并且在标记阶段开始后，将创建的所有新对象都标记为黑色，防止新分配的对象被错误的回收。
 
 具体操作为：
@@ -68,8 +75,7 @@ Go 中使用 **`混合写屏障`**，即插入写屏障与删除写屏障都开�
 1. 被添加的对象标记为灰色。
 
 
-
-## Go 中的三色标记算法
+## 2 三色标记算法实现
 我们先不看整个的流程实现，而是从核心的标记算法入手。
 
 ### 2.1 标记
@@ -140,7 +146,7 @@ gcWork 有几个重要的方法：
 * 黑色对象 -> 不在 gcWork 中，但是被 mark 的 object；
 * 白色对象 -> 不在 gcWork 中，没有被 mark 的 object；
 
-每个 P 会对应一个标记使用的 groutine，执行 `gcDrain()` 函数（runtime/mgcmark.go）：
+每个 P 会对应一个标记使用的 groutine，执行 **`gcDrain()`** 函数（runtime/mgcmark.go）：
 ```go
 // gcDrain scans roots and objects in work buffers, blackening grey
 // objects until it is unable to get more work. It may return before
@@ -321,7 +327,7 @@ func markroot(gcw *gcWork, i uint32) {
 
 其中，大部分扫描都会是栈上的对象，**通过得到对应 object 的地址，然后判断其地址是否存在与 heap 管理的 mspan 中决定其是否是根对象。**
 {{< admonition note Note>}}
-在 [**Go 内存管理总结**]() 中说过，**任意的内存地址，都可以通过公式得到其对应的 mspan 的地址**，这也可以用于判断一个地址是否是存在与 mheap 上的。
+在 [**Go 内存管理总结**](https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#451-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80) 中说过，**任意的内存地址，都可以通过公式得到其对应的 mspan 的地址**，这也可以用于判断一个地址是否是存在与 mheap 上的。
 {{< /admonition >}}
 
 所有扫描到的 object 地址通过 `greyobject()` 函数进行 mark 并放入 gcWork。
@@ -398,7 +404,7 @@ func scanobject(b uintptr, gcw *gcWork) {
 ```
 可以看到，通过当前 object 地址的**不断偏移 8 字节**，然后**通过 `heapArena.bitmap` 判断当前 8 字节是否是指针**，如果是指针就将其放入 gcWork 对象。
 {{< admonition note Note>}}
-在 [**Go 内存管理总结**]() 中看到，**对于 heap 中每 8 个字节，通过存在对应 bit 位标识是否指针，以及是否被 mark**；
+在 [**Go 内存管理总结**](https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#451-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80) 中看到，**对于 heap 中每 8 个字节，通过存在对应 bit 位标识是否指针，以及是否被 mark**；
 {{< /admonition >}}
 
 `greyobject()` 用于将该 object 标记，并放入 gcWork 中：
@@ -463,3 +469,376 @@ func greyobject(obj, base, off uintptr, span *mspan, gcw *gcWork, objIndex uintp
 1. 被添加的对象标记为灰色。
 
 当开始 GC 时，全局变量 `runtime.writeBarrier.enabled` 变为 true，所有的写操作都会经过 `writebarrier()` 的操作。
+
+
+## 3 内存清理
+内存清理与标记就是完全分隔的逻辑了，通过判断对象是否被标记就可决定是否将其内存回收。
+
+**`gcSweep()`** 函数用于在 GC 标记结束后执行清理（src/runtime/mgc.go）：
+```go
+// gcSweep must be called on the system stack because it acquires the heap
+// lock. See mheap for details.
+//
+// The world must be stopped.
+//
+//go:systemstack
+func gcSweep(mode gcMode) {
+        lock(&mheap_.lock)
+        // 关键的 sweepgen 变量
+        mheap_.sweepgen += 2
+        mheap_.sweepdone = 0
+        if !go115NewMCentralImpl && mheap_.sweepSpans[mheap_.sweepgen/2%2].index != 0 {
+                // We should have drained this list during the last
+                // sweep phase. We certainly need to start this phase
+                // with an empty swept list.
+                throw("non-empty swept list")
+        }
+        mheap_.pagesSwept = 0
+        mheap_.sweepArenas = mheap_.allArenas
+        mheap_.reclaimIndex = 0
+        mheap_.reclaimCredit = 0
+        unlock(&mheap_.lock)
+
+        if go115NewMCentralImpl {
+                sweep.centralIndex.clear()
+        }
+
+	    // 阻塞清理
+        if !_ConcurrentSweep || mode == gcForceBlockMode {
+                // Special case synchronous sweep.
+                // Record that no proportional sweeping has to happen.
+                lock(&mheap_.lock)
+                mheap_.sweepPagesPerByte = 0
+                unlock(&mheap_.lock)
+                
+                // 清理 span !
+                // Sweep all spans eagerly.
+                for sweepone() != ^uintptr(0) {
+                        sweep.npausesweep++
+                }
+                
+                // Free workbufs eagerly.
+                prepareFreeWorkbufs()
+                for freeSomeWbufs(false) {
+                }
+                // All "free" events for this mark/sweep cycle have
+                // now happened, so we can make this profile cycle
+                // available immediately.
+                mProf_NextCycle()
+                mProf_Flush()
+                return
+        }
+ 
+	      // 后台清理（并发清理）
+        // Background sweep.
+        lock(&sweep.lock)
+        if sweep.parked {
+                sweep.parked = false
+                ready(sweep.g, 0, true)
+        }
+        unlock(&sweep.lock)
+}
+```
+1. 不断执行 `sweepone()` 来清理 mspan；
+1. 启动后台并发清理；
+
+### 3.1 阻塞清理
+通过不断执行 `sweepone()` 来进行 mspan 的清理，`sweepone()` 从 heap 得到一个 mspan 并清理（src/runtime/mgcsweep.go）：
+```go
+// sweepone sweeps some unswept heap span and returns the number of pages returned
+// to the heap, or ^uintptr(0) if there was nothing to sweep.
+func sweepone() uintptr {
+  …
+  
+  // 得到一个被清理的 mspan
+  var s *mspan
+  sg := mheap_.sweepgen
+  for {
+          if go115NewMCentralImpl {
+                  s = mheap_.nextSpanForSweep()
+          } else {
+                  s = mheap_.sweepSpans[1-sg/2%2].pop()
+          }
+          if s == nil {
+                  atomic.Store(&mheap_.sweepdone, 1)
+                  break
+          }
+          // 设置标记
+          if s.sweepgen == sg-2 && atomic.Cas(&s.sweepgen, sg-2, sg-1) {
+                  break
+          }
+  } 
+  // 清理 mspan
+  npages := ^uintptr(0)
+  if s != nil {
+          npages = s.npages
+          if s.sweep(false) {
+                  // Whole span was freed. Count it toward the
+                  // page reclaimer credit since these pages can
+                  // now be used for span allocation.
+                  atomic.Xadduintptr(&mheap_.reclaimCredit, npages)
+          } else {
+                  // Span is still in-use, so this returned no
+                  // pages to the heap and the span needs to
+                  // move to the swept in-use list.
+                  npages = 0
+          }
+  } 
+  …
+  
+  return npages
+}
+```
+最终的回收工作靠 `mspan.sweep()` 完成，这给在 [**Go 内存管理总结**](https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#451-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80) 中可以看到具体实现，大致就是将 GC 后没有被 mark 的 object 记录为可用，以后续申请使用覆盖。如果整个 mspan 变回空，就由 mheap 回收其对应的 page。
+
+### 3.2 并发清理
+并发清理就是一个死循环，被唤醒后开始执行清理任务。
+```go
+func bgsweep(c chan int) {
+	sweep.g = getg()
+
+	lockInit(&sweep.lock, lockRankSweep)
+	lock(&sweep.lock)
+	sweep.parked = true
+	c <- 1
+	goparkunlock(&sweep.lock, waitReasonGCSweepWait, traceEvGoBlock, 1)
+
+	for {
+		// 依旧通过 sweepone() 清理
+		for sweepone() != ^uintptr(0) {
+			sweep.nbgsweep++
+			Gosched()
+		}
+		for freeSomeWbufs(true) {
+			Gosched()
+		}
+		lock(&sweep.lock)
+		if !isSweepDone() {
+			// This can happen if a GC runs between
+			// gosweepone returning ^0 above
+			// and the lock being acquired.
+			unlock(&sweep.lock)
+			continue
+		}
+		
+		// 等待唤醒
+		sweep.parked = true
+		goparkunlock(&sweep.lock, waitReasonGCSweepWait, traceEvGoBlock, 1)
+	}
+}
+```
+依旧是通过不断执行 `sweepone()` 进行清理。
+
+
+## 4 标记流程
+下面来看如何触发的 GC 以及 GC 的大致流程。
+
+### 4.1 GC 触发
+GC 有三个点会被触发：
+1. runtime 启动后会启动一个后台 gourtine，被唤醒后就会执行 GC，而**唤醒操作由 sysmon 负责执行**。<br>
+sysmon 会根据系统情况决定是否触发。
+1. **分配新 object 时**（[**mallocgc() 函数**](https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#52-object-%E5%88%86%E9%85%8D)），如果 mcache 需要重新刷新，或者是分配的是 large object，那么也会触发一次 GC。
+1. 通过接口 **runtime.GC() 主动触发**。
+
+所有的触发都会使用 `gcTrigger.test()` 进行条件检测（runtime/mgc.go）：
+```go
+// test reports whether the trigger condition is satisfied, meaning
+// that the exit condition for the _GCoff phase has been met. The exit
+// condition should be tested when allocating.
+func (t gcTrigger) test() bool {
+        if !memstats.enablegc || panicking != 0 || gcphase != _GCoff {
+                return false
+        }
+        switch t.kind {
+        case gcTriggerHeap:
+                // 由 heap 触发，也就是分配 object 时触发
+                // Non-atomic access to heap_live for performance. If
+                // we are going to trigger on this, this thread just
+                // atomically wrote heap_live anyway and we'll see our
+                // own write.
+                return memstats.heap_live >= memstats.gc_trigger
+        case gcTriggerTime:
+                // 由 sysmon 周期性触发
+                if gcpercent < 0 {
+                        return false
+                }
+                lastgc := int64(atomic.Load64(&memstats.last_gc_nanotime))
+                return lastgc != 0 && t.now-lastgc > forcegcperiod
+        case gcTriggerCycle:
+                // 通过 runtime.GC() 主动触发
+                // t.n > work.cycles, but accounting for wraparound.
+                return int32(t.n-work.cycles) > 0
+        }
+        return true
+}
+```
+对应的条件为：
+1. sysmon 周期性触发：**触发间隔大于 2min**；
+1. 分配 object 触发：**堆内存的分配达到控制计算的触发堆大小**；
+1. runtime.GC() **主动触发**：当前没有正在 GC，则触发；
+
+### 4.2 GC 开始
+所有触发 GC 后调用的都是 **`gcStart()`** 函数（runtime/mgc.go）：
+```go
+// gcStart starts the GC. It transitions from _GCoff to _GCmark (if
+// debug.gcstoptheworld == 0) or performs all of GC (if
+// debug.gcstoptheworld != 0).
+//
+// This may return without performing this transition in some cases,
+// such as when called on a system stack or with locks held.
+func gcStart(trigger gcTrigger) {
+  // Since this is called from malloc and malloc is called in
+  // the guts of a number of libraries that might be holding
+  // locks, don't attempt to start GC in non-preemptible or
+  // potentially unstable situations.
+  mp := acquirem()
+  if gp := getg(); gp == mp.g0 || mp.locks > 1 || mp.preemptoff != "" {
+    releasem(mp)
+    return
+  }
+  releasem(mp)
+  mp = nil
+
+  // 再次验证是否条件，并不断调用 sweepone() 来完成上一次垃圾收集的收尾工作
+  // Pick up the remaining unswept/not being swept spans concurrently
+  //
+  // This shouldn't happen if we're being invoked in background
+  // mode since proportional sweep should have just finished
+  // sweeping everything, but rounding errors, etc, may leave a
+  // few spans unswept. In forced mode, this is necessary since
+  // GC can be forced at any point in the sweeping cycle.
+  //
+  // We check the transition condition continuously here in case
+  // this G gets delayed in to the next GC cycle.
+  for trigger.test() && sweepone() != ^uintptr(0) {
+    sweep.nbgsweep++
+  }
+
+  // Perform GC initialization and the sweep termination
+  // transition.
+  semacquire(&work.startSema)
+  // Re-check transition condition under transition lock.
+  if !trigger.test() {
+    semrelease(&work.startSema)
+    return
+  }
+
+  // 获取 STW 的锁
+  // Ok, we're doing it! Stop everybody else
+  semacquire(&gcsema)
+  semacquire(&worldsema)
+
+  // 每个 P 分配一个 G，准备开始执行后台的标记工作
+  gcBgMarkStartWorkers()
+
+  // 执行 STW !
+  systemstack(stopTheWorldWithSema)
+  // Finish sweep before we start concurrent scan.
+  systemstack(func() {
+    finishsweep_m()
+  })
+
+  // 修改 GC 状态，进入标记
+  setGCPhase(_GCmark)
+
+  // 初始化标记所需状态
+  gcBgMarkPrepare() 
+  // 计算 Data、BSS、Stack 等需要扫描的数量
+  gcMarkRootPrepare()
+
+  // 直接标记 tiny object
+  gcMarkTinyAllocs()
+
+  // 可以开始运行标记
+  atomic.Store(&gcBlackenEnabled, 1)
+          
+  // STW 结束，G 开始进行并行标记
+  // Concurrent mark.
+  systemstack(func() {
+    now = startTheWorldWithSema(trace.enabled)
+    work.pauseNS += now - work.pauseStart
+    work.tMark = now
+  })
+
+  // 释放锁
+  semrelease(&worldsema)
+  releasem(mp)
+     
+	if mode != gcBackgroundMode {
+		Gosched()
+	}
+	semrelease(&work.startSema)
+}
+```
+该函数比较复杂，大致分为下面几个步骤：
+1. 主动进入休眠状态，并**等待唤醒**；
+1. 根据 P.gcMarkWorkerMode **决定标记的策略**；
+1. 调用 [**gcDrain()**](#212-groutine-标记流程) 进行标记
+1. 所有标记任务完成后，调用 `gcMarkDone()` 完成标记阶段；
+
+因为标记阶段是与用户进程并发的，所以会涉及到执行垃圾收集还是普通程序的问题。为此，每个垃圾收集的 G 有着不同的标记策略，其依赖于 P.gcMarkWorkerMode（由一个独立的 G 计算出不同模式的 P 的数量并设置）。
+
+其包含三种标记策略：
+* **gcMarkWorkerDedicatedMode**：P 专门用于标记对象，不会被抢占；
+* **gcMarkWorkerFractionalMode**：当垃圾收集后台 CPU 使用率达不到 25%，会启动该类型工作协程帮助垃圾收集达到利用率目标，因为只占用一个 CPU 部分资源，可以被抢占；
+* **gcMarkWorkerIdleMode**：当 P 没有可以执行的 G 时，会运行垃圾收集标记任务直到被抢占；
+
+### 4.3 标记结束
+当每个标记 Groutine 结束后，都会调用 `gcMarkDone()`，但是等待所有标记结束后，**只有一个 groutine 会真正执行结束逻辑**（runtime/mgc.go）。
+```go
+func gcMarkDone() {
+	// 第一个获取到锁的才会执行 gcMarkDone()
+	// Ensure only one thread is running the ragged barrier at a
+	// time.
+	semacquire(&work.markDoneSema)
+
+top:
+	// 后续的 gouroute 会串行的在这里退出
+	if !(gcphase == _GCmark && work.nwait == work.nproc && !gcMarkWorkAvailable(nil)) {
+		semrelease(&work.markDoneSema)
+		return
+	}
+	
+	// 循环等待所有标记结束
+	gcMarkDoneFlushed = 0
+	systemstack(func() {
+		gp := getg().m.curg
+		casgstatus(gp, _Grunning, _Gwaiting)
+		forEachP(func(_p_ *p) {
+			wbBufFlush1(_p_)
+			_p_.gcw.dispose()
+			if _p_.gcw.flushedWork {
+				atomic.Xadd(&gcMarkDoneFlushed, 1)
+				_p_.gcw.flushedWork = false
+			}
+		})
+		casgstatus(gp, _Gwaiting, _Grunning)
+	})
+
+	if gcMarkDoneFlushed != 0 {
+		goto top
+	}
+	…
+	
+	// Perform mark termination. This will restart the world.
+	gcMarkTermination(nextTriggerRatio)
+}
+```
+
+在一大堆判断标记结束的逻辑后，调用 **`gcMarkTermination()`** 进入标记终止阶段。
+
+在 `gcMarkTermination()` 会关闭混合写屏障，决定触发垃圾收集的 heap 阈值，并进行相关信息的统计，然后调用 [**gcSweep()**](#3-内存清理) 进行阻塞式清理。
+
+## 总结
+垃圾回收真的很复杂，上面省略了大量的细节，也有可能理解错误的情况。但是忽略掉繁琐的细节，需要完全明白的有几个点：
+* [****三色标记算法的步骤****](#12-三色标记算法)
+* [****强三色不变性概念，以及为什么需要****](#三色不变性)
+* [****写屏障的作用，以及 Go 使用的混合写屏障****](#13-屏障技术)
+* [****GC 触发的时机与条件****](#41-gc-触发)
+* [****GC 并发标记的实现****](#211-并发标记框架)
+* [****GC 标记的实现，与内存管理的协同****](#212-groutine-标记流程)
+* [****内存清理的时机****](#3-内存清理)
+
+## 参考
+* [《Golang 学习笔记》](https://github.com/qyuhen/book)
+* [《Golang 设计与实现》：内存分配器](https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-garbage-collector/#72-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8)

@@ -1,5 +1,8 @@
 # 容器网络总结
 
+> **总结系列的文章**是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。
+
+本文是对自己使用过的 docker 使用的网络模式的原理的总结。
 
 ## 1 概览
 docker 容器网络目前包含 5 中模式，包括：
@@ -100,7 +103,8 @@ veth-pair 设备了解推荐文章：[Linux虚拟网络设备之veth](https://se
 **`macvlan 网络设备`** 可以有 mac 地址与 ip 地址，用于将 net namespace 连接到宿主机的物理网络中，相当于，容器直接连接着物理网络。
 
 macvlan 网络设备有着多种的模式，包括：bridge、private 等，这影响着各个 macvlan 网络设备之间的通信。
-更过 macvlan 网络设备推荐文章：[Linux interfaces for virtual networking](https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/)
+
+更多 macvlan 网络设备推荐文章：[Linux interfaces for virtual networking](https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/)
 
 
 ## 3 Bridge 网络

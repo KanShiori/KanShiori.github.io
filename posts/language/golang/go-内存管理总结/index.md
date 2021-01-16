@@ -1,9 +1,10 @@
 # Go 内存管理总结
 
+> **总结系列的文章**是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。
 
 本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。
 
-所以学习的书籍与文章见 [**参考**](#reference)。
+所以学习的书籍与文章见 [**参考**](#参考)。
 
 下面代码都是基于 go 1.15.6。
 
@@ -82,8 +83,6 @@ type stack struct {
 	hi uintptr
 }
 ```
-
-<a id="new-g-stack"></a>
 
 ### 3.1 新 G 的栈
 在 **`malg`** 函数中，可以看到对于新 G 的栈的分配（一开始为 2KB）：
@@ -374,7 +373,7 @@ if iscgo || GOOS == "solaris" || GOOS == "illumos" || GOOS == "windows" || GOOS 
 }
 mp.g0.m = mp
 ```
-可以看到，m 的 g0 属性还是使用的 [**malg() 函数**](#new-g-stack) 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。
+可以看到，m 的 g0 属性还是使用的 [**malg() 函数**](#31-新-g-的栈) 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。
 
 不过，g0 的栈还是有些不同的，不会进行栈的扩容（因为仅仅内部管理时用到，不需要进行自动扩容），在栈扩容的 [**morestack 汇编代码**](#morestack)里可以看到。
 
@@ -440,6 +439,8 @@ type mspan struct {
 * **`freeindex`** ：下一个空闲的 object 的编号，如果 freeindex == nelem，表明没有空闲 object 可以分配
 * nelems ：当前 span 中分配的 object 的上限；
 * **`allocCache`** ：freeindex 的 cache，通过 bitmap 的方式记录对应编号的 object 内存是否是空闲的；
+* **`allocBits`** : 通过 bitmap 标识哪些编号的 object 是分配出去的；
+* **`gcmarkBits`** : 经过 GC 后，gcmarkBits 标识出的 object 就是被 mark 的，没有 mark 的变为垃圾对象清除；
 * **`sweepgen`** ：mspan 的状态, 见注释；
 * spanclass ：mspan 大小类别；
 * allocCount ：已经分配的 object 数量；
@@ -506,8 +507,129 @@ func (s *mspan) nextFreeIndex() uintptr {
 }
 ```
 注意：目前跳过了 "nextFreeFast" 实现，该获取 span 比 "nextFree" 更快，使用了 `mspan.allocCache`。
+
 #### 4.2.2 mspan 的清理
-TODO
+mspan.sweep() 用于进行一个 mspan 的清理，我们先看下旧版本的实现 mspan.oldSweep()：
+```go
+// Sweep frees or collects finalizers for blocks not marked in the mark phase.
+// It clears the mark bits in preparation for the next GC round.
+// Returns true if the span was returned to heap.
+// If preserve=true, don't return it to heap nor relink in mcentral lists;
+// caller takes care of it.
+//
+// For !go115NewMCentralImpl.
+func (s *mspan) oldSweep(preserve bool) bool {
+	// It's critical that we enter this function with preemption disabled,
+	// GC must not start while we are in the middle of this function.
+	_g_ := getg()
+
+	...
+
+	spc := s.spanclass
+	size := s.elemsize
+	res := false
+
+	c := _g_.m.p.ptr().mcache
+	freeToHeap := false
+
+	// The allocBits indicate which unmarked objects don't need to be
+	// processed since they were free at the end of the last GC cycle
+	// and were not allocated since then.
+	// If the allocBits index is >= s.freeindex and the bit
+	// is not marked then the object remains unallocated
+	// since the last GC.
+	// This situation is analogous to being on a freelist.
+
+	// Unlink & free special records for any objects we're about to free.
+	// Two complications here:
+	// 1. An object can have both finalizer and profile special records.
+	//    In such case we need to queue finalizer for execution,
+	//    mark the object as live and preserve the profile special.
+	// 2. A tiny object can have several finalizers setup for different offsets.
+	//    If such object is not marked, we need to queue all finalizers at once.
+	// Both 1 and 2 are possible at the same time.
+	hadSpecials := s.specials != nil
+	specialp := &s.specials
+	special := *specialp
+	// 收集 mspan.specials 中对象
+
+	...
+
+	// Count the number of free objects in this span.
+	nalloc := uint16(s.countAlloc())  // 通过 mspan.gcmarkBits 得到正在使用的 object 数量
+	if spc.sizeclass() == 0 && nalloc == 0 {
+		s.needzero = 1
+		freeToHeap = true  // 如果是 large object 并且没有任何使用着对象, 那么标记还给 heap
+	}
+	nfreed := s.allocCount - nalloc // 得到需要回收的 object 数量
+
+	s.allocCount = nalloc
+	wasempty := s.nextFreeIndex() == s.nelems
+	s.freeindex = 0 // reset allocation index to start of span.
+
+	// allocBits 与 gcmarkBits 交换
+	// gcmarkBits becomes the allocBits.
+	// get a fresh cleared gcmarkBits in preparation for next GC
+	s.allocBits = s.gcmarkBits
+	s.gcmarkBits = newMarkBits(s.nelems)
+
+	// Initialize alloc bits cache.
+	s.refillAllocCache(0)
+
+	// We need to set s.sweepgen = h.sweepgen only when all blocks are swept,
+	// because of the potential for a concurrent free/SetFinalizer.
+	// But we need to set it before we make the span available for allocation
+	// (return it to heap or mcentral), because allocation code assumes that a
+	// span is already swept if available for allocation.
+	if freeToHeap || nfreed == 0 {
+		// Serialization point.
+		// At this point the mark bits are cleared and allocation ready
+		// to go so release the span.
+		atomic.Store(&s.sweepgen, sweepgen)
+	}
+
+	// 小对象, 通过调用 mcentral.freespan 
+	if nfreed > 0 && spc.sizeclass() != 0 {
+		c.local_nsmallfree[spc.sizeclass()] += uintptr(nfreed)
+		res = mheap_.central[spc].mcentral.freeSpan(s, preserve, wasempty)
+		// mcentral.freeSpan updates sweepgen
+	} else if freeToHeap {
+		// Free large span to heap
+
+		// NOTE(rsc,dvyukov): The original implementation of efence
+		// in CL 22060046 used sysFree instead of sysFault, so that
+		// the operating system would eventually give the memory
+		// back to us again, so that an efence program could run
+		// longer without running out of memory. Unfortunately,
+		// calling sysFree here without any kind of adjustment of the
+		// heap data structures means that when the memory does
+		// come back to us, we have the wrong metadata for it, either in
+		// the mspan structures or in the garbage collection bitmap.
+		// Using sysFault here means that the program will run out of
+		// memory fairly quickly in efence mode, but at least it won't
+		// have mysterious crashes due to confused memory reuse.
+		// It should be possible to switch back to sysFree if we also
+		// implement and then call some kind of mheap.deleteSpan.
+		if debug.efence > 0 {
+			s.limit = 0 // prevent mlookup from finding this span
+			sysFault(unsafe.Pointer(s.base()), size)
+		} else {
+			mheap_.freeSpan(s)
+		}
+		c.local_nlargefree++
+		c.local_largefree += size
+		res = true
+	}
+	if !res {
+		// The span has been swept and is still in-use, so put
+		// it on the swept in-use list.
+		mheap_.sweepSpans[sweepgen/2%2].push(s)
+	}
+	return res
+}
+```
+可以看到，经过 GC 的 `mspan.gcmarkBits` 会变为 `mspan.allocBits`，标识哪些 object 是可以使用的，而没有使用的 object 后面就会被新的覆盖了。
+而调用 `mcentral.freeSpan()` 或者 `mheap_.freeSpan()` 接口，是为了其结构的调整，或者对于完全空的 mspan 真正回收内存。
 
 ### 4.3 mcache
 每个 P 拥有一个 mcache，mcache 中保存着具有空闲空间的 mspan，用于分配 object 时，不需要加锁即可从 mspan 分配对象。
@@ -551,8 +673,6 @@ type mcache struct {
 ```
 * **`tiny`** **`tinyoffset`** ：用于小对象（<16）的分配。tiny 指向当前为 tiny object 准备的 span 的起始地址，tinyoffset 指向对象使用的偏移地址；
 * **`alloc`** ：最重要的属性，保存着不同大小的 mspan 各一个。目前，包含固定 64 类 sizeclass：0、8 … 32768；
-
-<a id="mcache-alloc_mspan"></a>
 
 #### 4.3.1 mspan 的分配
 先看下 tiny object 分配，在分配一个 object 时，如果大小小于 16 字节时，就会走 tiny object 逻辑。
@@ -651,8 +771,6 @@ func (c *mcache) nextFree(spc spanClass) (v gclinkptr, s *mspan, shouldhelpgc bo
 3. `mspan.nextFreeIndex()` 下一个 index，并计算出对应的内存地址返回；
 
 
-<a id="mcache-alloc"></a>
-
 #### 4.3.2 mspan 的获取
 前面分配 object 中可以看到，当 mcache 当前大小的 mspan 没有空闲空间后，就会通过 **`c.refill()`** **向 mcentral 重新申请一个 mspan**（runtime/mcache.go）：
 ```go
@@ -742,7 +860,7 @@ type mcentral struct {
 {{< /admonition >}}
 
 #### 4.4.1 从 mcentral 申请 mspan
-[**在 mcache 中**](#mcache-alloc)，可以看到 mcache 通过调用 `mcentral.cacheSpan()` 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 `mcentral.oldCacheSpan()` 方法中。
+在 [**mcache的获取**](#432-mspan-的获取) 中，可以看到 mcache 通过调用 `mcentral.cacheSpan()` 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 `mcentral.oldCacheSpan()` 方法中。
 ```go
 // Allocate a span to use in an mcache.
 func (c *mcentral) cacheSpan() *mspan {
@@ -756,85 +874,85 @@ func (c *mcentral) cacheSpan() *mspan {
 //
 // For !go115NewMCentralImpl.
 func (c *mcentral) oldCacheSpan() *mspan {
-        lock(&c.lock)
-        sg := mheap_.sweepgen
+	lock(&c.lock)
+	sg := mheap_.sweepgen
         
 retry:
-        var s *mspan
-        // 走 nonempty 链表找
-        for s = c.nonempty.first; s != nil; s = s.next {
-                if s.sweepgen == sg-2 && atomic.Cas(&s.sweepgen, sg-2, sg-1) {
-                        c.nonempty.remove(s)
-                        c.empty.insertBack(s)
-                        unlock(&c.lock)
-                        s.sweep(true)
-                        goto havespan
-                }
-                if s.sweepgen == sg-1 {
-                        // the span is being swept by background sweeper, skip
-                        continue
-                }
-                // we have a nonempty span that does not require sweeping, allocate from it
-                c.nonempty.remove(s)
-                c.empty.insertBack(s)
-                unlock(&c.lock)
-                goto havespan
-        }
+	var s *mspan
+	// 走 nonempty 链表找
+	for s = c.nonempty.first; s != nil; s = s.next {
+		if s.sweepgen == sg-2 && atomic.Cas(&s.sweepgen, sg-2, sg-1) {
+			c.nonempty.remove(s)
+			c.empty.insertBack(s)
+			unlock(&c.lock)
+			s.sweep(true)
+			goto havespan
+		}
+		if s.sweepgen == sg-1 {
+			// the span is being swept by background sweeper, skip
+			continue
+		}
+		// we have a nonempty span that does not require sweeping, allocate from it
+		c.nonempty.remove(s)
+		c.empty.insertBack(s)
+		unlock(&c.lock)
+		goto havespan
+	}
 
-        // 走 empty 链表找
-        for s = c.empty.first; s != nil; s = s.next {
-                if s.sweepgen == sg-2 && atomic.Cas(&s.sweepgen, sg-2, sg-1) {
-                        // we have an empty span that requires sweeping,
-                        // sweep it and see if we can free some space in it
-                        c.empty.remove(s)
-                        // swept spans are at the end of the list
-                        c.empty.insertBack(s)
-                        unlock(&c.lock)
-                        s.sweep(true)
-                        freeIndex := s.nextFreeIndex()
-                        if freeIndex != s.nelems {
-                                s.freeindex = freeIndex
-                                goto havespan
-                        }
-                        lock(&c.lock)
-                        // the span is still empty after sweep
-                        // it is already in the empty list, so just retry
-                        goto retry
-                }
-                if s.sweepgen == sg-1 {
-                        // the span is being swept by background sweeper, skip
-                        continue
-                }
-                // already swept empty span,
-                // all subsequent ones must also be either swept or in process of sweeping
-                break
-        }
-        unlock(&c.lock)
+	// 走 empty 链表找
+	for s = c.empty.first; s != nil; s = s.next {
+		if s.sweepgen == sg-2 && atomic.Cas(&s.sweepgen, sg-2, sg-1) {
+			// we have an empty span that requires sweeping,
+			// sweep it and see if we can free some space in it
+			c.empty.remove(s)
+			// swept spans are at the end of the list
+			c.empty.insertBack(s)
+			unlock(&c.lock)
+			s.sweep(true)
+			freeIndex := s.nextFreeIndex()
+			if freeIndex != s.nelems {
+				s.freeindex = freeIndex
+				goto havespan
+			}
+			lock(&c.lock)
+			// the span is still empty after sweep
+			// it is already in the empty list, so just retry
+			goto retry
+		}
+		if s.sweepgen == sg-1 {
+			 // the span is being swept by background sweeper, skip
+			 continue
+		}
+		// already swept empty span,
+		// all subsequent ones must also be either swept or in process of sweeping
+		break
+	}
+	unlock(&c.lock)
 
-        // 向 heap 申请新的 mspan
-        // Replenish central list if empty.
-        s = c.grow()
-        if s == nil {
-                return nil
-        }
-        lock(&c.lock)
-        c.empty.insertBack(s)
-        unlock(&c.lock)
+	// 向 heap 申请新的 mspan
+	// Replenish central list if empty.
+	s = c.grow()
+	if s == nil {
+		return nil
+	}
+	lock(&c.lock)
+	c.empty.insertBack(s)
+	unlock(&c.lock)
 
-        // At this point s is a non-empty span, queued at the end of the empty list,
-        // c is unlocked.
+	// At this point s is a non-empty span, queued at the end of the empty list,
+	// c is unlocked.
 havespan:
-        …
-        freeByteBase := s.freeindex &^ (64 - 1)
-        whichByte := freeByteBase / 8
-        // Init alloc bits cache.
-        s.refillAllocCache(whichByte)
+	…
+	freeByteBase := s.freeindex &^ (64 - 1)
+	whichByte := freeByteBase / 8
+	// Init alloc bits cache.
+	s.refillAllocCache(whichByte)
 
-        // Adjust the allocCache so that s.freeindex corresponds to the low bit in
-        // s.allocCache.
-        s.allocCache >>= s.freeindex % 64
+	// Adjust the allocCache so that s.freeindex corresponds to the low bit in
+	// s.allocCache.
+	s.allocCache >>= s.freeindex % 64
 
-        return s
+	return s
 }
 ```
 上面逻辑可以大致分为几个步骤：
@@ -843,35 +961,85 @@ havespan:
 1. 还是没有，通过 `mcentral.grow()` 向 mheap 申请新的 mspan，mheap 中都没有，return nil；
 1. 找到空闲 mspan 后，会放置到 empty 链表尾部，并返回；
 
-
-<a id="mcentral-grow"></a>
-
 #### 4.4.2 mcentral 扩容
 在 mcentral 没有任何空闲 mspan 给 mcache 时，就会调用 `mcentral.grow()` 申请新的 mspan。
 ```go
 // grow allocates a new empty span from the heap and initializes it for c's size class.
 func (c *mcentral) grow() *mspan {
-        npages := uintptr(class_to_allocnpages[c.spanclass.sizeclass()])
-        size := uintptr(class_to_size[c.spanclass.sizeclass()])
+	 npages := uintptr(class_to_allocnpages[c.spanclass.sizeclass()])
+	 size := uintptr(class_to_size[c.spanclass.sizeclass()])
 
-        s := mheap_.alloc(npages, c.spanclass, true)
-        if s == nil {
-                return nil
-        }
+	 s := mheap_.alloc(npages, c.spanclass, true)
+	 if s == nil {
+		 return nil
+	 }
 
-        // Use division by multiplication and shifts to quickly compute:
-        // n := (npages << _PageShift) / size
-        n := (npages << _PageShift) >> s.divShift * uintptr(s.divMul) >> s.divShift2
-        s.limit = s.base() + size*n
-        heapBitsForAddr(s.base()).initSpan(s)
-        return s
+	 // Use division by multiplication and shifts to quickly compute:
+	 // n := (npages << _PageShift) / size
+	 n := (npages << _PageShift) >> s.divShift * uintptr(s.divMul) >> s.divShift2
+	 s.limit = s.base() + size*n
+	 heapBitsForAddr(s.base()).initSpan(s)
+	 return s
 }
 ```
 1. 通过 `mheap.alloc()` 申请一个指大小的 mspan；
 2. 执行 `mheapBit.initSpan()` 初始化 mspan；
 
 #### 4.4.3 mcentral 回收 mspan
-TODO
+前面 [**mspan.sweep()**](#422-mspan-的清理) 时看到，通过调用 mcentral.freeSpan() 调整其 mspan:
+```go
+// freeSpan updates c and s after sweeping s.
+// It sets s's sweepgen to the latest generation,
+// and, based on the number of free objects in s,
+// moves s to the appropriate list of c or returns it
+// to the heap.
+// freeSpan reports whether s was returned to the heap.
+// If preserve=true, it does not move s (the caller
+// must take care of it).
+//
+// For !go115NewMCentralImpl.
+func (c *mcentral) freeSpan(s *mspan, preserve bool, wasempty bool) bool {
+	s.needzero = 1
+
+	if preserve {
+		// preserve is set only when called from (un)cacheSpan above,
+		// the span must be in the empty list.
+		if !s.inList() {
+			throw("can't preserve unlinked span")
+		}
+		atomic.Store(&s.sweepgen, mheap_.sweepgen)
+		return false
+	}
+
+	lock(&c.lock)
+
+	// 如果 mspan 完全空, 调整链表项
+	// Move to nonempty if necessary.
+	if wasempty {
+		c.empty.remove(s)
+		c.nonempty.insert(s)
+	}
+
+	// delay updating sweepgen until here. This is the signal that
+	// the span may be used in an mcache, so it must come after the
+	// linked list operations above (actually, just after the
+	// lock of c above.)
+	atomic.Store(&s.sweepgen, mheap_.sweepgen)
+
+	// 还有 object 正在使用, 返回
+	if s.allocCount != 0 {
+		unlock(&c.lock)
+		return false
+	}
+
+	// 没有 object 了, 也就是空的 mspan 尝试返回给 mheap
+	c.nonempty.remove(s)
+	unlock(&c.lock)
+	mheap_.freeSpan(s)
+	return true
+}
+```
+所谓的回收 mspan 仅仅对于 mspan 完全空闲情况下，调用 mheap.freeSpan() 尝试回收。非空的 mspan 其实没有啥操作。
 
 ### 4.5 mheap
 mheap 是最核心的组件了，runtime 只存在一个 mheap 对象，分配、初始化 mspan 都从 mheap 开始。
@@ -895,46 +1063,46 @@ var mheap_ mheap
 //
 //go:notinheap
 type mheap struct {
-		// arenas is the heap arena map. It points to the metadata for
-		// the heap for every arena frame of the entire usable virtual
-		// address space.
-		//
-		// Use arenaIndex to compute indexes into this array.
-		//
-		// For regions of the address space that are not backed by the
-		// Go heap, the arena map contains nil.
-		//
-		// Modifications are protected by mheap_.lock. Reads can be
-		// performed without locking; however, a given entry can
-		// transition from nil to non-nil at any time when the lock
-		// isn't held. (Entries never transitions back to nil.)
-		//
-		// In general, this is a two-level mapping consisting of an L1
-		// map and possibly many L2 maps. This saves space when there
-		// are a huge number of arena frames. However, on many
-		// platforms (even 64-bit), arenaL1Bits is 0, making this
-		// effectively a single-level map. In this case, arenas[0]
-		// will never be nil.
-		arenas [1 << arenaL1Bits]*[1 << arenaL2Bits]*heapArena
-		
-		// central free lists for small size classes.
-		// the padding makes sure that the mcentrals are
-		// spaced CacheLinePadSize bytes apart, so that each mcentral.lock
-		// gets its own cache line.
-		// central is indexed by spanClass.
-		central [numSpanClasses]struct {
-				mcentral mcentral
-				pad      [cpu.CacheLinePadSize - unsafe.Sizeof(mcentral{})%cpu.CacheLinePadSize]byte
-		}
-		
-		pages     pageAlloc // page allocation data structure
-		
-		spanalloc             fixalloc // allocator for span*
-		cachealloc            fixalloc // allocator for mcache*
-		specialfinalizeralloc fixalloc // allocator for specialfinalizer*
-		specialprofilealloc   fixalloc // allocator for specialprofile*
-		speciallock           mutex    // lock for special record allocators.
-		arenaHintAlloc        fixalloc // allocator for arenaHints
+	// arenas is the heap arena map. It points to the metadata for
+	// the heap for every arena frame of the entire usable virtual
+	// address space.
+	//
+	// Use arenaIndex to compute indexes into this array.
+	//
+	// For regions of the address space that are not backed by the
+	// Go heap, the arena map contains nil.
+	//
+	// Modifications are protected by mheap_.lock. Reads can be
+	// performed without locking; however, a given entry can
+	// transition from nil to non-nil at any time when the lock
+	// isn't held. (Entries never transitions back to nil.)
+	//
+	// In general, this is a two-level mapping consisting of an L1
+	// map and possibly many L2 maps. This saves space when there
+	// are a huge number of arena frames. However, on many
+	// platforms (even 64-bit), arenaL1Bits is 0, making this
+	// effectively a single-level map. In this case, arenas[0]
+	// will never be nil.
+	arenas [1 << arenaL1Bits]*[1 << arenaL2Bits]*heapArena
+			
+	// central free lists for small size classes.
+	// the padding makes sure that the mcentrals are
+	// spaced CacheLinePadSize bytes apart, so that each mcentral.lock
+	// gets its own cache line.
+	// central is indexed by spanClass.
+	central [numSpanClasses]struct {
+			mcentral mcentral
+			pad      [cpu.CacheLinePadSize - unsafe.Sizeof(mcentral{})%cpu.CacheLinePadSize]byte
+	}
+			
+	pages     pageAlloc // page allocation data structure
+			
+	spanalloc             fixalloc // allocator for span*
+	cachealloc            fixalloc // allocator for mcache*
+	specialfinalizeralloc fixalloc // allocator for specialfinalizer*
+	specialprofilealloc   fixalloc // allocator for specialprofile*
+	speciallock           mutex    // lock for special record allocators.
+	arenaHintAlloc        fixalloc // allocator for arenaHints
 }
 ```
 * **`arenas`** ：内存管理的元信息数组，对于虚拟内存的逻辑切割与管理就靠这个数组了；
@@ -975,121 +1143,122 @@ type mheap struct {
 //
 //go:notinheap
 type heapArena struct {
-        // bitmap stores the pointer/scalar bitmap for the words in
-        // this arena. See mbitmap.go for a description. Use the
-        // heapBits type to access this.
-        bitmap [heapArenaBitmapBytes]byte
+	// bitmap stores the pointer/scalar bitmap for the words in
+	// this arena. See mbitmap.go for a description. Use the
+	// heapBits type to access this.
+	bitmap [heapArenaBitmapBytes]byte
 
-        // spans maps from virtual address page ID within this arena to *mspan.
-        // For allocated spans, their pages map to the span itself.
-        // For free spans, only the lowest and highest pages map to the span itself.
-        // Internal pages map to an arbitrary span.
-        // For pages that have never been allocated, spans entries are nil.
-        //
-        // Modifications are protected by mheap.lock. Reads can be
-        // performed without locking, but ONLY from indexes that are
-        // known to contain in-use or stack spans. This means there
-        // must not be a safe-point between establishing that an
-        // address is live and looking it up in the spans array.
-        spans [pagesPerArena]*mspan
+	// spans maps from virtual address page ID within this arena to *mspan.
+	// For allocated spans, their pages map to the span itself.
+	// For free spans, only the lowest and highest pages map to the span itself.
+	// Internal pages map to an arbitrary span.
+	// For pages that have never been allocated, spans entries are nil.
+	//
+	// Modifications are protected by mheap.lock. Reads can be
+	// performed without locking, but ONLY from indexes that are
+	// known to contain in-use or stack spans. This means there
+	// must not be a safe-point between establishing that an
+	// address is live and looking it up in the spans array.
+	spans [pagesPerArena]*mspan
 
-        // pageInUse is a bitmap that indicates which spans are in
-        // state mSpanInUse. This bitmap is indexed by page number,
-        // but only the bit corresponding to the first page in each
-        // span is used.
-        //
-        // Reads and writes are atomic.
-        pageInUse [pagesPerArena / 8]uint8
+	// pageInUse is a bitmap that indicates which spans are in
+	// state mSpanInUse. This bitmap is indexed by page number,
+	// but only the bit corresponding to the first page in each
+	// span is used.
+	//
+	// Reads and writes are atomic.
+	pageInUse [pagesPerArena / 8]uint8
 
-        // pageMarks is a bitmap that indicates which spans have any
-        // marked objects on them. Like pageInUse, only the bit
-        // corresponding to the first page in each span is used.
-        //
-        // Writes are done atomically during marking. Reads are
-        // non-atomic and lock-free since they only occur during
-        // sweeping (and hence never race with writes).
-        //
-        // This is used to quickly find whole spans that can be freed.
-        //
-        // TODO(austin): It would be nice if this was uint64 for
-        // faster scanning, but we don't have 64-bit atomic bit
-        // operations.
-        pageMarks [pagesPerArena / 8]uint8
+	// pageMarks is a bitmap that indicates which spans have any
+	// marked objects on them. Like pageInUse, only the bit
+	// corresponding to the first page in each span is used.
+	//
+	// Writes are done atomically during marking. Reads are
+	// non-atomic and lock-free since they only occur during
+	// sweeping (and hence never race with writes).
+	//
+	// This is used to quickly find whole spans that can be freed.
+	//
+	// TODO(austin): It would be nice if this was uint64 for
+	// faster scanning, but we don't have 64-bit atomic bit
+	// operations.
+	pageMarks [pagesPerArena / 8]uint8
 
-        // pageSpecials is a bitmap that indicates which spans have
-        // specials (finalizers or other). Like pageInUse, only the bit
-        // corresponding to the first page in each span is used.
-        //
-        // Writes are done atomically whenever a special is added to
-        // a span and whenever the last special is removed from a span.
-        // Reads are done atomically to find spans containing specials
-        // during marking.
-        pageSpecials [pagesPerArena / 8]uint8
+	// pageSpecials is a bitmap that indicates which spans have
+	// specials (finalizers or other). Like pageInUse, only the bit
+	// corresponding to the first page in each span is used.
+	//
+	// Writes are done atomically whenever a special is added to
+	// a span and whenever the last special is removed from a span.
+	// Reads are done atomically to find spans containing specials
+	// during marking.
+	pageSpecials [pagesPerArena / 8]uint8
 
-        // zeroedBase marks the first byte of the first page in this
-        // arena which hasn't been used yet and is therefore already
-        // zero. zeroedBase is relative to the arena base.
-        // Increases monotonically until it hits heapArenaBytes.
-        //
-        // This field is sufficient to determine if an allocation
-        // needs to be zeroed because the page allocator follows an
-        // address-ordered first-fit policy.
-        //
-        // Read atomically and written with an atomic CAS.
-        zeroedBase uintptr
+	// zeroedBase marks the first byte of the first page in this
+	// arena which hasn't been used yet and is therefore already
+	// zero. zeroedBase is relative to the arena base.
+	// Increases monotonically until it hits heapArenaBytes.
+	//
+	// This field is sufficient to determine if an allocation
+	// needs to be zeroed because the page allocator follows an
+	// address-ordered first-fit policy.
+	//
+	// Read atomically and written with an atomic CAS.
+	zeroedBase uintptr
 }
 ```
-* `bitmap`：表示该 arena 区域中哪些地址保存了对象，每个字节的前 4bit 的每个 bit 表示一个 8B 内存（4个指针大小）是否被扫描，后 4bit 每个 bit 表示是否包含指针。<br>
+* `bitmap`：表示该 arena 区域中哪些地址保存了对象，**每个字节的前 4bit 的每个 bit 表示一个 8B 内存（4个指针大小）是否被扫描，后 4bit 每个 bit 表示是否包含指针**。<br>
 因此，一个字节就代表了 32B（4个指针，每个 8B）内存的状态。**（图片来自《知乎：图解Go语言内存分配》）**
 * `spans`：每个 mspan 对应的指针，因为管理 64 MB，所以数组长度为 8192（64MB / 8KB）。<br>
 其数组编号就是对应的 page 编号，例如 spans\[0] 就代表第一个 page 内存区域大小，执行对应的 mspan 。当然，mspan 可能有多个 page 组成，那么对应的多个数组项就指向的同一个 mspan 对象。
 * `zeroedBase` 记录管理的 arena 的内存基地址。
 {{< find_img "img8.png" >}}
 
-在一个 heapAreana 空间下，对于任意一个内存地址 addr，(addr - zeroedBase)/8KB 我们能够计算出对应的 page 编号，那么通过 heapAreana.spans\[index] 就可以找到对应的 mspan。
+在一个 heapAreana 空间下，**对于任意一个内存地址 addr，(addr - zeroedBase)/8KB 我们能够计算出对应的 page 编号，那么通过 heapAreana.spans\[index] 就可以找到对应的 mspan**。
+{{< admonition note Note>}}
+这个非常重要，在垃圾收集和许多地方都需要通过一个内存地址得到其对应的 mspan。
+{{< /admonition >}}
 
 #### 4.5.2 mheap 初始化
 在 runtime 初始化时，会镜像 mheap 的初始化，执行 `mheap.init()` 函数：
 ```go
 // Initialize the heap.
 func (h *mheap) init() {
-        lockInit(&h.lock, lockRankMheap)
-        lockInit(&h.sweepSpans[0].spineLock, lockRankSpine)
-        lockInit(&h.sweepSpans[1].spineLock, lockRankSpine)
-        lockInit(&h.speciallock, lockRankMheapSpecial)
+	lockInit(&h.lock, lockRankMheap)
+	lockInit(&h.sweepSpans[0].spineLock, lockRankSpine)
+	lockInit(&h.sweepSpans[1].spineLock, lockRankSpine)
+	lockInit(&h.speciallock, lockRankMheapSpecial)
 
-        h.spanalloc.init(unsafe.Sizeof(mspan{}), recordspan, unsafe.Pointer(h), &memstats.mspan_sys)
-        h.cachealloc.init(unsafe.Sizeof(mcache{}), nil, nil, &memstats.mcache_sys)
-        h.specialfinalizeralloc.init(unsafe.Sizeof(specialfinalizer{}), nil, nil, &memstats.other_sys)
-        h.specialprofilealloc.init(unsafe.Sizeof(specialprofile{}), nil, nil, &memstats.other_sys)
-        h.arenaHintAlloc.init(unsafe.Sizeof(arenaHint{}), nil, nil, &memstats.other_sys)
+	h.spanalloc.init(unsafe.Sizeof(mspan{}), recordspan, unsafe.Pointer(h), &memstats.mspan_sys)
+	h.cachealloc.init(unsafe.Sizeof(mcache{}), nil, nil, &memstats.mcache_sys)
+	h.specialfinalizeralloc.init(unsafe.Sizeof(specialfinalizer{}), nil, nil, &memstats.other_sys)
+	h.specialprofilealloc.init(unsafe.Sizeof(specialprofile{}), nil, nil, &memstats.other_sys)
+	h.arenaHintAlloc.init(unsafe.Sizeof(arenaHint{}), nil, nil, &memstats.other_sys)
 
-        // Don't zero mspan allocations. Background sweeping can
-        // inspect a span concurrently with allocating it, so it's
-        // important that the span's sweepgen survive across freeing
-        // and re-allocating a span to prevent background sweeping
-        // from improperly cas'ing it from 0.
-        //
-        // This is safe because mspan contains no heap pointers.
-        h.spanalloc.zero = false
+	// Don't zero mspan allocations. Background sweeping can
+	// inspect a span concurrently with allocating it, so it's
+	// important that the span's sweepgen survive across freeing
+	// and re-allocating a span to prevent background sweeping
+	// from improperly cas'ing it from 0.
+	//
+	// This is safe because mspan contains no heap pointers.
+	h.spanalloc.zero = false
 
-        // h->mapcache needs no init
+	// h->mapcache needs no init
 
-        for i := range h.central {
-                h.central[i].mcentral.init(spanClass(i))
-        }
+	for i := range h.central {
+		h.central[i].mcentral.init(spanClass(i))
+	}
 
-        h.pages.init(&h.lock, &memstats.gc_sys)
+	h.pages.init(&h.lock, &memstats.gc_sys)
 }
 ```
 1. 初始化各个类型的空闲链表分配器：`spanalloc`、`cachealloc` 等；
 1. 初始化各个 `mcentral`；
 1. 初始化 `page alloctor`；
 
-<a id="mheap-alloc_mspan"></a>
-
 #### 4.5.3 mheap 分配 mspan
-在 [**mcentral 扩容流程**](#mcentral-grow)中看到，会调用 `mheap.alloc()` 申请一个新的 mspan。
+在 [**mcentral 扩容流程**](#442-mcentral-扩容)中看到，会调用 `mheap.alloc()` 申请一个新的 mspan。
 
 而之前说的 large object 分配，也是直接会走 `mheap.alloc()` 分配到一个合适大小的 mspan，然后分配 object。
 ```go
@@ -1099,26 +1268,26 @@ func (h *mheap) init() {
 //
 // If needzero is true, the memory for the returned span will be zeroed.
 func (h *mheap) alloc(npages uintptr, spanclass spanClass, needzero bool) *mspan {
-        // Don't do any operations that lock the heap on the G stack.
-        // It might trigger stack growth, and the stack growth code needs
-        // to be able to allocate heap.
-        var s *mspan
-        systemstack(func() {
-                // To prevent excessive heap growth, before allocating n pages
-                // we need to sweep and reclaim at least n pages.
-                if h.sweepdone == 0 {
-                        h.reclaim(npages)
-                }
-                s = h.allocSpan(npages, false, spanclass, &memstats.heap_inuse)
-        })
+	// Don't do any operations that lock the heap on the G stack.
+	// It might trigger stack growth, and the stack growth code needs
+	// to be able to allocate heap.
+	var s *mspan
+	systemstack(func() {
+		// To prevent excessive heap growth, before allocating n pages
+		// we need to sweep and reclaim at least n pages.
+		if h.sweepdone == 0 {
+			h.reclaim(npages)
+		}
+		s = h.allocSpan(npages, false, spanclass, &memstats.heap_inuse)
+	})
 
-        if s != nil {
-                if needzero && s.needzero != 0 {
-                        memclrNoHeapPointers(unsafe.Pointer(s.base()), s.npages<<_PageShift)
-                }
-                s.needzero = 0
-        }
-        return s
+	if s != nil {
+		if needzero && s.needzero != 0 {
+		 	memclrNoHeapPointers(unsafe.Pointer(s.base()), s.npages<<_PageShift)
+		}
+		s.needzero = 0
+	}
+	return s
 }
 
 // allocSpan allocates an mspan which owns npages worth of memory.
@@ -1139,53 +1308,51 @@ func (h *mheap) alloc(npages uintptr, spanclass spanClass, needzero bool) *mspan
 //
 //go:systemstack
 func (h *mheap) allocSpan(npages uintptr, manual bool, spanclass spanClass, sysStat *uint64) (s *mspan) {
-        // Function-global state.
-        gp := getg()
-        base, scav := uintptr(0), uintptr(0)
+	// Function-global state.
+	gp := getg()
+	base, scav := uintptr(0), uintptr(0)
 
-        // If the allocation is small enough, try the page cache!
-        pp := gp.m.p.ptr()
-        if pp != nil && npages < pageCachePages/4 {
-                c := &pp.pcache
+	// If the allocation is small enough, try the page cache!
+	pp := gp.m.p.ptr()
+	if pp != nil && npages < pageCachePages/4 {
+	        c := &pp.pcache
 
-        // If the cache is empty, refill it.
-        if c.empty() {
-                lock(&h.lock)
-                *c = h.pages.allocToCache()
-                unlock(&h.lock)
-        }
+	// If the cache is empty, refill it.
+	if c.empty() {
+	        lock(&h.lock)
+	        *c = h.pages.allocToCache()
+	        unlock(&h.lock)
+	}
 
-        // Try to allocate from the cache.
-        base, scav = c.alloc(npages)
-        if base != 0 {
-                s = h.tryAllocMSpan()
+	// Try to allocate from the cache.
+	base, scav = c.alloc(npages)
+	if base != 0 {
+	        s = h.tryAllocMSpan()
 
-        if s != nil && gcBlackenEnabled == 0 && (manual || spanclass.sizeclass() != 0) {
-                goto HaveSpan
-        }
-        }
-        }
-        
-        if base == 0 {
-                // Try to acquire a base address.
-                base, scav = h.pages.alloc(npages)
-                if base == 0 {
-                        if !h.grow(npages) {
-                                unlock(&h.lock)
-                                return nil
-                        }
-                        base, scav = h.pages.alloc(npages)
-                        if base == 0 {
-                                throw("grew heap, but no adequate free space found")
-                        }
-                }
-        }
-        
-        … 
+	if s != nil && gcBlackenEnabled == 0 && (manual || spanclass.sizeclass() != 0) {
+	        goto HaveSpan
+	}
+	        
+	if base == 0 {
+		// Try to acquire a base address.
+		base, scav = h.pages.alloc(npages)
+		if base == 0 {
+			if !h.grow(npages) {
+				unlock(&h.lock)
+				return nil
+			}
+			base, scav = h.pages.alloc(npages)
+			if base == 0 {
+			 	throw("grew heap, but no adequate free space found")
+			}
+		}
+	}
+	        
+	… 
 HaveSpan:
-        // 初始化 mspan
-        …
-        return s
+	// 初始化 mspan
+	…
+	return s
 }
 ```
 函数很长，这里只保留了最关键的步骤：
@@ -1199,7 +1366,68 @@ HaveSpan:
 最后获取到之后，就会走 mspan 的初始化流程，包括初始 mspan 数据结构，记录 mspan 指针到 `mheap.arenas` 等行为。
 
 #### 4.5.4 mheap 回收 mspan
-TODO
+所有的回收 mspan 操作最后殊途同归，会走到 `mheap.freeSpan()` 函数:
+```go
+// Free the span back into the heap.
+func (h *mheap) freeSpan(s *mspan) {
+	systemstack(func() {
+		c := getg().m.p.ptr().mcache
+		lock(&h.lock)
+		h.freeSpanLocked(s, true, true)
+		unlock(&h.lock)
+	})
+}
+
+func (h *mheap) freeSpanLocked(s *mspan, acctinuse, acctidle bool) {
+	...
+
+	// Mark the space as free.
+	h.pages.free(s.base(), s.npages)
+
+	// Free the span structure. We no longer have a use for it.
+	s.state.set(mSpanDead)
+	h.freeMSpanLocked(s)
+}
+
+// free returns npages worth of memory starting at base back to the page heap.
+//
+// s.mheapLock must be held.
+func (s *pageAlloc) free(base, npages uintptr) {
+	// If we're freeing pages below the s.searchAddr, update searchAddr.
+	if b := (offAddr{base}); b.lessThan(s.searchAddr) {
+		s.searchAddr = b
+	}
+	// Update the free high watermark for the scavenger.
+	limit := base + npages*pageSize - 1
+	if offLimit := (offAddr{limit}); s.scav.freeHWM.lessThan(offLimit) {
+		s.scav.freeHWM = offLimit
+	}
+	if npages == 1 {
+		// Fast path: we're clearing a single bit, and we know exactly
+		// where it is, so mark it directly.
+		i := chunkIndex(base)
+		s.chunkOf(i).free1(chunkPageIndex(base))
+	} else {
+		// Slow path: we're clearing more bits so we may need to iterate.
+		sc, ec := chunkIndex(base), chunkIndex(limit)
+		si, ei := chunkPageIndex(base), chunkPageIndex(limit)
+
+		if sc == ec {
+			// The range doesn't cross any chunk boundaries.
+			s.chunkOf(sc).free(si, ei+1-si)
+		} else {
+			// The range crosses at least one chunk boundary.
+			s.chunkOf(sc).free(si, pallocChunkPages-si)
+			for c := sc + 1; c < ec; c++ {
+				s.chunkOf(c).freeAll()
+			}
+			s.chunkOf(ec).free(0, ei+1)
+		}
+	}
+	s.update(base, npages, true, false)
+}
+```
+清理操作将对应的 page 标记为未使用的，这样之后新的 mspan 创建时可以复用。
 
 #### 4.5.5 mheap 扩容
 扩容的逻辑更加复杂，目前先不细致的分析了。
@@ -1207,23 +1435,23 @@ TODO
 这里可以看一下申请内存使用的方式：
 ```go
 func sysReserve(v unsafe.Pointer, n uintptr) unsafe.Pointer {
-        p, err := mmap(v, n, _PROT_NONE, _MAP_ANON|_MAP_PRIVATE, -1, 0)
-        if err != 0 {
-                return nil
-        }
-        return p
+	p, err := mmap(v, n, _PROT_NONE, _MAP_ANON|_MAP_PRIVATE, -1, 0)
+	if err != 0 {
+		return nil
+	}
+	return p
 }
 
 func sysMap(v unsafe.Pointer, n uintptr, sysStat *uint64) {
-        mSysStatInc(sysStat, n)
+	mSysStatInc(sysStat, n)
 
-        p, err := mmap(v, n, _PROT_READ|_PROT_WRITE, _MAP_ANON|_MAP_FIXED|_MAP_PRIVATE, -1, 0)
-        if err == _ENOMEM {
-                throw("runtime: out of memory")
-        }
-        if p != v || err != 0 {
-                throw("runtime: cannot map pages in arena address space")
-        }
+	p, err := mmap(v, n, _PROT_READ|_PROT_WRITE, _MAP_ANON|_MAP_FIXED|_MAP_PRIVATE, -1, 0)
+	if err == _ENOMEM {
+		throw("runtime: out of memory")
+	}
+	if p != v || err != 0 {
+		throw("runtime: cannot map pages in arena address space")
+	}
 }
 ```
 1. 会先调用 `sysReserve()` 来申请内存，但是不使用，预备状态；
@@ -1252,7 +1480,7 @@ mheap 作为最底层，就好像文件系统一样，管理着整个内存分�
 所有的分配逻辑在 `mallocgc()` 开始分叉，下面分别看下具体的分配代码。
 
 ### 5.1 tiny object 分配
-tiny object 分配的代码在 [**mspan 分配**](#mcache-alloc_mspan)中已经说明了，这里再理一下大致步骤：
+tiny object 分配的代码在 [**mspan 分配**](#431-mspan-的分配)中已经说明了，这里再理一下大致步骤：
 1. 不包含指针(noscan)并且小于 16B 的对象才走微小对象分配；
 2. tiny object 分配仅仅是增大 mcache.tinyoffset 的值，所以是不同大小 tiny object 挤压在一个 mspan 中；
 3. 如果当前的 mspan 没有空间了，通过 mcache.nextFree() 来获取新的指定大小的 mspan，而获取的流程就是前面所说的（走 mcentral->mheap);
@@ -1347,11 +1575,82 @@ func largeAlloc(size uintptr, needzero bool, noscan bool) *mspan {
 1. large object 会切换到系统栈，然后走 mheap 申请；
 2. 计算对象需要的 page 数量，然后调用 mheap.alloc() 申请空闲的 mspan；
 
-而 [**mheap.alloc()**](#mheap-alloc_mspan) 就是 mcentral 申请 mspan 的方法。
+而 [**mheap.alloc()**](#453-mheap-分配-mspan) 就是 mcentral 申请 mspan 的方法。
+
+
+## 6 内存的释放
+### 6.1 释放操作
+前面 [**4.5.4 mheap 回收 mspan**](#454-mheap-回收-mspan) 中看到，mheap 不会真正的释放内存，而是等待其被复用。但是不可能一直扩展内存，而不释放。
+
+释放内存由 `mheap.page` 的 `pageAlloc.scavenge()` 函数负责（runtime/mgcscavenge.go）:
+```go
+// scavenge scavenges nbytes worth of free pages, starting with the
+// highest address first. Successive calls continue from where it left
+// off until the heap is exhausted. Call scavengeStartGen to bring it
+// back to the top of the heap.
+//
+// Returns the amount of memory scavenged in bytes.
+//
+// s.mheapLock must be held, but may be temporarily released if
+// mayUnlock == true.
+//
+// Must run on the system stack because s.mheapLock must be held.
+//
+//go:systemstack
+func (s *pageAlloc) scavenge(nbytes uintptr, mayUnlock bool) uintptr {
+	var (
+		addrs addrRange
+		gen   uint32
+	)
+	released := uintptr(0)
+	for released < nbytes {
+		if addrs.size() == 0 {
+			// 通过标记选出一部分需要释放的内存区域
+			if addrs, gen = s.scavengeReserve(); addrs.size() == 0 {
+				break
+			}
+		}
+		// 释放内存
+		r, a := s.scavengeOne(addrs, nbytes-released, mayUnlock)
+		released += r
+		addrs = a
+	}
+	// Only unreserve the space which hasn't been scavenged or searched
+	// to ensure we always make progress.
+	s.scavengeUnreserve(addrs, gen)
+	return released
+}
+```
+释放的流程比较复杂，没有研究过看不懂，目前知道下最后会调用 `sysUnused()` 函数释放（runtime/mem_linux.go）：
+```go
+func sysUnused(v unsafe.Pointer, n uintptr) {
+	// huge page 处理
+	...
+
+	var advise uint32
+	if debug.madvdontneed != 0 {
+		advise = _MADV_DONTNEED
+	} else {
+		advise = atomic.Load(&adviseUnused)
+	}
+	if errno := madvise(v, n, int32(advise)); advise == _MADV_FREE && errno != 0 {
+		// MADV_FREE was added in Linux 4.5. Fall back to MADV_DONTNEED if it is
+		// not supported.
+		atomic.Store(&adviseUnused, _MADV_DONTNEED)
+		madvise(v, n, _MADV_DONTNEED)
+	}
+}
+```
+* 通过系统调用 **`madvise()`** 告知操作系统某段内存不适用，建议内核回收对应物理内存。<br>
+当然，内核在物理内存充足情况下可能不会实际回收内存，以减少无谓的回收消耗。<br>
+而当再次使用此内存块时，会引发缺页异常，内核会自动重新关联物理内存页。
+### 6.2 释放时机
+`scavenge()` 有两个地方会被调用:
+1. **周期性的触发**（每 5 min?）；
+2. **mheap 扩容时** 或者 **调用 [runtime/debug.FreeOSMemory()](https://pkg.go.dev/runtime/debug#FreeOSMemory) 主动触发**；
 
 
 ## 参考
-<a id="reference"></a>
 
 * [《Golang 学习笔记》](https://github.com/qyuhen/book)
 * [Blog：Go 内存管理可视化](https://medium.com/@ankur_anand/a-visual-guide-to-golang-memory-allocator-from-ground-up-e132258453ed)
