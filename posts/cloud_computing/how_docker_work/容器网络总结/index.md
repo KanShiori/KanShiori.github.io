@@ -48,7 +48,6 @@ Server:
   GitCommit:
 ```
 
-
 ## 2 背景知识
 
 ### 2.1 cgroup 与 namespace
@@ -87,7 +86,7 @@ $ ls -lhi /run/docker/netns/9779108cb6b0
 
 不过与真实的交换机不同，brdige 网卡可以被赋值 IP，当 bridge 拥有 IP 后，它就与内核协议栈连接了，因此接收到的包可以到达内核协议栈的 IP 层处理，也就会经过 net_filter 处理。
 {{< admonition tip 推荐阅读 >}}
-bridge 网卡推荐阅读：[Linux虚拟网络设备之bridge(桥)](https://segmentfault.com/a/1190000009491002)
+bridge 网卡推荐阅读：[Linux 虚拟网络设备之 bridge（桥）](https://segmentfault.com/a/1190000009491002)
 {{< /admonition >}}
 
 ### 2.4 veth-pair 虚拟网络设备
@@ -96,7 +95,7 @@ bridge 网卡推荐阅读：[Linux虚拟网络设备之bridge(桥)](https://segm
 默认下，veth 设备链接的两端是内核协议栈。不过 veth 设备链接上 bridge，这样另一端发送的数据都会由 bridge 处理。
 
 {{< admonition tip 推荐阅读 >}}
-veth-pair 设备了解推荐文章：[Linux虚拟网络设备之veth](https://segmentfault.com/a/1190000009251098)
+veth-pair 设备了解推荐文章：[Linux 虚拟网络设备之 veth](https://segmentfault.com/a/1190000009251098)
 {{< /admonition >}}
 
 ### 2.5 macvlan 虚拟网络设备
@@ -105,7 +104,6 @@ veth-pair 设备了解推荐文章：[Linux虚拟网络设备之veth](https://se
 macvlan 网络设备有着多种的模式，包括：bridge、private 等，这影响着各个 macvlan 网络设备之间的通信。
 
 更多 macvlan 网络设备推荐文章：[Linux interfaces for virtual networking](https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/)
-
 
 ## 3 Bridge 网络
 
@@ -332,7 +330,7 @@ Chain DOCKER (2 references)
 * PREROUTING  -> DOCKER 链中，所有不是从 mybr0 进入的包，并且发往 tcp 12211 端口的包，都会被 **DNAT** 为发往 192.168.100.2:8080。这样就实现了端口映射的功能。
 
 ### 3.3 bridge 网络总结
-中心思想：bridge 网络使用 bridge 网卡创建了一个本地的内网，而 bridge 网卡 + iptables 规则成为了这个内网的 '**路由器**'。其中:
+中心思想：bridge 网络使用 bridge 网卡创建了一个本地的内网，而 bridge 网卡 + iptables 规则成为了这个内网的 '**路由器**'。其中：
 * bridge 网卡作为二层的交换机，bridge 网卡 ip 作为路由器的网关 ip。
 * iptables 规则实现了 brdige 网卡与物理网络的连接
 * 宿主机内核栈实现了这个 '路由器' 的路由功能。
@@ -344,7 +342,6 @@ Chain DOCKER (2 references)
 2. iptables 实现了 bridge 网卡与物理网络的 '连接'。
 bridge 网卡收到的包，经过 iptables 的 MASQUERADE 将包进行地址转换，并经过内核协议栈的路由通过物理网卡发送到物理网络。而回包通过 conntrack 机制正常接收与逆地址转换。
 3. 容器与宿主机的端口映射，也是通过 iptables 的 DNAT 实现的。
-
 
 ## 4 Host 网络
 Host 网络没啥好说的，启动容器不创建新的 namespace，依旧在宿主机的 net namespace 下。
@@ -365,7 +362,6 @@ lrwxrwxrwx 1 root root 0 Nov  7 14:47 /proc/self/ns/net -> 'net:[4026531992]'
 $ ls -lhi  /run/docker/netns/default
 4026531992 -r--r--r-- 1 root root 0 Oct 30 16:50 /run/docker/netns/default
 ```
-
 
 ## 5 macvlan 网络
 macvlan 网络使用 macvlan 虚拟网络设备，将容器 net namespace 网络暴露在与当前宿主机同级的局域网内，相当于容器就是当前网络内的一台 "主机"。
@@ -483,9 +479,7 @@ PING 192.168.9.253 (192.168.9.253) 56(84) bytes of data.
 ### 5.3 总结
 中心思想：将 macvlan 网络启动容器看做一个与宿主机同级的网络，其获取 IP 方式都与正常的机器相同。
 
-
-
 ## 参考
 * [Docker 容器网络官方文档](https://docs.docker.com/network/)
-* [Linux虚拟网络设备之bridge(桥)](https://segmentfault.com/a/1190000009491002)
+* [Linux 虚拟网络设备之 bridge（桥）](https://segmentfault.com/a/1190000009491002)
 * [Linux interfaces for virtual networking](https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/)

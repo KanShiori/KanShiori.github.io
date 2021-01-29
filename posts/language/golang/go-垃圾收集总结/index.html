@@ -5,8 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Go 垃圾收集总结 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Go 垃圾收集总结" />
-<meta property="og:description" content="总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 垃圾收集的一个总结，基本内容来源于网络的学习" />
+        <title>Go 垃圾收集总结 - Shiori&#39;s Blog</title><meta name="Description" content="Golang 三色标记收集算法，算法实现原理"><meta property="og:title" content="Go 垃圾收集总结" />
+<meta property="og:description" content="Golang 三色标记收集算法，算法实现原理" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/" />
 <meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -16,9 +16,9 @@
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
 <meta name="twitter:title" content="Go 垃圾收集总结"/>
-<meta name="twitter:description" content="总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 垃圾收集的一个总结，基本内容来源于网络的学习"/>
+<meta name="twitter:description" content="Golang 三色标记收集算法，算法实现原理"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/" /><link rel="prev" href="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/" /><link rel="prev" href="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" /><link rel="next" href="https://KanShiori.github.io/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -27,13 +27,13 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  7471 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  7450 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93\/","datePublished": "2021-01-14T20:40:47+08:00","dateModified": "2021-01-14T20:40:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
                 "name": "Shiori"
-            },"description": ""
+            },"description": "Golang 三色标记收集算法，算法实现原理"
     }
     </script></head>
     <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Go 垃圾收集总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw"></i>Golang</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-14">2021-01-14</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 7471 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-14">2021-01-14</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 7450 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 15 分钟&nbsp;<span id="/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Go 垃圾收集总结">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -220,9 +220,9 @@
 
 
 </p>
-<p>但是，仅仅是普通的三色标记算法要求执行时，Mutator 不能同时运行。因为如果 Mutator 并行时，某个扫描过的结点的引用关系变化，就可能导致<strong><ruby>悬挂指针<rt>dangling pointer</rt></ruby></strong>问题。</p>
+<p>但是，仅仅是普通的三色标记算法要求执行时，Mutator 不能同时运行。因为如果 Mutator 并行时，某个扫描过的结点的引用关系变化，就可能导致 <strong><ruby>悬挂指针<rt>dangling pointer</rt></ruby></strong> 问题。</p>
 <p>例如，上图中第 3 步将 A 指向 D，那么 D 还是无法被标记，被错误回收。</p>
-<p>而想要让 Mutator 同时运行时，标记的结果还保持正确，那么每个时刻标记的结果要满足<strong><ruby>三色不变性<rt>Tri-color invariant</rt></ruby></strong> <a id="三色不变性"></a></p>
+<p>而想要让 Mutator 同时运行时，标记的结果还保持正确，那么每个时刻标记的结果要满足 <strong><ruby>三色不变性<rt>Tri-color invariant</rt></ruby></strong> <a id="三色不变性"></a></p>
 <ul>
 <li><strong><code>强三色不变性</code></strong>：<strong>黑色对象不会指向白色对象，只会指向灰色对象或者黑色对象</strong>。<br>
 因为黑色对象不会再被扫描，如果黑色对象指向白色对象，那么肯定该白色对象会被错误回收。<br>
@@ -279,8 +279,8 @@
 <p>Go 中使用 <strong><code>混合写屏障</code></strong>，即插入写屏障与删除写屏障都开启，并且在标记阶段开始后，将创建的所有新对象都标记为黑色，防止新分配的对象被错误的回收。</p>
 <p>具体操作为：</p>
 <ol>
-<li>GC开始将栈上的对象全部扫描并标记为黑色(之后不再进行第二次重复扫描，无需STW)，</li>
-<li>GC期间，任何在栈上创建的新对象，均为黑色。</li>
+<li>GC 开始将栈上的对象全部扫描并标记为黑色（之后不再进行第二次重复扫描，无需 STW)，</li>
+<li>GC 期间，任何在栈上创建的新对象，均为黑色。</li>
 <li>被删除的对象标记为灰色。</li>
 <li>被添加的对象标记为灰色。</li>
 </ol>
@@ -508,8 +508,6 @@
 </span><span class="lnt">107
 </span><span class="lnt">108
 </span><span class="lnt">109
-</span><span class="lnt">110
-</span><span class="lnt">111
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// gcDrain scans roots and objects in work buffers, blackening grey
@@ -610,8 +608,6 @@
                 <span class="k">if</span> <span class="nx">check</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nf">check</span><span class="p">()</span> <span class="p">{</span>
                         <span class="k">break</span>
                 <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="p">}</span>
         <span class="p">}</span>
 
 <span class="nx">done</span><span class="p">:</span>
@@ -829,9 +825,6 @@
 </span><span class="lnt">61
 </span><span class="lnt">62
 </span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// scanobject scans the object starting at b, adding pointers to gcw.
@@ -860,12 +853,10 @@
                         <span class="nx">gcw</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="nx">oblet</span><span class="p">)</span>
                 <span class="p">}</span>
         <span class="p">}</span>
-        <span class="p">}</span>
 
         <span class="nx">n</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()</span> <span class="o">+</span> <span class="nx">s</span><span class="p">.</span><span class="nx">elemsize</span> <span class="o">-</span> <span class="nx">b</span>
         <span class="k">if</span> <span class="nx">n</span> <span class="p">&gt;</span> <span class="nx">maxObletBytes</span> <span class="p">{</span>
                 <span class="nx">n</span> <span class="p">=</span> <span class="nx">maxObletBytes</span>
-        <span class="p">}</span>
         <span class="p">}</span>
 
         <span class="c1">// 普通 object 的子对象扫描
@@ -895,7 +886,6 @@
                 <span class="k">if</span> <span class="nx">obj</span><span class="p">,</span> <span class="nx">span</span><span class="p">,</span> <span class="nx">objIndex</span> <span class="o">:=</span> <span class="nf">findObject</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">i</span><span class="p">);</span> <span class="nx">obj</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
                         <span class="nf">greyobject</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">span</span><span class="p">,</span> <span class="nx">gcw</span><span class="p">,</span> <span class="nx">objIndex</span><span class="p">)</span>
                 <span class="p">}</span>
-        <span class="p">}</span>
         <span class="p">}</span>
         <span class="nx">gcw</span><span class="p">.</span><span class="nx">bytesMarked</span> <span class="o">+=</span> <span class="nb">uint64</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
         <span class="nx">gcw</span><span class="p">.</span><span class="nx">scanWork</span> <span class="o">+=</span> <span class="nb">int64</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
@@ -959,7 +949,6 @@
 </span><span class="lnt">43
 </span><span class="lnt">44
 </span><span class="lnt">45
-</span><span class="lnt">46
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// obj is the start of an object with mark mbits.
@@ -1001,7 +990,6 @@
                 <span class="nx">gcw</span><span class="p">.</span><span class="nx">bytesMarked</span> <span class="o">+=</span> <span class="nb">uint64</span><span class="p">(</span><span class="nx">span</span><span class="p">.</span><span class="nx">elemsize</span><span class="p">)</span>
                 <span class="k">return</span>
         <span class="p">}</span>
-        <span class="p">}</span>
 
         <span class="c1">// 放入 gcWork 中
 </span><span class="c1"></span>        <span class="k">if</span> <span class="p">!</span><span class="nx">gcw</span><span class="p">.</span><span class="nf">putFast</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
@@ -1015,7 +1003,7 @@
 <p>在 SSA 中间代码生成阶段，编译器会在 Store、Move、Zero 操作中加入写屏障，写屏障函数为 <code>writebarrier()</code> 函数（cmd/compile/internal/ssa/writebarrier.go）。</p>
 <p><code>writebarrier()</code> 函数很复杂，这里不展开。再次看一下混合写屏障操作：</p>
 <ol>
-<li>GC 开始将栈上的对象全部扫描并标记为黑色(之后不再进行第二次重复扫描，无需STW)。</li>
+<li>GC 开始将栈上的对象全部扫描并标记为黑色（之后不再进行第二次重复扫描，无需 STW)。</li>
 <li>GC 期间，任何在栈上创建的新对象，均为黑色。</li>
 <li>被删除的对象标记为灰色。</li>
 <li>被添加的对象标记为灰色。</li>
@@ -1732,7 +1720,8 @@ sysmon 会根据系统情况决定是否触发。</li>
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" class="prev" rel="prev" title="Go 内存管理总结"><i class="fas fa-angle-left fa-fw"></i>Go 内存管理总结</a></div>
+    <div class="post-nav"><a href="/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" class="prev" rel="prev" title="Go 内存管理总结"><i class="fas fa-angle-left fa-fw"></i>Go 内存管理总结</a>
+            <a href="/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/" class="next" rel="next" title="Go 并发调度总结">Go 并发调度总结<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 <div id="comments"><div id="valine" class="comment"></div><noscript>
                 Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.

@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/how_docker_work\/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "docker, container","wordcount":  5491 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "docker, container","wordcount":  5484 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/how_docker_work\/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93\/","datePublished": "2020-11-06T20:40:51+08:00","dateModified": "2020-11-06T20:40:51+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">容器网络总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/docker-%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/"><i class="far fa-folder fa-fw"></i>Docker 原理总结</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-06">2020-11-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 5491 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-06">2020-11-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 5484 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 11 分钟&nbsp;<span id="/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="容器网络总结">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -293,7 +293,7 @@ $ ls -lhi /run/docker/netns/9779108cb6b0
             <i class="icon fas fa-lightbulb fa-fw"></i>推荐阅读<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">bridge 网卡推荐阅读：<a href="https://segmentfault.com/a/1190000009491002" target="_blank" rel="noopener noreffer">Linux虚拟网络设备之bridge(桥)</a></div>
+            <div class="admonition-content">bridge 网卡推荐阅读：<a href="https://segmentfault.com/a/1190000009491002" target="_blank" rel="noopener noreffer">Linux 虚拟网络设备之 bridge（桥）</a></div>
         </div>
     </div></p>
 <h3 id="24-veth-pair-虚拟网络设备">2.4 veth-pair 虚拟网络设备</h3>
@@ -304,7 +304,7 @@ $ ls -lhi /run/docker/netns/9779108cb6b0
             <i class="icon fas fa-lightbulb fa-fw"></i>推荐阅读<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">veth-pair 设备了解推荐文章：<a href="https://segmentfault.com/a/1190000009251098" target="_blank" rel="noopener noreffer">Linux虚拟网络设备之veth</a></div>
+            <div class="admonition-content">veth-pair 设备了解推荐文章：<a href="https://segmentfault.com/a/1190000009251098" target="_blank" rel="noopener noreffer">Linux 虚拟网络设备之 veth</a></div>
         </div>
     </div>
 <h3 id="25-macvlan-虚拟网络设备">2.5 macvlan 虚拟网络设备</h3>
@@ -738,7 +738,7 @@ Chain DOCKER <span class="o">(</span><span class="m">2</span> references<span cl
 <li>PREROUTING  -&gt; DOCKER 链中，所有不是从 mybr0 进入的包，并且发往 tcp 12211 端口的包，都会被 <strong>DNAT</strong> 为发往 192.168.100.2:8080。这样就实现了端口映射的功能。</li>
 </ul>
 <h3 id="33-bridge-网络总结">3.3 bridge 网络总结</h3>
-<p>中心思想：bridge 网络使用 bridge 网卡创建了一个本地的内网，而 bridge 网卡 + iptables 规则成为了这个内网的 &lsquo;<strong>路由器</strong>'。其中:</p>
+<p>中心思想：bridge 网络使用 bridge 网卡创建了一个本地的内网，而 bridge 网卡 + iptables 规则成为了这个内网的 &lsquo;<strong>路由器</strong>'。其中：</p>
 <ul>
 <li>bridge 网卡作为二层的交换机，bridge 网卡 ip 作为路由器的网关 ip。</li>
 <li>iptables 规则实现了 brdige 网卡与物理网络的连接</li>
@@ -1015,7 +1015,7 @@ PING 192.168.9.253 <span class="o">(</span>192.168.9.253<span class="o">)</span>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://docs.docker.com/network/" target="_blank" rel="noopener noreffer">Docker 容器网络官方文档</a></li>
-<li><a href="https://segmentfault.com/a/1190000009491002" target="_blank" rel="noopener noreffer">Linux虚拟网络设备之bridge(桥)</a></li>
+<li><a href="https://segmentfault.com/a/1190000009491002" target="_blank" rel="noopener noreffer">Linux 虚拟网络设备之 bridge（桥）</a></li>
 <li><a href="https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/" target="_blank" rel="noopener noreffer">Linux interfaces for virtual networking</a></li>
 </ul>
 </div><div class="post-footer" id="post-footer">

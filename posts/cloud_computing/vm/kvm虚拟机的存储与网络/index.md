@@ -6,7 +6,6 @@
 
 下面所有的虚拟机启动都使用 libvirt，通过修改其配置文件来设置网络或者存储，省略了虚拟机的启动、停止等操作命令。
 
-
 ## 1 virtio 概述
 KVM 在 IO 虚拟化方面，传统的方式是使用 QEMU 纯软件方式模拟网卡、磁盘。
 
@@ -56,7 +55,7 @@ virtio                 15008  2 virtio_net,virtio_pci
 其中，virtio、virtio_ring、virtio_pci 等驱动提供对 virtio API 支持，任何 virtio 前端驱动都必须使用。
 
 ### 1.3 vhost
-正如[**前面所述**](#12-virtio-基本原理)，virtio 分为前后端，而后端默认为用户空间的 QEMU 进程。由 QEMU 进程模拟虚拟机的命令，在将结果返回给虚拟机。可以看到，这里存在着一次 用户空间至内核空间的转换。
+正如 [**前面所述**](#12-virtio-基本原理)，virtio 分为前后端，而后端默认为用户空间的 QEMU 进程。由 QEMU 进程模拟虚拟机的命令，在将结果返回给虚拟机。可以看到，这里存在着一次 用户空间至内核空间的转换。
 
 而 vhost 出现就是用于优化这一次的转换。**`vhost`** 是宿主机中的一个内核模块，用于和虚拟机直接进行通信，也是通过 virtio 提供的数据队列进行通信。
 
@@ -79,7 +78,6 @@ vhost_iotlb            16384  1 vhost
 
 而 virtio 的通信方式中，还存在 QEMU 模拟命令执行这一个优化点，因此，**vhost 出现优化了这一次的用户空间至内核空间的切换**。
 
-
 ## 2 设备直接分配
 
 ### 2.1 PCI 设备直接分配
@@ -88,7 +86,7 @@ vhost_iotlb            16384  1 vhost
 设备直接分配相当于虚拟机直接使用硬件设备，也就没有了 QEMU 进程的模拟，因此速度最快。
 
 但是，设备直接分配有一些条件：
-* 硬件平台需要支持 Intel 硬件支持设备直接分配规范为 "Intel(R)Virtualization Technology for Directed I/O"（VT-d）或者 AMD 的规范为 "AMD-Vi"（也叫作IOMMU）。
+* 硬件平台需要支持 Intel 硬件支持设备直接分配规范为 "Intel(R)Virtualization Technology for Directed I/O"（VT-d）或者 AMD 的规范为 "AMD-Vi"（也叫作 IOMMU）。
 目前市面上的 x86 硬件平台基本都支持 VT-d，在 BIOS 中设置打开 VT-d 特性。
 * 内核配置支持相关 VT-d 的特性，并且加载内核模块 vfio-pci（内核 >= 3.10）。
 * 内核启动参数需要打开 intel_iommu=on（intel 平台）
@@ -150,7 +148,6 @@ $ lspci -s 82:00.0 -v
 ```
 * *"Capabilities: \[160] Single Root I/O Virtualization (SR-IOV)"* 表示网卡支持 SR-IOV 功能
 具体使用方式见网络模式中的示例。
-
 
 ## 3 存储模式
 下面的磁盘测试都是以 4k 随机读写测试，命令如下：
@@ -232,7 +229,7 @@ vdb    253:16   0  500G  0 disk
 
 virtio-blk 虽然提供了很高的存储访问性能，但是其设计上也有着一些缺点：
 * virtio blk 的范围有限，这使得新的命令实现变得复杂。每次开发一个新命令时，virtio blk 驱动程序都必须在每个客户机中更新
-* **virtio blk 将 PCI 功能和存储设备映射为1:1，一个映射就需要占用虚拟机一个 PCI 地址**，限制了可扩展性。
+* **virtio blk 将 PCI 功能和存储设备映射为 1:1，一个映射就需要占用虚拟机一个 PCI 地址**，限制了可扩展性。
 * virtio blk 不是真正的 SCSI 设备。这会导致一些应用程序在从物理机移动到虚拟机时中断。
 
 ### 3.3 virtio-scsi
@@ -304,7 +301,6 @@ vda    253:0    0   500G  0 disk
 如果是要将 scsi 磁盘单独分给虚拟机，推荐使用设备直接分配中的 [**scsi 设备分配**](#342-scsi-设备)。
 {{< /admonition >}}
 
-
 ### 3.4 设备直接分配
 #### 3.4.1 PCI 设备
 在 [**2.1 PCI 设备直接分配**](#21-pci-设备直接分配) 中所说，PCI 设备都支持进行设备直接分配，使得虚拟机中直接对 PCI 设备进行访问，速度最快。nvme 磁盘可以使用这种方式。
@@ -343,13 +339,8 @@ vda    253:0    0   500G  0 disk
 这种模式还是会使用 virtio-scsi 驱动，我不确定这是否属于设备直接分配，但是在文档中其属于 passthrough 的一类
 {{< /admonition >}}
 
-
-
 ### 3.5 libvirt 提供的存储模型
 TODO
-
-
-
 
 ## 4 网络模式
 虚拟机网络的构建一般都是需要构建 宿主机网络环境 + 虚拟机虚拟网络设备，得益于 libvirt，一些常用的网络的构建只需要配置好相关配置就行，libvirt 会进行网络的构建。在 libvirt 中，一个可用的网络就称为 **`netowrk`**
@@ -366,7 +357,7 @@ libvirt 支持的网络模式有很多，下面仅仅提到我使用过的。
 #### 4.1.1 NAT Mode
 NAT 网络是最简单的网络，不需要任何的依赖。通过虚拟的 bridge 网卡创建一个属于虚拟机的内网，然后在宿主机上通过 iptables 实现内网地址的 NAT。（没错，这和 docker bridge network 的原理一样）
 {{< find_img "img5.png" >}}
-libvirt 会存在一个名为 **default** 的 network，其就是一个 NAT 网络。通过 `virsh net-list` 查看:
+libvirt 会存在一个名为 **default** 的 network，其就是一个 NAT 网络。通过 `virsh net-list` 查看：
 ```bash
 $ virsh net-list
  Name      State    Autostart   Persistent
@@ -383,7 +374,7 @@ $ ip a
        valid_lft forever preferred_lft forever
 ...
 ```
-默认下，default 网络的内网为 192.168.122.1/24，我通过修改其配置文件 `/etc/libvirt/qemu/networks/default.xml` 修改了内网范围:
+默认下，default 网络的内网为 192.168.122.1/24，我通过修改其配置文件 `/etc/libvirt/qemu/networks/default.xml` 修改了内网范围：
 ```bash
 $ cat  /etc/libvirt/qemu/networks/default.xml
 <network>
@@ -488,7 +479,7 @@ TODO
 ...
 ```
 
-启动虚拟机后，在宿主机上可以看到对应的 macvtap 设备被创建, 其 mac 地址也与配置中的一致。
+启动虚拟机后，在宿主机上可以看到对应的 macvtap 设备被创建，其 mac 地址也与配置中的一致。
 ```bash
 $ ip a
 ...
@@ -522,7 +513,6 @@ bound to 192.168.1.105 -- renewal in 3423 seconds.
        valid_lft 7023sec preferred_lft 7023sec
 ```
 
-
 ### 4.3 设备直接分配
 前面的各种网络模式，最后还是靠着全虚拟化或者半虚拟化将数据包传递给虚拟机，而如果你有着多个可用的网卡，那么可以考虑使用设备直接分配，这是性能最高的方式。
 
@@ -543,8 +533,6 @@ bound to 192.168.1.105 -- renewal in 3423 seconds.
 
 #### 4.3.1 SR-IOV
 TODO
-
-
 
 ## 参考
 * [libvirt domain 配置官方文档](https://libvirt.org/formatdomain.html#hard-drives-floppy-disks-cdroms)

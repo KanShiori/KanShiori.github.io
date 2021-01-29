@@ -32,11 +32,11 @@
 整个逻辑很简单，就是一个树的层次遍历，将所有可达的结点标记，然后清理未标记的不可达结点。
 {{< find_img "img1.png" >}}
 
-但是，仅仅是普通的三色标记算法要求执行时，Mutator 不能同时运行。因为如果 Mutator 并行时，某个扫描过的结点的引用关系变化，就可能导致[悬挂指针]^(dangling pointer)问题。
+但是，仅仅是普通的三色标记算法要求执行时，Mutator 不能同时运行。因为如果 Mutator 并行时，某个扫描过的结点的引用关系变化，就可能导致 [悬挂指针]^(dangling pointer) 问题。
 
 例如，上图中第 3 步将 A 指向 D，那么 D 还是无法被标记，被错误回收。
 
-而想要让 Mutator 同时运行时，标记的结果还保持正确，那么每个时刻标记的结果要满足[三色不变性]^(Tri-color invariant) <a id="三色不变性"></a>
+而想要让 Mutator 同时运行时，标记的结果还保持正确，那么每个时刻标记的结果要满足 [三色不变性]^(Tri-color invariant) <a id="三色不变性"></a>
 * **`强三色不变性`**：**黑色对象不会指向白色对象，只会指向灰色对象或者黑色对象**。<br>
   因为黑色对象不会再被扫描，如果黑色对象指向白色对象，那么肯定该白色对象会被错误回收。<br>
   当然，除非这种情况能够满足弱三色不变性。
@@ -69,11 +69,10 @@ Yuasa 提出的 **`删除写屏障`**，让老对象的引用被删除时，将�
 Go 中使用 **`混合写屏障`**，即插入写屏障与删除写屏障都开启，并且在标记阶段开始后，将创建的所有新对象都标记为黑色，防止新分配的对象被错误的回收。
 
 具体操作为：
-1. GC开始将栈上的对象全部扫描并标记为黑色(之后不再进行第二次重复扫描，无需STW)，
-1. GC期间，任何在栈上创建的新对象，均为黑色。
+1. GC 开始将栈上的对象全部扫描并标记为黑色（之后不再进行第二次重复扫描，无需 STW)，
+1. GC 期间，任何在栈上创建的新对象，均为黑色。
 1. 被删除的对象标记为灰色。
 1. 被添加的对象标记为灰色。
-
 
 ## 2 三色标记算法实现
 我们先不看整个的流程实现，而是从核心的标记算法入手。
@@ -247,8 +246,6 @@ func gcDrain(gcw *gcWork, flags gcDrainFlags) {
                         break
                 }
         }
-        }
-        }
 
 done:
         if gcw.scanWork > 0 {
@@ -361,12 +358,10 @@ func scanobject(b uintptr, gcw *gcWork) {
                         gcw.put(oblet)
                 }
         }
-        }
 
         n = s.base() + s.elemsize - b
         if n > maxObletBytes {
                 n = maxObletBytes
-        }
         }
 
         // 普通 object 的子对象扫描
@@ -396,7 +391,6 @@ func scanobject(b uintptr, gcw *gcWork) {
                 if obj, span, objIndex := findObject(obj, b, i); obj != 0 {
                         greyobject(obj, b, i, span, gcw, objIndex)
                 }
-        }
         }
         gcw.bytesMarked += uint64(n)
         gcw.scanWork += int64(i)
@@ -448,7 +442,6 @@ func greyobject(obj, base, off uintptr, span *mspan, gcw *gcWork, objIndex uintp
                 gcw.bytesMarked += uint64(span.elemsize)
                 return
         }
-        }
 
         // 放入 gcWork 中
         if !gcw.putFast(obj) {
@@ -463,13 +456,12 @@ func greyobject(obj, base, off uintptr, span *mspan, gcw *gcWork, objIndex uintp
 在 SSA 中间代码生成阶段，编译器会在 Store、Move、Zero 操作中加入写屏障，写屏障函数为 `writebarrier()` 函数（cmd/compile/internal/ssa/writebarrier.go）。
 
 `writebarrier()` 函数很复杂，这里不展开。再次看一下混合写屏障操作：
-1. GC 开始将栈上的对象全部扫描并标记为黑色(之后不再进行第二次重复扫描，无需STW)。
+1. GC 开始将栈上的对象全部扫描并标记为黑色（之后不再进行第二次重复扫描，无需 STW)。
 1. GC 期间，任何在栈上创建的新对象，均为黑色。
 1. 被删除的对象标记为灰色。
 1. 被添加的对象标记为灰色。
 
 当开始 GC 时，全局变量 `runtime.writeBarrier.enabled` 变为 true，所有的写操作都会经过 `writebarrier()` 的操作。
-
 
 ## 3 内存清理
 内存清理与标记就是完全分隔的逻辑了，通过判断对象是否被标记就可决定是否将其内存回收。
@@ -628,7 +620,6 @@ func bgsweep(c chan int) {
 }
 ```
 依旧是通过不断执行 `sweepone()` 进行清理。
-
 
 ## 4 标记流程
 下面来看如何触发的 GC 以及 GC 的大致流程。

@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/how_docker_work\/%E5%AE%B9%E5%99%A8%E5%90%AF%E5%81%9C%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "docker, container","wordcount":  3104 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "docker, container","wordcount":  3091 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/how_docker_work\/%E5%AE%B9%E5%99%A8%E5%90%AF%E5%81%9C%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93\/","datePublished": "2020-11-13T15:45:03+08:00","dateModified": "2020-11-13T15:45:03+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">容器启停原理总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/docker-%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/"><i class="far fa-folder fa-fw"></i>Docker 原理总结</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-13">2020-11-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3104 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-13">2020-11-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3091 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;<span id="/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E5%90%AF%E5%81%9C%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="容器启停原理总结">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -234,7 +234,7 @@ Server:
 </div><h2 id="1-启动">1 启动</h2>
 <h3 id="11-create">1.1 Create</h3>
 <p>通过 <code>docker create</code> 命令可以创建一个容器，但是容器并不会真正的运行，其对应进程不会存在。</p>
-<p>create 容器经过的具体流程为:</p>
+<p>create 容器经过的具体流程为：</p>
 <ol>
 <li>容器参数检查与调整；</li>
 <li>容器对应的读写层（RWLayer）的创建；</li>
@@ -249,7 +249,7 @@ Server:
 例如，容器中对系统盘 root 目录中某个文件的修改，这个修改后的文件会被复制一份在系统盘上。</li>
 <li><strong><code>init 层</code></strong> ：用于处理一些与镜像不绑定，但是与运行容器相关的文件修改，主要是 /etc/resolve.conf /etc/hosts 等；<br>
 为什么要有 init 层？我的理解是：镜像层（只读层）提供的是一个静态的环境，即所有容器看到的环境都是一样<br>
-而有些东西并不是想让所有容器看到的相同，例如 hostname、nameserver，这些 docker 都提供了参数配置，所docker   单独抽出了一个 &ldquo;机器维度&rdquo; 的只读层，init 层。<br>
+而有些东西并不是想让所有容器看到的相同，例如 hostname、nameserver，这些 docker 都提供了参数配置，所 docker   单独抽出了一个 &ldquo;机器维度&rdquo; 的只读层，init 层。<br>
 置于为什么不是在读写层修改，个人觉得是因为读写层是可以被 &ldquo;导出&rdquo; 的（docker save），而这些 /etresolve.conf   的内容又是不应该被导出的，所以放在了 init 层。</li>
 <li><strong><code>只读层</code></strong> ：镜像包含的所有层，仅仅只读。对只读层任何修改都会以 COW 形式放在读写层。</li>
 </ul>
@@ -300,7 +300,7 @@ diff  link  lower  work
 </div>
 </div><ul>
 <li>所有的层（包含容器、镜像）都位于 <em>/var/lib/docker/[driver]</em> 目录下，不过不同的 driver 有着不同的目录结构；</li>
-<li>每个层的目录结构也和对应的 driver 有关，overlay2 中就会包含 diff、work 等子目录，而真正容器运行后看到的就是 diff 目录被挂载后的内容;</li>
+<li>每个层的目录结构也和对应的 driver 有关，overlay2 中就会包含 diff、work 等子目录，而真正容器运行后看到的就是 diff 目录被挂载后的内容；</li>
 </ul>
 <p>在 <em>/var/lib/docker/overlay2/</em> 目录下，我们还可以看到一个同读写层类似名字的 &ldquo;<strong>xxx-init</strong>&rdquo; 目录，这就是 init 层目录，对应的 diff 子目录也是用于挂载的目录：</p>
 <div class="highlight"><div class="chroma">
@@ -469,7 +469,7 @@ nsfs on /run/docker/netns/4500ea4f0025 <span class="nb">type</span> nsfs <span c
 <p>有趣的是停止容器运行的过程里，并没有使用 runc 库，而是在 shim 这一层中，对 shim 进程发送信号。这一块也是后面细说。</p>
 <p>大致的停止流程就是下面两步：</p>
 <ol>
-<li>发送 配置/默认(SIGTERM) 的停止信号；</li>
+<li>发送 配置/默认 (SIGTERM) 的停止信号；</li>
 <li>上一步停止失败/超时，那么就发送 SIGKILL 信号；</li>
 </ol>
 <h3 id="22-remove">2.2 Remove</h3>

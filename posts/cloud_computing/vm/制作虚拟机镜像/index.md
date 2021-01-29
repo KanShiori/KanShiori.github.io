@@ -39,15 +39,12 @@ Id    Name                           State
 
 这块不了解，具体见红帽官方文档：[KICKSTART INSTALLATIONS](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/installation_guide/ch-kickstart2#s1-kickstart2-whatis)
 
-
-
 ## 2 使用 Cloud Image
 当然，上面制作过程中耗时都在安装系统上了，而各个云厂商的虚拟机数量那么多，肯定不会一台台去安装操作系统了。所以，目前最常见的都是直接下载已经安装过系统的虚拟机镜像文件。
 
 但是这样的虚拟机是没有特殊配置的，例如密码、hostname 都是一致的，所以 **cloud-init** 出现，用于在第一次启动虚拟机时进行系统的配置。
 
 所以，最快速的制作方法就是：虚拟机镜像文件 + cloud-init 配置。
-
 
 ### 2.1 cloud-init
 下面内容都来自于文档，这里仅为自己做个记录。
@@ -57,7 +54,7 @@ Id    Name                           State
 #### (1) 基本概念
 * **metadata**：包含服务器信息，用于 cloud-init 配置；
 * **userdata**：包含 cloud-init 系统配置信息，可以是 文件，脚本，yaml 文件等；
-* **datasource**：cloud-init 读取配置数据的来源，包含大部分云厂商，当然，也可以来自本地的文件([NoCloud datasource](https://cloudinit.readthedocs.io/en/latest/topics/datasources/nocloud.html))；
+* **datasource**：cloud-init 读取配置数据的来源，包含大部分云厂商，当然，也可以来自本地的文件 ([NoCloud datasource](https://cloudinit.readthedocs.io/en/latest/topics/datasources/nocloud.html))；
 
 #### (2) 运行过程
 cloud init 设置包括五个阶段：
@@ -92,7 +89,7 @@ $ wget  https://mirrors.ustc.edu.cn/centos-cloud/centos/7/images/CentOS-7-x86_64
 $ virt-customize -a CentOS-7-x86_64-GenericCloud-2003.qcow2  --root-password password:yourpassword
 ```
 {{< /admonition >}}
-2. 因为 cloud-init 需要一个 datasource，而我们没有使用云厂商，所以使用 NoCloud 形式，按照官方的s示例创建一个 disk 文件。
+2. 因为 cloud-init 需要一个 datasource，而我们没有使用云厂商，所以使用 NoCloud 形式，按照官方的 s 示例创建一个 disk 文件。
 ```bash
 # 创建 user-data 与 meta-date 配置文件
 $ cat meta-data
@@ -127,7 +124,6 @@ $ virt-install --memory 2048 --vcpus 2 --name guest2 \
 最后根据配置的密码成功进入：
 {{< find_img "img4.png" >}}
 4. 而 **CentOS-7-x86_64-GenericCloud-2003.qcow2** 就是虚拟机经过配置的镜像文件，而 libvirt 启动所需的配置文件就是 `/etc/libvirt/qemu/guest1.xml`。
-
 
 ## 参考
 * [CREATING GUESTS WITH VIRT-INSTALL](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/virtualization_deployment_and_administration_guide/sect-guest_virtual_machine_installation_overview-creating_guests_with_virt_install)

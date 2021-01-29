@@ -3,7 +3,14 @@
         <title>Golang - 分类 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/categories/golang/</link>
         <description>Golang - 分类 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 14 Jan 2021 20:40:47 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/golang/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 23 Jan 2021 17:45:55 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/golang/" rel="self" type="application/rss+xml" /><item>
+    <title>Go 并发调度总结</title>
+    <link>https://KanShiori.github.io/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/</link>
+    <pubDate>Sat, 23 Jan 2021 17:45:55 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/</guid>
+    <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 并发调度实现的一个总结，基本内容来源于网络的]]></description>
+</item><item>
     <title>Go 垃圾收集总结</title>
     <link>https://KanShiori.github.io/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/</link>
     <pubDate>Thu, 14 Jan 2021 20:40:47 &#43;0800</pubDate>

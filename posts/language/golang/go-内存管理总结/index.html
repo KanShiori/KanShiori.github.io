@@ -5,8 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Go 内存管理总结 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Go 内存管理总结" />
-<meta property="og:description" content="总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于" />
+        <title>Go 内存管理总结 - Shiori&#39;s Blog</title><meta name="Description" content="Golang 协程栈实现，堆内存管理实现"><meta property="og:title" content="Go 内存管理总结" />
+<meta property="og:description" content="Golang 协程栈实现，堆内存管理实现" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" />
 <meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -16,7 +16,7 @@
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
 <meta name="twitter:title" content="Go 内存管理总结"/>
-<meta name="twitter:description" content="总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于"/>
+<meta name="twitter:description" content="Golang 协程栈实现，堆内存管理实现"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
 <meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/" /><link rel="next" href="https://KanShiori.github.io/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
@@ -27,13 +27,13 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  15464 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  15525 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93\/","datePublished": "2021-01-05T18:28:41+08:00","dateModified": "2021-01-05T18:28:41+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
                 "name": "Shiori"
-            },"description": ""
+            },"description": "Golang 协程栈实现，堆内存管理实现"
     }
     </script></head>
     <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Go 内存管理总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw"></i>Golang</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-05">2021-01-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 15464 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-05">2021-01-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 15525 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 31 分钟&nbsp;<span id="/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Go 内存管理总结">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -302,7 +302,7 @@
             <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">stack 与 stackguard0 属性一定要在 g 结构的开头，因为汇编中会使用指定的偏移(0x10)来获取对应的值;</div>
+            <div class="admonition-content">stack 与 stackguard0 属性一定要在 g 结构的开头，因为汇编中会使用指定的偏移 (0x10) 来获取对应的值；</div>
         </div>
     </div>
 <p>具体看一下 stack 结构（runtime/runtime2.go）：</p>
@@ -816,7 +816,7 @@
 	<span class="nx">MOVQ</span>	<span class="mi">0</span><span class="p">(</span><span class="nx">DX</span><span class="p">),</span> <span class="nx">CX</span>		    <span class="c1">// make sure g != nil
 </span><span class="c1"></span>	<span class="nf">get_tls</span><span class="p">(</span><span class="nx">CX</span><span class="p">)</span>
 	<span class="nx">MOVQ</span>	<span class="nx">DX</span><span class="p">,</span> <span class="nf">g</span><span class="p">(</span><span class="nx">CX</span><span class="p">)</span>
-	<span class="nx">MOVQ</span>	<span class="nf">gobuf_sp</span><span class="p">(</span><span class="nx">BX</span><span class="p">),</span> <span class="nx">SP</span>	<span class="c1">// restore SP (关键!)
+	<span class="nx">MOVQ</span>	<span class="nf">gobuf_sp</span><span class="p">(</span><span class="nx">BX</span><span class="p">),</span> <span class="nx">SP</span>	<span class="c1">// restore SP （关键！)
 </span><span class="c1"></span>	<span class="nx">MOVQ</span>	<span class="nf">gobuf_ret</span><span class="p">(</span><span class="nx">BX</span><span class="p">),</span> <span class="nx">AX</span>
 	<span class="nx">MOVQ</span>	<span class="nf">gobuf_ctxt</span><span class="p">(</span><span class="nx">BX</span><span class="p">),</span> <span class="nx">DX</span>
 	<span class="nx">MOVQ</span>	<span class="nf">gobuf_bp</span><span class="p">(</span><span class="nx">BX</span><span class="p">),</span> <span class="nx">BP</span>
@@ -862,8 +862,8 @@
 <span class="nx">mp</span><span class="p">.</span><span class="nx">g0</span><span class="p">.</span><span class="nx">m</span> <span class="p">=</span> <span class="nx">mp</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>可以看到，m 的 g0 属性还是使用的 <a href="#31-%e6%96%b0-g-%e7%9a%84%e6%a0%88" rel=""><strong>malg() 函数</strong></a> 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。</p>
-<p>不过，g0 的栈还是有些不同的，不会进行栈的扩容（因为仅仅内部管理时用到，不需要进行自动扩容），在栈扩容的 <a href="#morestack" rel=""><strong>morestack 汇编代码</strong></a>里可以看到。</p>
+</div><p>可以看到，m 的 g0 属性还是使用的 [<strong>malg() 函数</strong>](#31-新-g-的栈） 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。</p>
+<p>不过，g0 的栈还是有些不同的，不会进行栈的扩容（因为仅仅内部管理时用到，不需要进行自动扩容），在栈扩容的 <a href="#morestack" rel=""><strong>morestack 汇编代码</strong></a> 里可以看到。</p>
 <h2 id="4-内存模型">4 内存模型</h2>
 <h3 id="41-概览">4.1 概览</h3>
 <p>Golang 内存管理包含四个组件：</p>
@@ -886,7 +886,7 @@
     </div></p>
 <h3 id="42-mspan">4.2 mspan</h3>
 <p>每个 mspan 由多个 8KB 的 page 组成，所有的 mspan 会以 list 的方式构建，而不同的模块（mcache、mcentral）通过引用指针，来不同方式来组织不同的 mspan。</p>
-<p>每个 mspan 管理多个固定大小的 object，通过编号(index)方式来寻找 object 的地址。</p>
+<p>每个 mspan 管理多个固定大小的 object，通过编号 (index) 方式来寻找 object 的地址。</p>
 <p>结构如下图所示：
 
 
@@ -963,7 +963,7 @@
 </div>
 </div><ul>
 <li>next、prev ：链表前后 span；</li>
-<li><strong><code>startAddr</code></strong> ：span 在 arena 区域的起始地址;</li>
+<li><strong><code>startAddr</code></strong> ：span 在 arena 区域的起始地址；</li>
 <li><strong><code>npages</code></strong> ：占用 page(8KB) 数量；</li>
 <li>manualFreeList ：空闲 object 链表；</li>
 <li><strong><code>freeindex</code></strong> ：下一个空闲的 object 的编号，如果 freeindex == nelem，表明没有空闲 object 可以分配</li>
@@ -971,12 +971,12 @@
 <li><strong><code>allocCache</code></strong> ：freeindex 的 cache，通过 bitmap 的方式记录对应编号的 object 内存是否是空闲的；</li>
 <li><strong><code>allocBits</code></strong> : 通过 bitmap 标识哪些编号的 object 是分配出去的；</li>
 <li><strong><code>gcmarkBits</code></strong> : 经过 GC 后，gcmarkBits 标识出的 object 就是被 mark 的，没有 mark 的变为垃圾对象清除；</li>
-<li><strong><code>sweepgen</code></strong> ：mspan 的状态, 见注释；</li>
+<li><strong><code>sweepgen</code></strong> ：mspan 的状态，见注释；</li>
 <li>spanclass ：mspan 大小类别；</li>
 <li>allocCount ：已经分配的 object 数量；</li>
 <li><strong><code>elemsize</code></strong> ：管理的 object 的固定大小；</li>
 </ul>
-<p>可以看到，每个 mspan 管理着固定大小的 object，并通过一个 freeindex+allocCache 来记录空闲的 object 的编号。由此可以得出:</p>
+<p>可以看到，每个 mspan 管理着固定大小的 object，并通过一个 freeindex+allocCache 来记录空闲的 object 的编号。由此可以得出：</p>
 <ul>
 <li><strong>mspan 的地址区域</strong>: <strong><code>[startAddr, startAddr + npages*8*1024)</code></strong></li>
 <li><strong>某个 object 的起始地址</strong>: <strong><code>&lt;index&gt;*elemsize + startAddr</code></strong></li>
@@ -1261,7 +1261,7 @@
 </span><span class="c1"></span>	<span class="nx">nalloc</span> <span class="o">:=</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nf">countAlloc</span><span class="p">())</span>  <span class="c1">// 通过 mspan.gcmarkBits 得到正在使用的 object 数量
 </span><span class="c1"></span>	<span class="k">if</span> <span class="nx">spc</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">nalloc</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
 		<span class="nx">s</span><span class="p">.</span><span class="nx">needzero</span> <span class="p">=</span> <span class="mi">1</span>
-		<span class="nx">freeToHeap</span> <span class="p">=</span> <span class="kc">true</span>  <span class="c1">// 如果是 large object 并且没有任何使用着对象, 那么标记还给 heap
+		<span class="nx">freeToHeap</span> <span class="p">=</span> <span class="kc">true</span>  <span class="c1">// 如果是 large object 并且没有任何使用着对象，那么标记还给 heap
 </span><span class="c1"></span>	<span class="p">}</span>
 	<span class="nx">nfreed</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">allocCount</span> <span class="o">-</span> <span class="nx">nalloc</span> <span class="c1">// 得到需要回收的 object 数量
 </span><span class="c1"></span>
@@ -1290,7 +1290,7 @@
 </span><span class="c1"></span>		<span class="nx">atomic</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">,</span> <span class="nx">sweepgen</span><span class="p">)</span>
 	<span class="p">}</span>
 
-	<span class="c1">// 小对象, 通过调用 mcentral.freespan 
+	<span class="c1">// 小对象，通过调用 mcentral.freespan 
 </span><span class="c1"></span>	<span class="k">if</span> <span class="nx">nfreed</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">spc</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
 		<span class="nx">c</span><span class="p">.</span><span class="nx">local_nsmallfree</span><span class="p">[</span><span class="nx">spc</span><span class="p">.</span><span class="nf">sizeclass</span><span class="p">()]</span> <span class="o">+=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">nfreed</span><span class="p">)</span>
 		<span class="nx">res</span> <span class="p">=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">central</span><span class="p">[</span><span class="nx">spc</span><span class="p">].</span><span class="nx">mcentral</span><span class="p">.</span><span class="nf">freeSpan</span><span class="p">(</span><span class="nx">s</span><span class="p">,</span> <span class="nx">preserve</span><span class="p">,</span> <span class="nx">wasempty</span><span class="p">)</span>
@@ -1766,12 +1766,12 @@
         </div>
         <div class="details-content">
             <div class="admonition-content"><p>源码中存在 go115NewMCentralImpl 的注释，对 mcentral 结构做了很大的改动，但是在 go1.15 release 页面上并没有看到对应的说明。</p>
-<p>其 commit 见: <a href="https://github.com/golang/go/commit/a13691966ad571ed9e434d591a2d612c51349fd1" target="_blank" rel="noopener noreffer">runtime: add new mcentral implementation</a></p>
+<p>其 commit 见：<a href="https://github.com/golang/go/commit/a13691966ad571ed9e434d591a2d612c51349fd1" target="_blank" rel="noopener noreffer">runtime: add new mcentral implementation</a></p>
 </div>
         </div>
     </div>
 <h4 id="441-从-mcentral-申请-mspan">4.4.1 从 mcentral 申请 mspan</h4>
-<p>在 <a href="#432-mspan-%e7%9a%84%e8%8e%b7%e5%8f%96" rel=""><strong>mcache的获取</strong></a> 中，可以看到 mcache 通过调用 <code>mcentral.cacheSpan()</code> 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 <code>mcentral.oldCacheSpan()</code> 方法中。</p>
+<p>在 [<strong>mcache 的获取</strong>](#432-mspan-的获取） 中，可以看到 mcache 通过调用 <code>mcentral.cacheSpan()</code> 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 <code>mcentral.oldCacheSpan()</code> 方法中。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -2016,7 +2016,7 @@
 <li>执行 <code>mheapBit.initSpan()</code> 初始化 mspan；</li>
 </ol>
 <h4 id="443-mcentral-回收-mspan">4.4.3 mcentral 回收 mspan</h4>
-<p>前面 <a href="#422-mspan-%e7%9a%84%e6%b8%85%e7%90%86" rel=""><strong>mspan.sweep()</strong></a> 时看到，通过调用 mcentral.freeSpan() 调整其 mspan:</p>
+<p>前面 [<strong>mspan.sweep()</strong>](#422-mspan-的清理） 时看到，通过调用 mcentral.freeSpan() 调整其 mspan:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -2096,7 +2096,7 @@
 
 	<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
 
-	<span class="c1">// 如果 mspan 完全空, 调整链表项
+	<span class="c1">// 如果 mspan 完全空，调整链表项
 </span><span class="c1"></span>	<span class="c1">// Move to nonempty if necessary.
 </span><span class="c1"></span>	<span class="k">if</span> <span class="nx">wasempty</span> <span class="p">{</span>
 		<span class="nx">c</span><span class="p">.</span><span class="nx">empty</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
@@ -2109,13 +2109,13 @@
 </span><span class="c1"></span>	<span class="c1">// lock of c above.)
 </span><span class="c1"></span>	<span class="nx">atomic</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">,</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">)</span>
 
-	<span class="c1">// 还有 object 正在使用, 返回
+	<span class="c1">// 还有 object 正在使用，返回
 </span><span class="c1"></span>	<span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">allocCount</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
 		<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
 		<span class="k">return</span> <span class="kc">false</span>
 	<span class="p">}</span>
 
-	<span class="c1">// 没有 object 了, 也就是空的 mspan 尝试返回给 mheap
+	<span class="c1">// 没有 object 了，也就是空的 mspan 尝试返回给 mheap
 </span><span class="c1"></span>	<span class="nx">c</span><span class="p">.</span><span class="nx">nonempty</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
 	<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
 	<span class="nx">mheap_</span><span class="p">.</span><span class="nf">freeSpan</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
@@ -2454,8 +2454,8 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li><code>bitmap</code>：表示该 arena 区域中哪些地址保存了对象，<strong>每个字节的前 4bit 的每个 bit 表示一个 8B 内存（4个指针大小）是否被扫描，后 4bit 每个 bit 表示是否包含指针</strong>。<br>
-因此，一个字节就代表了 32B（4个指针，每个 8B）内存的状态。<strong>（图片来自《知乎：图解Go语言内存分配》）</strong></li>
+<li><code>bitmap</code>：表示该 arena 区域中哪些地址保存了对象，<strong>每个字节的前 4bit 的每个 bit 表示一个 8B 内存（4 个指针大小）是否被扫描，后 4bit 每个 bit 表示是否包含指针</strong>。<br>
+因此，一个字节就代表了 32B（4 个指针，每个 8B）内存的状态。<strong>（图片来自《知乎：图解 Go 语言内存分配》）</strong></li>
 <li><code>spans</code>：每个 mspan 对应的指针，因为管理 64 MB，所以数组长度为 8192（64MB / 8KB）。<br>
 其数组编号就是对应的 page 编号，例如 spans[0] 就代表第一个 page 内存区域大小，执行对应的 mspan 。当然，mspan 可能有多个 page 组成，那么对应的多个数组项就指向的同一个 mspan 对象。</li>
 <li><code>zeroedBase</code> 记录管理的 arena 的内存基地址。
@@ -2555,7 +2555,7 @@
 <li>初始化 <code>page alloctor</code>；</li>
 </ol>
 <h4 id="453-mheap-分配-mspan">4.5.3 mheap 分配 mspan</h4>
-<p>在 <a href="#442-mcentral-%e6%89%a9%e5%ae%b9" rel=""><strong>mcentral 扩容流程</strong></a>中看到，会调用 <code>mheap.alloc()</code> 申请一个新的 mspan。</p>
+<p>在 [<strong>mcentral 扩容流程</strong>](#442-mcentral-扩容）中看到，会调用 <code>mheap.alloc()</code> 申请一个新的 mspan。</p>
 <p>而之前说的 large object 分配，也是直接会走 <code>mheap.alloc()</code> 分配到一个合适大小的 mspan，然后分配 object。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -2749,7 +2749,7 @@
 </div>
 </div><p>函数很长，这里只保留了最关键的步骤：</p>
 <ol>
-<li>小内存，从当前 <code>p.pcache</code>（pageCache结构）获取一个内存区域（又是一个缓存~）；</li>
+<li>小内存，从当前 <code>p.pcache</code>（pageCache 结构）获取一个内存区域（又是一个缓存~）；</li>
 <li><code>p.pcache</code> 中没有获取到，从 p.mspancache 中获取  mspan（还是缓存~）；</li>
 <li>内存比较大（large mspan），或者上面还是没有获取到，那么只能从 mheap 中获取了，加锁操作：
 <ol>
@@ -2761,7 +2761,7 @@
 </ol>
 <p>最后获取到之后，就会走 mspan 的初始化流程，包括初始 mspan 数据结构，记录 mspan 指针到 <code>mheap.arenas</code> 等行为。</p>
 <h4 id="454-mheap-回收-mspan">4.5.4 mheap 回收 mspan</h4>
-<p>所有的回收 mspan 操作最后殊途同归，会走到 <code>mheap.freeSpan()</code> 函数:</p>
+<p>所有的回收 mspan 操作最后殊途同归，会走到 <code>mheap.freeSpan()</code> 函数：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -2968,12 +2968,12 @@
 <h3 id="51-tiny-object-分配">5.1 tiny object 分配</h3>
 <p>tiny object 分配的代码在 <a href="#431-mspan-%e7%9a%84%e5%88%86%e9%85%8d" rel=""><strong>mspan 分配</strong></a>中已经说明了，这里再理一下大致步骤：</p>
 <ol>
-<li>不包含指针(noscan)并且小于 16B 的对象才走微小对象分配；</li>
+<li>不包含指针 (noscan) 并且小于 16B 的对象才走微小对象分配；</li>
 <li>tiny object 分配仅仅是增大 mcache.tinyoffset 的值，所以是不同大小 tiny object 挤压在一个 mspan 中；</li>
 <li>如果当前的 mspan 没有空间了，通过 mcache.nextFree() 来获取新的指定大小的 mspan，而获取的流程就是前面所说的（走 mcentral-&gt;mheap);</li>
 </ol>
 <h3 id="52-object-分配">5.2 object 分配</h3>
-<p>普通大小 object 分配流程就很简单了:</p>
+<p>普通大小 object 分配流程就很简单了：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -3278,7 +3278,7 @@
 而当再次使用此内存块时，会引发缺页异常，内核会自动重新关联物理内存页。</li>
 </ul>
 <h3 id="62-释放时机">6.2 释放时机</h3>
-<p><code>scavenge()</code> 有两个地方会被调用:</p>
+<p><code>scavenge()</code> 有两个地方会被调用：</p>
 <ol>
 <li><strong>周期性的触发</strong>（每 5 min?）；</li>
 <li><strong>mheap 扩容时</strong> 或者 <strong>调用 <a href="https://pkg.go.dev/runtime/debug#FreeOSMemory" target="_blank" rel="noopener noreffer">runtime/debug.FreeOSMemory()</a> 主动触发</strong>；</li>
@@ -3288,7 +3288,7 @@
 <li><a href="https://github.com/qyuhen/book" target="_blank" rel="noopener noreffer">《Golang 学习笔记》</a></li>
 <li><a href="https://medium.com/@ankur_anand/a-visual-guide-to-golang-memory-allocator-from-ground-up-e132258453ed" target="_blank" rel="noopener noreffer">Blog：Go 内存管理可视化</a></li>
 <li><a href="https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-memory-allocator/#71-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%99%A8" target="_blank" rel="noopener noreffer">《Golang 设计与实现》：内存分配器</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/59125443" target="_blank" rel="noopener noreffer">知乎：图解Go语言内存分配</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/59125443" target="_blank" rel="noopener noreffer">知乎：图解 Go 语言内存分配</a></li>
 </ul>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">

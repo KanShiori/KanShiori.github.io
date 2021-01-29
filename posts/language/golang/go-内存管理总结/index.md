@@ -21,8 +21,6 @@ mmap 最基本有两个用途：
 
 而所有在内存上所说的地址，包括代码指令地址、变量地址都是上面地址空间的一个地址。
 
-
-
 ## 2 PC 与 SP
 
 Goroutine 将进程的切换变为了协程间的切换，那么就需要**在用户空间负责执行代码与协程上下文的保留与切换**。因此，有两个关键的寄存器：PC 与 SP。
@@ -38,8 +36,6 @@ Goroutine 将进程的切换变为了协程间的切换，那么就需要**在�
 不过，因为 goroutine 切换时，必须要保存当前 goroutine 的上下文，也就是栈里的变量。因此，goroutine 栈肯定是不能使用 Linux 进程栈了（因为进程栈有上限，也无法实现“保存”这种功能）。所以所说的**协程栈，都是基于 mmap 申请内存空间**（基于 Go 内存管理，内存管理基于 mmap），然后**切换时修改 SP 寄存器地址实现的**。
 
 这也是为什么 goroutine 栈可以“无限大”的原因了。
-
-
 
 ## 3 Goroutine 栈
 整体的一个 G 的栈如下图所示：
@@ -70,7 +66,7 @@ type g struct {
 * `stack` 属性就是 G 对应的栈了（这也表明了不是使用的进程栈）；
 
 {{< admonition note Note>}}
-stack 与 stackguard0 属性一定要在 g 结构的开头，因为汇编中会使用指定的偏移(0x10)来获取对应的值;
+stack 与 stackguard0 属性一定要在 g 结构的开头，因为汇编中会使用指定的偏移 (0x10) 来获取对应的值；
 {{< /admonition >}}
 
 具体看一下 stack 结构（runtime/runtime2.go）：
@@ -342,7 +338,7 @@ TEXT runtime·gogo(SB), NOSPLIT, $16-8
 	MOVQ	0(DX), CX		    // make sure g != nil
 	get_tls(CX)
 	MOVQ	DX, g(CX)
-	MOVQ	gobuf_sp(BX), SP	// restore SP (关键!)
+	MOVQ	gobuf_sp(BX), SP	// restore SP （关键！)
 	MOVQ	gobuf_ret(BX), AX
 	MOVQ	gobuf_ctxt(BX), DX
 	MOVQ	gobuf_bp(BX), BP
@@ -373,10 +369,9 @@ if iscgo || GOOS == "solaris" || GOOS == "illumos" || GOOS == "windows" || GOOS 
 }
 mp.g0.m = mp
 ```
-可以看到，m 的 g0 属性还是使用的 [**malg() 函数**](#31-新-g-的栈) 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。
+可以看到，m 的 g0 属性还是使用的 [**malg() 函数**](#31-新-g-的栈） 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。
 
-不过，g0 的栈还是有些不同的，不会进行栈的扩容（因为仅仅内部管理时用到，不需要进行自动扩容），在栈扩容的 [**morestack 汇编代码**](#morestack)里可以看到。
-
+不过，g0 的栈还是有些不同的，不会进行栈的扩容（因为仅仅内部管理时用到，不需要进行自动扩容），在栈扩容的 [**morestack 汇编代码**](#morestack) 里可以看到。
 
 ## 4 内存模型
 
@@ -397,7 +392,7 @@ Golang 内存管理包含四个组件：
 ### 4.2 mspan
 每个 mspan 由多个 8KB 的 page 组成，所有的 mspan 会以 list 的方式构建，而不同的模块（mcache、mcentral）通过引用指针，来不同方式来组织不同的 mspan。
 
-每个 mspan 管理多个固定大小的 object，通过编号(index)方式来寻找 object 的地址。
+每个 mspan 管理多个固定大小的 object，通过编号 (index) 方式来寻找 object 的地址。
 
 结构如下图所示：
 {{< find_img "img3.png" >}}
@@ -433,7 +428,7 @@ type mspan struct {
 }
 ```
 * next、prev ：链表前后 span；
-* **`startAddr`** ：span 在 arena 区域的起始地址;
+* **`startAddr`** ：span 在 arena 区域的起始地址；
 * **`npages`** ：占用 page(8KB) 数量；
 * manualFreeList ：空闲 object 链表；
 * **`freeindex`** ：下一个空闲的 object 的编号，如果 freeindex == nelem，表明没有空闲 object 可以分配
@@ -441,12 +436,12 @@ type mspan struct {
 * **`allocCache`** ：freeindex 的 cache，通过 bitmap 的方式记录对应编号的 object 内存是否是空闲的；
 * **`allocBits`** : 通过 bitmap 标识哪些编号的 object 是分配出去的；
 * **`gcmarkBits`** : 经过 GC 后，gcmarkBits 标识出的 object 就是被 mark 的，没有 mark 的变为垃圾对象清除；
-* **`sweepgen`** ：mspan 的状态, 见注释；
+* **`sweepgen`** ：mspan 的状态，见注释；
 * spanclass ：mspan 大小类别；
 * allocCount ：已经分配的 object 数量；
 * **`elemsize`** ：管理的 object 的固定大小；
 
-可以看到，每个 mspan 管理着固定大小的 object，并通过一个 freeindex+allocCache 来记录空闲的 object 的编号。由此可以得出:
+可以看到，每个 mspan 管理着固定大小的 object，并通过一个 freeindex+allocCache 来记录空闲的 object 的编号。由此可以得出：
 * **mspan 的地址区域**: **`[startAddr, startAddr + npages*8*1024)`**
 * **某个 object 的起始地址**: **`<index>*elemsize + startAddr`**
 
@@ -559,7 +554,7 @@ func (s *mspan) oldSweep(preserve bool) bool {
 	nalloc := uint16(s.countAlloc())  // 通过 mspan.gcmarkBits 得到正在使用的 object 数量
 	if spc.sizeclass() == 0 && nalloc == 0 {
 		s.needzero = 1
-		freeToHeap = true  // 如果是 large object 并且没有任何使用着对象, 那么标记还给 heap
+		freeToHeap = true  // 如果是 large object 并且没有任何使用着对象，那么标记还给 heap
 	}
 	nfreed := s.allocCount - nalloc // 得到需要回收的 object 数量
 
@@ -588,7 +583,7 @@ func (s *mspan) oldSweep(preserve bool) bool {
 		atomic.Store(&s.sweepgen, sweepgen)
 	}
 
-	// 小对象, 通过调用 mcentral.freespan 
+	// 小对象，通过调用 mcentral.freespan 
 	if nfreed > 0 && spc.sizeclass() != 0 {
 		c.local_nsmallfree[spc.sizeclass()] += uintptr(nfreed)
 		res = mheap_.central[spc].mcentral.freeSpan(s, preserve, wasempty)
@@ -770,7 +765,6 @@ func (c *mcache) nextFree(spc spanClass) (v gclinkptr, s *mspan, shouldhelpgc bo
 1. 如果 mspan 没有空闲空间了（freeIndex == s.nelems），那么走 `c.refill()` **重新向 mcentral 申请一个 有空闲空间 mspan**；
 3. `mspan.nextFreeIndex()` 下一个 index，并计算出对应的内存地址返回；
 
-
 #### 4.3.2 mspan 的获取
 前面分配 object 中可以看到，当 mcache 当前大小的 mspan 没有空闲空间后，就会通过 **`c.refill()`** **向 mcentral 重新申请一个 mspan**（runtime/mcache.go）：
 ```go
@@ -821,7 +815,6 @@ func (c *mcache) refill(spc spanClass) {
 
 可以看到，通过 refill 动态的申请 mspan，mcache 不同大小的 mspan 在 **申请->使用->替换** 中不断的循环，而 cache 一直能保存着有着空闲空间的 mspan 供 P 使用。
 
-
 ### 4.4 mcentral
 **`mcentral`** 是内存分配器的中心缓存，**用于给 mcache 提供空闲的 mspan**。因为不是 P 对应的，所以访问也需要锁。
 
@@ -856,11 +849,11 @@ type mcentral struct {
 {{< admonition note Note>}}
 源码中存在 go115NewMCentralImpl 的注释，对 mcentral 结构做了很大的改动，但是在 go1.15 release 页面上并没有看到对应的说明。
 
-其 commit 见: [runtime: add new mcentral implementation](https://github.com/golang/go/commit/a13691966ad571ed9e434d591a2d612c51349fd1)
+其 commit 见：[runtime: add new mcentral implementation](https://github.com/golang/go/commit/a13691966ad571ed9e434d591a2d612c51349fd1)
 {{< /admonition >}}
 
 #### 4.4.1 从 mcentral 申请 mspan
-在 [**mcache的获取**](#432-mspan-的获取) 中，可以看到 mcache 通过调用 `mcentral.cacheSpan()` 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 `mcentral.oldCacheSpan()` 方法中。
+在 [**mcache 的获取**](#432-mspan-的获取） 中，可以看到 mcache 通过调用 `mcentral.cacheSpan()` 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 `mcentral.oldCacheSpan()` 方法中。
 ```go
 // Allocate a span to use in an mcache.
 func (c *mcentral) cacheSpan() *mspan {
@@ -986,7 +979,7 @@ func (c *mcentral) grow() *mspan {
 2. 执行 `mheapBit.initSpan()` 初始化 mspan；
 
 #### 4.4.3 mcentral 回收 mspan
-前面 [**mspan.sweep()**](#422-mspan-的清理) 时看到，通过调用 mcentral.freeSpan() 调整其 mspan:
+前面 [**mspan.sweep()**](#422-mspan-的清理） 时看到，通过调用 mcentral.freeSpan() 调整其 mspan:
 ```go
 // freeSpan updates c and s after sweeping s.
 // It sets s's sweepgen to the latest generation,
@@ -1013,7 +1006,7 @@ func (c *mcentral) freeSpan(s *mspan, preserve bool, wasempty bool) bool {
 
 	lock(&c.lock)
 
-	// 如果 mspan 完全空, 调整链表项
+	// 如果 mspan 完全空，调整链表项
 	// Move to nonempty if necessary.
 	if wasempty {
 		c.empty.remove(s)
@@ -1026,13 +1019,13 @@ func (c *mcentral) freeSpan(s *mspan, preserve bool, wasempty bool) bool {
 	// lock of c above.)
 	atomic.Store(&s.sweepgen, mheap_.sweepgen)
 
-	// 还有 object 正在使用, 返回
+	// 还有 object 正在使用，返回
 	if s.allocCount != 0 {
 		unlock(&c.lock)
 		return false
 	}
 
-	// 没有 object 了, 也就是空的 mspan 尝试返回给 mheap
+	// 没有 object 了，也就是空的 mspan 尝试返回给 mheap
 	c.nonempty.remove(s)
 	unlock(&c.lock)
 	mheap_.freeSpan(s)
@@ -1207,8 +1200,8 @@ type heapArena struct {
 	zeroedBase uintptr
 }
 ```
-* `bitmap`：表示该 arena 区域中哪些地址保存了对象，**每个字节的前 4bit 的每个 bit 表示一个 8B 内存（4个指针大小）是否被扫描，后 4bit 每个 bit 表示是否包含指针**。<br>
-因此，一个字节就代表了 32B（4个指针，每个 8B）内存的状态。**（图片来自《知乎：图解Go语言内存分配》）**
+* `bitmap`：表示该 arena 区域中哪些地址保存了对象，**每个字节的前 4bit 的每个 bit 表示一个 8B 内存（4 个指针大小）是否被扫描，后 4bit 每个 bit 表示是否包含指针**。<br>
+因此，一个字节就代表了 32B（4 个指针，每个 8B）内存的状态。**（图片来自《知乎：图解 Go 语言内存分配》）**
 * `spans`：每个 mspan 对应的指针，因为管理 64 MB，所以数组长度为 8192（64MB / 8KB）。<br>
 其数组编号就是对应的 page 编号，例如 spans\[0] 就代表第一个 page 内存区域大小，执行对应的 mspan 。当然，mspan 可能有多个 page 组成，那么对应的多个数组项就指向的同一个 mspan 对象。
 * `zeroedBase` 记录管理的 arena 的内存基地址。
@@ -1258,7 +1251,7 @@ func (h *mheap) init() {
 1. 初始化 `page alloctor`；
 
 #### 4.5.3 mheap 分配 mspan
-在 [**mcentral 扩容流程**](#442-mcentral-扩容)中看到，会调用 `mheap.alloc()` 申请一个新的 mspan。
+在 [**mcentral 扩容流程**](#442-mcentral-扩容）中看到，会调用 `mheap.alloc()` 申请一个新的 mspan。
 
 而之前说的 large object 分配，也是直接会走 `mheap.alloc()` 分配到一个合适大小的 mspan，然后分配 object。
 ```go
@@ -1356,7 +1349,7 @@ HaveSpan:
 }
 ```
 函数很长，这里只保留了最关键的步骤：
-1. 小内存，从当前 `p.pcache`（pageCache结构）获取一个内存区域（又是一个缓存~）；
+1. 小内存，从当前 `p.pcache`（pageCache 结构）获取一个内存区域（又是一个缓存~）；
 1. `p.pcache` 中没有获取到，从 p.mspancache 中获取  mspan（还是缓存~）；
 1. 内存比较大（large mspan），或者上面还是没有获取到，那么只能从 mheap 中获取了，加锁操作：
 	1. 从 `pagealloc.alloc()` 获取内存；
@@ -1366,7 +1359,7 @@ HaveSpan:
 最后获取到之后，就会走 mspan 的初始化流程，包括初始 mspan 数据结构，记录 mspan 指针到 `mheap.arenas` 等行为。
 
 #### 4.5.4 mheap 回收 mspan
-所有的回收 mspan 操作最后殊途同归，会走到 `mheap.freeSpan()` 函数:
+所有的回收 mspan 操作最后殊途同归，会走到 `mheap.freeSpan()` 函数：
 ```go
 // Free the span back into the heap.
 func (h *mheap) freeSpan(s *mspan) {
@@ -1457,7 +1450,6 @@ func sysMap(v unsafe.Pointer, n uintptr, sysStat *uint64) {
 1. 会先调用 `sysReserve()` 来申请内存，但是不使用，预备状态；
 1. 经过地址检查后，`sysMap()` 将其转为可读可写，就可以使用该内存了；
 
-
 ### 4.6 总结
 粗略地看完整个内存模型后，大概内存的结构如下：
 {{< find_img "img9.png" >}}
@@ -1470,7 +1462,6 @@ func sysMap(v unsafe.Pointer, n uintptr, sysStat *uint64) {
 
 mheap 作为最底层，就好像文件系统一样，管理着整个内存分配的骨架。而与上层的交互就是靠 mspan 作为单位。
 
-
 ## 5 对象分配流程
 前面一直提到的，对象的分配分为三类：
 * **`tiny object`** `(0, 16B)`: 使用 tiny allocator 分配，使用 mcahe 一个独立的 mspan，挤压式的；
@@ -1481,12 +1472,12 @@ mheap 作为最底层，就好像文件系统一样，管理着整个内存分�
 
 ### 5.1 tiny object 分配
 tiny object 分配的代码在 [**mspan 分配**](#431-mspan-的分配)中已经说明了，这里再理一下大致步骤：
-1. 不包含指针(noscan)并且小于 16B 的对象才走微小对象分配；
+1. 不包含指针 (noscan) 并且小于 16B 的对象才走微小对象分配；
 2. tiny object 分配仅仅是增大 mcache.tinyoffset 的值，所以是不同大小 tiny object 挤压在一个 mspan 中；
 3. 如果当前的 mspan 没有空间了，通过 mcache.nextFree() 来获取新的指定大小的 mspan，而获取的流程就是前面所说的（走 mcentral->mheap);
 
 ### 5.2 object 分配
-普通大小 object 分配流程就很简单了:
+普通大小 object 分配流程就很简单了：
 ```go
 func mallocgc(size uintptr, typ *_type, needzero bool) unsafe.Pointer {
 	if size <= maxSmallSize {
@@ -1577,7 +1568,6 @@ func largeAlloc(size uintptr, needzero bool, noscan bool) *mspan {
 
 而 [**mheap.alloc()**](#453-mheap-分配-mspan) 就是 mcentral 申请 mspan 的方法。
 
-
 ## 6 内存的释放
 ### 6.1 释放操作
 前面 [**4.5.4 mheap 回收 mspan**](#454-mheap-回收-mspan) 中看到，mheap 不会真正的释放内存，而是等待其被复用。但是不可能一直扩展内存，而不释放。
@@ -1645,14 +1635,13 @@ func sysUnused(v unsafe.Pointer, n uintptr) {
 当然，内核在物理内存充足情况下可能不会实际回收内存，以减少无谓的回收消耗。<br>
 而当再次使用此内存块时，会引发缺页异常，内核会自动重新关联物理内存页。
 ### 6.2 释放时机
-`scavenge()` 有两个地方会被调用:
+`scavenge()` 有两个地方会被调用：
 1. **周期性的触发**（每 5 min?）；
 2. **mheap 扩容时** 或者 **调用 [runtime/debug.FreeOSMemory()](https://pkg.go.dev/runtime/debug#FreeOSMemory) 主动触发**；
-
 
 ## 参考
 
 * [《Golang 学习笔记》](https://github.com/qyuhen/book)
 * [Blog：Go 内存管理可视化](https://medium.com/@ankur_anand/a-visual-guide-to-golang-memory-allocator-from-ground-up-e132258453ed)
 * [《Golang 设计与实现》：内存分配器](https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-memory-allocator/#71-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%99%A8)
-* [知乎：图解Go语言内存分配](https://zhuanlan.zhihu.com/p/59125443)
+* [知乎：图解 Go 语言内存分配](https://zhuanlan.zhihu.com/p/59125443)
