@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  14851 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  14982 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93\/","datePublished": "2021-01-23T17:45:55+08:00","dateModified": "2021-01-23T17:45:55+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Go 并发调度总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw"></i>Golang</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-23">2021-01-23</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 14851 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-23">2021-01-23</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 14982 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 30 分钟&nbsp;<span id="/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Go 并发调度总结">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -201,6 +201,7 @@
         </li>
       </ul>
     </li>
+    <li><a href="#总结">总结</a></li>
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
@@ -251,8 +252,19 @@
 <li>A 函数：执行 -&gt; 异步 -&gt; 返回</li>
 <li>回调函数：读取数据 -&gt; 执行。</li>
 </ul>
-<p>首先，单个函数的执行流变为了两个不同函数，代码写法上串行的思维要变为分割的思维。并且，如果这个操作还是有状态的，那么还涉及到了 “A 函数将状态传递到回调函数” 等问题。</p>
-<p>TODO：图</p>
+<p>首先，单个函数的执行流变为了两个不同函数，代码写法上串行的思维要变为分割的思维。并且，如果这个操作还是有状态的，那么还涉及到了 “A 函数将状态传递到回调函数” 等问题。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/img1.png"/><br>
+
+
+</p>
 <p>因此，<strong><ruby>协程<rt>routine</rt></ruby></strong> 出现，上面的例子的执行流还是：</p>
 <ul>
 <li>执行 -&gt; 读取数据 -&gt; 执行</li>
@@ -297,8 +309,19 @@
 <li><strong><code>P</code></strong> ：处理器，作用类似于 CPU 核，<strong>控制并发执行任务数量</strong>；</li>
 <li><strong><code>schedt</code></strong> ：全局的链表，包括<strong>全局的 G 可运行链表、空闲 M 链表、空闲 P 链表</strong>；</li>
 </ul>
-<p>而大致的运行的模型如下：</p>
-<p>TODO：图的优化</p>
+<p>而大致的运行的模型如下：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/img2.png"/><br>
+
+
+</p>
 <ul>
 <li>每个 P 绑定一个 M，与一个正在运行的 G；</li>
 <li>每个 P 包含自己本地的可运行的 G 的链表；</li>
@@ -492,8 +515,19 @@
 </tr>
 </tbody>
 </table>
-<p>其状态轮转如下图所示：</p>
-<p>TODO：图</p>
+<p>其状态轮转如下图所示：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/img3.png"/><br>
+
+
+</p>
 <h4 id="212-g-的创建">2.1.2 G 的创建</h4>
 <p>在代码中调用 go 语句时，编译器会将其翻译为 <code>newproc()</code> 调用，这也就是创建 G 的开端：</p>
 <div class="highlight"><div class="chroma">
@@ -3602,6 +3636,30 @@
 </div>
         </div>
     </div>
+<h2 id="总结">总结</h2>
+<p>相对于 <a href="https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" target="_blank" rel="noopener noreffer"><strong>内存管理</strong></a> 与 <a href="https://kanshiori.github.io/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/" target="_blank" rel="noopener noreffer"><strong>垃圾收集</strong></a>，竟然感觉并发调度的结构还算简单。</p>
+<p>需要弄清楚的有以下几点：</p>
+<ul>
+<li><a href="#11-%e8%bf%9b%e7%a8%8b%e7%ba%bf%e7%a8%8b%e4%b8%8e%e5%8d%8f%e7%a8%8b" rel=""><strong>协程出现的意义</strong></a></li>
+<li><a href="#12-%e8%b0%83%e5%ba%a6%e5%99%a8" rel=""><strong>调度器的工作</strong></a></li>
+<li><a href="#2-gmp-%e6%a8%a1%e5%9e%8b" rel=""><strong>GMP 模型整体框架</strong></a></li>
+<li><a href="#2-gmp-%e6%a8%a1%e5%9e%8b" rel=""><strong>G、M、P 代表的意义</strong></a></li>
+<li>调度循环的流程
+<ul>
+<li><a href="#31-schedule" rel=""><strong>进入调度循环 M 的行为</strong></a></li>
+<li><a href="#311-fundrunnable" rel=""><strong>找寻 G 的各个途径</strong></a></li>
+<li><a href="#32-execute" rel=""><strong>M 执行 G 时，如何切换上下文</strong></a></li>
+<li><a href="#32-execute" rel=""><strong>如何退出回到调度循环</strong></a></li>
+</ul>
+</li>
+<li>调度切换
+<ul>
+<li><a href="#41-%e5%88%87%e6%8d%a2%e6%97%b6%e6%9c%ba" rel=""><strong>切换的各个时机</strong></a></li>
+<li><a href="#44-%e7%b3%bb%e7%bb%9f%e8%b0%83%e7%94%a8" rel=""><strong>系统调用进行调度切换的行为</strong></a></li>
+<li><a href="#45-%e6%8a%a2%e5%8d%a0" rel=""><strong>抢占的两种方式</strong></a></li>
+</ul>
+</li>
+</ul>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://github.com/qyuhen/book" target="_blank" rel="noopener noreffer">《Golang 学习笔记》</a></li>
