@@ -3,9 +3,16 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 23 Jan 2021 17:45:55 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 04 Feb 2021 16:29:04 &#43;0800</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Linux 网络收发包过程总结</title>
+    <link>https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/</link>
+    <pubDate>Thu, 04 Feb 2021 16:29:04 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/</guid>
+    <description><![CDATA[1 背景知识 1.1 中断 中断终止 CPU 执行流，立即执行必要的处理程序。分为两个类型： 同步中断和异常：由 CPU 自身产生。例如程序崩溃、缺页异常； 异步中断：由 IO]]></description>
+</item><item>
     <title>Go 并发调度总结</title>
     <link>https://KanShiori.github.io/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/</link>
     <pubDate>Sat, 23 Jan 2021 17:45:55 &#43;0800</pubDate>
@@ -68,12 +75,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/</guid>
     <description><![CDATA[Kubernetes 中，通过 RBAC 机制来实现集群 Pod 中对 APIServer 的访问权限控制与授权。 RBAC 机制有三个最基本的概念： Role：一组规则，定义了对 API 对象的操作权限； Subjec]]></description>
-</item><item>
-    <title>CRD 实践</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/crd-%E5%AE%9E%E8%B7%B5/</link>
-    <pubDate>Fri, 30 Oct 2020 15:57:36 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/crd-%E5%AE%9E%E8%B7%B5/</guid>
-    <description><![CDATA[CRD 是 Kubernetes 可扩展性的第一个体现，因为 Kubernetes 提供的是一个编排的框架，因此不止可以对 Pod 进行编排，也支持通过 CRD 对你自定义的类型的编排。 1 CRD 构建 目的：通过 CRD]]></description>
 </item></channel>
 </rss>

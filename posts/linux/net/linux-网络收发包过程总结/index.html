@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Linux 网络收发包过程总结 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Linux 网络收发包过程总结" />
+<meta property="og:description" content="1 背景知识 1.1 中断 中断终止 CPU 执行流，立即执行必要的处理程序。分为两个类型： 同步中断和异常：由 CPU 自身产生。例如程序崩溃、缺页异常； 异步中断：由 IO" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" />
+<meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+<meta property="article:published_time" content="2021-02-04T16:29:04+08:00" />
+<meta property="article:modified_time" content="2021-02-04T16:29:04+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="Linux 网络收发包过程总结"/>
+<meta name="twitter:description" content="1 背景知识 1.1 中断 中断终止 CPU 执行流，立即执行必要的处理程序。分为两个类型： 同步中断和异常：由 CPU 自身产生。例如程序崩溃、缺页异常； 异步中断：由 IO"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" /><link rel="prev" href="https://KanShiori.github.io/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Linux 网络收发包过程总结",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/linux\/net\/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "linux, net","wordcount":  5870 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/linux\/net\/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93\/","datePublished": "2021-02-04T16:29:04+08:00","dateModified": "2021-02-04T16:29:04+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/" title="">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Linux 网络收发包过程总结</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>linux</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-02-04">2021-02-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 5870 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 12 分钟&nbsp;<span id="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Linux 网络收发包过程总结">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-背景知识">1 背景知识</a>
+      <ul>
+        <li><a href="#11-中断">1.1 中断</a>
+          <ul>
+            <li><a href="#111-硬件中断">1.1.1 硬件中断</a></li>
+            <li><a href="#112-中断下半部">1.1.2 中断下半部</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#2-网卡层">2 网卡层</a>
+      <ul>
+        <li><a href="#21-网卡多队列">2.1 网卡多队列</a>
+          <ul>
+            <li><a href="#211-配置网卡队列">2.1.1 配置网卡队列</a></li>
+            <li><a href="#212-配置中断亲和性">2.1.2 配置中断亲和性</a></li>
+          </ul>
+        </li>
+        <li><a href="#22-接收数据">2.2 接收数据</a></li>
+        <li><a href="#23-发送数据">2.3 发送数据</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-网络访问层">3 网络访问层</a>
+      <ul>
+        <li><a href="#31-net_device">3.1 net_device</a></li>
+        <li><a href="#32-gro">3.2 GRO</a></li>
+        <li><a href="#33-rps-xps-rfs">3.3 RPS XPS RFS</a>
+          <ul>
+            <li><a href="#331-rps">3.3.1 RPS</a></li>
+            <li><a href="#332-rfs">3.3.2 RFS</a></li>
+            <li><a href="#333-xps">3.3.3 XPS</a></li>
+          </ul>
+        </li>
+        <li><a href="#34-接收数据">3.4 接收数据</a></li>
+        <li><a href="#35-发送数据">3.5 发送数据</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-网络层">4 网络层</a>
+      <ul>
+        <li><a href="#41-sk_buff">4.1 sk_buff</a></li>
+        <li><a href="#42-接收数据">4.2 接收数据</a></li>
+        <li><a href="#43-发送数据">4.3 发送数据</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-传输层">5 传输层</a>
+      <ul>
+        <li><a href="#51-sock">5.1 sock</a>
+          <ul>
+            <li><a href="#511-配置-socket-buffer-大小">5.1.1 配置 socket buffer 大小</a></li>
+          </ul>
+        </li>
+        <li><a href="#52-udp-层">5.2 UDP 层</a>
+          <ul>
+            <li><a href="#521-接收数据">5.2.1 接收数据</a></li>
+            <li><a href="#522-发送数据">5.2.2 发送数据</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-背景知识">1 背景知识</h2>
+<h3 id="11-中断">1.1 中断</h3>
+<p>中断终止 CPU 执行流，立即执行必要的处理程序。分为两个类型：</p>
+<ul>
+<li><strong>同步中断</strong>和<strong>异常</strong>：由 CPU 自身产生。例如程序崩溃、缺页异常；</li>
+<li><strong>异步中断</strong>：由 IO 设备产生，任意时间可能发生；</li>
+</ul>
+<p>两种中断发生后，CPU 会切换至内核态，并执行 <strong><ruby>中断处理程序<rt>interrupt handler</rt></ruby></strong>。</p>
+<p>对于异步中断，因为会停止当前执行的进程，所以内核要确保中断处理程序尽快完成，尽快返还 CPU。同样，也会阻塞 IO 设备的下一次中断，Linux 将异步中断分为了 <strong>硬件中断</strong> 与 <strong>中断下半部</strong>。</p>
+<h4 id="111-硬件中断">1.1.1 硬件中断</h4>
+<p><strong><ruby>硬件中断<rt>hardware interrupt</rt></ruby></strong> 指硬件设备发起信号中断 CPU 执行，CPU 立即进行中断的处理。</p>
+<p>实际上，为了不长时间阻塞与中断处理，硬中断往往启动到的是一个通知的作用。例如网卡收到数据包，并通过 DMA 写入 ringbuffer 后，会通过硬中断通知 CPU 从 ringbuffer 读取并处理数据。</p>
+<p>通过 <code>/proc/interrupts</code> 可以看到硬中断的触发次数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ cat /proc/interrupts
+<span class="c1"># …</span>
+      CPU0
+100:  <span class="m">15</span>      IR-PCI-MSI  35651584-edge p2p1-TxRx-0
+101:  <span class="m">0</span>       IR-PCI-MSI  35651585-edge p2p1-TxRx-1
+102:  <span class="m">0</span>       IR-PCI-MSI  35651586-edge p2p1-TxRx-2
+103:  <span class="m">0</span>       IR-PCI-MSI  35651587-edge p2p1-TxRx-3
+104:  <span class="m">0</span>       IR-PCI-MSI  35651588-edge p2p1-TxRx-4
+105:  <span class="m">0</span>       IR-PCI-MSI  35651589-edge p2p1-TxRx-5
+106:  <span class="m">0</span>       IR-PCI-MSI  35651590-edge p2p1-TxRx-6
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>第一行：IRQ 编号；</li>
+<li>第二行：每个 CPU 的中断次数；</li>
+<li>第三行：中断的类型；</li>
+<li>第四行：？？；</li>
+<li>第五行：中断发起的设备名；</li>
+</ul>
+<p>平时可能只需要关注第五行设备名称就行，因为可能要过滤出网卡对应队列的中断，然后将其绑定触发的 CPU，见网卡多队列。</p>
+<h4 id="112-中断下半部">1.1.2 中断下半部</h4>
+<p><strong><ruby>中断下半部<rt>bottom half</rt></ruby></strong> 包含三种处理方式：</p>
+<ul>
+<li><strong><code>软中断 softirq</code></strong>：固定的 32 个接口，只留给对时间要求最严格的下半部使用。<br>
+查看 <code>/proc/softirqs</code> 文件 可以看到目前支持的软中断：
+<table>
+<thead>
+<tr>
+<th>命名</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HI</td>
+<td></td>
+</tr>
+<tr>
+<td>TIMER</td>
+<td>定时中断</td>
+</tr>
+<tr>
+<td>NET_TX</td>
+<td>网络发送</td>
+</tr>
+<tr>
+<td>NET_RX</td>
+<td>网络接收</td>
+</tr>
+<tr>
+<td>BLOCK</td>
+<td></td>
+</tr>
+<tr>
+<td>IRQ_POLL</td>
+<td></td>
+</tr>
+<tr>
+<td>TASKLET</td>
+<td>tasklet 软中断扩展</td>
+</tr>
+<tr>
+<td>SCHED</td>
+<td>内核调度</td>
+</tr>
+<tr>
+<td>HRTIMER</td>
+<td></td>
+</tr>
+<tr>
+<td>RCU</td>
+<td>RCU 锁</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><strong><code>tasklet</code></strong>：因为软中断只有固定的 32 个，为了支持扩展，tasklet 基于软中断时间，在不同处理器上运行，并且支持通过代码动态注册；</li>
+<li><strong><code>工作队列 work queue</code></strong>：将一个中断的部分工作推后，可以实现一些 tasklet 不能实现的工作（比如可以睡眠）。<br>
+一些内核线程会不断处理工作队列的数据，其运行在进程上下文中，并且可以睡眠以及被重新调度。目前，<strong><code>kworker 内核线程</code></strong> 负责处理这个工作。</li>
+</ul>
+<p>对于软中断与 tasklet，如果大量出现时，为了不一直进行 CPU 中断，内核会唤醒 <strong><code>ksoftirqd</code></strong> 内核线程进行异步的处理。<strong>每个处理器有一个 ksoftirqd/n 线程，n 为 CPU 编号</strong>。</p>
+<h2 id="2-网卡层">2 网卡层</h2>
+<h3 id="21-网卡多队列">2.1 网卡多队列</h3>
+<p>网卡与系统传输数据包通过两个环形队列：<code>TX ring buffer</code>、<code>RX ring buffer</code>，也称为 <code>DMA 环形队列</code>。平时所说的设置网卡多队列指的就是设置这个环形队列的数量。</p>
+<p>当网卡收到帧时，会<strong>通过哈希来决定将帧放在哪个 ring buffer 上，然后通过硬中断通知其对应的 CPU 处理</strong>。</p>
+<p>默认下，处理环形队列数据由 CPU0 负责，可以通过配置<strong>中断亲和性</strong>，或者通过开启 <strong>irqbalance service</strong> 将中断均衡到各个 CPU 上。</p>
+<h4 id="211-配置网卡队列">2.1.1 配置网卡队列</h4>
+<p>通过 <code>ethool -l/-L &lt;nic&gt;</code> 命令查看与配置网卡的队列数，通常配置的与机器 CPU 个数一样（如果网卡支持的话）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ ethtool -l eth0
+Channel parameters <span class="k">for</span> eth0:
+Pre-set maximums:
+RX:             <span class="m">0</span>
+TX:             <span class="m">0</span>
+Other:          <span class="m">1</span>
+Combined:       <span class="m">8</span>
+Current hardware settings:
+RX:             <span class="m">0</span>
+TX:             <span class="m">0</span>
+Other:          <span class="m">1</span>
+Combined:       <span class="m">7</span>
+
+$ ethtool -L eth0 combined <span class="m">8</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>设置后，你在 <code>/sys/class/net/&lt;nic&gt;/queues/</code> 可以看到对应的收发队列目录：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ ls /sys/class/net/eth0/queues/
+rx-0  rx-1  rx-2  rx-3  rx-4  rx-5  rx-6  rx-7  tx-0  tx-1  tx-2  tx-3  tx-4  tx-5  tx-6  tx-7
+</code></pre></td></tr></table>
+</div>
+</div><p>在 <code>/proc/interrupts</code> 中也可以看到各个队列对各个 CPU 的中断次数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ cat /proc/interrupts <span class="p">|</span> grep eth0
+<span class="c1"># … 这里只打印了一个 CPU 中断</span>
+      CPU0
+62:  <span class="m">0</span>     IR-PCI-MSI   524288-edge   eth0
+63:  <span class="m">0</span>     IR-PCI-MSI   524289-edge   eth0-TxRx-0
+64:  <span class="m">0</span>     IR-PCI-MSI   524290-edge   eth0-TxRx-1
+65:  <span class="m">1766</span>  IR-PCI-MSI   524291-edge   eth0-TxRx-2
+66:  <span class="m">0</span>     IR-PCI-MSI   524292-edge   eth0-TxRx-3
+67:  <span class="m">0</span>     IR-PCI-MSI   524293-edge   eth0-TxRx-4
+68:  <span class="m">0</span>     IR-PCI-MSI   524294-edge   eth0-TxRx-5
+69:  <span class="m">0</span>     IR-PCI-MSI   524295-edge   eth0-TxRx-6
+70:  <span class="m">0</span>     IR-PCI-MSI   524296-edge   eth0-TxRx-7
+</code></pre></td></tr></table>
+</div>
+</div><p>通过 <code>ethtool -g/-G &lt;nic&gt;</code> 可以查看与配置 ring buffer 的长度：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ ethtool -g eth0
+Ring parameters <span class="k">for</span> eth0:
+Pre-set maximums:
+RX:             <span class="m">4096</span>
+RX Mini:        <span class="m">0</span>
+RX Jumbo:       <span class="m">0</span>
+TX:             <span class="m">4096</span>
+Current hardware settings:
+RX:             <span class="m">256</span>
+RX Mini:        <span class="m">0</span>
+RX Jumbo:       <span class="m">0</span>
+TX:             <span class="m">256</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="212-配置中断亲和性">2.1.2 配置中断亲和性</h4>
+<p>如果你发现 CPU0 的中断很高，那么就很有可能所有网卡队列的中断都打到了 CPU0 上。可以通过 <code>/proc/irq/&lt;id&gt;/smp_affinity_list</code> 查看指定编号的中断的对应允许的 CPU。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ <span class="k">for</span> i in <span class="o">{</span>62..70<span class="o">}</span><span class="p">;</span> <span class="k">do</span> <span class="nb">echo</span> -n <span class="s2">&#34;Interrupt </span><span class="nv">$i</span><span class="s2"> is allowed on CPUs &#34;</span><span class="p">;</span> cat /proc/irq/<span class="nv">$i</span>/smp_affinity_list<span class="p">;</span> <span class="k">done</span>
+Interrupt <span class="m">62</span> is allowed on CPUs <span class="m">4</span>
+Interrupt <span class="m">63</span> is allowed on CPUs <span class="m">8</span>
+Interrupt <span class="m">64</span> is allowed on CPUs <span class="m">13</span>
+Interrupt <span class="m">65</span> is allowed on CPUs <span class="m">21</span>
+Interrupt <span class="m">66</span> is allowed on CPUs <span class="m">6</span>
+Interrupt <span class="m">67</span> is allowed on CPUs <span class="m">31</span>
+Interrupt <span class="m">68</span> is allowed on CPUs <span class="m">5</span>
+Interrupt <span class="m">69</span> is allowed on CPUs <span class="m">2</span>
+Interrupt <span class="m">70</span> is allowed on CPUs <span class="m">31</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>62-70 的网卡队列中断都打到了不同的 CPU 上；</li>
+</ul>
+<p>通过写入 <code>echo &quot;&lt;bitmark&gt;&quot; &gt; /proc/irq/&lt;id&gt;/smp_affinity</code> 可以中断绑定的 CPU，bitmark 的每个位对应一个 CPU，例如 &ldquo;0x1111&rdquo; 表示 CPU 0-3 都可以处理这个中断。</p>
+<p>当然，你也可以通过 irqbalance 来均衡各个 CPU 的中断，动态的改变中断与绑定的 CPU。不过，irqbalance 不仅仅针对网卡队列中断，还会调整其他的。</p>
+<h3 id="22-接收数据">2.2 接收数据</h3>
+<p>先来看第一个阶段，网卡接收到数据是如何处理的。</p>
+<ol>
+<li>packet 进入物理网卡，物理网卡会根据目的 mac <strong>判断是否丢弃</strong>（除非混杂模式）；</li>
+<li>网卡通过 DMA 方式将 packet <strong>写入到 ringbuffer</strong>。<br>
+ringbuffer 由网卡驱动程序分配并初始化。</li>
+<li>网卡通过<strong>硬中断通知 CPU</strong>，有数据来了。</li>
+<li>CPU 根据<strong>中断执行中断处理函数</strong>，该函数会调用网卡驱动函数。</li>
+<li>驱动程序<strong>先禁用网卡中断</strong>（NAPI），表示网卡下次直接写到 ringbuffer 即可，不需要中断通知了。<br>
+这样避免 CPU 不断被中断。</li>
+<li>驱动程序启动软中断，让 CPU 执行软中断处理函数<strong>不断从 ringbuffer 读取并处理 packet</strong>。</li>
+</ol>
+<p>网卡多队列就是在这里生效，网卡会将 packet 放置到不同的 ringbuffer，不同的 ringbuffer 会中断不同的 CPU（如果设置了中断亲和性），使得各个 CPU 的队列硬中断是均衡的。</p>
+<h3 id="23-发送数据">2.3 发送数据</h3>
+<p>网络设备通过驱动函数发送数据后，就归网卡驱动管了，不同的驱动有着不同的处理方式。</p>
+<p>大致的流程如下：</p>
+<ol>
+<li>将 <strong>sk_buff 放入 TX ringbuff</strong>。</li>
+<li><strong>通知网卡</strong>发送数据。</li>
+<li>网卡发送完数据后，通过<strong>中断通知 CPU</strong>。</li>
+<li>收到中断后，进行 sk_buff 的<strong>清理工作</strong>。</li>
+</ol>
+<p>当然，网卡驱动还有一些与 net_device 打交道的地方，比如网卡的队列满了，需要告诉上层不要再发了，等队列有空闲的时候，再通知上层接着发数据。</p>
+<h2 id="3-网络访问层">3 网络访问层</h2>
+<h3 id="31-net_device">3.1 net_device</h3>
+<p>每个网络设备都表示为 <strong><code>net_device</code></strong> 一个实例。不同类型的网络设备都会有 net_device 表示，而其相关操作函数的实现不同。</p>
+<p>net_device 是针对于 namespace 的，通过 sysfs 你可以看到当前命名空间下所有的 net_device。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ ls /sys/class/net
+docker0  enp0s3  enp0s8  lo  lxcbr0  vethea62395
+</code></pre></td></tr></table>
+</div>
+</div><p>net_device 包含了设备相关的所有信息，定义很长， 下面经过简化：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">net_device</span> <span class="p">{</span>
+	<span class="kt">char</span>			<span class="n">name</span><span class="p">[</span><span class="n">IFNAMSIZ</span><span class="p">];</span>
+	
+	<span class="c1">// IO 相关字段
+</span><span class="c1"></span>	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">mem_end</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">mem_start</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">base_addr</span><span class="p">;</span>
+	<span class="kt">int</span>			        <span class="n">irq</span><span class="p">;</span>
+
+	<span class="kt">unsigned</span> <span class="kt">long</span>	<span class="n">state</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">dev_list</span><span class="p">;</span>
+
+	<span class="kt">int</span>			<span class="n">ifindex</span><span class="p">;</span>
+	
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">net_device_ops</span> <span class="o">*</span><span class="n">netdev_ops</span><span class="p">;</span>
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">ethtool_ops</span> <span class="o">*</span><span class="n">ethtool_ops</span><span class="p">;</span>
+
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">flags</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">mtu</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">short</span>		<span class="n">type</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">short</span>		<span class="n">hard_header_len</span><span class="p">;</span>
+
+	<span class="kt">unsigned</span> <span class="kt">char</span>		<span class="n">perm_addr</span><span class="p">[</span><span class="n">MAX_ADDR_LEN</span><span class="p">];</span>
+	<span class="kt">unsigned</span> <span class="kt">char</span>		<span class="n">addr_len</span><span class="p">;</span>
+
+<span class="cp">#if IS_ENABLED(CONFIG_VLAN_8021Q)
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="n">vlan_info</span> <span class="n">__rcu</span>	<span class="o">*</span><span class="n">vlan_info</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="cp"></span>	<span class="c1">// … 协议相关的特殊指针
+</span><span class="c1"></span>
+	<span class="cm">/* Interface address info used in eth_type_trans() */</span>
+	<span class="kt">unsigned</span> <span class="kt">char</span>		<span class="o">*</span><span class="n">dev_addr</span><span class="p">;</span>
+
+	<span class="k">struct</span> <span class="n">netdev_rx_queue</span>	<span class="o">*</span><span class="n">_rx</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">num_rx_queues</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">real_num_rx_queues</span><span class="p">;</span>
+
+	<span class="k">struct</span> <span class="n">bpf_prog</span> <span class="n">__rcu</span>	<span class="o">*</span><span class="n">xdp_prog</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">gro_flush_timeout</span><span class="p">;</span>
+	<span class="kt">int</span>			<span class="n">napi_defer_hard_irqs</span><span class="p">;</span>
+	<span class="n">rx_handler_func_t</span> <span class="n">__rcu</span>	<span class="o">*</span><span class="n">rx_handler</span><span class="p">;</span>
+	<span class="kt">void</span> <span class="n">__rcu</span>		<span class="o">*</span><span class="n">rx_handler_data</span><span class="p">;</span>
+	
+	<span class="k">struct</span> <span class="n">netdev_queue</span> <span class="n">__rcu</span> <span class="o">*</span><span class="n">ingress_queue</span><span class="p">;</span>
+
+	<span class="n">truct</span> <span class="n">netdev_queue</span>	<span class="o">*</span><span class="n">_tx</span><span class="err">；</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">num_tx_queues</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">real_num_tx_queues</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">Qdisc</span>		<span class="o">*</span><span class="n">qdisc</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">tx_queue_len</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>name[IFNAMSIZ] ：设备命名；</li>
+<li>irq ：irq 编号；</li>
+<li>ifindex ：设备编号；</li>
+<li>mtu ：设备的最大传输单元；</li>
+<li>netdev_ops ：设备的操作接口，不同类型的接口有着不同的操作实现；</li>
+<li>dev_addr ：网卡硬件地址；</li>
+<li>_rx ：数据包接收队列（ringbuffer）；</li>
+<li>_tx ：数据包发送队列；</li>
+<li>qdisc : 设备进入的 qdisc；</li>
+<li>ingress_queue ：ingress 队列；</li>
+<li>其他包含一些 XDP 相关，统计相关等字段；</li>
+</ul>
+<p>大多数的统计信息都可以在对应设备的 sysfs 目录中找到。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>网卡命名<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">linux 内核启动过程中，会默认给网卡以 ethx 方式命名，后面 systemd 回去 rename 网卡名称。</div>
+        </div>
+    </div></p>
+<h3 id="32-gro">3.2 GRO</h3>
+<p><strong><ruby>GRO<rt>Generic Receive Offloading</rt></ruby></strong> 用于将 jumbo frame（超过 1500B）的多个分片合并，然后将给上层处理，以减少上层处理数据包的数量。</p>
+<p>通过 <code>ethtool -k/K &lt;nic&gt;</code> 查和设置 GRO。</p>
+<h3 id="33-rps-xps-rfs">3.3 RPS XPS RFS</h3>
+<h4 id="331-rps">3.3.1 RPS</h4>
+<p>网卡多队列需要硬件的支持，而 <strong><ruby>RPS<rt>Receive Packet Steering</rt></ruby></strong> 这些则是软件实现多队列，将包让指定的 CPU 去处理。通常情况，当网卡队列数小于 CPU 个数时，可以让 RPS 进一步利用多余的 CPU，让其去处理中断。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">RPS 的设置是针对单个 ringbuffer 的，与网卡多队列处理不是同一个阶段，也不是冲突的。</div>
+        </div>
+    </div></p>
+<p>开启 RPS 后，数据会由经由被中断 CPU 转发，由其他 CPU 处理。流程如下：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img1.png"/><br>
+
+
+</p>
+<ol>
+<li>当网卡收到数据存入 ring buffer 后，还是通知指定 CPUx 从 ringbuffer 取出数据；</li>
+<li>不过接下来，CPUx 会为每个 packet 哈希放入其他 CPU 的 input_pkt_queue 中。</li>
+<li>CPUx 通过 Inter-processor Interrupt (IPI)  中断告知其他 CPU，处理自己的 input_pkt_queue ；</li>
+<li>其他 CPU 从各个的 input_pkt_queue 中取出数据包，并处理之后的流程；</li>
+</ol>
+<p>可以看到，<strong>RPS 不是用于减少 CPU 软中断，而是用于将数据包处理时间均摊到各个 CPU 上</strong>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 配置该 ringbuffer 使用 CPU0 CPU1 的队列</span>
+$ <span class="nb">echo</span> <span class="s2">&#34;0x11&#34;</span> &gt; /sys/class/net/eth0/queues/rx-0/rps_cpus
+
+<span class="c1"># 配置每个 CPU 的 input_pkt_queue 的大小</span>
+$ sysctl -w net.core.netdev_max_backlog<span class="o">=</span><span class="m">1000</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="332-rfs">3.3.2 RFS</h4>
+<p><strong><ruby>RFS<rt>Receive Flow Steering</rt></ruby></strong> 一般和 RPS 配合工作。</p>
+<p>RPS 将受到的 packet 经过哈希发配到不同的 CPU input_pkt_queue。而 RFS 会根据 packet 的数据流，发送到对应被处理的 CPU input_pkt_queue 上，即<strong>同一个数据流的 packet 会被路由到处理当前数据流的 CPU 上</strong>，从而提高 CPU cache 的命中率。</p>
+<p>RFS 默认是关闭的，需要通过配置生效，一般推荐的配置如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 配置系统期望的活跃连接数</span>
+$ sysctl -w net.core.rps_sock_flow_entries<span class="o">=</span><span class="m">32768</span>
+
+<span class="c1"># 配置每个 rps 队列负责的 flow 最大数量，为 rps_sock_flow_entries / N</span>
+$ <span class="nb">echo</span> <span class="m">2048</span> &gt; /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="333-xps">3.3.3 XPS</h4>
+<p><strong><ruby>XPS<rt>Transmit Packet Steering</rt></ruby></strong> 则是发送时的多队列处理。</p>
+<h3 id="34-接收数据">3.4 接收数据</h3>
+<p>在网卡层中，最后由异步的软中断处理函数来异步的从里 ringbuffer 的数据。而这由内核线程 ksoftirqd 来调用对应的网络软中断函数处理。</p>
+<p><strong>所以，在数据包到达 socket buffer 前，数据处理都是由 ksoftirqd 线程执行的。</strong></p>
+<ol>
+<li>ksoftirqd 调用<strong>驱动程序的 poll 函数来一个个处理 packet</strong>。<br>
+如果没有 packet 的话，就会重新启动网卡硬中断，等待下一次重新的流程。</li>
+<li>poll 函数将读取的每个 packet，<strong>转换为 sk_buff 数据格式，并分析其传输层协议</strong>。</li>
+<li>（可选）如果开启了 GRO，那么进行 <strong>GRO 的处理</strong>。</li>
+<li>如果开启了 RPS，那么进行 <strong>RPS 的处理</strong>，否则放入当前 CPU 的 input_pkt_queue。<br>
+RPS 处理的流程如下：
+<ol>
+<li>当前 CPU 将 sk_buff 放到其他 CPU 的 input_pkt_queue 中。如果 input_pkt_queue 满的话，packet 会被丢弃。</li>
+<li>CPU 通过 IPI 硬中断通知其他 CPU 处理自己的 input_pkt_queue，也就是走 11 步流程。</li>
+</ol>
+</li>
+</ol>
+<p>到这里，而无论是否开启 RPS，接下来就是 <strong>CPU 从各自 input_pkt_queue 取出 sk_buff 并处理</strong>。</p>
+<ol>
+<li>CPU 查看 socket 是否是 AF_PACKET 类型的。如果是的话复制一份数据处理（例如 tcpdump 抓这里的包）。</li>
+<li>调用对应协议栈的函数，将数据包交给协议栈处理。</li>
+</ol>
+<h3 id="35-发送数据">3.5 发送数据</h3>
+<p>接受到网络层的数据后，来到网络访问层会经过一个非常重要的系统：Traffic Controller。这是接收数据时不会经过。</p>
+<ol>
+<li>根据 sk_buff 中的设备信息，获取对应 net_device.qdisc。<br>
+如果 qdisc 存在的话，走流量控制系统，可能会丢弃包：
+TODO</li>
+<li>拷贝一份 sk_buff 给 &ldquo;packet taps&rdquo;。</li>
+<li>调用具体驱动的发送数据的函数发送。</li>
+</ol>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">注意，发送数据时并没有 CPU 的 &ldquo;outputqueue&rdquo;，因为流量控制系统已经进行了流量控制。</div>
+        </div>
+    </div>
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw"></i>入口流量控制<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">如果想对入口流量进行流量控制，可以使用 tc ingressqdisc + 虚拟设备 IFB 进行</div>
+        </div>
+    </div>
+<h2 id="4-网络层">4 网络层</h2>
+<p>网络访问层在接受到数据后，调用各个网络层协议的处理函数，进行 sk_buff 的处理。当然，我们下面说的是 IP 协议。</p>
+<h3 id="41-sk_buff">4.1 sk_buff</h3>
+<p>网卡接受到的数据包，整个在内核中传递使用的都是 sk_buff 数据结构。网络的各个层都是使用的同一个 sk_buff 对象，而无需进行数据的复制，使得性能更高。</p>
+<p>sk_buff 包含各个指针执行对应数据的内存区域，并且表示其协议的 head data 等区域。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C" data-lang="C"><span class="c1">// &lt;sk_buff.h&gt;
+</span><span class="c1"></span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="p">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span>
+    <span class="k">union</span> <span class="p">{</span>
+        <span class="n">__be16</span>  <span class="n">inner_protocol</span><span class="p">;</span>
+        <span class="n">__u8</span>    <span class="n">inner_ipproto</span><span class="p">;</span>
+    <span class="p">};</span>
+
+    <span class="n">__u16</span>   <span class="n">inner_transport_header</span><span class="p">;</span>
+    <span class="n">__u16</span>   <span class="n">inner_network_header</span><span class="p">;</span>
+    <span class="n">__u16</span>   <span class="n">inner_mac_header</span><span class="p">;</span>
+
+    <span class="n">__be16</span>  <span class="n">protocol</span><span class="p">;</span>
+    <span class="n">__u16</span>   <span class="n">transport_header</span><span class="p">;</span>
+    <span class="n">__u16</span>   <span class="n">network_header</span><span class="p">;</span>
+    <span class="n">__u16</span>   <span class="n">mac_header</span><span class="p">;</span>
+
+    <span class="cm">/* These elements must be at the end, see alloc_skb() for details.  */</span>
+    <span class="n">sk_buff_data_t</span>  <span class="n">tail</span><span class="p">;</span>
+    <span class="n">sk_buff_data_t</span>  <span class="n">end</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">char</span>   <span class="o">*</span><span class="n">head</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">data</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>head，end 为整个数据包的头尾内存地址；</li>
+<li>data，tail 为当前层对应的数据的头尾内存地址；</li>
+<li>transport_header，network_header，mac_header 传输层、网络层、链路层 header 的内存地址；</li>
+</ul>
+<p>看图可能更好理解，sk_buff 通过指针将数据包各个区域表示出来了，而在各个协议层之间移动则是移动 data 与 tail 指针。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img4.png"/><br>
+
+
+</p>
+<p>sk_buff_head 表示 sk_buff 组成的链表，这个结构就是 RPS 各个 CPU 的队列，以及 socket buffer 的实现。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C" data-lang="C"><span class="c1">// &lt;sk_buff.h&gt;
+</span><span class="c1"></span><span class="k">struct</span> <span class="n">sk_buff_head</span> <span class="p">{</span>
+    <span class="cm">/* These two members must be first. */</span>
+    <span class="k">struct</span> <span class="n">sk_buff</span>  <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sk_buff</span>  <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+
+    <span class="n">__u32</span>       <span class="n">qlen</span><span class="p">;</span>  <span class="c1">// 链表长度
+</span><span class="c1"></span>    <span class="n">spinlock_t</span>  <span class="n">lock</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="42-接收数据">4.2 接收数据</h3>
+<p>看一下网络层处理数据报的步骤：</p>
+<ol>
+<li>如果其数据包的 MAC 地址不是当前网卡，那么丢弃（可能由于网卡混杂模式进来的，还是无法经过协议栈处理）。</li>
+<li>经过 netfilter 的 PREROUTING 阶段回调。</li>
+<li>进行路由判断：如果目的 IP 是本机 IP，那么接受该包。如果不是本机 IP，判断是否要路由。</li>
+<li>经过 netfilter 的 INPUT 阶段回调。</li>
+<li>进入传输层。</li>
+</ol>
+<p>可以看到，如果仅仅是简单的接收数据包很简单，只要经过 netfilter 的回调即可。</p>
+<p>看一下路由对数据包的处理：</p>
+<ol>
+<li>检查是否开启 ip forward 功能，没有开启的话数据包会执行丢弃。<br>
+通过 <code>sysctl -w net.ipv4.ip_forward=1</code> 开启 ip forward。</li>
+<li>经过 netfilter 的 FORWARD 阶段回调。</li>
+<li>走正常的发包流程发送数据包（会经过 netfilter POSTROUTING 阶段回调）</li>
+</ol>
+<p>还是看图比较直观：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img5.png"/><br>
+
+
+</p>
+<h3 id="43-发送数据">4.3 发送数据</h3>
+<ol>
+<li>在 sk_buff 指向的数据区设置好 IP 报文头。</li>
+<li>调用 netfilter 的 OUTPUT 阶段回调。</li>
+<li>调用相关协议的发送函数（IP 协议或其他），将出口网卡设备信息写入 sk_buff。</li>
+<li>调用 netfilter 的 POSTOUTPUT 阶段回调。</li>
+<li>POSTOUTPUT 可能设置了 SNAT，从而导致路由信息变化，如果发生变化重新重新回到 3。</li>
+<li>根据目的 IP，从路由表中获取下一跳的地址，然后在 ARP 缓存表中找到下一跳的 neigh 信息。</li>
+<li>如果没有 neigh信息，那么会进行一个 ARP 请求，尝试得到下一跳的 mac 地址。</li>
+</ol>
+<p>到这里，得到了下一跳设备的 mac 地址，将其填入 sk_buff 并调用下一层的接口。</p>
+<h2 id="5-传输层">5 传输层</h2>
+<h3 id="51-sock">5.1 sock</h3>
+<p>sock 是 socket 在内核的表示结构，每个 sock 对应于一个用户态使用的 socket。TCP UDP 都是基于该结构来实现的。</p>
+<p>其中，sock 最主要的属性就是常说的 socket buffer 了。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">// &lt;sock.h&gt;
+</span><span class="c1"></span><span class="k">struct</span> <span class="n">sock</span> <span class="p">{</span>
+    <span class="c1">// …
+</span><span class="c1"></span>	<span class="cp">#define sk_state    __sk_common.skc_state
+</span><span class="cp"></span>	<span class="c1">// …
+</span><span class="c1"></span>    <span class="k">struct</span> <span class="n">sk_buff_head</span> <span class="n">sk_error_queue</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sk_buff_head</span> <span class="n">sk_receive_queue</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sk_buff_head</span> <span class="n">sk_write_queue</span><span class="p">;</span>
+
+	<span class="kt">int</span> <span class="n">sk_rcvbuf</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">sk_sndbuf</span><span class="p">;</span>
+	
+	<span class="n">u32</span> <span class="n">sk_ack_backlog</span><span class="p">;</span>
+	<span class="n">u32</span> <span class="n">sk_max_ack_backlog</span><span class="p">;</span>
+	
+	<span class="c1">// 各个回调函数
+</span><span class="c1"></span>    <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">sk_state_change</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">);</span>
+    <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">sk_data_ready</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">);</span>
+    <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">sk_write_space</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">);</span>
+    <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">sk_error_report</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">);</span>
+    <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">sk_backlog_rcv</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">,</span>
+                <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+    <span class="c1">// …
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>sk_state ：TCP 的状态；</li>
+<li>sk_receive_queue sk_write_queue ：接受/发送队列（buffer）；</li>
+<li>rcvbuf，sndbuf ：接受/发送队列的大小，单位 B；</li>
+<li>sk_ack_backlog ：经过三次握手后，等待 accept() 的全连接队列；</li>
+</ul>
+<h4 id="511-配置-socket-buffer-大小">5.1.1 配置 socket buffer 大小</h4>
+<p>通过 sysctl 可以配置 TCP、UDP 的接受与发送缓冲区大小：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sysctl -w net.ipv4.tcp_rmem<span class="o">=</span><span class="s2">&#34;4096 503827 6291456&#34;</span>
+sysctl -w net.ipv4.tcp_wmem<span class="o">=</span><span class="s2">&#34;4096 503827 6291456&#34;</span>
+sysctl -w net.ipv4.udp_mem<span class="o">=</span><span class="s2">&#34;377868 503827  755736&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>每个设置包含三个值，min、default、max。内核会根据当前的可用内存动态调节队列的大小；</p>
+<h3 id="52-udp-层">5.2 UDP 层</h3>
+<h4 id="521-接收数据">5.2.1 接收数据</h4>
+<p>先从简单的 UDP 处理开始看：</p>
+<ol>
+<li>对数据包进行一致性检查。</li>
+<li>根据目的 IP 与目的 port，在 udptable（包含机器所有的 udp sock）查找对应的 sock。没有找到则会丢弃数据包，否则继续。</li>
+<li>检查 receive buffer 是否满，如果满了则会直接丢弃数据包。</li>
+<li>检查数据包是否满足 BPF socket filter，如果不满足则直接丢弃数据包。</li>
+<li>将数据包放入 sock 接受队列。</li>
+<li>调用回调函数，以通知数据包已经准备好。这会将阻塞等待数据包到来的用户态程序唤醒。</li>
+</ol>
+<p>UDP 的处理很简单，找到对应的 sock 结构，然后将其放入到队列中，唤醒用户态程序。</p>
+<h4 id="522-发送数据">5.2.2 发送数据</h4>
+<p>发送操作与接收不是对称的，因为在发送时就要确定出口的设备，来确认包是否会被直接丢弃。</p>
+<ol>
+<li>根据机器的路由表和目的 IP，决定数据包应该从哪个设备发送出去。如果根据路由表无法到达目的地址，直接丢弃包。</li>
+<li>如果 socket 没有绑定源 IP，那么就使用设备的源 IP。</li>
+<li>根据获取到路由信息，将 msg 构建为 sk_buff 结构体。</li>
+<li>向 sk_buff 的数据区填充 UDP 包头，然后调用 IP 层相关函数。</li>
+</ol>
+<h2 id="参考">参考</h2>
+<p>总结
+内核实现层次分明的比较清楚，因此可以一层层观察其对应负责的行为，所以整体要有一个框架的概念。</p>
+<ul>
+<li>网卡层
+<ul>
+<li><a href="#21-%e7%bd%91%e5%8d%a1%e5%a4%9a%e9%98%9f%e5%88%97" rel=""><strong>网卡多队列的概念与位置</strong></a>；</li>
+<li><a href="#22-%e6%8e%a5%e6%94%b6%e6%95%b0%e6%8d%ae" rel=""><strong>CPU 如何接受网卡数据</strong></a>；</li>
+<li><a href="#23-%e5%8f%91%e9%80%81%e6%95%b0%e6%8d%ae" rel=""><strong>CPU 如何发送网卡数据</strong></a>；</li>
+</ul>
+</li>
+<li>网络访问层
+<ul>
+<li><a href="#34-%e6%8e%a5%e6%94%b6%e6%95%b0%e6%8d%ae" rel=""><strong>网络访问层接受数据</strong></a>；</li>
+<li><a href="#35-%e5%8f%91%e9%80%81%e6%95%b0%e6%8d%ae" rel=""><strong>网络访问层发送数据</strong></a>；</li>
+<li><a href="#34-%e6%8e%a5%e6%94%b6%e6%95%b0%e6%8d%ae" rel=""><strong>ksoftiqrd 线程的任务</strong></a>；</li>
+<li><a href="#33-rps-xps-rfs" rel=""><strong>RPS、XPS、RFS 的概念</strong></a>；</li>
+<li><a href="#35-%e5%8f%91%e9%80%81%e6%95%b0%e6%8d%ae" rel=""><strong>TC 流量控制处理的位置</strong></a>；</li>
+<li>XDP 处理的位置；</li>
+</ul>
+</li>
+<li>网络层
+<ul>
+<li><a href="#41-sk_buff" rel=""><strong>sk_buff 结构的概念</strong></a>；</li>
+<li><a href="#42-%e6%8e%a5%e6%94%b6%e6%95%b0%e6%8d%ae" rel=""><strong>网络层接受数据</strong></a>；</li>
+<li><a href="#43-%e5%8f%91%e9%80%81%e6%95%b0%e6%8d%ae" rel=""><strong>网络层发送数据</strong></a>；</li>
+<li>netfilter 各个阶段回调的位置；</li>
+<li><a href="#43-%e5%8f%91%e9%80%81%e6%95%b0%e6%8d%ae" rel=""><strong>如何进行路由判断</strong></a>；</li>
+</ul>
+</li>
+<li>传输层
+<ul>
+<li><a href="#51-sock" rel=""><strong>sock 结构的概念</strong></a>；</li>
+<li><a href="#521-%e6%8e%a5%e6%94%b6%e6%95%b0%e6%8d%ae" rel=""><strong>UDP 的 recv socket buffer</strong></a>；</li>
+<li>TCP 的半连接队列，全连接队列，r/w socket buffer；</li>
+</ul>
+</li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-02-04</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" data-title="Linux 网络收发包过程总结"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" data-title="Linux 网络收发包过程总结"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" data-title="Linux 网络收发包过程总结"><i class="fab fa-evernote fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/linux/">linux</a>,&nbsp;<a href="/tags/net/">net</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/" class="prev" rel="prev" title="Go 并发调度总结"><i class="fas fa-angle-left fa-fw"></i>Go 并发调度总结</a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.76.5">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":25},"comment":{"valine":{"appId":"MmnKVcBz9AcNPahAcxxe8B6A-gzGzoHsz","appKey":"R3UuooucP5zsSKK77zNspvlL","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"你的评论 ...","recordIP":true,"serverURLs":"https://mmnkvcbz.lc-cn-n1-shared.com","visitor":true}},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
