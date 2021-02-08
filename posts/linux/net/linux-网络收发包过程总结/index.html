@@ -6,7 +6,7 @@
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
         <title>Linux 网络收发包过程总结 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Linux 网络收发包过程总结" />
-<meta property="og:description" content="1 背景知识 1.1 中断 中断终止 CPU 执行流，立即执行必要的处理程序。分为两个类型： 同步中断和异常：由 CPU 自身产生。例如程序崩溃、缺页异常； 异步中断：由 IO" />
+<meta property="og:description" content="总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Linux 网络收发包一个总结，基本内容来源于网络的学习" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" />
 <meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -16,7 +16,7 @@
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
 <meta name="twitter:title" content="Linux 网络收发包过程总结"/>
-<meta name="twitter:description" content="1 背景知识 1.1 中断 中断终止 CPU 执行流，立即执行必要的处理程序。分为两个类型： 同步中断和异常：由 CPU 自身产生。例如程序崩溃、缺页异常； 异步中断：由 IO"/>
+<meta name="twitter:description" content="总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Linux 网络收发包一个总结，基本内容来源于网络的学习"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
 <meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" /><link rel="prev" href="https://KanShiori.github.io/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/linux\/net\/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "linux, net","wordcount":  5870 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "linux, net","wordcount":  6552 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/linux\/net\/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93\/","datePublished": "2021-02-04T16:29:04+08:00","dateModified": "2021-02-04T16:29:04+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Linux 网络收发包过程总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>linux</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-02-04">2021-02-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 5870 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 12 分钟&nbsp;<span id="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Linux 网络收发包过程总结">
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-02-04">2021-02-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 6552 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 14 分钟&nbsp;<span id="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Linux 网络收发包过程总结">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
@@ -169,8 +169,10 @@
     <li><a href="#4-网络层">4 网络层</a>
       <ul>
         <li><a href="#41-sk_buff">4.1 sk_buff</a></li>
-        <li><a href="#42-接收数据">4.2 接收数据</a></li>
-        <li><a href="#43-发送数据">4.3 发送数据</a></li>
+        <li><a href="#42-netfilter">4.2 netfilter</a></li>
+        <li><a href="#43-接收数据">4.3 接收数据</a></li>
+        <li><a href="#44-路由数据">4.4 路由数据</a></li>
+        <li><a href="#45-发送数据">4.5 发送数据</a></li>
       </ul>
     </li>
     <li><a href="#5-传输层">5 传输层</a>
@@ -188,10 +190,16 @@
         </li>
       </ul>
     </li>
+    <li><a href="#总结">总结</a></li>
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><h2 id="1-背景知识">1 背景知识</h2>
+            </div><div class="content" id="content"><blockquote>
+<p><strong>总结系列的文章</strong>是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。</p>
+</blockquote>
+<p>本文是对 Linux 网络收发包一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。</p>
+<p>所以学习的书籍与文章见 <a href="#%e5%8f%82%e8%80%83" rel=""><strong>参考</strong></a>。</p>
+<h2 id="1-背景知识">1 背景知识</h2>
 <h3 id="11-中断">1.1 中断</h3>
 <p>中断终止 CPU 执行流，立即执行必要的处理程序。分为两个类型：</p>
 <ul>
@@ -237,7 +245,7 @@
 <li>第四行：？？；</li>
 <li>第五行：中断发起的设备名；</li>
 </ul>
-<p>平时可能只需要关注第五行设备名称就行，因为可能要过滤出网卡对应队列的中断，然后将其绑定触发的 CPU，见网卡多队列。</p>
+<p>平时可能只需要关注第五行设备名称就行，因为可能要过滤出网卡对应队列的中断，然后将其绑定触发的 CPU，见 <a href="#21-%e7%bd%91%e5%8d%a1%e5%a4%9a%e9%98%9f%e5%88%97" rel=""><strong>网卡多队列</strong></a>。</p>
 <h4 id="112-中断下半部">1.1.2 中断下半部</h4>
 <p><strong><ruby>中断下半部<rt>bottom half</rt></ruby></strong> 包含三种处理方式：</p>
 <ul>
@@ -301,9 +309,9 @@
 <p>对于软中断与 tasklet，如果大量出现时，为了不一直进行 CPU 中断，内核会唤醒 <strong><code>ksoftirqd</code></strong> 内核线程进行异步的处理。<strong>每个处理器有一个 ksoftirqd/n 线程，n 为 CPU 编号</strong>。</p>
 <h2 id="2-网卡层">2 网卡层</h2>
 <h3 id="21-网卡多队列">2.1 网卡多队列</h3>
-<p>网卡与系统传输数据包通过两个环形队列：<code>TX ring buffer</code>、<code>RX ring buffer</code>，也称为 <code>DMA 环形队列</code>。平时所说的设置网卡多队列指的就是设置这个环形队列的数量。</p>
+<p>网卡与系统传输数据包通过两个环形队列：<strong><code>TX ring buffer</code></strong>、<strong><code>RX ring buffer</code></strong>，也称为 <code>DMA 环形队列</code>。平时所说的设置网卡多队列指的就是设置这个环形队列的数量。</p>
 <p>当网卡收到帧时，会<strong>通过哈希来决定将帧放在哪个 ring buffer 上，然后通过硬中断通知其对应的 CPU 处理</strong>。</p>
-<p>默认下，处理环形队列数据由 CPU0 负责，可以通过配置<strong>中断亲和性</strong>，或者通过开启 <strong>irqbalance service</strong> 将中断均衡到各个 CPU 上。</p>
+<p>默认下，处理环形队列数据由 CPU0 负责，可以通过配置 <strong><code>中断亲和性</code></strong>，或者通过开启 <strong>irqbalance service</strong> 将中断均衡到各个 CPU 上。</p>
 <h4 id="211-配置网卡队列">2.1.1 配置网卡队列</h4>
 <p>通过 <code>ethool -l/-L &lt;nic&gt;</code> 命令查看与配置网卡的队列数，通常配置的与机器 CPU 个数一样（如果网卡支持的话）：</p>
 <div class="highlight"><div class="chroma">
@@ -446,8 +454,21 @@ Interrupt <span class="m">70</span> is allowed on CPUs <span class="m">31</span>
 </ul>
 <p>通过写入 <code>echo &quot;&lt;bitmark&gt;&quot; &gt; /proc/irq/&lt;id&gt;/smp_affinity</code> 可以中断绑定的 CPU，bitmark 的每个位对应一个 CPU，例如 &ldquo;0x1111&rdquo; 表示 CPU 0-3 都可以处理这个中断。</p>
 <p>当然，你也可以通过 irqbalance 来均衡各个 CPU 的中断，动态的改变中断与绑定的 CPU。不过，irqbalance 不仅仅针对网卡队列中断，还会调整其他的。</p>
+<p>如果你的网卡不支持多队列，可以尝试配置 <a href="#331-rps" rel=""><strong>RPS</strong></a>。</p>
 <h3 id="22-接收数据">2.2 接收数据</h3>
-<p>先来看第一个阶段，网卡接收到数据是如何处理的。</p>
+<p>先来看第一个阶段，网卡接收到数据是如何处理的。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img2.png"/><br>
+
+
+</p>
 <ol>
 <li>packet 进入物理网卡，物理网卡会根据目的 mac <strong>判断是否丢弃</strong>（除非混杂模式）；</li>
 <li>网卡通过 DMA 方式将 packet <strong>写入到 ringbuffer</strong>。<br>
@@ -461,7 +482,19 @@ ringbuffer 由网卡驱动程序分配并初始化。</li>
 <p>网卡多队列就是在这里生效，网卡会将 packet 放置到不同的 ringbuffer，不同的 ringbuffer 会中断不同的 CPU（如果设置了中断亲和性），使得各个 CPU 的队列硬中断是均衡的。</p>
 <h3 id="23-发送数据">2.3 发送数据</h3>
 <p>网络设备通过驱动函数发送数据后，就归网卡驱动管了，不同的驱动有着不同的处理方式。</p>
-<p>大致的流程如下：</p>
+<p>大致的流程如下：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img3.png"/><br>
+
+
+</p>
 <ol>
 <li>将 <strong>sk_buff 放入 TX ringbuff</strong>。</li>
 <li><strong>通知网卡</strong>发送数据。</li>
@@ -647,7 +680,7 @@ docker0  enp0s3  enp0s8  lo  lxcbr0  vethea62395
 <li>CPUx 通过 Inter-processor Interrupt (IPI)  中断告知其他 CPU，处理自己的 input_pkt_queue ；</li>
 <li>其他 CPU 从各个的 input_pkt_queue 中取出数据包，并处理之后的流程；</li>
 </ol>
-<p>可以看到，<strong>RPS 不是用于减少 CPU 软中断，而是用于将数据包处理时间均摊到各个 CPU 上</strong>。</p>
+<p>可以看到，<strong>RPS 不是用于减少 CPU 软中断的次数，而是用于将数据包处理时间均摊到各个 CPU 上，也就是减少单个 CPU 的软中断执行时间（%soft）</strong>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -688,7 +721,7 @@ $ <span class="nb">echo</span> <span class="m">2048</span> &gt; /sys/class/net/e
 <p><strong><ruby>XPS<rt>Transmit Packet Steering</rt></ruby></strong> 则是发送时的多队列处理。</p>
 <h3 id="34-接收数据">3.4 接收数据</h3>
 <p>在网卡层中，最后由异步的软中断处理函数来异步的从里 ringbuffer 的数据。而这由内核线程 ksoftirqd 来调用对应的网络软中断函数处理。</p>
-<p><strong>所以，在数据包到达 socket buffer 前，数据处理都是由 ksoftirqd 线程执行的。</strong></p>
+<p><strong>所以，在数据包到达 <a href="#51-sock" rel=""><strong>socket buffer</strong></a> 前，数据处理都是由 ksoftirqd 线程执行的，也就是算在软中断处理时间里的。</strong></p>
 <ol>
 <li>ksoftirqd 调用<strong>驱动程序的 poll 函数来一个个处理 packet</strong>。<br>
 如果没有 packet 的话，就会重新启动网卡硬中断，等待下一次重新的流程。</li>
@@ -705,7 +738,7 @@ RPS 处理的流程如下：
 <p>到这里，而无论是否开启 RPS，接下来就是 <strong>CPU 从各自 input_pkt_queue 取出 sk_buff 并处理</strong>。</p>
 <ol>
 <li>CPU 查看 socket 是否是 AF_PACKET 类型的。如果是的话复制一份数据处理（例如 tcpdump 抓这里的包）。</li>
-<li>调用对应协议栈的函数，将数据包交给协议栈处理。</li>
+<li>调用对应协议栈的函数，将数据包解析出网络层协议，并交给对应的协议栈处理。</li>
 </ol>
 <h3 id="35-发送数据">3.5 发送数据</h3>
 <p>接受到网络层的数据后，来到网络访问层会经过一个非常重要的系统：Traffic Controller。这是接收数据时不会经过。</p>
@@ -792,8 +825,8 @@ TODO</li>
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>head，end 为整个数据包的头尾内存地址；</li>
-<li>data，tail 为当前层对应的数据的头尾内存地址；</li>
+<li><code>head</code>，<code>end</code> 为整个数据包的头尾内存地址；</li>
+<li><code>data</code>，<code>tail</code> 为当前层对应的数据的头尾内存地址；</li>
 <li>transport_header，network_header，mac_header 传输层、网络层、链路层 header 的内存地址；</li>
 </ul>
 <p>看图可能更好理解，sk_buff 通过指针将数据包各个区域表示出来了，而在各个协议层之间移动则是移动 data 与 tail 指针。
@@ -834,24 +867,23 @@ TODO</li>
 <span class="p">};</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="42-接收数据">4.2 接收数据</h3>
-<p>看一下网络层处理数据报的步骤：</p>
-<ol>
-<li>如果其数据包的 MAC 地址不是当前网卡，那么丢弃（可能由于网卡混杂模式进来的，还是无法经过协议栈处理）。</li>
-<li>经过 netfilter 的 PREROUTING 阶段回调。</li>
-<li>进行路由判断：如果目的 IP 是本机 IP，那么接受该包。如果不是本机 IP，判断是否要路由。</li>
-<li>经过 netfilter 的 INPUT 阶段回调。</li>
-<li>进入传输层。</li>
-</ol>
-<p>可以看到，如果仅仅是简单的接收数据包很简单，只要经过 netfilter 的回调即可。</p>
-<p>看一下路由对数据包的处理：</p>
-<ol>
-<li>检查是否开启 ip forward 功能，没有开启的话数据包会执行丢弃。<br>
-通过 <code>sysctl -w net.ipv4.ip_forward=1</code> 开启 ip forward。</li>
-<li>经过 netfilter 的 FORWARD 阶段回调。</li>
-<li>走正常的发包流程发送数据包（会经过 netfilter POSTROUTING 阶段回调）</li>
-</ol>
-<p>还是看图比较直观：
+</div><h3 id="42-netfilter">4.2 netfilter</h3>
+<p>netfilter 是一个在内核框架，位于网络层，可以根据动态的条件过滤或操作分组。
+主要包含如下功能：</p>
+<ul>
+<li>filter：根据分组元信息，对不同数据流进行分组过滤；</li>
+<li>NAT：根据规则来转换 source ip 或者 destination ip；</li>
+<li>mangle: 根据特定分组拆分与修改；</li>
+</ul>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>iptables<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">iptables 是用于提供给用户配置防火墙、分组过滤等功能，使用的就是 netfilter 框架。</div>
+        </div>
+    </div>
+<p>针对不同的阶段，内核代码中会存在不同的 hook 点，如下图：
 
 
 
@@ -864,21 +896,50 @@ TODO</li>
 
 
 </p>
-<h3 id="43-发送数据">4.3 发送数据</h3>
+<h3 id="43-接收数据">4.3 接收数据</h3>
+<p>接受数据到这里，数据包的网络层协议已经解析过了，看一下网络层处理数据报的步骤：</p>
+<ol>
+<li>如果其数据包的 MAC 地址不是当前网卡，那么丢弃（可能由于网卡混杂模式进来的，还是无法经过协议栈处理）。</li>
+<li>经过 <code>netfilter.PREROUTING</code> 阶段回调。</li>
+<li>进行路由判断：如果目的 IP 是本机 IP，那么接受该包。如果不是本机 IP，判断是否要路由。</li>
+<li>经过 <code>netfilter.LOCALIN</code> 阶段回调。</li>
+<li>进入传输层。</li>
+</ol>
+<p>可以看到，如果仅仅是简单的接收数据包很简单，只要经过 netfilter 的回调即可。</p>
+<h3 id="44-路由数据">4.4 路由数据</h3>
+<p>当接受数据时发现数据包不是发往本机时，就会判断是否需要进行路由。</p>
+<p>路由的前提是：机器开启了 <strong>ip forward</strong> 功能，否则会直接丢包。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 开启 ip forward</span>
+sysctl -w net.ipv4.ip_forward<span class="o">=</span><span class="m">1</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>看一下路由对数据包的处理：</p>
+<ol>
+<li>检查是否开启 ip forward 功能，没有开启的话数据包会执行丢弃。</li>
+<li>经过 <code>netfilter.FORWARD</code> 阶段回调。</li>
+<li>走正常的发包流程发送数据包（会经过 <code>netfilter.POSTROUTING</code> 阶段回调）</li>
+</ol>
+<h3 id="45-发送数据">4.5 发送数据</h3>
 <ol>
 <li>在 sk_buff 指向的数据区设置好 IP 报文头。</li>
-<li>调用 netfilter 的 OUTPUT 阶段回调。</li>
+<li>调用 <code>netfilter.LOCALOUT</code> 阶段回调。</li>
 <li>调用相关协议的发送函数（IP 协议或其他），将出口网卡设备信息写入 sk_buff。</li>
-<li>调用 netfilter 的 POSTOUTPUT 阶段回调。</li>
+<li>调用 <code>netfilter.POSTOUTPUT</code> 阶段回调。</li>
 <li>POSTOUTPUT 可能设置了 SNAT，从而导致路由信息变化，如果发生变化重新重新回到 3。</li>
 <li>根据目的 IP，从路由表中获取下一跳的地址，然后在 ARP 缓存表中找到下一跳的 neigh 信息。</li>
-<li>如果没有 neigh信息，那么会进行一个 ARP 请求，尝试得到下一跳的 mac 地址。</li>
+<li>如果没有 neigh 信息，那么会进行一个 ARP 请求，尝试得到下一跳的 mac 地址。</li>
 </ol>
 <p>到这里，得到了下一跳设备的 mac 地址，将其填入 sk_buff 并调用下一层的接口。</p>
 <h2 id="5-传输层">5 传输层</h2>
 <h3 id="51-sock">5.1 sock</h3>
-<p>sock 是 socket 在内核的表示结构，每个 sock 对应于一个用户态使用的 socket。TCP UDP 都是基于该结构来实现的。</p>
-<p>其中，sock 最主要的属性就是常说的 socket buffer 了。</p>
+<p><strong><code>sock</code></strong> 是 socket 在内核的表示结构，每个 sock 对应于一个用户态使用的 socket。TCP UDP 都是基于该结构来实现的。</p>
+<p>其中，sock 最主要的属性就是常说的 <strong>socket buffer</strong> 了。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -934,10 +995,10 @@ TODO</li>
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>sk_state ：TCP 的状态；</li>
-<li>sk_receive_queue sk_write_queue ：接受/发送队列（buffer）；</li>
+<li><code>sk_state</code> ：TCP 的状态；</li>
+<li><code>sk_receive_queue</code> <code>sk_write_queue</code> ：接受/发送队列（buffer）；</li>
 <li>rcvbuf，sndbuf ：接受/发送队列的大小，单位 B；</li>
-<li>sk_ack_backlog ：经过三次握手后，等待 accept() 的全连接队列；</li>
+<li><code>sk_ack_backlog</code> ：经过三次握手后，等待 accept() 的全连接队列；</li>
 </ul>
 <h4 id="511-配置-socket-buffer-大小">5.1.1 配置 socket buffer 大小</h4>
 <p>通过 sysctl 可以配置 TCP、UDP 的接受与发送缓冲区大小：</p>
@@ -953,16 +1014,24 @@ sysctl -w net.ipv4.tcp_wmem<span class="o">=</span><span class="s2">&#34;4096 50
 sysctl -w net.ipv4.udp_mem<span class="o">=</span><span class="s2">&#34;377868 503827  755736&#34;</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>每个设置包含三个值，min、default、max。内核会根据当前的可用内存动态调节队列的大小；</p>
+</div><p>每个设置包含三个值，min、default、max。内核会根据当前的可用内存动态调节队列的大小；
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw"></i>Tip<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">使用 SO_SNDBUF/SO_RCVBUF 可以针对 socket 单独设置 r/w buffer。</div>
+        </div>
+    </div></p>
 <h3 id="52-udp-层">5.2 UDP 层</h3>
 <h4 id="521-接收数据">5.2.1 接收数据</h4>
 <p>先从简单的 UDP 处理开始看：</p>
 <ol>
 <li>对数据包进行一致性检查。</li>
-<li>根据目的 IP 与目的 port，在 udptable（包含机器所有的 udp sock）查找对应的 sock。没有找到则会丢弃数据包，否则继续。</li>
-<li>检查 receive buffer 是否满，如果满了则会直接丢弃数据包。</li>
+<li>根据目的 IP 与目的 port，在 udptable（包含机器所有的 udp sock）<strong>查找对应的 sock</strong>。没有找到则会丢弃数据包，否则继续。</li>
+<li><strong>检查 receive buffer 是否满</strong>，如果满了则会直接丢弃数据包。</li>
 <li>检查数据包是否满足 BPF socket filter，如果不满足则直接丢弃数据包。</li>
-<li>将数据包放入 sock 接受队列。</li>
+<li>将<strong>数据包放入 receive buffer</strong>。</li>
 <li>调用回调函数，以通知数据包已经准备好。这会将阻塞等待数据包到来的用户态程序唤醒。</li>
 </ol>
 <p>UDP 的处理很简单，找到对应的 sock 结构，然后将其放入到队列中，唤醒用户态程序。</p>
@@ -974,9 +1043,22 @@ sysctl -w net.ipv4.udp_mem<span class="o">=</span><span class="s2">&#34;377868 5
 <li>根据获取到路由信息，将 msg 构建为 sk_buff 结构体。</li>
 <li>向 sk_buff 的数据区填充 UDP 包头，然后调用 IP 层相关函数。</li>
 </ol>
-<h2 id="参考">参考</h2>
-<p>总结
-内核实现层次分明的比较清楚，因此可以一层层观察其对应负责的行为，所以整体要有一个框架的概念。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>UDP 不存在 send buffer，数据直接会发送出去，因为 <strong>UDP 没有拥塞控制</strong>。</p>
+<p>设置 socket SO_SNDBUF 选项时，对于 UDP 这是每次发送数据的最大值，超过的话发送会直接返回 ENOBUFS。</p>
+</div>
+        </div>
+    </div>
+<h2 id="总结">总结</h2>
+<p>整个内核网络收发是个很复杂的模块，可能好多地方的细节都没有涉及，也有可能有理解错误的地方。</p>
+<p>所幸内核实现层次分明的比较清楚，因此可以一层层观察其对应负责的行为。</p>
+<p>在一个普通程序员的角度下，首先需要理解网络包收发涉及到的各个层的作用：网卡层、网络访问层、网络层、传输层。</p>
+<p>对于各个层，需要知道一些包处理的关键点的所处于的位置，包括：网卡多队列、流量控制、netfilter、r/w buffer 等；</p>
+<p>目前整理的主要的点如下：</p>
 <ul>
 <li>网卡层
 <ul>
@@ -1000,7 +1082,7 @@ sysctl -w net.ipv4.udp_mem<span class="o">=</span><span class="s2">&#34;377868 5
 <li><a href="#41-sk_buff" rel=""><strong>sk_buff 结构的概念</strong></a>；</li>
 <li><a href="#42-%e6%8e%a5%e6%94%b6%e6%95%b0%e6%8d%ae" rel=""><strong>网络层接受数据</strong></a>；</li>
 <li><a href="#43-%e5%8f%91%e9%80%81%e6%95%b0%e6%8d%ae" rel=""><strong>网络层发送数据</strong></a>；</li>
-<li>netfilter 各个阶段回调的位置；</li>
+<li><a href="#42-netfilter" rel=""><strong>netfilter 各个阶段回调的位置</strong></a>；</li>
 <li><a href="#43-%e5%8f%91%e9%80%81%e6%95%b0%e6%8d%ae" rel=""><strong>如何进行路由判断</strong></a>；</li>
 </ul>
 </li>
@@ -1011,6 +1093,12 @@ sysctl -w net.ipv4.udp_mem<span class="o">=</span><span class="s2">&#34;377868 5
 <li>TCP 的半连接队列，全连接队列，r/w socket buffer；</li>
 </ul>
 </li>
+</ul>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://segmentfault.com/a/1190000008836467" target="_blank" rel="noopener noreffer"><strong>Blog: Linux 网络 - 数据包的接收过程</strong></a></li>
+<li><a href="https://segmentfault.com/a/1190000008926093" target="_blank" rel="noopener noreffer"><strong>Blog: Linux 网络 - 数据包的发送过程</strong></a></li>
+<li><a href="https://book.douban.com/subject/4843567/" target="_blank" rel="noopener noreffer"><strong>《深入 Linux 内核架构》</strong></a></li>
 </ul>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">

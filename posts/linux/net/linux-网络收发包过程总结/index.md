@@ -1,5 +1,10 @@
 # Linux 网络收发包过程总结
 
+> **总结系列的文章**是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。
+
+本文是对 Linux 网络收发包一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。
+
+所以学习的书籍与文章见 [**参考**](#参考)。
 
 ## 1 背景知识
 ### 1.1 中断
@@ -35,7 +40,7 @@ $ cat /proc/interrupts
 * 第四行：？？；
 * 第五行：中断发起的设备名；
 
-平时可能只需要关注第五行设备名称就行，因为可能要过滤出网卡对应队列的中断，然后将其绑定触发的 CPU，见网卡多队列。
+平时可能只需要关注第五行设备名称就行，因为可能要过滤出网卡对应队列的中断，然后将其绑定触发的 CPU，见 [**网卡多队列**](#21-网卡多队列)。
 
 #### 1.1.2 中断下半部
 [中断下半部]^(bottom half) 包含三种处理方式：
@@ -61,11 +66,11 @@ RCU     | RCU 锁
 
 ## 2 网卡层
 ### 2.1 网卡多队列
-网卡与系统传输数据包通过两个环形队列：`TX ring buffer`、`RX ring buffer`，也称为 `DMA 环形队列`。平时所说的设置网卡多队列指的就是设置这个环形队列的数量。
+网卡与系统传输数据包通过两个环形队列：**`TX ring buffer`**、**`RX ring buffer`**，也称为 `DMA 环形队列`。平时所说的设置网卡多队列指的就是设置这个环形队列的数量。
 
 当网卡收到帧时，会**通过哈希来决定将帧放在哪个 ring buffer 上，然后通过硬中断通知其对应的 CPU 处理**。
 
-默认下，处理环形队列数据由 CPU0 负责，可以通过配置**中断亲和性**，或者通过开启 **irqbalance service** 将中断均衡到各个 CPU 上。
+默认下，处理环形队列数据由 CPU0 负责，可以通过配置 **`中断亲和性`**，或者通过开启 **irqbalance service** 将中断均衡到各个 CPU 上。
 #### 2.1.1 配置网卡队列
 通过 `ethool -l/-L <nic>` 命令查看与配置网卡的队列数，通常配置的与机器 CPU 个数一样（如果网卡支持的话）：
 ```bash
@@ -143,8 +148,12 @@ Interrupt 70 is allowed on CPUs 31
 
 当然，你也可以通过 irqbalance 来均衡各个 CPU 的中断，动态的改变中断与绑定的 CPU。不过，irqbalance 不仅仅针对网卡队列中断，还会调整其他的。
 
+如果你的网卡不支持多队列，可以尝试配置 [**RPS**](#331-rps)。
+
 ### 2.2 接收数据
 先来看第一个阶段，网卡接收到数据是如何处理的。
+{{< find_img "img2.png" >}}
+
 1. packet 进入物理网卡，物理网卡会根据目的 mac **判断是否丢弃**（除非混杂模式）；
 1. 网卡通过 DMA 方式将 packet **写入到 ringbuffer**。<br>
    ringbuffer 由网卡驱动程序分配并初始化。
@@ -160,6 +169,8 @@ Interrupt 70 is allowed on CPUs 31
 网络设备通过驱动函数发送数据后，就归网卡驱动管了，不同的驱动有着不同的处理方式。
 
 大致的流程如下：
+{{< find_img "img3.png" >}}
+
 1. 将 **sk_buff 放入 TX ringbuff**。
 1. **通知网卡**发送数据。
 1. 网卡发送完数据后，通过**中断通知 CPU**。
@@ -267,7 +278,7 @@ RPS 的设置是针对单个 ringbuffer 的，与网卡多队列处理不是同�
 1. CPUx 通过 Inter-processor Interrupt (IPI)  中断告知其他 CPU，处理自己的 input_pkt_queue ；
 1. 其他 CPU 从各个的 input_pkt_queue 中取出数据包，并处理之后的流程；
 
-可以看到，**RPS 不是用于减少 CPU 软中断，而是用于将数据包处理时间均摊到各个 CPU 上**。
+可以看到，**RPS 不是用于减少 CPU 软中断的次数，而是用于将数据包处理时间均摊到各个 CPU 上，也就是减少单个 CPU 的软中断执行时间（%soft）**。
 ```bash
 # 配置该 ringbuffer 使用 CPU0 CPU1 的队列
 $ echo "0x11" > /sys/class/net/eth0/queues/rx-0/rps_cpus
@@ -296,7 +307,7 @@ $ echo 2048 > /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
 ### 3.4 接收数据
 在网卡层中，最后由异步的软中断处理函数来异步的从里 ringbuffer 的数据。而这由内核线程 ksoftirqd 来调用对应的网络软中断函数处理。
 
-**所以，在数据包到达 socket buffer 前，数据处理都是由 ksoftirqd 线程执行的。**
+**所以，在数据包到达 [**socket buffer**](#51-sock) 前，数据处理都是由 ksoftirqd 线程执行的，也就是算在软中断处理时间里的。**
 
 1. ksoftirqd 调用**驱动程序的 poll 函数来一个个处理 packet**。<br>
    如果没有 packet 的话，就会重新启动网卡硬中断，等待下一次重新的流程。
@@ -310,7 +321,7 @@ $ echo 2048 > /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
 到这里，而无论是否开启 RPS，接下来就是 **CPU 从各自 input_pkt_queue 取出 sk_buff 并处理**。
 
 1. CPU 查看 socket 是否是 AF_PACKET 类型的。如果是的话复制一份数据处理（例如 tcpdump 抓这里的包）。
-1. 调用对应协议栈的函数，将数据包交给协议栈处理。
+1. 调用对应协议栈的函数，将数据包解析出网络层协议，并交给对应的协议栈处理。
 
 ### 3.5 发送数据
 接受到网络层的数据后，来到网络访问层会经过一个非常重要的系统：Traffic Controller。这是接收数据时不会经过。
@@ -360,8 +371,8 @@ struct sk_buff {
         *data;
 };
 ```
-* head，end 为整个数据包的头尾内存地址；
-* data，tail 为当前层对应的数据的头尾内存地址；
+* `head`，`end` 为整个数据包的头尾内存地址；
+* `data`，`tail` 为当前层对应的数据的头尾内存地址；
 * transport_header，network_header，mac_header 传输层、网络层、链路层 header 的内存地址；
 
 看图可能更好理解，sk_buff 通过指针将数据包各个区域表示出来了，而在各个协议层之间移动则是移动 data 与 tail 指针。
@@ -380,42 +391,59 @@ struct sk_buff_head {
 };
 ```
 
-### 4.2 接收数据
-看一下网络层处理数据报的步骤：
+### 4.2 netfilter
+netfilter 是一个在内核框架，位于网络层，可以根据动态的条件过滤或操作分组。
+主要包含如下功能：
+* filter：根据分组元信息，对不同数据流进行分组过滤；
+* NAT：根据规则来转换 source ip 或者 destination ip；
+* mangle: 根据特定分组拆分与修改；
+
+{{< admonition note iptables>}}
+iptables 是用于提供给用户配置防火墙、分组过滤等功能，使用的就是 netfilter 框架。
+{{< /admonition >}}
+
+针对不同的阶段，内核代码中会存在不同的 hook 点，如下图：
+{{< find_img "img5.png" >}}
+
+### 4.3 接收数据
+接受数据到这里，数据包的网络层协议已经解析过了，看一下网络层处理数据报的步骤：
 1. 如果其数据包的 MAC 地址不是当前网卡，那么丢弃（可能由于网卡混杂模式进来的，还是无法经过协议栈处理）。
-1. 经过 netfilter 的 PREROUTING 阶段回调。
+1. 经过 `netfilter.PREROUTING` 阶段回调。
 1. 进行路由判断：如果目的 IP 是本机 IP，那么接受该包。如果不是本机 IP，判断是否要路由。
-1. 经过 netfilter 的 INPUT 阶段回调。
+1. 经过 `netfilter.LOCALIN` 阶段回调。
 1. 进入传输层。
 
 可以看到，如果仅仅是简单的接收数据包很简单，只要经过 netfilter 的回调即可。
 
+### 4.4 路由数据
+当接受数据时发现数据包不是发往本机时，就会判断是否需要进行路由。
+
+路由的前提是：机器开启了 **ip forward** 功能，否则会直接丢包。
+```bash
+# 开启 ip forward
+sysctl -w net.ipv4.ip_forward=1
+```
 看一下路由对数据包的处理：
-1. 检查是否开启 ip forward 功能，没有开启的话数据包会执行丢弃。<br>
-   通过 `sysctl -w net.ipv4.ip_forward=1` 开启 ip forward。
-1. 经过 netfilter 的 FORWARD 阶段回调。
-1. 走正常的发包流程发送数据包（会经过 netfilter POSTROUTING 阶段回调）
+1. 检查是否开启 ip forward 功能，没有开启的话数据包会执行丢弃。
+1. 经过 `netfilter.FORWARD` 阶段回调。
+1. 走正常的发包流程发送数据包（会经过 `netfilter.POSTROUTING` 阶段回调）
 
-还是看图比较直观：
-{{< find_img "img5.png" >}}
-
-
-### 4.3 发送数据
+### 4.5 发送数据
 1. 在 sk_buff 指向的数据区设置好 IP 报文头。
-1. 调用 netfilter 的 OUTPUT 阶段回调。
+1. 调用 `netfilter.LOCALOUT` 阶段回调。
 1. 调用相关协议的发送函数（IP 协议或其他），将出口网卡设备信息写入 sk_buff。
-1. 调用 netfilter 的 POSTOUTPUT 阶段回调。
+1. 调用 `netfilter.POSTOUTPUT` 阶段回调。
 1. POSTOUTPUT 可能设置了 SNAT，从而导致路由信息变化，如果发生变化重新重新回到 3。
 1. 根据目的 IP，从路由表中获取下一跳的地址，然后在 ARP 缓存表中找到下一跳的 neigh 信息。
-1. 如果没有 neigh信息，那么会进行一个 ARP 请求，尝试得到下一跳的 mac 地址。
+1. 如果没有 neigh 信息，那么会进行一个 ARP 请求，尝试得到下一跳的 mac 地址。
 
 到这里，得到了下一跳设备的 mac 地址，将其填入 sk_buff 并调用下一层的接口。
 
 ## 5 传输层
 ### 5.1 sock
-sock 是 socket 在内核的表示结构，每个 sock 对应于一个用户态使用的 socket。TCP UDP 都是基于该结构来实现的。
+**`sock`** 是 socket 在内核的表示结构，每个 sock 对应于一个用户态使用的 socket。TCP UDP 都是基于该结构来实现的。
 
-其中，sock 最主要的属性就是常说的 socket buffer 了。
+其中，sock 最主要的属性就是常说的 **socket buffer** 了。
 ```c
 // <sock.h>
 struct sock {
@@ -442,10 +470,10 @@ struct sock {
     // …
 }
 ```
-* sk_state ：TCP 的状态；
-* sk_receive_queue sk_write_queue ：接受/发送队列（buffer）；
+* `sk_state` ：TCP 的状态；
+* `sk_receive_queue` `sk_write_queue` ：接受/发送队列（buffer）；
 * rcvbuf，sndbuf ：接受/发送队列的大小，单位 B；
-* sk_ack_backlog ：经过三次握手后，等待 accept() 的全连接队列；
+* `sk_ack_backlog` ：经过三次握手后，等待 accept() 的全连接队列；
 
 #### 5.1.1 配置 socket buffer 大小
 通过 sysctl 可以配置 TCP、UDP 的接受与发送缓冲区大小：
@@ -455,15 +483,18 @@ sysctl -w net.ipv4.tcp_wmem="4096 503827 6291456"
 sysctl -w net.ipv4.udp_mem="377868 503827  755736"
 ```
 每个设置包含三个值，min、default、max。内核会根据当前的可用内存动态调节队列的大小；
+{{< admonition tip Tip>}}
+使用 SO_SNDBUF/SO_RCVBUF 可以针对 socket 单独设置 r/w buffer。
+{{< /admonition >}}
 
 ### 5.2 UDP 层
 #### 5.2.1 接收数据
 先从简单的 UDP 处理开始看：
 1. 对数据包进行一致性检查。
-1. 根据目的 IP 与目的 port，在 udptable（包含机器所有的 udp sock）查找对应的 sock。没有找到则会丢弃数据包，否则继续。
-1. 检查 receive buffer 是否满，如果满了则会直接丢弃数据包。
+1. 根据目的 IP 与目的 port，在 udptable（包含机器所有的 udp sock）**查找对应的 sock**。没有找到则会丢弃数据包，否则继续。
+1. **检查 receive buffer 是否满**，如果满了则会直接丢弃数据包。
 1. 检查数据包是否满足 BPF socket filter，如果不满足则直接丢弃数据包。
-1. 将数据包放入 sock 接受队列。
+1. 将**数据包放入 receive buffer**。
 1. 调用回调函数，以通知数据包已经准备好。这会将阻塞等待数据包到来的用户态程序唤醒。
 
 UDP 的处理很简单，找到对应的 sock 结构，然后将其放入到队列中，唤醒用户态程序。
@@ -475,10 +506,22 @@ UDP 的处理很简单，找到对应的 sock 结构，然后将其放入到队�
 1. 根据获取到路由信息，将 msg 构建为 sk_buff 结构体。
 1. 向 sk_buff 的数据区填充 UDP 包头，然后调用 IP 层相关函数。
 
+{{< admonition note Note>}}
+UDP 不存在 send buffer，数据直接会发送出去，因为 **UDP 没有拥塞控制**。
 
-## 参考
-总结
-内核实现层次分明的比较清楚，因此可以一层层观察其对应负责的行为，所以整体要有一个框架的概念。
+设置 socket SO_SNDBUF 选项时，对于 UDP 这是每次发送数据的最大值，超过的话发送会直接返回 ENOBUFS。
+{{< /admonition >}}
+
+## 总结
+整个内核网络收发是个很复杂的模块，可能好多地方的细节都没有涉及，也有可能有理解错误的地方。
+
+所幸内核实现层次分明的比较清楚，因此可以一层层观察其对应负责的行为。
+
+在一个普通程序员的角度下，首先需要理解网络包收发涉及到的各个层的作用：网卡层、网络访问层、网络层、传输层。
+
+对于各个层，需要知道一些包处理的关键点的所处于的位置，包括：网卡多队列、流量控制、netfilter、r/w buffer 等；
+
+目前整理的主要的点如下：
 * 网卡层
     * [**网卡多队列的概念与位置**](#21-网卡多队列)；
     * [**CPU 如何接受网卡数据**](#22-接收数据)；
@@ -494,10 +537,15 @@ UDP 的处理很简单，找到对应的 sock 结构，然后将其放入到队�
     * [**sk_buff 结构的概念**](#41-sk_buff)；
     * [**网络层接受数据**](#42-接收数据)；
     * [**网络层发送数据**](#43-发送数据)；
-    * netfilter 各个阶段回调的位置；
+    * [**netfilter 各个阶段回调的位置**](#42-netfilter)；
     * [**如何进行路由判断**](#43-发送数据)；
 * 传输层
     * [**sock 结构的概念**](#51-sock)；
     * [**UDP 的 recv socket buffer**](#521-接收数据)；
     * TCP 的半连接队列，全连接队列，r/w socket buffer；
+
+## 参考
+* [**Blog: Linux 网络 - 数据包的接收过程**](https://segmentfault.com/a/1190000008836467)
+* [**Blog: Linux 网络 - 数据包的发送过程**](https://segmentfault.com/a/1190000008926093)
+* [**《深入 Linux 内核架构》**](https://book.douban.com/subject/4843567/)
 

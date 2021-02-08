@@ -11,7 +11,7 @@
     <pubDate>Thu, 04 Feb 2021 16:29:04 &#43;0800</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/</guid>
-    <description><![CDATA[1 背景知识 1.1 中断 中断终止 CPU 执行流，立即执行必要的处理程序。分为两个类型： 同步中断和异常：由 CPU 自身产生。例如程序崩溃、缺页异常； 异步中断：由 IO]]></description>
+    <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Linux 网络收发包一个总结，基本内容来源于网络的学习]]></description>
 </item><item>
     <title>Go 并发调度总结</title>
     <link>https://KanShiori.github.io/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/</link>
