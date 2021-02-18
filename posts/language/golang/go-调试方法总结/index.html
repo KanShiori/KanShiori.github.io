@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Go 调试方法总结 - Shiori&#39;s Blog</title><meta name="Description" content="Golang 常见调试方法归纳总结"><meta property="og:title" content="Go 调试方法总结" />
+<meta property="og:description" content="Golang 常见调试方法归纳总结" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" />
+<meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+<meta property="article:published_time" content="2021-02-18T17:54:17+08:00" />
+<meta property="article:modified_time" content="2021-02-18T17:54:17+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="Go 调试方法总结"/>
+<meta name="twitter:description" content="Golang 常见调试方法归纳总结"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" /><link rel="prev" href="https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Go 调试方法总结",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 开发","wordcount":  2306 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93\/","datePublished": "2021-02-18T17:54:17+08:00","dateModified": "2021-02-18T17:54:17+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": "Golang 常见调试方法归纳总结"
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/" title="">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Go 调试方法总结</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw"></i>Golang</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-02-18">2021-02-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2306 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 5 分钟&nbsp;<span id="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Go 调试方法总结">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-go-pprof">1 go pprof</a>
+      <ul>
+        <li><a href="#11-采集">1.1 采集</a></li>
+        <li><a href="#12-上报">1.2 上报</a>
+          <ul>
+            <li><a href="#121-浏览器方式">1.2.1 浏览器方式</a></li>
+          </ul>
+        </li>
+        <li><a href="#13-解析">1.3 解析</a>
+          <ul>
+            <li><a href="#131-heap">1.3.1 heap</a></li>
+            <li><a href="#132-alloc">1.3.2 alloc</a></li>
+            <li><a href="#133-goroutine">1.3.3 goroutine</a></li>
+            <li><a href="#134-profile">1.3.4 profile</a></li>
+            <li><a href="#135-trace">1.3.5 trace</a>
+              <ul>
+                <li><a href="#1-view-trace">(1) View trace</a></li>
+                <li><a href="#2-goroutine-analysis">(2) Goroutine analysis</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#2-delve">2 delve</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><blockquote>
+<p><strong>总结系列的文章</strong>是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。</p>
+</blockquote>
+<p>本文是对 Golang 调试方法的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。</p>
+<p>所以学习的书籍与文章见 <a href="#%e5%8f%82%e8%80%83" rel=""><strong>参考</strong></a>。</p>
+<h2 id="1-go-pprof">1 go pprof</h2>
+<p>Go pprof 是 Go 性能分析工具，在程序运行的过程中，可以记录运行的：CPU、Mem、goroutine 等情况。基本定位 Go 程序的问题第一反应就是使用 go pprof。</p>
+<p>pprof 像基本的采集一样，分为采集、上报、分析三个部分。</p>
+<h3 id="11-采集">1.1 采集</h3>
+<p>Go 标准库提供个各个数据的采集接口，可以主动开启 pprof 并将数据写入到 <code>io.writer</code> 中。
+其包括：</p>
+<ul>
+<li><code>pprof.Profiles()</code> ：返回支持的 profile 的快照。包括：goroutine、threadcreate、heap、allocs、block、mutex；</li>
+<li><code>trace.Start()</code> / <code>trace.Stop()</code> ：开启各个事件的追踪，包括 goroutine 状态变更、GC 事件、mheap 大小变更等；</li>
+<li>runtime 包函数；</li>
+</ul>
+<p>不过大多数情况下，我们通过使用 <code>net/http/pprof</code> 就行了，其注册了各个 HTTP 请求的处理函数，而其函数使用前面的接口进行的数据的采集。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">//  net/http/pprof/pprof.go
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/debug/pprof/&#34;</span><span class="p">,</span> <span class="nx">Index</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/debug/pprof/cmdline&#34;</span><span class="p">,</span> <span class="nx">Cmdline</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/debug/pprof/profile&#34;</span><span class="p">,</span> <span class="nx">Profile</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/debug/pprof/symbol&#34;</span><span class="p">,</span> <span class="nx">Symbol</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/debug/pprof/trace&#34;</span><span class="p">,</span> <span class="nx">Trace</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>/debug/pprof/</code> ：引导界面，包含各个子类别的访问；</li>
+<li><code>/debug/pprof/cmdline</code> ：输出程序启动的命令行；</li>
+<li><code>/debug/pprof/profile</code> ：输出大多数 profile 结果，调用 pprof.Profiles()；</li>
+<li><code>/debug/pprof/trace</code> ：一定时间内 go runtime 事件的追踪，调用 trace.Start()；</li>
+</ul>
+<h3 id="12-上报">1.2 上报</h3>
+<p>前面看到，<code>net/http/pprof</code> 包就 init 注册对应的 HTTP 请求处理函数，而我们只要在程序中导入 <code>net/http/pprof</code> 并<strong>启动一个 HTTP Server</strong> 就可以使用其提供的上报的功能。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;net/http&#34;</span>
+	<span class="nx">_</span> <span class="s">&#34;net/http/pprof&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// …
+</span><span class="c1"></span>	
+	<span class="c1">// 启动对应的 HTTP Server
+</span><span class="c1"></span>	<span class="c1">// 这里我的程序中 main 函数后面会阻塞, 所以用协程启动 server
+</span><span class="c1"></span>	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;0.0.0.0:12300&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	
+	<span class="c1">// …
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="121-浏览器方式">1.2.1 浏览器方式</h4>
+<p>浏览器打开指定的地址的 /debug/pprof/ 页面，可以看到引导页面：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/img1.png"/><br>
+
+
+
+各个支持的 profile 都有简要的解释，这里翻译一下：</p>
+<ul>
+<li><strong><code>allocs</code></strong> ：过去所有的内存分配的样本；</li>
+<li><code>block</code> ：</li>
+<li><code>cmdline</code> ：输出程序执行的命令；</li>
+<li><code>goroutine</code> ：所有 goroutine 当前执行的上下文；</li>
+<li><code>heap</code> ：heap 内存使用的样本；</li>
+<li><code>mutex</code> ：</li>
+<li><strong><code>profile</code></strong> ：一定时间内的 CPU profile，可以通过参数指定采集多少时间；</li>
+<li><code>threadcreate</code> ：创建新的系统线程的函数执行上下文，也许在 cgo 中很有用；</li>
+<li><strong><code>trace</code></strong> ：一定时间内程序的执行 trace，可以通过参数指定采集时间。</li>
+</ul>
+<p>当你点击其中的某一项时，就会得到一个用于 profile 的数据文件，通过 <code>go tool profile</code> 或者 <code>go tool trace</code> 等命令可以将其可视化。
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw"></i>Tip<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>也许你点击 heap 或者其他会发现浏览器打开了一个新的页面，这是浏览器直接将获取的数据展示了出来，但是其数据可读性很差。</p>
+<p>你可以使用 curl 保存数据文件，或者直接通过 <code>go tool profile &lt;addr&gt;/debug/profile/heap</code> 来获取文件并解析。</p>
+</div>
+        </div>
+    </div></p>
+<h3 id="13-解析">1.3 解析</h3>
+<p>通过 go tool pprof 可以解析 pprof 得到的数据文件。<code>go tool pprof &lt;file&gt;</code> 执行后会进入一个交互式命令行，其中通过各个命令可以进行数据文件的解析与展示。
+常用的命令包括：</p>
+<ul>
+<li><strong><code>top &lt;N&gt;</code></strong> ：展示前 N 个数据最大的项；</li>
+<li><code>list &lt;packge&gt;.&lt;func&gt;</code> ：列出某个函数的指标；</li>
+<li><code>traces</code> ：展示各个 goroutine 的调用栈，以及对应的指标；</li>
+<li><strong><code>web</code></strong> ：通过浏览器打开解析后的图片；</li>
+</ul>
+<h4 id="131-heap">1.3.1 heap</h4>
+<p>我们先来看一下 heap 项的数据文件，下载后通过 go tool pprof 的 web 命令打开：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ go tool pprof http://10.9.195.138:12300/debug/pprof/heap
+</code></pre></td></tr></table>
+</div>
+</div><p>弹出的浏览器的图片中，展示<strong>各个函数的申请的 heap 占用</strong>。其中，框越大就代表使用的越多，所以我们很快可以找到内存使用最多的函数。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/img2.png"/><br>
+
+
+</p>
+<h4 id="132-alloc">1.3.2 alloc</h4>
+<p>对于 heap 项展示的是一瞬间的 heap 使用的快照。但是有一些情况从 heap 项的数据中看不出来，例如一直在快速申请无用内存，而导致 GC 频繁触发。这种情况虽然整体程序内存占用不大，但是是频繁 GC 之后的假象。</p>
+<p><strong>而 alloc 就是用于展示申请内存大小</strong>，这与 heap 展示当前占用内存大小是不一样的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$  go tool pprof http://10.9.195.138:12300/debug/pprof/allocs
+</code></pre></td></tr></table>
+</div>
+</div>
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/img3.png"/><br>
+
+
+
+<h4 id="133-goroutine">1.3.3 goroutine</h4>
+<p>Go 自带内存回收，所以一般不会发生内存泄漏的情况。而<strong>大部分所说的内存泄漏，都是由于 goroutine 泄漏导致的 goroutine 结构占用内存过多</strong>。</p>
+<p>如果直接点击浏览器的 goroutine 项中，会展示出所有 goroutine 的上下文。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/img4.png"/><br>
+
+
+
+但是这不利于分析整体的 goroutine 情况，还是通过 <code>go tool profile</code> 命令来看：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$  go tool pprof http://10.9.195.138:12300/debug/pprof/goroutine
+</code></pre></td></tr></table>
+</div>
+</div><p>在解析后的图片中，<strong>可以看到各个函数创建的 goroutine 的数量</strong>，因此可以很快找到 goroutine 泄漏的情况（图片不是泄漏，只是展示一下）。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/img5.png"/><br>
+
+
+</p>
+<h4 id="134-profile">1.3.4 profile</h4>
+<p>profile 项用于<strong>展示各个函数的 CPU 执行时间</strong>，当你发现程序 CPU 使用异常时，这项非常关键。</p>
+<p>默认情况会程序在收到情况后，采集 30s 内的各个函数的 CPU 执行时间。你可以通过设置参数来调整该时间。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ go tool pprof http://10.9.195.138:12300/debug/pprof/profile?seconds<span class="o">=</span><span class="m">30</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>一眼就可以看到执行时间最长的函数流：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/img6.png"/><br>
+
+
+</p>
+<h4 id="135-trace">1.3.5 trace</h4>
+<p>与前面几个不同，trace 可以用于跟踪程序的执行情况。go runtime 会上报特定的 trace 事件，而 trace 将其收集并展示出来。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ curl http://10.9.195.138:12300/debug/pprof/trace<span class="se">\?</span>seconds<span class="se">\=</span><span class="m">30</span> &gt; trace.out
+$ go tool trace trace.out
+</code></pre></td></tr></table>
+</div>
+</div><p>执行命令后，浏览器会弹出一个页面（必须是 Chrome），包含几个分析项，包括：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>View trace</strong></td>
+<td>按照时间维度观察各个事件；</td>
+</tr>
+<tr>
+<td><strong>Goroutine analysis</strong></td>
+<td>查看各个 G 的统计信息，包括执行时间，阻塞时间等；</td>
+</tr>
+<tr>
+<td><strong>Network blocking profile</strong></td>
+<td>网络接口阻塞情况；</td>
+</tr>
+<tr>
+<td><strong>Synchronization blocking</strong></td>
+<td>profile：用户态阻塞情况，包括 select、chan 阻塞等；</td>
+</tr>
+<tr>
+<td><strong>Syscall blocking profile</strong></td>
+<td>系统调用导致的阻塞情况，最常见的就是 IO 系统调用；</td>
+</tr>
+<tr>
+<td><strong>Scheduler latency profile</strong></td>
+<td>各个函数的执行时间情况；</td>
+</tr>
+<tr>
+<td>User defined task</td>
+<td></td>
+</tr>
+<tr>
+<td>User defined regions</td>
+<td></td>
+</tr>
+<tr>
+<td>Minimum mutator utilization</td>
+<td>展示出了 GC 外，应用能够获得的 CPU 资源的最小比例；</td>
+</tr>
+</tbody>
+</table>
+<h5 id="1-view-trace">(1) View trace</h5>
+<p>选择 &ldquo;View trace&rdquo;，会出现一个以时间为横轴的图片。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/img7.png"/><br>
+
+
+
+按住 W 放大后可以看到，其中每个 P 执行的 G 的时间段与事件（事件执行是个竖线）都会展示出来。各个 G 直接存在事件，点击 Flow events 后还会展示出事件流。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/img8.png"/><br>
+
+
+</p>
+<ul>
+<li>上面 G76 这个 Goroutine，经过了 P0 执行 -&gt; 系统调用阻塞 -&gt; P2 执行</li>
+</ul>
+<p>点击其中一个段，可以看到该 G 的执行的统计信息。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/img9.png"/><br>
+
+
+</p>
+<ul>
+<li><code>Title</code>：G 编号以及执行的函数</li>
+<li><code>Start</code>：启动时间；</li>
+<li><code>Wall Duration</code>：执行时间；</li>
+<li><code>Start Stack Trace</code>：G 开始执行的函数栈；</li>
+<li><code>End Stack Trace</code>：G 切换前或者结束的函数栈；</li>
+</ul>
+<h5 id="2-goroutine-analysis">(2) Goroutine analysis</h5>
+<p>选择 &ldquo;Goroutine analysis&rdquo; 后，点击一个具体的 G，可以看到其执行时间的统计。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/img10.png"/><br>
+
+
+</p>
+<h2 id="2-delve">2 delve</h2>
+<p>pprof 是程序整体的运行情况的数据，如果想<strong>对程序执行进行单步调试，就需要使用 delve</strong>。</p>
+<p>delve 类似于 gdb，但是 gdb 是针对于线程的，无法识别 goroutine。而 delve 是专门用于 Go 程序的，可以做到针对不同 goroutine 打断点，单步执行等操作。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-02-18</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" data-title="Go 调试方法总结"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" data-title="Go 调试方法总结"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" data-title="Go 调试方法总结"><i class="fab fa-evernote fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/golang/">Golang</a>,&nbsp;<a href="/tags/golang-%E5%BC%80%E5%8F%91/">Golang 开发</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" class="prev" rel="prev" title="Linux 网络收发包过程总结"><i class="fas fa-angle-left fa-fw"></i>Linux 网络收发包过程总结</a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.76.5">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":25},"comment":{"valine":{"appId":"MmnKVcBz9AcNPahAcxxe8B6A-gzGzoHsz","appKey":"R3UuooucP5zsSKK77zNspvlL","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"你的评论 ...","recordIP":true,"serverURLs":"https://mmnkvcbz.lc-cn-n1-shared.com","visitor":true}},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
