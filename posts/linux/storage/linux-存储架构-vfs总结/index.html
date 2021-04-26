@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Linux 存储架构 - VFS 总结 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Linux 存储架构 - VFS 总结" />
+<meta property="og:description" content="总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Linux 存储架构中的 VFS 层的一个总结，基本内容来源于网" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-03-13T06:29:25&#43;00:00" />
+<meta property="article:modified_time" content="2021-03-13T06:29:25&#43;00:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="Linux 存储架构 - VFS 总结"/>
+<meta name="twitter:description" content="总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Linux 存储架构中的 VFS 层的一个总结，基本内容来源于网"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/" /><link rel="prev" href="https://KanShiori.github.io/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Linux 存储架构 - VFS 总结",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/linux\/storage\/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "linux, storage","wordcount":  6448 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/linux\/storage\/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93\/","datePublished": "2021-03-13T06:29:25+00:00","dateModified": "2021-03-13T06:29:25+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Linux 存储架构 - VFS 总结</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>linux</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-03-13">2021-03-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 6448 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 13 分钟&nbsp;<span id="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Linux 存储架构 - VFS 总结">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-vfs-整体模型">1 VFS 整体模型</a></li>
+    <li><a href="#2-vfs-的通用文件模型">2 VFS 的通用文件模型</a>
+      <ul>
+        <li><a href="#21-inode">2.1 inode</a>
+          <ul>
+            <li><a href="#211-文件系统对-inode-操作">2.1.1 文件系统对 inode 操作</a></li>
+            <li><a href="#211-文件系统对文件的操作">2.1.1 文件系统对文件的操作</a></li>
+          </ul>
+        </li>
+        <li><a href="#22-superblock">2.2 superblock</a></li>
+        <li><a href="#23-file">2.3 file</a></li>
+        <li><a href="#24-dentry">2.4 dentry</a>
+          <ul>
+            <li><a href="#241-dentry-操作">2.4.1 dentry 操作</a></li>
+          </ul>
+        </li>
+        <li><a href="#25-模型总结">2.5 模型总结</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-文件操作实现">3 文件操作实现</a>
+      <ul>
+        <li><a href="#31-挂载">3.1 挂载</a>
+          <ul>
+            <li><a href="#311-共享子树">3.1.1 共享子树</a></li>
+          </ul>
+        </li>
+        <li><a href="#32-查找-inode">3.2 查找 inode</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><blockquote>
+<p><strong>总结系列的文章</strong>是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。</p>
+</blockquote>
+<p>本文是对 Linux 存储架构中的 VFS 层的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。</p>
+<h2 id="1-vfs-整体模型">1 VFS 整体模型</h2>
+<p><strong><ruby>虚拟文件系统<rt>Virtual File System</rt></ruby></strong> 是在用户进程与文件系统之间的一个<strong>抽象层</strong>，使得用户进程无需关系文件系统的实现，而通过相同的 IO 接口就可以进行数据的读写。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img1.png"/><br>
+
+
+</p>
+<p>当用户程序对一个 fd 调用 IO 系统调用时，VFS 根据其对应的文件系统，调用其各个函数的实现。</p>
+<p>可以将其想象问，你定义了一个 Golang interface VFS，而不同的文件系统实现了其 interface 的操作。上层只需要调用 VFS 的各个接口即可。
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw"></i>Tip<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><strong>“一切的抽象层都是为了解耦”</strong></div>
+        </div>
+    </div></p>
+<h2 id="2-vfs-的通用文件模型">2 VFS 的通用文件模型</h2>
+<p>为了管理不同的文件系统，VFS 需要一个<strong>通用的文件模型来抽象整个文件系统的模型</strong>，而不同的文件系统需要通过自身的实现来满足这个模型。</p>
+<p>VFS 的通用文件模型主要包含 4 个对象：</p>
+<ul>
+<li><strong><code>superblock</code></strong>：保存<strong>文件系统的基本元数据</strong>，一个文件系统有着一个 superblock 对象，包含文件系统类型、大小、状态等信息；</li>
+<li><strong><code>inode</code></strong>：保存一个<strong>文件或目录相关的元信息</strong>，代表着一个文件或目录，包含文件访问权限、文件类型、大小等（不包括文件名）；</li>
+<li><strong><code>file</code></strong>：<strong>进程打开文件后，文件的表示</strong>，进程所看见的文件；</li>
+<li><strong><code>dentry</code></strong>：保存<strong>文件名（目录名）与其 inode 的对应关系</strong>，用于加速文件的查询；</li>
+</ul>
+<h3 id="21-inode">2.1 inode</h3>
+<p><strong><code>inode</code></strong> 是针对文件系统维度而言的，是<strong>每个文件或目录在文件系统的唯一标识</strong>，并包含其相关的元信息。可以想到，inode 需要持久化在具体的存储设备上，用以机器重启后恢复文件信息。</p>
+<p>看一下 inode 的结构，可以知晓其对应的包含的信息：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span><span class="lnt">93
+</span><span class="lnt">94
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">// fs.h
+</span><span class="c1"></span><span class="k">struct</span> <span class="n">inode</span> <span class="p">{</span>
+	<span class="n">umode_t</span>			<span class="n">i_mode</span><span class="p">;</span>
+	<span class="n">kuid_t</span>			<span class="n">i_uid</span><span class="p">;</span>
+	<span class="n">kgid_t</span>			<span class="n">i_gid</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">i_flags</span><span class="p">;</span>
+
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">inode_operations</span>	<span class="o">*</span><span class="n">i_op</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">super_block</span>	<span class="o">*</span><span class="n">i_sb</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">address_space</span>	<span class="o">*</span><span class="n">i_mapping</span><span class="p">;</span>
+
+<span class="cp">#ifdef CONFIG_SECURITY
+</span><span class="cp"></span>	<span class="kt">void</span>			<span class="o">*</span><span class="n">i_security</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="cp"></span>
+	<span class="cm">/* Stat data, not accessed from path walking */</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">i_ino</span><span class="p">;</span>
+	<span class="cm">/*
+</span><span class="cm">	 * Filesystems may only read i_nlink directly.  They shall use the
+</span><span class="cm">	 * following functions for modification:
+</span><span class="cm">	 *
+</span><span class="cm">	 *    (set|clear|inc|drop)_nlink
+</span><span class="cm">	 *    inode_(inc|dec)_link_count
+</span><span class="cm">	 */</span>
+	<span class="k">union</span> <span class="p">{</span>
+		<span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i_nlink</span><span class="p">;</span>
+		<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">__i_nlink</span><span class="p">;</span>
+	<span class="p">};</span>
+	<span class="n">dev_t</span>			<span class="n">i_rdev</span><span class="p">;</span>
+	<span class="n">loff_t</span>			<span class="n">i_size</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">timespec64</span>	<span class="n">i_atime</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">timespec64</span>	<span class="n">i_mtime</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">timespec64</span>	<span class="n">i_ctime</span><span class="p">;</span>
+	<span class="n">spinlock_t</span>		<span class="n">i_lock</span><span class="p">;</span>	<span class="cm">/* i_blocks, i_bytes, maybe i_size */</span>
+	<span class="kt">unsigned</span> <span class="kt">short</span>          <span class="n">i_bytes</span><span class="p">;</span>
+	<span class="n">u8</span>			<span class="n">i_blkbits</span><span class="p">;</span>
+	<span class="n">u8</span>			<span class="n">i_write_hint</span><span class="p">;</span>
+	<span class="n">blkcnt_t</span>		<span class="n">i_blocks</span><span class="p">;</span>
+
+<span class="cp">#ifdef __NEED_I_SIZE_ORDERED
+</span><span class="cp"></span>	<span class="n">seqcount_t</span>		<span class="n">i_size_seqcount</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="cp"></span>
+	<span class="cm">/* Misc */</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">i_state</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">rw_semaphore</span>	<span class="n">i_rwsem</span><span class="p">;</span>
+
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">dirtied_when</span><span class="p">;</span>	<span class="cm">/* jiffies of first dirtying */</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">dirtied_time_when</span><span class="p">;</span>
+
+	<span class="k">struct</span> <span class="n">hlist_node</span>	<span class="n">i_hash</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">i_io_list</span><span class="p">;</span>	<span class="cm">/* backing dev IO list */</span>
+<span class="cp">#ifdef CONFIG_CGROUP_WRITEBACK
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="n">bdi_writeback</span>	<span class="o">*</span><span class="n">i_wb</span><span class="p">;</span>		<span class="cm">/* the associated cgroup wb */</span>
+
+	<span class="cm">/* foreign inode detection, see wbc_detach_inode() */</span>
+	<span class="kt">int</span>			<span class="n">i_wb_frn_winner</span><span class="p">;</span>
+	<span class="n">u16</span>			<span class="n">i_wb_frn_avg_time</span><span class="p">;</span>
+	<span class="n">u16</span>			<span class="n">i_wb_frn_history</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">i_lru</span><span class="p">;</span>		<span class="cm">/* inode LRU list */</span>
+	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">i_sb_list</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">i_wb_list</span><span class="p">;</span>	<span class="cm">/* backing dev writeback list */</span>
+	<span class="k">union</span> <span class="p">{</span>
+		<span class="k">struct</span> <span class="n">hlist_head</span>	<span class="n">i_dentry</span><span class="p">;</span>
+		<span class="k">struct</span> <span class="n">rcu_head</span>		<span class="n">i_rcu</span><span class="p">;</span>
+	<span class="p">};</span>
+	<span class="n">atomic64_t</span>		<span class="n">i_version</span><span class="p">;</span>
+	<span class="n">atomic64_t</span>		<span class="n">i_sequence</span><span class="p">;</span> <span class="cm">/* see futex */</span>
+	<span class="n">atomic_t</span>		<span class="n">i_count</span><span class="p">;</span>
+	<span class="n">atomic_t</span>		<span class="n">i_dio_count</span><span class="p">;</span>
+	<span class="n">atomic_t</span>		<span class="n">i_writecount</span><span class="p">;</span>
+<span class="cp">#if defined(CONFIG_IMA) || defined(CONFIG_FILE_LOCKING)
+</span><span class="cp"></span>	<span class="n">atomic_t</span>		<span class="n">i_readcount</span><span class="p">;</span> <span class="cm">/* struct files open RO */</span>
+<span class="cp">#endif
+</span><span class="cp"></span>	<span class="k">union</span> <span class="p">{</span>
+		<span class="k">const</span> <span class="k">struct</span> <span class="n">file_operations</span>	<span class="o">*</span><span class="n">i_fop</span><span class="p">;</span>	<span class="cm">/* former -&gt;i_op-&gt;default_file_ops */</span>
+		<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">free_inode</span><span class="p">)(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">);</span>
+	<span class="p">};</span>
+	<span class="k">struct</span> <span class="n">file_lock_context</span>	<span class="o">*</span><span class="n">i_flctx</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">address_space</span>	<span class="n">i_data</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">i_devices</span><span class="p">;</span>
+	<span class="k">union</span> <span class="p">{</span>
+		<span class="k">struct</span> <span class="n">pipe_inode_info</span>	<span class="o">*</span><span class="n">i_pipe</span><span class="p">;</span>
+		<span class="k">struct</span> <span class="n">block_device</span>	<span class="o">*</span><span class="n">i_bdev</span><span class="p">;</span>
+		<span class="k">struct</span> <span class="n">cdev</span>		<span class="o">*</span><span class="n">i_cdev</span><span class="p">;</span>
+		<span class="kt">char</span>			<span class="o">*</span><span class="n">i_link</span><span class="p">;</span>
+		<span class="kt">unsigned</span>		<span class="n">i_dir_seq</span><span class="p">;</span>
+	<span class="p">};</span>
+
+	<span class="n">__u32</span>			<span class="n">i_generation</span><span class="p">;</span>
+
+	<span class="kt">void</span>			<span class="o">*</span><span class="n">i_private</span><span class="p">;</span> <span class="cm">/* fs or device private pointer */</span>
+<span class="p">}</span> <span class="n">__randomize_layout</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>i_mode：文件类型，文件、目录等，也包括一些权限信息；</li>
+<li>i_uid、i_gid：文件所属的 UID 与 GID；</li>
+<li>i_flags：文件状态标记；</li>
+<li>i_op：inode 操作集合，不同的文件系统注册不同的操作；</li>
+<li>i_sb：指向所属文件系统的 superblock 结构；</li>
+<li>i_mapping：inode 对应的地址空间（address_space），对于 mmap 很重要；</li>
+<li>i_ino：inode 索引号；</li>
+<li>i_nlink：inode 引用计数；</li>
+<li>i_rdev：inode 表示设备文件时，为设备的 dev number（major+minor）；</li>
+<li>i_size：inode 对应的文件大小；</li>
+<li>i_atime、i_mtime、i_ctime：文件最后访问时间、文件内容最后修改时间、inode 最后变化时间（权限、所有者等）</li>
+<li>i_bytes：文件占用存储设备的字节数（考虑稀疏文件）；</li>
+<li>i_blocks：文件占用存储设备的块数（考虑稀疏文件）；</li>
+<li>i_hash：inode 所存在的 hash 表；</li>
+<li>i_lru：inode 构成的 LRU list；</li>
+<li>i_fop：文件操作函数集合，不同文件系统不同实现；</li>
+</ul>
+<p>从上面可以看到，任何文件系统上的每一个单元（普通文件、目录、设备、管道等等），在 VFS 都由一个 inode 来抽象。</p>
+<p>因此，对于每个进程，所有的操作都是相同的，即基于文件系统某个“文件”的增删改查等等，接口是统一的。<strong>而各个文件系统就要实现自身的 i_op、i_fop 操作</strong>。</p>
+<p>例如，对于网络 IO，也是通过 VFS 层操作的，而需要网络子系统实现一个走网络的 i_fop 操作。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">“一切皆文件”</div>
+        </div>
+    </div></p>
+<h4 id="211-文件系统对-inode-操作">2.1.1 文件系统对 inode 操作</h4>
+<p>看一下文件系统对 inode 的操作 <strong><code>inode_operations</code></strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">// fs.h
+</span><span class="c1"></span><span class="k">struct</span> <span class="n">inode_operations</span> <span class="p">{</span>
+	<span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="n">lookup</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="n">get_link</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">delayed_call</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">permission</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="k">struct</span> <span class="n">posix_acl</span> <span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="n">get_acl</span><span class="p">)(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">readlink</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="p">,</span><span class="kt">int</span><span class="p">);</span>
+
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">create</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="n">umode_t</span><span class="p">,</span> <span class="kt">bool</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">link</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">unlink</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">symlink</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">mkdir</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span><span class="n">umode_t</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">rmdir</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">mknod</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span><span class="n">umode_t</span><span class="p">,</span><span class="n">dev_t</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">rename</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span>
+			<span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">setattr</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">iattr</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">getattr</span><span class="p">)</span> <span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">path</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kstat</span> <span class="o">*</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="n">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">listxattr</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="p">,</span> <span class="n">size_t</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">fiemap</span><span class="p">)(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">fiemap_extent_info</span> <span class="o">*</span><span class="p">,</span> <span class="n">u64</span> <span class="n">start</span><span class="p">,</span>
+		      <span class="n">u64</span> <span class="n">len</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">update_time</span><span class="p">)(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">timespec64</span> <span class="o">*</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">atomic_open</span><span class="p">)(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span>
+			   <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">open_flag</span><span class="p">,</span>
+			   <span class="n">umode_t</span> <span class="n">create_mode</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">tmpfile</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="n">umode_t</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">set_acl</span><span class="p">)(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">posix_acl</span> <span class="o">*</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+<span class="p">}</span> <span class="n">____cacheline_aligned</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>大部分的函数功能看到其命名就可以知晓了，仅仅说明下部分函数：</p>
+<ul>
+<li><code>lookup</code>：根据 dentry（文件名）查找其 inode；</li>
+<li><code>link/unlink</code>：用于将 dentry 绑定 inode，当引用计数为 0 时会删除文件；</li>
+</ul>
+<p>i_op 都是对文件元信息的修改与查询，不涉及到对文件内容的修改。</p>
+<h4 id="211-文件系统对文件的操作">2.1.1 文件系统对文件的操作</h4>
+<p>看一下文件系统对文件需要实现的操作 <strong><code>file_operations</code></strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">file_operations</span> <span class="p">{</span>
+	<span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
+	<span class="n">loff_t</span> <span class="p">(</span><span class="o">*</span><span class="n">llseek</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="n">loff_t</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="n">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">read</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="p">,</span> <span class="n">size_t</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="p">);</span>
+	<span class="n">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">write</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="p">,</span> <span class="n">size_t</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="p">);</span>
+	<span class="n">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">read_iter</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">kiocb</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">iov_iter</span> <span class="o">*</span><span class="p">);</span>
+	<span class="n">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">write_iter</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">kiocb</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">iov_iter</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">iopoll</span><span class="p">)(</span><span class="k">struct</span> <span class="n">kiocb</span> <span class="o">*</span><span class="n">kiocb</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">spin</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">iterate</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">dir_context</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">iterate_shared</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">dir_context</span> <span class="o">*</span><span class="p">);</span>
+	<span class="n">__poll_t</span> <span class="p">(</span><span class="o">*</span><span class="n">poll</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">poll_table_struct</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">long</span> <span class="p">(</span><span class="o">*</span><span class="n">unlocked_ioctl</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">);</span>
+	<span class="kt">long</span> <span class="p">(</span><span class="o">*</span><span class="n">compat_ioctl</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">mmap</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">mmap_supported_flags</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">open</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">flush</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="n">fl_owner_t</span> <span class="n">id</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">release</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">fsync</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="n">loff_t</span><span class="p">,</span> <span class="n">loff_t</span><span class="p">,</span> <span class="kt">int</span> <span class="n">datasync</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">fasync</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">lock</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file_lock</span> <span class="o">*</span><span class="p">);</span>
+	<span class="n">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">sendpage</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">size_t</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="kt">unsigned</span> <span class="nf">long</span> <span class="p">(</span><span class="o">*</span><span class="n">get_unmapped_area</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">check_flags</span><span class="p">)(</span><span class="kt">int</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">flock</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file_lock</span> <span class="o">*</span><span class="p">);</span>
+	<span class="n">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">splice_write</span><span class="p">)(</span><span class="k">struct</span> <span class="n">pipe_inode_info</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="p">,</span> <span class="n">size_t</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="n">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">splice_read</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">pipe_inode_info</span> <span class="o">*</span><span class="p">,</span> <span class="n">size_t</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">setlease</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">long</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file_lock</span> <span class="o">**</span><span class="p">,</span> <span class="kt">void</span> <span class="o">**</span><span class="p">);</span>
+	<span class="kt">long</span> <span class="p">(</span><span class="o">*</span><span class="n">fallocate</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">,</span> <span class="n">loff_t</span> <span class="n">offset</span><span class="p">,</span>
+			  <span class="n">loff_t</span> <span class="n">len</span><span class="p">);</span>
+	<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">show_fdinfo</span><span class="p">)(</span><span class="k">struct</span> <span class="n">seq_file</span> <span class="o">*</span><span class="n">m</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">f</span><span class="p">);</span>
+<span class="cp">#ifndef CONFIG_MMU
+</span><span class="cp"></span>	<span class="kt">unsigned</span> <span class="p">(</span><span class="o">*</span><span class="n">mmap_capabilities</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">);</span>
+<span class="cp">#endif
+</span><span class="cp"></span>	<span class="n">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">copy_file_range</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="n">loff_t</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span>
+			<span class="n">loff_t</span><span class="p">,</span> <span class="n">size_t</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="n">loff_t</span> <span class="p">(</span><span class="o">*</span><span class="n">remap_file_range</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file_in</span><span class="p">,</span> <span class="n">loff_t</span> <span class="n">pos_in</span><span class="p">,</span>
+				   <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file_out</span><span class="p">,</span> <span class="n">loff_t</span> <span class="n">pos_out</span><span class="p">,</span>
+				   <span class="n">loff_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">remap_flags</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">fadvise</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="n">loff_t</span><span class="p">,</span> <span class="n">loff_t</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+<span class="p">}</span> <span class="n">__randomize_layout</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>read、write：读写文件操作，需要传入文件描述符（file）、缓冲区（存放返回数据）、读写大小、偏移量；</li>
+<li>read_iter、write_iter：异步 IO（aio）读写函数，通过结束后异步执行回调函数；</li>
+<li>mmap：将文件内容映射到进程的虚拟地址空间中；</li>
+<li>open：打开文件操作，这样讲一个 file 关联到了一个 inode；</li>
+<li>release：关闭文件操作，解绑 file 与 inode，使得可以清理一些数据；</li>
+<li>poll：IO 复用的文件系统实现，例如 select poll epoll；</li>
+<li>lock：锁定文件，用于多进程并发访问时进行同步；</li>
+<li>fallocate：进行文件内容的预分配，这与稀疏文件不同，会占用空间会实际展示在文件系统上；</li>
+</ul>
+<h3 id="22-superblock">2.2 superblock</h3>
+<p><strong><code>superblock</code></strong> 包含<strong>一个具体文件系统的全局信息</strong>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">super_block</span> <span class="p">{</span>
+	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">s_list</span><span class="p">;</span>		<span class="cm">/* Keep this first */</span>
+	<span class="n">dev_t</span>			<span class="n">s_dev</span><span class="p">;</span>		<span class="cm">/* search index; _not_ kdev_t */</span>
+	<span class="kt">unsigned</span> <span class="kt">char</span>		<span class="n">s_blocksize_bits</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">s_blocksize</span><span class="p">;</span>
+	<span class="n">loff_t</span>			<span class="n">s_maxbytes</span><span class="p">;</span>	<span class="cm">/* Max file size */</span>
+	<span class="k">struct</span> <span class="n">file_system_type</span>	<span class="o">*</span><span class="n">s_type</span><span class="p">;</span>
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">super_operations</span>	<span class="o">*</span><span class="n">s_op</span><span class="p">;</span>
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">dquot_operations</span>	<span class="o">*</span><span class="n">dq_op</span><span class="p">;</span>
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">quotactl_ops</span>	<span class="o">*</span><span class="n">s_qcop</span><span class="p">;</span>
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">export_operations</span> <span class="o">*</span><span class="n">s_export_op</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">s_flags</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">s_iflags</span><span class="p">;</span>	<span class="cm">/* internal SB_I_* flags */</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">s_magic</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">dentry</span>		<span class="o">*</span><span class="n">s_root</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">rw_semaphore</span>	<span class="n">s_umount</span><span class="p">;</span>
+	<span class="kt">int</span>			<span class="n">s_count</span><span class="p">;</span>
+	<span class="n">atomic_t</span>		<span class="n">s_active</span><span class="p">;</span>
+
+	<span class="kt">char</span>			<span class="n">s_id</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>	<span class="cm">/* Informational name */</span>
+	<span class="n">uuid_t</span>			<span class="n">s_uuid</span><span class="p">;</span>		<span class="cm">/* UUID */</span>
+
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">s_max_links</span><span class="p">;</span>
+	<span class="n">fmode_t</span>			<span class="n">s_mode</span><span class="p">;</span>
+
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">dentry_operations</span> <span class="o">*</span><span class="n">s_d_op</span><span class="p">;</span> <span class="cm">/* default d_op for dentries */</span>
+
+	<span class="cm">/* s_inode_list_lock protects s_inodes */</span>
+	<span class="n">spinlock_t</span>		<span class="n">s_inode_list_lock</span> <span class="n">____cacheline_aligned_in_smp</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">s_inodes</span><span class="p">;</span>	<span class="cm">/* all inodes */</span>
+
+	<span class="n">spinlock_t</span>		<span class="n">s_inode_wblist_lock</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">s_inodes_wb</span><span class="p">;</span>	<span class="cm">/* writeback inodes */</span>
+<span class="p">}</span> <span class="n">__randomize_layout</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>s_list ：所有存在的文件系统以 list 方式组织；</li>
+<li>s_dev ：文件系统对应的设备的 dev 编号；</li>
+<li>s_blocksize_bits、s_blocksize ：</li>
+<li>s_maxbytes ：可以创建的最大文件大小；</li>
+<li>s_type ：文件系统类型；</li>
+<li>s_op ：文件系统操作，包含 mount、umount 等操作的实现；</li>
+<li>dq_op ：文件系统 quota 功能的实现；</li>
+<li>s_magic ：文件系统 magic number，每类文件系统有着唯一的 magic number；</li>
+<li>s_root ：root 目录，如果是存储文件系统的话；</li>
+<li>s_uuid ：文件系统 UUID，每个文件系统有着单机唯一的 UUID；</li>
+<li>s_inodes ：所有 inode 的组成的链表；</li>
+<li>s_inodes_wb ：所有等待 writeback 的 inode 组成的链表；</li>
+</ul>
+<h3 id="23-file">2.3 file</h3>
+<p><strong><code>file</code></strong> 是<strong>文件在进程中的表示</strong>，当进程通过 <code>open()</code> 打开一个文件得到文件描述符后，内核就会有一个 file 对象来表示这个“打开”。</p>
+<p>如下图所示，每个进程所打开的每个 fd，就对应这一个 file 结构对象。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img2.png"/><br>
+
+
+</p>
+<p>看下具体的 file 对象：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">// fs.h
+</span><span class="c1"></span><span class="k">struct</span> <span class="n">file</span> <span class="p">{</span>
+	<span class="k">union</span> <span class="p">{</span>
+		<span class="k">struct</span> <span class="n">llist_node</span>	<span class="n">fu_llist</span><span class="p">;</span>
+		<span class="k">struct</span> <span class="n">rcu_head</span> 	<span class="n">fu_rcuhead</span><span class="p">;</span>
+	<span class="p">}</span> <span class="n">f_u</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">path</span>		<span class="n">f_path</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">inode</span>		<span class="o">*</span><span class="n">f_inode</span><span class="p">;</span>	<span class="cm">/* cached value */</span>
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">file_operations</span>	<span class="o">*</span><span class="n">f_op</span><span class="p">;</span>
+
+	<span class="n">spinlock_t</span>		<span class="n">f_lock</span><span class="p">;</span>
+	<span class="k">enum</span> <span class="n">rw_hint</span>		<span class="n">f_write_hint</span><span class="p">;</span>
+	<span class="n">atomic_long_t</span>		<span class="n">f_count</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span> 		<span class="n">f_flags</span><span class="p">;</span>
+	<span class="n">fmode_t</span>			<span class="n">f_mode</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">mutex</span>		<span class="n">f_pos_lock</span><span class="p">;</span>
+	<span class="n">loff_t</span>			<span class="n">f_pos</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">fown_struct</span>	<span class="n">f_owner</span><span class="p">;</span>
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">cred</span>	<span class="o">*</span><span class="n">f_cred</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">file_ra_state</span>	<span class="n">f_ra</span><span class="p">;</span>
+
+	<span class="n">u64</span>			<span class="n">f_version</span><span class="p">;</span>
+<span class="cp">#ifdef CONFIG_SECURITY
+</span><span class="cp"></span>	<span class="kt">void</span>			<span class="o">*</span><span class="n">f_security</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="cp"></span>	<span class="cm">/* needed for tty driver, and maybe others */</span>
+	<span class="kt">void</span>			<span class="o">*</span><span class="n">private_data</span><span class="p">;</span>
+
+<span class="cp">#ifdef CONFIG_EPOLL
+</span><span class="cp"></span>	<span class="cm">/* Used by fs/eventpoll.c to link all the hooks to this file */</span>
+	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">f_ep_links</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">f_tfile_llink</span><span class="p">;</span>
+<span class="cp">#endif </span><span class="cm">/* #ifdef CONFIG_EPOLL */</span><span class="cp">
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="n">address_space</span>	<span class="o">*</span><span class="n">f_mapping</span><span class="p">;</span>
+
+<span class="err">…</span>
+<span class="p">}</span> <span class="n">__randomize_layout</span>
+  <span class="n">__attribute__</span><span class="p">((</span><span class="n">aligned</span><span class="p">(</span><span class="mi">4</span><span class="p">)));</span>	<span class="cm">/* lest something weird decides that 2 is OK */</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>f_owner 包含处理该文件的进程有关信息，例如进程的 pid；</li>
+<li>f_ra 表示预读相关的操作，包含预读文件数据的大小、预读的方式等；</li>
+<li>f_mode 为打开文件时传递的方式，例如 readonly rw 等模式；</li>
+<li>f_flags 为 open 系统调用时传递的额外的 flag 标志；</li>
+<li><strong>f_path</strong> 用于维护两个信息：
+<ul>
+<li>文件名与 inode 之间的关联（dentry）；</li>
+<li>文件所在文件系统的信息（vfsmount）；</li>
+</ul>
+</li>
+<li>f_op 为对应 inode 的文件操作函数；</li>
+<li>f_mapping ：指向文件对应的 inode 的地址空间映射，即 inode -&gt; i_mapping；</li>
+</ul>
+<p>file.f_path 属性包含文件对应的 dentry 对象，dentry 中包含着对应的 inode 指针，因此完成了 file -&gt; inode 的映射。</p>
+<h3 id="24-dentry">2.4 dentry</h3>
+<p><strong><code>dentry</code></strong> 表示的是一个文件名与其对应的 inode 的关系，<strong>dentry 组成的树型结构构建起了某个文件系统的目录树</strong>。</p>
+<p>每个文件系统有着一个没有父 dentry 的根目录，被文件系统对应的 superblock 所引用。</p>
+<p>必须要清楚，<strong>磁盘等持久化存储设备上并没有存储 dentry</strong>。dentry 树型结构的构建是在 VFS 读取目录、文件的数据后，对应创建并构建的。也就是说，<strong>dentry 是一个缓存结构，用于运行时构建出树型组织结构，来加速文件、目录的查找</strong>。</p>
+<p>看下其主要的数据结构：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">// dcache.h
+</span><span class="c1"></span><span class="k">struct</span> <span class="n">dentry</span> <span class="p">{</span>
+	<span class="cm">/* RCU lookup touched fields */</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">d_flags</span><span class="p">;</span>		<span class="cm">/* protected by d_lock */</span>
+	<span class="n">seqcount_spinlock_t</span> <span class="n">d_seq</span><span class="p">;</span>	<span class="cm">/* per dentry seqlock */</span>
+	<span class="k">struct</span> <span class="n">hlist_bl_node</span> <span class="n">d_hash</span><span class="p">;</span>	<span class="cm">/* lookup hash list */</span>
+	<span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="n">d_parent</span><span class="p">;</span>	<span class="cm">/* parent directory */</span>
+	<span class="k">struct</span> <span class="n">qstr</span> <span class="n">d_name</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="n">d_inode</span><span class="p">;</span>		<span class="cm">/* Where the name belongs to - NULL is
+</span><span class="cm">					 * negative */</span>
+	<span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">d_iname</span><span class="p">[</span><span class="n">DNAME_INLINE_LEN</span><span class="p">];</span>	<span class="cm">/* small names */</span>
+
+	<span class="cm">/* Ref lookup also touches following */</span>
+	<span class="k">struct</span> <span class="n">lockref</span> <span class="n">d_lockref</span><span class="p">;</span>	<span class="cm">/* per-dentry lock and refcount */</span>
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">dentry_operations</span> <span class="o">*</span><span class="n">d_op</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">super_block</span> <span class="o">*</span><span class="n">d_sb</span><span class="p">;</span>	<span class="cm">/* The root of the dentry tree */</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">d_time</span><span class="p">;</span>		<span class="cm">/* used by d_revalidate */</span>
+	<span class="kt">void</span> <span class="o">*</span><span class="n">d_fsdata</span><span class="p">;</span>			<span class="cm">/* fs-specific data */</span>
+
+	<span class="k">union</span> <span class="p">{</span>
+		<span class="k">struct</span> <span class="n">list_head</span> <span class="n">d_lru</span><span class="p">;</span>		<span class="cm">/* LRU list */</span>
+		<span class="n">wait_queue_head_t</span> <span class="o">*</span><span class="n">d_wait</span><span class="p">;</span>	<span class="cm">/* in-lookup ones only */</span>
+	<span class="p">};</span>
+	<span class="k">struct</span> <span class="n">list_head</span> <span class="n">d_child</span><span class="p">;</span>	<span class="cm">/* child of parent list */</span>
+	<span class="k">struct</span> <span class="n">list_head</span> <span class="n">d_subdirs</span><span class="p">;</span>	<span class="cm">/* our children */</span>
+	<span class="cm">/*
+</span><span class="cm">	 * d_alias and d_rcu can share memory
+</span><span class="cm">	 */</span>
+	<span class="k">union</span> <span class="p">{</span>
+		<span class="k">struct</span> <span class="n">hlist_node</span> <span class="n">d_alias</span><span class="p">;</span>	<span class="cm">/* inode alias list */</span>
+		<span class="k">struct</span> <span class="n">hlist_bl_node</span> <span class="n">d_in_lookup_hash</span><span class="p">;</span>	<span class="cm">/* only for in-lookup ones */</span>
+	 	<span class="k">struct</span> <span class="n">rcu_head</span> <span class="n">d_rcu</span><span class="p">;</span>
+	<span class="p">}</span> <span class="n">d_u</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">__randomize_layout</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>d_parent：父目录的 dentry，根目录 dentry 指向自身；</li>
+<li><code>d_name</code>：文件名/目录名；</li>
+<li><code>d_inode</code>：文件名对应文件/目录的 inode；</li>
+<li>d_op：文件系统 dentry 操作的实现；</li>
+<li>d_sb：dentry 所属的文件系统的 superblock 结构；</li>
+<li>d_lockref：dentry 引用计数；</li>
+<li>d_alias：链表元素，不同 dentry 表示相同文件时，会通过链表链接所有 dentry。例如，使用硬链接将两个不同名称对应同一个文件时，会发生这种情况；</li>
+</ul>
+<h4 id="241-dentry-操作">2.4.1 dentry 操作</h4>
+<p><code>dentry_operations</code> 结构保存了指向特定文件系统对 dentry 需要实现的操作。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">// dcache.h
+</span><span class="c1"></span><span class="k">struct</span> <span class="n">dentry_operations</span> <span class="p">{</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">d_revalidate</span><span class="p">)(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">d_weak_revalidate</span><span class="p">)(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">d_hash</span><span class="p">)(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">qstr</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">d_compare</span><span class="p">)(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span>
+			<span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">qstr</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">d_delete</span><span class="p">)(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">d_init</span><span class="p">)(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">d_release</span><span class="p">)(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">d_prune</span><span class="p">)(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">d_iput</span><span class="p">)(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">d_dname</span><span class="p">)(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+	<span class="k">struct</span> <span class="n">vfsmount</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">d_automount</span><span class="p">)(</span><span class="k">struct</span> <span class="n">path</span> <span class="o">*</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">d_manage</span><span class="p">)(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">path</span> <span class="o">*</span><span class="p">,</span> <span class="kt">bool</span><span class="p">);</span>
+	<span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">d_real</span><span class="p">)(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">);</span>
+<span class="p">}</span> <span class="n">____cacheline_aligned</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>d_revalidate：检查内存中各个 dentry 对象构建的结构，是否符合当前文件系统的情况。这对于网络文件系统至关重要。<br>
+因为网络文件系统不直接关联到内核与 VFS，所有的数据都要通过网络 IO 来收集。该函数用于保证 dentry 结构与实际情况的一致性。</li>
+</ul>
+<h3 id="25-模型总结">2.5 模型总结</h3>
+<p>首先从内核角度看，一个已经挂载的<strong>文件系统就是由 superblock + inode 组成</strong>的。文件系统信息保存在 superblock 中，每个文件由 inode 表示。</p>
+<p><strong>对于一个文件的读写，就是找到对应文件的 inode，然后调用底层文件系统的 read/write 接口。一个目录 inode 对应的数据，就是其子文件或者目录的命名。</strong></p>
+<p>因为文件的读写增删是非常频繁的，为了在目录树中更快速的查找 inode，<strong>内核维护了 dentry 结构树，dentry 包含了文件名与 inode 的映射关系，使得不用依靠读写磁盘来查找文件对应的 inode</strong>。</p>
+<p>从进程角度看，<strong>每个进程可以打开多文件，因此使用 file 结构代表了每个进程打开的文件</strong>，从 file -&gt; dentry -&gt; inode 来找到其对应的文件。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img3.png"/><br>
+
+
+</p>
+<h2 id="3-文件操作实现">3 文件操作实现</h2>
+<h3 id="31-挂载">3.1 挂载</h3>
+<p>文件系统的挂载有 mount 系统调用触发，<strong>当文件系统挂载到一个目录时，挂载点的内容就被替换为了被挂载的文件系统中的根目录的内容</strong>。前一个目录消失，无法访问，当挂载点被取消挂载后又会重新出现，并且数据不会改变。</p>
+<p>每个挂载的文件系统都对应内核中的 <code>mount</code> 结构对象：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">vfsmount</span> <span class="p">{</span>
+	<span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="n">mnt_root</span><span class="p">;</span>        <span class="cm">/* root of the mounted tree */</span>
+	<span class="k">struct</span> <span class="n">super_block</span> <span class="o">*</span><span class="n">mnt_sb</span><span class="p">;</span>        <span class="cm">/* pointer to superblock */</span>
+	<span class="kt">int</span> <span class="n">mnt_flags</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">__randomize_layout</span><span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">mount</span> <span class="p">{</span>
+	<span class="k">struct</span> <span class="n">hlist_node</span> <span class="n">mnt_hash</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">mount</span> <span class="o">*</span><span class="n">mnt_parent</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="n">mnt_mountpoint</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">vfsmount</span> <span class="n">mnt</span><span class="p">;</span>
+	<span class="k">union</span> <span class="p">{</span>
+		<span class="k">struct</span> <span class="n">rcu_head</span> <span class="n">mnt_rcu</span><span class="p">;</span>
+		<span class="k">struct</span> <span class="n">llist_node</span> <span class="n">mnt_llist</span><span class="p">;</span>
+	<span class="p">};</span>
+<span class="cp">#ifdef CONFIG_SMP
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="n">mnt_pcp</span> <span class="n">__percpu</span> <span class="o">*</span><span class="n">mnt_pcp</span><span class="p">;</span>
+<span class="cp">#else
+</span><span class="cp"></span>	<span class="kt">int</span> <span class="n">mnt_count</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">mnt_writers</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="n">list_head</span> <span class="n">mnt_mounts</span><span class="p">;</span>        <span class="cm">/* list of children, anchored here */</span>
+	<span class="k">struct</span> <span class="n">list_head</span> <span class="n">mnt_child</span><span class="p">;</span>        <span class="cm">/* and going through their mnt_child */</span>
+	<span class="k">struct</span> <span class="n">list_head</span> <span class="n">mnt_instance</span><span class="p">;</span>        <span class="cm">/* mount instance on sb-&gt;s_mounts */</span>
+	<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">mnt_devname</span><span class="p">;</span>        <span class="cm">/* Name of device e.g. /dev/dsk/hda1 */</span>
+	<span class="k">struct</span> <span class="n">list_head</span> <span class="n">mnt_list</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">list_head</span> <span class="n">mnt_expire</span><span class="p">;</span>        <span class="cm">/* link in fs-specific expiry list */</span>
+	<span class="k">struct</span> <span class="n">list_head</span> <span class="n">mnt_share</span><span class="p">;</span>        <span class="cm">/* circular list of shared mounts */</span>
+	<span class="k">struct</span> <span class="n">list_head</span> <span class="n">mnt_slave_list</span><span class="p">;</span><span class="cm">/* list of slave mounts */</span>
+	<span class="k">struct</span> <span class="n">list_head</span> <span class="n">mnt_slave</span><span class="p">;</span>        <span class="cm">/* slave list entry */</span>
+	<span class="k">struct</span> <span class="n">mount</span> <span class="o">*</span><span class="n">mnt_master</span><span class="p">;</span>        <span class="cm">/* slave is on master-&gt;mnt_slave_list */</span>
+	<span class="k">struct</span> <span class="n">mnt_namespace</span> <span class="o">*</span><span class="n">mnt_ns</span><span class="p">;</span>        <span class="cm">/* containing namespace */</span>
+	<span class="k">struct</span> <span class="n">mountpoint</span> <span class="o">*</span><span class="n">mnt_mp</span><span class="p">;</span>        <span class="cm">/* where is it mounted */</span>
+	<span class="k">union</span> <span class="p">{</span>
+		<span class="k">struct</span> <span class="n">hlist_node</span> <span class="n">mnt_mp_list</span><span class="p">;</span>        <span class="cm">/* list mounts with the same mountpoint */</span>
+		<span class="k">struct</span> <span class="n">hlist_node</span> <span class="n">mnt_umount</span><span class="p">;</span>
+	<span class="p">};</span>
+	<span class="k">struct</span> <span class="n">list_head</span> <span class="n">mnt_umounting</span><span class="p">;</span> <span class="cm">/* list entry for umount propagation */</span>
+<span class="cp">#ifdef CONFIG_FSNOTIFY
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="n">fsnotify_mark_connector</span> <span class="n">__rcu</span> <span class="o">*</span><span class="n">mnt_fsnotify_marks</span><span class="p">;</span>
+	<span class="n">__u32</span> <span class="n">mnt_fsnotify_mask</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="cp"></span>	<span class="kt">int</span> <span class="n">mnt_id</span><span class="p">;</span>                        <span class="cm">/* mount identifier */</span>
+	<span class="kt">int</span> <span class="n">mnt_group_id</span><span class="p">;</span>                <span class="cm">/* peer group identifier */</span>
+	<span class="kt">int</span> <span class="n">mnt_expiry_mark</span><span class="p">;</span>                <span class="cm">/* true if marked for expiry */</span>
+	<span class="k">struct</span> <span class="n">hlist_head</span> <span class="n">mnt_pins</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">hlist_head</span> <span class="n">mnt_stuck_children</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">__randomize_layout</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>mnt_parent：挂载点位于父文件系统挂载；</li>
+<li><code>mnt_mountpoint</code>：挂载点，也就是父文件系统中挂载点对应的 dentry；</li>
+<li>mnt：包含代表的文件系统的挂载属性：
+<ul>
+<li>mnt_root：文件系统根目录的 dentry；</li>
+<li>mnt_sb：文件系统对应的 superblock；</li>
+<li>mnt_flags：挂载标志；</li>
+</ul>
+</li>
+<li><code>mnt_count</code>：挂载的引用计数；</li>
+<li>mnt_ns：所属的 mount namespace；</li>
+<li>mnt_devname：挂载的设备名称，例如 /dev/sda；</li>
+<li>挂载子树相关数据结构 …；</li>
+<li><code>mnt_id</code>：该挂载的唯一 id；</li>
+<li><code>mnt_group_id</code>：同组的挂载点的集合，即 peer group id；</li>
+</ul>
+<h4 id="311-共享子树">3.1.1 共享子树</h4>
+<p>普通的挂载理解起来并不难，但是涉及到 bind mount 与 mount namespace 后，事情开始不一样了起来。想象几个场景：</p>
+<ol>
+<li>如果系统新添加了磁盘，因为容器间 mount namespace 隔离了挂载信息，如果容器想用这个磁盘，是否只能手动进行挂载。</li>
+</ol>
+<p>Shared subtrees 可以帮助我们解决这个问题。</p>
+<p><strong><ruby>共享子树<rt>Shared subtrees</rt></ruby></strong> 就是<strong>一种控制子挂载点能否在其他地方被看到的技术，只会在 bind mount 和 mount namespace 中被使用到。</strong></p>
+<p>这个概念比较绕，并且也不会常常用到，可以先跳过。</p>
+<p>首先，需要先知道两个概念：</p>
+<ul>
+<li><code>peer group</code>：一个或多个挂载点的集合，同组的挂载之间会共享挂载信息，也就是可以看到。
+目前有两种情况会让两个挂载点属于同一个 peer group：
+<ol>
+<li>使用 mount &ndash;bind，并且挂载的 propagation type 为 share，这样源目录和目标目录属于同一个 peer group（前提是源是一个挂载点，而不是普通文件或者普通目录）。</li>
+<li>当创建新的 mount namespace 时，新 namespace 会拷贝一份老 namespace 的挂载点信息，于是新的和老的 namespace 里面的相同挂载点就会属于同一个 peer group。</li>
+</ol>
+</li>
+<li><code>propagation type</code>：每个挂载点都有一个 type 标志，由它决定同一个 peer group 里的其他的挂载点下面是不是也会创建和移除相应的挂载点。</li>
+</ul>
+<p>目前包含四种类型的 propagation type：</p>
+<ul>
+<li>MS_SHARED：挂载信息在同一个 peer group 的不同挂载点之间共享传播；</li>
+<li>MS_PRIVATE：挂载信息不共享，设置 private 的挂载点不属于任何的 peer group；</li>
+<li>MS_SLAVE：传播是单向的，同一个 peer group 中，master 的挂载点下面发生变化会共享到 slave。反之，slave 下变化不会影响 master；</li>
+<li>MS_UNBINDABLE：和 MS_PRIVATE 相同，只是这种类型挂载点不能作为 bind mount；
+可以看到，peer cgroup 的概念就是 mount 结构中的 mnt_group_id，各个不同的 type 的子挂载，会被保存在不同的 mount 的链表中。</li>
+</ul>
+<blockquote>
+<p>有个大神给出了清晰的示例与解释，见：<a href="https://segmentfault.com/a/1190000006899213" target="_blank" rel="noopener noreffer">Shared subtrees</a></p>
+</blockquote>
+<h3 id="32-查找-inode">3.2 查找 inode</h3>
+<p>查找 inode 应该是最常见的操作了，当你要打开文件或者进入目录，内核第一个任务就是要根据其路径，来查找到对应的 inode。</p>
+<p>因为 dentry 的存在，查找自然分为了：<strong>通过 dentry 缓存查找</strong>，以及<strong>通过实际的读文件系统查找</strong>。</p>
+<p>先看下通过 dentry 缓存查找：</p>
+<ol>
+<li>解析文件路径，然后不断查找对应的 dentry。
+例如 /a/b/c，先通过 root dentry 查找 a 对应的 dentry，接着通过 a dentry 查找 b，不断循环。</li>
+<li>因为 dentry 只是缓存，所以需要使用 d_revalidate() 来检查 dentry 是否是有效地。</li>
+<li>返回有效 dentry 的 inode。</li>
+</ol>
+<p>当对应 dentry 不存在，或者无效之后，就会通过文件系统 inode 操作 lookup() 接口，通过底层的文件系统进行查找，并将其重新记录到 dentry 中。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://blog.csdn.net/jinking01/article/details/90669534" target="_blank" rel="noopener noreffer">Blog：linux 的 VFS 详解</a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-03-13</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/" data-title="Linux 存储架构 - VFS 总结"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/" data-title="Linux 存储架构 - VFS 总结"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/" data-title="Linux 存储架构 - VFS 总结"><i class="fab fa-evernote fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/linux/">linux</a>,&nbsp;<a href="/tags/storage/">storage</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" class="prev" rel="prev" title="Go 调试方法总结"><i class="fas fa-angle-left fa-fw"></i>Go 调试方法总结</a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.82.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":25},"comment":{"valine":{"appId":"MmnKVcBz9AcNPahAcxxe8B6A-gzGzoHsz","appKey":"R3UuooucP5zsSKK77zNspvlL","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"你的评论 ...","recordIP":true,"serverURLs":"https://mmnkvcbz.lc-cn-n1-shared.com","visitor":true}},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

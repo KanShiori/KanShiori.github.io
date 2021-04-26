@@ -49,9 +49,9 @@
     },
     {
         "title": "CRD 实践",
-        "uri": "posts/cloud_computing/k8s_practice/CRD-实践",
+        "uri": "posts/cloud_computing/k8s_practice/crd-实践",
         "content": "CRD   Kubernetes               Kubernetes                     Pod            CRD              1 CRD          CRD               CRD manifest                       CRD                CR                           kubectl apply    CR    CRD      Kubernetes                       kubectl apply                    Kubernetes                      CRNetwork                               CR                     kubectl   Client       Controller             CR                             k8s_practice    k8s                        2             Kubernetes         API                                                    main                                  k8s_practice Controller              Informer     Event    CR Sync     Controller           Informer     APIServer     CR     Cache      CR Event    Event Handler  Event Handler Informer     Event                workQueue       Workers      Event                             main                Informer Controller    Controller            Controller                 CR                          HandleAdd                       CR       Controller         Sync              CR    example crnetwork 2    Controller            Controller                   example crnetwork 2    Controller            Controller                  3             Pod TODO",
-        "objectID": "posts/cloud_computing/k8s_practice/CRD-实践",
+        "objectID": "posts/cloud_computing/k8s_practice/crd-实践",
         "date": "2020-10-30T07:57:36.000Z",
         "description": "使用 CRD 自定义资源，通过 Kubernetes 编排",
         "weight": 4,
@@ -67,9 +67,9 @@
     },
     {
         "title": "DaemonSet 实践",
-        "uri": "posts/cloud_computing/k8s_practice/DaemonSet-实践",
+        "uri": "posts/cloud_computing/k8s_practice/daemonset-实践",
         "content": "DaemonSet       Node      Daemon Pod   Deployment       DaemonSet                DaemonSet    toleration   nodeAffinity              DaemonSet       nodeAffinity              toleration    Node   taint                        node 1 node 2         Affinity             DaemonSet                           kubectl rollout status              Deployment               Event          delete    create",
-        "objectID": "posts/cloud_computing/k8s_practice/DaemonSet-实践",
+        "objectID": "posts/cloud_computing/k8s_practice/daemonset-实践",
         "date": "2020-10-30T07:26:30.000Z",
         "description": "使用 DaemonSet 部署常驻容器",
         "weight": 4,
@@ -85,9 +85,9 @@
     },
     {
         "title": "Deployment 实践",
-        "uri": "posts/cloud_computing/k8s_practice/Deployment-实践",
+        "uri": "posts/cloud_computing/k8s_practice/deployment-实践",
         "content": "1 ReplicaSet Deploment      ReplicaSet       ReplicaSet     ReplicaSet                         1 1    ReplicaSet    manifest             kubectl create                     ReplicaSet            Pod             1 2         3   Pod       Node 3            Node 3       node 3    NotReady                    Pod    Terminating        Pod                       3   Pod       Node 2            Node 3    kubelet                    Pod Pod       Terminating             1 3         kubectl scale                      Pod   Node 3              kubectl scale                Pod                     ReplicaSet            Scheduler                   Pod          Pod                       2 Deployment Deployment         ReplicaSet     Pod  2 1       manfiest             kubectl create    Deployment            Event         ReplicaSet          Deployment     ReplicaSet         2 2      Deployment         ReplicaSet           ReplicaSet   replica           2 3       1       Deployment   ReplicaSet                       Deployment            3          Deployment         image                 Deployment       ReplicaSet        Pod      ReplicaSet       0          Deployment   Event         ReplicaSet               ReplicaSet                 Pod                 3        2                   Deployment              kubectl set image   Deployment                         Event                  Replicaset                                                       Pod       2 4                      Deployment                     kubectl rollout    Deployment         kubectl rollout history      Deployment              record     kubectl                                          revision                       kubectl rollout undo                       to revision                                   history                       4",
-        "objectID": "posts/cloud_computing/k8s_practice/Deployment-实践",
+        "objectID": "posts/cloud_computing/k8s_practice/deployment-实践",
         "date": "2020-10-16T08:08:05.000Z",
         "description": "使用 Deployment 进行部署",
         "weight": 4,
@@ -103,9 +103,9 @@
     },
     {
         "title": "Job CronJob 实践",
-        "uri": "posts/cloud_computing/k8s_practice/Job-CronJob-实践",
+        "uri": "posts/cloud_computing/k8s_practice/job-cronjob-实践",
         "content": "Job                    CronJob   Job               1 Job       Job           Batch           Job                     Pod                            deadline   100    pod         restartPolicy                    deadline                 4             2 CronJob       CronJob             CronJob     Job             CronJob       CronJob       JobTemplate    CronJob       Job                   CronJob       Job               Job",
-        "objectID": "posts/cloud_computing/k8s_practice/Job-CronJob-实践",
+        "objectID": "posts/cloud_computing/k8s_practice/job-cronjob-实践",
         "date": "2020-10-30T07:33:36.000Z",
         "description": "使用 Job 或者 CronJob 部署一次性任务",
         "weight": 4,
@@ -121,9 +121,9 @@
     },
     {
         "title": "PV PVC 与 StorageClass",
-        "uri": "posts/cloud_computing/k8s_practice/PV-PVC-与-StorageClass",
+        "uri": "posts/cloud_computing/k8s_practice/pv-pvc-与-storageclass",
         "content": "1 PV   PVC       NFS   PV    Pod     PV Node 1    nfs         nfs         PV    nfs                     PVC         StorageClass                      pvc     Bound            pvc    pv      pv               PV        PV          Pod Deployment   Pod   Volume    PVC                 Pod        Node 2 Node 3   Node 2 Node 3          nfs mount                                Node 3                                nfs",
-        "objectID": "posts/cloud_computing/k8s_practice/PV-PVC-与-StorageClass",
+        "objectID": "posts/cloud_computing/k8s_practice/pv-pvc-与-storageclass",
         "date": "2020-10-30T08:14:11.000Z",
         "description": "使用 PV 与 PVC 为 Pod 提供存储",
         "weight": 4,
@@ -139,9 +139,9 @@
     },
     {
         "title": "RBAC 实践",
-        "uri": "posts/cloud_computing/k8s_practice/RBAC-实践",
+        "uri": "posts/cloud_computing/k8s_practice/rbac-实践",
         "content": "Kubernetes      RBAC         Pod    APIServer             RBAC              Role           API          Subject                 ServiceAccount  RoleBinding    Role   Subject  1 Role   ServiceAccount          Role   RoleBinding      ServiceAccount    Pod      ServiceAccount                    namespace  mynamespace                   ServiceAccount  example sa               namespace       ServiceAccount default       APIServer          ServiceAccount           Secret                    Role                      rules      Role       mynamespace    pod    get watch list             RoleBinding         Role   ServiceAccount               Pod       ServiceAccount   Pod                             k8s   ServiceAccount     Serects         run secrets kubernetes io serviceaccount        client          ca crt   token",
-        "objectID": "posts/cloud_computing/k8s_practice/RBAC-实践",
+        "objectID": "posts/cloud_computing/k8s_practice/rbac-实践",
         "date": "2020-10-30T08:03:17.000Z",
         "description": "使用 RBAC 进行访问控制与授权",
         "weight": 4,
@@ -157,9 +157,9 @@
     },
     {
         "title": "StatefulSet 实践",
-        "uri": "posts/cloud_computing/k8s_practice/StatefulSet-实践",
+        "uri": "posts/cloud_computing/k8s_practice/statefulset-实践",
         "content": "Deployment                                  Deployment                    Pod                    StatefulSet             Pod                                       Pod     1 HeadlessService StatefulSet     HeadlessService           HeadlessService         headless_service           Headless     Service       clusterIP   None     kubectl create    HeadlessService                  Endpoint      Endpoint     Node 1 Node 2   Pod         Endpoint    Service                          Headless Service            Pod   IP                 DNS           svc cluster local          Headless Service             2 StatfulSet 2 1 StaefulSet              StatefulSet          Headless Service                   StatefulSet                 StatefulSet   Deployment            serviceName           HeadlessService     StatefulSet        Deployment      Pod           StatefulSet          ReplicaSet        Deployment                  Pod        Pod                                              web 0  web 0      Ready      web 1       busybox         nslookup    HeadlessService                            web 0 Pod      StatefulSet            Pod    Pod                  web 0 nginx default svc cluster local                                               IP                Pod   IP 2 2 StatefulSet             StatefulSet    Template PVC                PVC     PodName        nfs   2   PV   2   Pod                       StatefulSet     PVC            Pod          PVC               StatefulSet   2   Pod        PVC            PVC              volume name   pod name     PVC   Pod                         Pod      Pod          Pod Name             Pod    PVC",
-        "objectID": "posts/cloud_computing/k8s_practice/StatefulSet-实践",
+        "objectID": "posts/cloud_computing/k8s_practice/statefulset-实践",
         "date": "2020-10-30T01:32:39.000Z",
         "description": "使用 StatefulSet 进行副本控制",
         "weight": 4,
@@ -281,6 +281,60 @@
         ],
         "categories": [
             "Golang"
+        ]
+    },
+    {
+        "title": "Go 调试方法总结",
+        "uri": "posts/language/golang/Go-调试方法总结",
+        "content": "Golang                                                    1 go pprof Go pprof   Go                          CPU Mem goroutine          Go               go pprof  pprof                          1 1    Go                        pprof         io writer         pprof Profiles          profile        goroutine threadcreate heap allocs block mutex  trace Start     trace Stop                 goroutine      GC    mheap        runtime                      net http pprof            HTTP                                 net http pprof pprof go func init     http HandleFunc   debug pprof    Index  http HandleFunc   debug pprof cmdline   Cmdline  http HandleFunc   debug pprof profile   Profile  http HandleFunc   debug pprof symbol   Symbol  http HandleFunc   debug pprof trace   Trace     debug pprof                     debug pprof cmdline               debug pprof profile        profile       pprof Profiles     debug pprof trace        go runtime          trace Start    1 2         net http pprof    init       HTTP                    net http pprof       HTTP Server                 package main import    net http  _  net http pprof    func main                   HTTP Server            main                  server go func     err    http ListenAndServe  0 0 0 0 12300   nil   err    nil   panic err               1 2 1                    debug pprof                          profile                 allocs                block   cmdline             goroutine     goroutine           heap  heap          mutex   profile         CPU profile                 threadcreate                       cgo       trace             trace                                    profile          go tool profile    go tool trace                        heap                                                          curl               go tool profile  debug profile heap                1 3       go tool pprof      pprof         go tool pprof                                                 top      N          list               traces       goroutine               web                 1 3 1 heap         heap              go tool pprof   web         go tool pprof http   10 9 195 138 12300 debug pprof heap                       heap                                             1 3 2 alloc    heap           heap                heap                             GC                             GC          alloc                 heap                    go tool pprof http   10 9 195 138 12300 debug pprof allocs      1 3 3 goroutine Go                                         goroutine       goroutine                      goroutine           goroutine                        goroutine         go tool profile         go tool pprof http   10 9 195 138 12300 debug pprof goroutine                      goroutine              goroutine                            1 3 4 profile profile            CPU             CPU                                30s         CPU                         go tool pprof http   10 9 195 138 12300 debug pprof profile seconds 30                         1 3 5 trace         trace               go runtime        trace      trace              curl http   10 9 195 138 12300 debug pprof trace  seconds  30   trace out   go tool trace trace out                      Chrome                          View trace                 Goroutine analysis        G                     Network blocking profile             Synchronization blocking   profile            select chan      Syscall blocking profile                      IO       Scheduler latency profile                User defined task   User defined regions   Minimum mutator utilization        GC           CPU           1  View trace     View trace                          W              P     G                            G           Flow events                    G76    Goroutine     P0                 P2                  G                Title G           Start       Wall Duration       Start Stack Trace G           End Stack Trace G               2  Goroutine analysis     Goroutine analysis            G                    2 delve pprof                                    delve  delve     gdb    gdb              goroutine   delve       Go              goroutine",
+        "objectID": "posts/language/golang/Go-调试方法总结",
+        "date": "2021-02-18T09:54:17.000Z",
+        "description": "Golang 常见调试方法归纳总结",
+        "weight": 4,
+        "draft": false,
+        "author": "Shiori",
+        "tags": [
+            "Golang",
+            "Golang 开发"
+        ],
+        "categories": [
+            "Golang"
+        ]
+    },
+    {
+        "title": "Linux 网络收发包过程总结",
+        "uri": "posts/linux/net/Linux-网络收发包过程总结",
+        "content": "Linux                                                    1      1 1         CPU                                   CPU                          IO                        CPU                       interrupt handler                                              CPU         IO          Linux                        1 1 1              hardware interrupt              CPU    CPU                                                              DMA    ringbuffer            CPU   ringbuffer              proc interrupts                 cat  proc interrupts   CPU0 100  15 IR PCI MSI 35651584 edge p2p1 TxRx 0 101  0 IR PCI MSI 35651585 edge p2p1 TxRx 1 102  0 IR PCI MSI 35651586 edge p2p1 TxRx 2 103  0 IR PCI MSI 35651587 edge p2p1 TxRx 3 104  0 IR PCI MSI 35651588 edge p2p1 TxRx 4 105  0 IR PCI MSI 35651589 edge p2p1 TxRx 5 106  0 IR PCI MSI 35651590 edge p2p1 TxRx 6     IRQ            CPU                                                                                        CPU          1 1 2                bottom half                softirq     32                            proc softirqs                              HI   TIMER        NET_TX        NET_RX        BLOCK   IRQ_POLL  TASKLET   tasklet       SCHED        HRTIMER   RCU   RCU   tasklet            32          tasklet                                      work queue                     tasklet                                                                 kworker                       tasklet                 CPU          ksoftirqd                      ksoftirqd n    n   CPU     2     2 1                          TX ring buffer RX ring buffer     DMA                                                          ring buffer                 CPU                   CPU0                        irqbalance service          CPU    2 1 1           ethool  l  L                        CPU                   ethtool  l eth0 Channel parameters eth0  Pre set maximums  RX  0 TX  0 Other  1 Combined  8 Current hardware settings  RX  0 TX  0 Other  1 Combined  7   ethtool  L eth0 combined 8         sys class net  queues                   ls  sys class net eth0 queues  rx 0 rx 1 rx 2 rx 3 rx 4 rx 5 rx 6 rx 7 tx 0 tx 1 tx 2 tx 3 tx 4 tx 5 tx 6 tx 7    proc interrupts               CPU          cat  proc interrupts   grep eth0            CPU    CPU0 62  0 IR PCI MSI 524288 edge eth0 63  0 IR PCI MSI 524289 edge eth0 TxRx 0 64  0 IR PCI MSI 524290 edge eth0 TxRx 1 65  1766 IR PCI MSI 524291 edge eth0 TxRx 2 66  0 IR PCI MSI 524292 edge eth0 TxRx 3 67  0 IR PCI MSI 524293 edge eth0 TxRx 4 68  0 IR PCI MSI 524294 edge eth0 TxRx 5 69  0 IR PCI MSI 524295 edge eth0 TxRx 6 70  0 IR PCI MSI 524296 edge eth0 TxRx 7    ethtool  g  G         ring buffer        ethtool  g eth0 Ring parameters eth0  Pre set maximums  RX  4096 RX Mini  0 RX Jumbo  0 TX  4096 Current hardware settings  RX  256 RX Mini  0 RX Jumbo  0 TX  256 2 1 2               CPU0                            CPU0         proc irq  smpaffinitylist                 CPU     62  70   echo  n  Interrupt  i allowed CPUs    cat  proc irq  i smpaffinitylist  done Interrupt 62 allowed CPUs 4 Interrupt 63 allowed CPUs 8 Interrupt 64 allowed CPUs 13 Interrupt 65 allowed CPUs 21 Interrupt 66 allowed CPUs 6 Interrupt 67 allowed CPUs 31 Interrupt 68 allowed CPUs 5 Interrupt 69 allowed CPUs 2 Interrupt 70 allowed CPUs 31 62 70                CPU         echo       proc irq  smp_affinity         CPU bitmark          CPU     0x1111     CPU 0 3                      irqbalance       CPU                 CPU    irqbalance                                          RPS  2 2                                   packet                  mac                      DMA     packet     ringbuffer  ringbuffer                          CPU        CPU                                        NAPI             ringbuffer                   CPU                    CPU              ringbuffer       packet                    packet        ringbuffer     ringbuffer        CPU                  CPU             2 3                                                               sk_buff    TX ringbuff                            CPU           sk_buff                     net_device                                                    3       3 1 net_device            netdevice                   netdevice                   netdevice      namespace      sysfs                 netdevice    ls  sys class net docker0 enp0s3 enp0s8 lo lxcbr0 vethea62395 net_device                            struct net_device   char name IFNAMSIZ      IO      unsigned long mem_end  unsigned long mem_start  unsigned long base_addr  int irq  unsigned long state  struct listhead devlist  int ifindex  const struct netdeviceops  netdev_ops  const struct ethtoolops  ethtoolops  unsigned int flags  unsigned int mtu  unsigned short type  unsigned short hardheaderlen  unsigned char permaddr MAXADDR_LEN   unsigned char addr_len   if ISENABLED CONFIGVLAN_8021Q  struct vlaninfo rcu  vlaninfo   endif                   Interface address info used ethtypetrans      unsigned char  dev_addr  struct netdevrxqueue  _rx  unsigned int numrxqueues  unsigned int re",
+        "objectID": "posts/linux/net/Linux-网络收发包过程总结",
+        "date": "2021-02-04T08:29:04.000Z",
+        "description": "Linux 网络收发包内核过程总结",
+        "weight": 4,
+        "draft": false,
+        "author": "Shiori",
+        "tags": [
+            "linux",
+            "net"
+        ],
+        "categories": [
+            "linux"
+        ]
+    },
+    {
+        "title": "Linux 存储架构 - VFS 总结",
+        "uri": "posts/linux/storage/Linux-存储架构-VFS总结",
+        "content": "Linux        VFS                                 1 VFS                Virtual File System                                               IO                             fd    IO       VFS                                       Golang interface VFS              interface             VFS                                   2 VFS                     VFS                                                   VFS             4      superblock                         superblock                       inode                                                       file                         dentry              inode                  2 1 inode inode                                                 inode                                   inode                       fs h struct inode   umodet imode  kuidt iuid  kgidt igid  unsigned int i_flags  const struct inodeoperations  iop  struct superblock  isb  struct addressspace  imapping   ifdef CONFIG_SECURITY void  i_security   endif    Stat data  not accessed path walking    unsigned long i_ino     Filesystems may read i_nlink directly  shall use following functions modification     set clear inc drop _nlink inode inc dec link_count    union   const unsigned int i_nlink  unsigned int _inlink     devt irdev  lofft isize  struct timespec64 i_atime  struct timespec64 i_mtime  struct timespec64 i_ctime  spinlockt ilock     iblocks  ibytes  maybe i_size    unsigned short i_bytes  u8 i_blkbits  u8 iwritehint  blkcntt iblocks   ifdef _NEEDISIZEORDERED seqcountt isize_seqcount   endif    Misc    unsigned long i_state  struct rwsemaphore irwsem  unsigned long dirtied_when     jiffies first dirtying    unsigned long dirtiedtimewhen  struct hlistnode ihash  struct listhead iio_list     backing dev IO list     ifdef CONFIGCGROUPWRITEBACK struct bdiwriteback iwb    associated cgroup wb       foreign inode detection  wbcdetachinode      int iwbfrn_winner  u16 iwbfrnavgtime  u16 iwbfrn_history   endif struct listhead ilru     inode LRU list    struct listhead isb_list  struct listhead iwb_list     backing dev writeback list    union   struct hlisthead identry  struct rcuhead ircu     atomic64t iversion  atomic64t isequence     futex    atomict icount  atomict idio_count  atomict iwritecount   if defined CONFIGIMA     defined CONFIGFILE_LOCKING  atomict ireadcount     struct files open RO     endif union   const struct fileoperations ifop    former   iop  defaultfile_ops    void  free_inode  struct inode       struct filelockcontext  i_flctx  struct addressspace idata  struct listhead idevices  union   struct pipeinodeinfo  i_pipe  struct blockdevice  ibdev  struct cdev  i_cdev  char  i_link  unsigned idirseq     _u32 igeneration  void i_private    fs device private pointer      _randomizelayout  i_mode                        iuid igid       UID   GID  i_flags         i_op inode                      i_sb           superblock     imapping inode         addressspace     mmap      i_ino inode      i_nlink inode       i_rdev inode              dev number major minor   i_size inode          iatime imtime i_ctime                     inode                 i_bytes                       i_blocks                      i_hash inode      hash    i_lru inode     LRU list  i_fop                                                               VFS      inode                                                                      iop ifop             IO      VFS                       i_fop                       2 1 1       inode             inode     inode_operations     fs h struct inode_operations   struct dentry    lookup   struct inode  struct dentry    unsigned int   const char    getlink   struct dentry   struct inode   struct delayedcall    int  permission   struct inode   int   struct posixacl    getacl  struct inode   int   int  readlink   struct dentry   char __user   int   int  create   struct inode  struct dentry    umode_t  bool   int  link   struct dentry  struct inode  struct dentry    int  unlink   struct inode  struct dentry     int  symlink   struct inode  struct dentry  const char    int  mkdir   struct inode  struct dentry   umode_t   int  rmdir   struct inode  struct dentry     int  mknod   struct inode  struct dentry   umodet devt   int  rename   struct inode   struct dentry    struct inode   struct dentry   unsigned int   int  setattr   struct dentry   struct iattr     int  getattr   const struct path   struct kstat    u32  unsigned int   ssizet  listxattr   struct dentry   char    sizet   int  fiemap  struct inode   struct fiemapextentinfo    u64 start  u64 len   int  update_time  struct inode   struct timespec64    int   int  atomic_open  struct inode   struct dentry    struct file    unsigned open_flag  umodet createmode   int  tmpfile   struct inode   struct dentry    umode_t   int  setacl  struct inode   struct posixacl    int     _cachelinealigned                                 lookup    dentry         inode  link unlink     dentry    inode        0         i_op                              2 1 1                              file_operations  struct file_operations   struct module  owner  lofft  llseek   struct",
+        "objectID": "posts/linux/storage/Linux-存储架构-VFS总结",
+        "date": "2021-03-13T06:29:25.000Z",
+        "description": "",
+        "weight": 4,
+        "draft": false,
+        "author": "Shiori",
+        "tags": [
+            "linux",
+            "storage"
+        ],
+        "categories": [
+            "linux"
         ]
     }
 ]
