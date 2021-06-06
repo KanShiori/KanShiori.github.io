@@ -3,7 +3,14 @@
         <title>云计算 - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/</link>
         <description>云计算 - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 05 Jun 2021 07:43:09 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 06 Jun 2021 14:03:01 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+    <title>Service 学习</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/service-%E5%AD%A6%E4%B9%A0/</link>
+    <pubDate>Sun, 06 Jun 2021 14:03:01 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/service-%E5%AD%A6%E4%B9%A0/</guid>
+    <description><![CDATA[1 概述 首先我们需要明确 Service 出现的背景：因为 Pod 设计上是无状态的，可以说没有固定的 IP，所以在其他组件访问某一个网络服务时，需要一个 “固定” 的地址]]></description>
+</item><item>
     <title>PV PVC StorageClass 学习</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pv-pvc-storageclass-%E5%AD%A6%E4%B9%A0/</link>
     <pubDate>Sat, 05 Jun 2021 07:43:09 &#43;0000</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/statefulset-%E5%AE%9E%E8%B7%B5/</guid>
     <description><![CDATA[Deployment 对于“无状态”的任务，已经能够做到副本控制，滚动升级功能了。但是 Deployment 无法适用于“有状态”的任务，因为其中 Pod 都是相同的，没有任何的对应关系。 而]]></description>
-</item><item>
-    <title>Deployment 实践</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/deployment-%E5%AE%9E%E8%B7%B5/</link>
-    <pubDate>Fri, 16 Oct 2020 16:08:05 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/deployment-%E5%AE%9E%E8%B7%B5/</guid>
-    <description><![CDATA[1 ReplicaSet Deploment 管理的是 ReplicaSet，所以先运行 ReplicaSet 观察。 ReplicaSet 只包含副本控制功能，没有滚动升级等高级的功能。 1.1 部署 ReplicaSet 创建 manifest 文件。 调用 kubectl create 创建资源。]]></description>
 </item></channel>
 </rss>
