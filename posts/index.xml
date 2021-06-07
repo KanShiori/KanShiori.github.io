@@ -3,7 +3,14 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 06 Jun 2021 14:03:01 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 07 Jun 2021 11:55:46 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>StatefulSet 学习</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/statefulset-%E5%AD%A6%E4%B9%A0/</link>
+    <pubDate>Mon, 07 Jun 2021 11:55:46 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/statefulset-%E5%AD%A6%E4%B9%A0/</guid>
+    <description><![CDATA[1 StatefulSet 概述 Pod 在设计的理念上是无状态的，因为 Pod 可以被认为任意时刻被销毁，或者任意时刻可以被在别的节点创建。 Deployment 与 RelicSets 就是基于这个理念设计的，它们仅仅]]></description>
+</item><item>
     <title>Service 学习</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/service-%E5%AD%A6%E4%B9%A0/</link>
     <pubDate>Sun, 06 Jun 2021 14:03:01 &#43;0000</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于]]></description>
-</item><item>
-    <title>KVM 虚拟机的存储与网络总结</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</link>
-    <pubDate>Sat, 28 Nov 2020 17:29:39 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</guid>
-    <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文主要总结一些遇到的虚拟机使用存储与网络的方式，挖了]]></description>
 </item></channel>
 </rss>

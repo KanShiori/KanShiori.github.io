@@ -35,22 +35,30 @@ spec:
 * `accessModes` ：设备在实际使用时会先 mount 到宿主机上，accessMode 决定了是否允许多节点复用，并其读写权限，包括：
     * ReadWriteOnce：只允许一个节点挂载使用，并提供读写；
     * ReadOnlyMany：允许多个节点挂载使用，提供读权限；
-    * ReadWriteMany：允许多个节点挂载使用，提供读写权限；
-	不同的 PV 类型对其 accessMode 支持程度不同，具体见 文档。
+    * ReadWriteMany：允许多个节点挂载使用，提供读写权限；<br>
+	不同的 PV 类型对其 accessMode 支持程度不同，具体见 [**AccessMode**](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)。
 * **`storageClassName`** ：指定其所属的 StorageClass。<br>
   也可以不指定 StorageClass，那么只有不指定 class 的 PVC 才可以绑定该 PV。
 * `persistentVolumeReclaimPolicy` ：ReclaimPolicy 指定了当其绑定的 PVC 删除时，该如何处理 PV。<br>
   目前的回收策略包括：
     * Retain：包括 PV；
     * Recycle：自动删除 PV 数据；
-    * Delete：同时删除后端磁盘（AWS EBS、GCE PD 等云盘也会被删除）；
+    * Delete：同时删除后端磁盘（AWS EBS、GCE PD 等云盘也会被删除）；<br>
 	目前，NFS 和 HostPath 类型的 PV 仅仅支持 Recycle，云厂商磁盘可以支持 Delete。
 * `mountOptions` ：当 PV 挂载到节点上时，添加的附加选项。<br>
-  针对不同类型的 PV，这个选项是不同的，具体见 文档。
+  针对不同类型的 PV，这个选项是不同的，具体见 [**Mount Points**](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#mount-options)。
 * **`nodeAffinity`** ：PV 可以设定节点亲和性，来限制只有特定的节点可以使用其 PV。<br>
   这在使用 Local PV 时必定要使用。
-#### 1.1.2 PV Phase
-一个 PV 可能处于以下状态：
+#### 1.1.2 PV 生命周期
+PV 生命周期包括 5 个阶段：
+1. **Provisioning** ：即 PV 的创建，可以直接创建 PV（静态方式），也可以使用 StorageClass 动态创建；
+1. **Binding** ：将 PV 分配给 PVC；
+1. **Using** ：Pod 通过 PVC 使用该 Volume，并可以通过准入控制 `StorageObjectInUseProtection` 阻止删除正在使用的 PVC；
+1. **Releasing** ：Pod 释放 Volume 并删除 PVC；
+1. **Reclaiming** ：回收 PV，可以保留 PV 以便下次使用，也可以直接从云存储中删除；
+1. **Deleting** ：删除 PV 并从云存储中删除后段存储；
+
+对应 5 个阶段，一个 PV 可能处于以下状态：
 * **Available**：PV 已经创建，并且没有 PVC 绑定；
 * **Bound**：PVC 绑定了该 PV；
 * **Released**：PVC 已经被删除，而该 PV 还没有被回收；
@@ -92,7 +100,7 @@ spec:
 * `StorageClass`：指定所属的 StorageClass，只有相同 StorageClass 的 PV PVC 才可以绑定；<br>
   如果没有指定 StorageClass，如果系统设置了 Default StorageClass 则使用，否则只能绑定没有设置 StorageClass 的 PV。
 {{< admonition note "不指定 StorageClass">}}
-在没有指定 `storageClassName` 下，行为是有多种情况的，见 [**文档**](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1)。
+在没有指定 `storageClassName` 下，行为是有多种情况的，见 [**Class**](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1)。
 {{< /admonition >}}
 
 #### 1.2.2 PVC 的使用
@@ -123,6 +131,7 @@ PV 的创建方法有两种：
 所以明确，**`StorageClass`** 是**根据 PVC，来创建/回收 PV 的**。
 
 而**创建与回收的 Driver** 就称为 **`Provisioner`**，不同类型的 PV 的创建与回收方式都是不同的，所以有着许多的 Provisioner 实现。
+
 #### 1.3.1 StorageClass 定义
 StorageClass 中大多数属性是其创建出 **PV 的模板**。
 ```yaml

@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/pv-pvc-storageclass-%E5%AD%A6%E4%B9%A0\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3173 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3362 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/pv-pvc-storageclass-%E5%AD%A6%E4%B9%A0\/","datePublished": "2021-06-05T07:43:09+00:00","dateModified": "2021-06-05T07:43:09+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">PV PVC StorageClass 学习</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/k8s-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>k8s 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-05">2021-06-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3173 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-05">2021-06-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3362 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;<span id="/posts/cloud_computing/k8s_learning/pv-pvc-storageclass-%E5%AD%A6%E4%B9%A0/" class="leancloud_visitors" data-flag-title="PV PVC StorageClass 学习">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -134,7 +134,7 @@
         <li><a href="#11-pv">1.1 PV</a>
           <ul>
             <li><a href="#111-pv-的定义">1.1.1 PV 的定义</a></li>
-            <li><a href="#112-pv-phase">1.1.2 PV Phase</a></li>
+            <li><a href="#112-pv-生命周期">1.1.2 PV 生命周期</a></li>
           </ul>
         </li>
         <li><a href="#12-pvc">1.2 PVC</a>
@@ -222,8 +222,8 @@
 <ul>
 <li>ReadWriteOnce：只允许一个节点挂载使用，并提供读写；</li>
 <li>ReadOnlyMany：允许多个节点挂载使用，提供读权限；</li>
-<li>ReadWriteMany：允许多个节点挂载使用，提供读写权限；
-不同的 PV 类型对其 accessMode 支持程度不同，具体见 文档。</li>
+<li>ReadWriteMany：允许多个节点挂载使用，提供读写权限；<br>
+不同的 PV 类型对其 accessMode 支持程度不同，具体见 <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes" target="_blank" rel="noopener noreffer"><strong>AccessMode</strong></a>。</li>
 </ul>
 </li>
 <li><strong><code>storageClassName</code></strong> ：指定其所属的 StorageClass。<br>
@@ -233,17 +233,26 @@
 <ul>
 <li>Retain：包括 PV；</li>
 <li>Recycle：自动删除 PV 数据；</li>
-<li>Delete：同时删除后端磁盘（AWS EBS、GCE PD 等云盘也会被删除）；
+<li>Delete：同时删除后端磁盘（AWS EBS、GCE PD 等云盘也会被删除）；<br>
 目前，NFS 和 HostPath 类型的 PV 仅仅支持 Recycle，云厂商磁盘可以支持 Delete。</li>
 </ul>
 </li>
 <li><code>mountOptions</code> ：当 PV 挂载到节点上时，添加的附加选项。<br>
-针对不同类型的 PV，这个选项是不同的，具体见 文档。</li>
+针对不同类型的 PV，这个选项是不同的，具体见 <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#mount-options" target="_blank" rel="noopener noreffer"><strong>Mount Points</strong></a>。</li>
 <li><strong><code>nodeAffinity</code></strong> ：PV 可以设定节点亲和性，来限制只有特定的节点可以使用其 PV。<br>
 这在使用 Local PV 时必定要使用。</li>
 </ul>
-<h4 id="112-pv-phase">1.1.2 PV Phase</h4>
-<p>一个 PV 可能处于以下状态：</p>
+<h4 id="112-pv-生命周期">1.1.2 PV 生命周期</h4>
+<p>PV 生命周期包括 5 个阶段：</p>
+<ol>
+<li><strong>Provisioning</strong> ：即 PV 的创建，可以直接创建 PV（静态方式），也可以使用 StorageClass 动态创建；</li>
+<li><strong>Binding</strong> ：将 PV 分配给 PVC；</li>
+<li><strong>Using</strong> ：Pod 通过 PVC 使用该 Volume，并可以通过准入控制 <code>StorageObjectInUseProtection</code> 阻止删除正在使用的 PVC；</li>
+<li><strong>Releasing</strong> ：Pod 释放 Volume 并删除 PVC；</li>
+<li><strong>Reclaiming</strong> ：回收 PV，可以保留 PV 以便下次使用，也可以直接从云存储中删除；</li>
+<li><strong>Deleting</strong> ：删除 PV 并从云存储中删除后段存储；</li>
+</ol>
+<p>对应 5 个阶段，一个 PV 可能处于以下状态：</p>
 <ul>
 <li><strong>Available</strong>：PV 已经创建，并且没有 PVC 绑定；</li>
 <li><strong>Bound</strong>：PVC 绑定了该 PV；</li>
@@ -316,7 +325,7 @@
             <i class="icon fas fa-pencil-alt fa-fw"></i>不指定 StorageClass<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">在没有指定 <code>storageClassName</code> 下，行为是有多种情况的，见 <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1" target="_blank" rel="noopener noreffer"><strong>文档</strong></a>。</div>
+            <div class="admonition-content">在没有指定 <code>storageClassName</code> 下，行为是有多种情况的，见 <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1" target="_blank" rel="noopener noreffer"><strong>Class</strong></a>。</div>
         </div>
     </div></li>
 </ul>
@@ -737,7 +746,7 @@
                 Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
             </noscript></div></article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.82.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
                 </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
