@@ -135,42 +135,11 @@
             </div><div class="content" id="content"><h2 id="1-pv-与-pvc">1 PV 与 PVC</h2>
 <p>目的：使用 NFS 做 PV，创建 Pod 使用该 PV</p>
 <ol>
-<li>Node-1 构建 nfs 服务，位于 &ldquo;/nfs&rdquo; 目录。</li>
-<li>创建 PV，使用 nfs 类型。
-<br>
-
-
-
-
-
-
-
-    <img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img1.png"/>
-
-
-
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img2.png"/><br>
-
-
+<li>
+<p>Node-1 构建 nfs 服务，位于 &ldquo;/nfs&rdquo; 目录。</p>
 </li>
-<li>声明、创建 PVC，使用上述指定的 StorageClass，形成指定的绑定关系。
-<br>
-
-
-
-
-
-
-
-    <img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img3.png"/>
+<li>
+<p>创建 PV，使用 nfs 类型。
 
 
 
@@ -179,14 +148,7 @@
 
 
 
-
-
-
-    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img4.png"/><br>
-
-
-
-pvc 状态为 Bound，表明已经成功绑定到了 pvc。查询 pv，可以看到 pv 也是被绑定了。(<strong>注意：一个 PV 只能绑定一个 PV</strong>)
+    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img1.png"/>
 
 
 
@@ -195,20 +157,16 @@ pvc 状态为 Bound，表明已经成功绑定到了 pvc。查询 pv，可以看
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img5.png"/><br>
 
 
+
+    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img2.png"/>
+
+
+</p>
 </li>
-<li>创建 Pod Deployment，在 Pod 的 Volume 使用 PVC。
-<br>
-
-
-
-
-
-
-
-    <img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img6.png"/>
+<li>
+<p>声明、创建 PVC，使用上述指定的 StorageClass，形成指定的绑定关系。
 
 
 
@@ -217,14 +175,7 @@ pvc 状态为 Bound，表明已经成功绑定到了 pvc。查询 pv，可以看
 
 
 
-
-
-
-    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img7.png"/><br>
-
-
-
-其中两个 Pod 分别调度到了 Node-2 Node-3，在 Node-2 Node-3 中可以看到对应的 nfs mount：
+    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img3.png"/>
 
 
 
@@ -233,11 +184,14 @@ pvc 状态为 Bound，表明已经成功绑定到了 pvc。查询 pv，可以看
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img8.png"/><br>
 
 
 
-对应容器配置也可以看到指定的挂载：
+    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img4.png"/>
+
+
+</p>
+<p>pvc 状态为 Bound，表明已经成功绑定到了 pvc。查询 pv，可以看到 pv 也是被绑定了。(<strong>注意：一个 PV 只能绑定一个 PV</strong>)
 
 
 
@@ -246,11 +200,13 @@ pvc 状态为 Bound，表明已经成功绑定到了 pvc。查询 pv，可以看
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img9.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img5.png"/>
 
 
+</p>
 </li>
-<li>在 Node-3 节点的容器环境内写入挂载路径文件，可以看到同步到了主节点的 /nfs 目录上，因此，存储配置成功。
+<li>
+<p>创建 Pod Deployment，在 Pod 的 Volume 使用 PVC。
 
 
 
@@ -259,9 +215,63 @@ pvc 状态为 Bound，表明已经成功绑定到了 pvc。查询 pv，可以看
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img10.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img6.png"/>
 
 
+
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img7.png"/>
+
+
+</p>
+<p>其中两个 Pod 分别调度到了 Node-2 Node-3，在 Node-2 Node-3 中可以看到对应的 nfs mount：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img8.png"/>
+
+
+</p>
+<p>对应容器配置也可以看到指定的挂载：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img9.png"/>
+
+
+</p>
+</li>
+<li>
+<p>在 Node-3 节点的容器环境内写入挂载路径文件，可以看到同步到了主节点的 /nfs 目录上，因此，存储配置成功。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/img10.png"/>
+
+
+</p>
 </li>
 </ol>
 </div><div class="post-footer" id="post-footer">

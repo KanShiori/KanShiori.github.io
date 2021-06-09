@@ -357,6 +357,7 @@ libvirt 支持的网络模式有很多，下面仅仅提到我使用过的。
 #### 4.1.1 NAT Mode
 NAT 网络是最简单的网络，不需要任何的依赖。通过虚拟的 bridge 网卡创建一个属于虚拟机的内网，然后在宿主机上通过 iptables 实现内网地址的 NAT。（没错，这和 docker bridge network 的原理一样）
 {{< find_img "img5.png" >}}
+
 libvirt 会存在一个名为 **default** 的 network，其就是一个 NAT 网络。通过 `virsh net-list` 查看：
 ```bash
 $ virsh net-list

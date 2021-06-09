@@ -12,21 +12,23 @@
 最基本的安装方式，通过 ISO 文件进行安装。
 1. 下载 ISO 镜像文件，镜像文件在各个镜像站中就可以找到。（因为不使用图形界面，所以下载的是非图形化的 ISO）
 2. 通过 `virt-install` 命令安装镜像（因为使用的是非图形化的安装，所以参数有一些不一样）
-```bash
-virt-install --name guest1_fromiso --memory 2048 --vcpus 2 \
-    --disk size=8 --location CentOS-7-x86_64-DVD-2003.iso \
-    --os-type Linux --os-variant=centos7.0  --virt-type kvm \
-    --boot menu=on  --graphics none --console pty --extra-args 'console=ttyS0'
-```
-其中要注意几个参数：
-* 因为我们是安装非图形化，所以需要 `--location` 参数指定 iso，并指定 `--boot menu=on` 打开安装菜单，最后还需要指定安装信息的输出 `--console pty --extra-args 'console=ttyS0'` 这样安装菜单才能正常展示出来
-* `--graphics none` 指定非图形化；
-* `--network bridge=virbr0`，指定网络模式，这里指定 libvirt 默认创建的 bridge 网卡，可以认为这是一个 libvirt 维护内网，安装时选择 dhcp 就可以获得一个可用的内网地址；
+   ```bash
+   virt-install --name guest1_fromiso --memory 2048 --vcpus 2 \
+       --disk size=8 --location CentOS-7-x86_64-DVD-2003.iso \
+       --os-type Linux --os-variant=centos7.0  --virt-type kvm \
+       --boot menu=on  --graphics none --console pty --extra-args 'console=ttyS0'
+   ```
+   
+   其中要注意几个参数：
+   * 因为我们是安装非图形化，所以需要 `--location` 参数指定 iso，并指定 `--boot menu=on` 打开安装菜单，最后还需要指定安装信息的输出 `--console pty --extra-args 'console=ttyS0'` 这样安装菜单才能正常展示出来
+   * `--graphics none` 指定非图形化；
+   * `--network bridge=virbr0`，指定网络模式，这里指定 libvirt 默认创建的 bridge 网卡，可以认为这是一个 libvirt 维护内网，安装时选择 dhcp 就可以获得一个可用的内网地址；
+   
+   具体 libvirt 的网络模型，后面在单独研究下。
+   * `-- disk size=8`，disk 参数用于指定系统盘，这里指定自动创建一个 8G 的 qcow2 文件，作为系统盘（默认镜像文件保存在 /var/lib/libvirt/images/）目录下；
 
-  具体 libvirt 的网络模型，后面在单独研究下。
-* `-- disk size=8`，disk 参数用于指定系统盘，这里指定自动创建一个 8G 的 qcow2 文件，作为系统盘（默认镜像文件保存在 /var/lib/libvirt/images/）目录下；
-这时就会进入虚拟机的安装步骤，具体安装步骤就不赘述了。
-{{< find_img "img1.png" >}}
+   这时就会进入虚拟机的安装步骤，具体安装步骤就不赘述了。
+   {{< find_img "img1.png" >}}
 3. 安装成功后，可以看到 domain 就被创建了，这就可以得到它的配置文件与镜像文件了。
    ```bash
    $ virsh list
@@ -83,6 +85,7 @@ cloud init 设置包括五个阶段：
    
    通过 local 阶段，网络已经配置好了，并且已经得到了 metadata。而 `/etc/cloud/cloud.cfg` 配置定义了剩下三个阶段对应的任务，也就是 module。
    {{< find_img "img2.png" >}}
+   
    cloud init 通过一些缓存信息来判断机器是否经过初始化，通过 `cloud-init clean` 也可以手动清理缓存信息。
 
    `/var/log/cloud-init.log` 记录了 cloud-init 运行的完整过程。

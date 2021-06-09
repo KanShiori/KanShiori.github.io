@@ -156,6 +156,7 @@ Minimum mutator utilization | 展示出了 GC 外，应用能够获得的 CPU �
 ##### (1) View trace
 选择 "View trace"，会出现一个以时间为横轴的图片。
 {{< find_img "img7.png" >}}
+
 按住 W 放大后可以看到，其中每个 P 执行的 G 的时间段与事件（事件执行是个竖线）都会展示出来。各个 G 直接存在事件，点击 Flow events 后还会展示出事件流。
 {{< find_img "img8.png" >}}
 * 上面 G76 这个 Goroutine，经过了 P0 执行 -> 系统调用阻塞 -> P2 执行

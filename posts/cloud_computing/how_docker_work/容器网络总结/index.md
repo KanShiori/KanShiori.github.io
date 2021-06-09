@@ -340,6 +340,7 @@ Chain DOCKER (2 references)
 
 下图展示了整个 bridge 网络的模型（图片来自网络）：
 {{< find_img "img1.png" >}}
+
 其中比较关键的点：
 1. veth pair 设备将容器 net namespace 连接到 bridge 网卡（可以看做将 veth pair 作为网线插到了 bridge 这个 '路由器' 上）。
 2. iptables 实现了 bridge 网卡与物理网络的 '连接'。

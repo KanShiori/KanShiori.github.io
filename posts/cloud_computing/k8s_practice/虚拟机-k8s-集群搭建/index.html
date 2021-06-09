@@ -154,8 +154,9 @@
 <p>目标：创建 3 个虚拟机，用作一个 Master Node，两个 Work Node；当然，三个节点处于同一个网段。
 具体步骤如下:</p>
 <ol>
-<li>构建节点 <br>
-构建三个虚拟机，基于 centos 7、内存 2 GB，并通过虚拟机复制功能（其实就是 copy 系统盘），完全复制出 Node 1，Node 2，Node 3。
+<li>
+<p>构建节点</p>
+<p>构建三个虚拟机，基于 centos 7、内存 2 GB，并通过虚拟机复制功能（其实就是 copy 系统盘），完全复制出 Node 1，Node 2，Node 3。
 
 
 
@@ -164,12 +165,14 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image1.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image1.png"/>
 
 
+</p>
 </li>
-<li>搭建网络 <br>
-三个节点需要互相访问，所以将其位于 VirtualBox 创建的 Nat网络下，给予每个 Node  静态的 IP（10.0.2.10 - 10.0.2.12），为了方便访问，并设置 ssh 的 DNAT。
+<li>
+<p>搭建网络</p>
+<p>三个节点需要互相访问，所以将其位于 VirtualBox 创建的 Nat网络下，给予每个 Node  静态的 IP（10.0.2.10 - 10.0.2.12），为了方便访问，并设置 ssh 的 DNAT。
 
 
 
@@ -178,24 +181,11 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image2.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image2.png"/>
 
 
-
-设置每个虚拟机网卡加入其创建的 &ldquo;NodeNatNetwork&rdquo;。例如：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image3.png"/><br>
-
-
-
-启动每个虚拟机，设置其 hostname，与网卡静态 IP。例如：
+</p>
+<p>设置每个虚拟机网卡加入其创建的 &ldquo;NodeNatNetwork&rdquo;。例如：
 
 
 
@@ -204,9 +194,23 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image5.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image3.png"/>
 
 
+</p>
+<p>启动每个虚拟机，设置其 hostname，与网卡静态 IP。例如：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image5.png"/>
+
+
+</p>
 </li>
 </ol>
 <p>至此，三个虚拟机位于同一个网段，并且能够相互访问；对外，则通过 VirtualBox 的 Nat 网络能够访问。</p>
@@ -224,24 +228,11 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image7.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image7.png"/>
 
 
-
-并且已经以 static pod 的形式启动了：apiserver、controller-manager、etcd、scheduler。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image8.png"/><br>
-
-
-
-还有最重要的，kubeadm 为集群生成一个【bootstrap token】，需要加入集群的节点都需要通过这个 token 加入。
+</p>
+<p>并且已经以 static pod 的形式启动了：apiserver、controller-manager、etcd、scheduler。
 
 
 
@@ -250,7 +241,20 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image9.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image8.png"/>
+
+
+</p>
+<p>还有最重要的，kubeadm 为集群生成一个【bootstrap token】，需要加入集群的节点都需要通过这个 token 加入。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image9.png"/>
 
 
 </p>
@@ -265,7 +269,7 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image11.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image11.png"/>
 
 
 </li>
@@ -278,7 +282,7 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image12.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image12.png"/>
 
 
 </li>
@@ -304,7 +308,7 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image14.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image14.png"/>
 
 
 </p>
@@ -323,20 +327,20 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image17.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image17.png"/>
 
 
-
-<code>kubectl describe node node-1</code> 可以看到，原因是因为没有设置正确的 Network Plugin：
-
-
-
-
+</p>
+<p><code>kubectl describe node node-1</code> 可以看到，原因是因为没有设置正确的 Network Plugin：
 
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image18.png"/><br>
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image18.png"/>
 
 
 </p>
@@ -360,24 +364,11 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image19.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image19.png"/>
 
 
-
-应用成功后，可以看到对应的 DaemonSet 就运行起来，并开始给三个 Node 部署 Pod:
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image20.png"/><br>
-
-
-
-在节点上，可以看到 weave-net 对应的 pod ，包括两个容器：
+</p>
+<p>应用成功后，可以看到对应的 DaemonSet 就运行起来，并开始给三个 Node 部署 Pod:
 
 
 
@@ -386,7 +377,20 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image21.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image20.png"/>
+
+
+</p>
+<p>在节点上，可以看到 weave-net 对应的 pod ，包括两个容器：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image21.png"/>
 
 
 </p>
@@ -414,20 +418,20 @@ $ kubectl apply -f https://raw.githubusercontent.com/rook/rook/master/cluster/ex
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image22.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image22.png"/>
 
 
-
-可以看到，Pod 也部署成功了：
-
-
-
-
+</p>
+<p>可以看到，Pod 也部署成功了：
 
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image23.png"/><br>
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/%E8%99%9A%E6%8B%9F%E6%9C%BA-k8s-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/image23.png"/>
 
 
 </p>

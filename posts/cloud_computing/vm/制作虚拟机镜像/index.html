@@ -156,9 +156,11 @@
 <h3 id="11-手动安装">1.1 手动安装</h3>
 <p>最基本的安装方式，通过 ISO 文件进行安装。</p>
 <ol>
-<li>下载 ISO 镜像文件，镜像文件在各个镜像站中就可以找到。（因为不使用图形界面，所以下载的是非图形化的 ISO）</li>
-<li>通过 <code>virt-install</code> 命令安装镜像（因为使用的是非图形化的安装，所以参数有一些不一样）</li>
-</ol>
+<li>
+<p>下载 ISO 镜像文件，镜像文件在各个镜像站中就可以找到。（因为不使用图形界面，所以下载的是非图形化的 ISO）</p>
+</li>
+<li>
+<p>通过 <code>virt-install</code> 命令安装镜像（因为使用的是非图形化的安装，所以参数有一些不一样）</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -175,19 +177,15 @@
 </div>
 </div><p>其中要注意几个参数：</p>
 <ul>
-<li>
-<p>因为我们是安装非图形化，所以需要 <code>--location</code> 参数指定 iso，并指定 <code>--boot menu=on</code> 打开安装菜单，最后还需要指定安装信息的输出 <code>--console pty --extra-args 'console=ttyS0'</code> 这样安装菜单才能正常展示出来</p>
-</li>
-<li>
-<p><code>--graphics none</code> 指定非图形化；</p>
-</li>
-<li>
-<p><code>--network bridge=virbr0</code>，指定网络模式，这里指定 libvirt 默认创建的 bridge 网卡，可以认为这是一个 libvirt 维护内网，安装时选择 dhcp 就可以获得一个可用的内网地址；</p>
+<li>因为我们是安装非图形化，所以需要 <code>--location</code> 参数指定 iso，并指定 <code>--boot menu=on</code> 打开安装菜单，最后还需要指定安装信息的输出 <code>--console pty --extra-args 'console=ttyS0'</code> 这样安装菜单才能正常展示出来</li>
+<li><code>--graphics none</code> 指定非图形化；</li>
+<li><code>--network bridge=virbr0</code>，指定网络模式，这里指定 libvirt 默认创建的 bridge 网卡，可以认为这是一个 libvirt 维护内网，安装时选择 dhcp 就可以获得一个可用的内网地址；</li>
+</ul>
 <p>具体 libvirt 的网络模型，后面在单独研究下。</p>
-</li>
-<li>
-<p><code>-- disk size=8</code>，disk 参数用于指定系统盘，这里指定自动创建一个 8G 的 qcow2 文件，作为系统盘（默认镜像文件保存在 /var/lib/libvirt/images/）目录下；
-这时就会进入虚拟机的安装步骤，具体安装步骤就不赘述了。
+<ul>
+<li><code>-- disk size=8</code>，disk 参数用于指定系统盘，这里指定自动创建一个 8G 的 qcow2 文件，作为系统盘（默认镜像文件保存在 /var/lib/libvirt/images/）目录下；</li>
+</ul>
+<p>这时就会进入虚拟机的安装步骤，具体安装步骤就不赘述了。
 
 
 
@@ -196,14 +194,13 @@
 
 
 
-    <br><img src="/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img1.png"/><br>
+    <br><img src="/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img1.png"/>
 
 
 </p>
 </li>
-</ul>
-<ol start="3">
-<li>安装成功后，可以看到 domain 就被创建了，这就可以得到它的配置文件与镜像文件了。
+<li>
+<p>安装成功后，可以看到 domain 就被创建了，这就可以得到它的配置文件与镜像文件了。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -271,11 +268,11 @@ Id    Name                           State
 
 
 
-    <br><img src="/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img2.png"/><br>
+    <br><img src="/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img2.png"/>
 
 
-
-cloud init 通过一些缓存信息来判断机器是否经过初始化，通过 <code>cloud-init clean</code> 也可以手动清理缓存信息。</p>
+</p>
+<p>cloud init 通过一些缓存信息来判断机器是否经过初始化，通过 <code>cloud-init clean</code> 也可以手动清理缓存信息。</p>
 <p><code>/var/log/cloud-init.log</code> 记录了 cloud-init 运行的完整过程。</p>
 </li>
 </ol>
@@ -382,7 +379,7 @@ $ genisoimage  -output seed.iso -volid cidata -joliet -rock user-data meta-data
 
 
 
-    <br><img src="/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img3.png"/><br>
+    <br><img src="/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img3.png"/>
 
 
 </p>
@@ -395,7 +392,7 @@ $ genisoimage  -output seed.iso -volid cidata -joliet -rock user-data meta-data
 
 
 
-    <br><img src="/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img4.png"/><br>
+    <br><img src="/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img4.png"/>
 
 
 </p>

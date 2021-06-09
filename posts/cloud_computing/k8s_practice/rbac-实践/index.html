@@ -142,7 +142,8 @@
 <h2 id="1-role-与-serviceaccount-实践">1 Role 与 ServiceAccount 实践</h2>
 <p>目的：通过 Role 与 RoleBinding 限制一类 ServiceAccount，并在 Pod 中使用该 ServiceAccount 观察权限控制。</p>
 <ol>
-<li>创建需要使用的自定义 namespace [mynamespace]
+<li>
+<p>创建需要使用的自定义 namespace [mynamespace]
 
 
 
@@ -151,11 +152,13 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img1.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img1.png"/>
 
 
+</p>
 </li>
-<li>创建需要限制访问权限的 ServiceAccount [example-sa]
+<li>
+<p>创建需要限制访问权限的 ServiceAccount [example-sa]
 
 
 
@@ -164,25 +167,27 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img2.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img2.png"/>
 
 
-
-可以看到，每个 namespace 有个默认的 ServiceAccount default，提供完整的 APIServer 访问权限。<br>
-每个 ServiceAccount 在容器维度看到就是 Secret 对象，包含证书内容。
-
-
-
-
+</p>
+<p>可以看到，每个 namespace 有个默认的 ServiceAccount default，提供完整的 APIServer 访问权限。</p>
+<p>每个 ServiceAccount 在容器维度看到就是 Secret 对象，包含证书内容。
 
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img3.png"/><br>
 
 
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img3.png"/>
+
+
+</p>
 </li>
-<li>创建 Role，定义允许的权限规则。
+<li>
+<p>创建 Role，定义允许的权限规则。
 
 
 
@@ -191,33 +196,26 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img4.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img4.png"/>
 
 
-
-可以看到，rules 指定了该 Role 为：允许对 mynamespace 下的 pod 进行 get、watch、list 操作。
-
-
-
-
+</p>
+<p>可以看到，rules 指定了该 Role 为：允许对 mynamespace 下的 pod 进行 get、watch、list 操作。
 
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img5.png"/><br>
 
 
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img5.png"/>
+
+
+</p>
 </li>
-<li>创建 RoleBinding，关联刚刚创建的 Role 与 ServiceAccount。
-<br>
-
-
-
-
-
-
-
-    <img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img6.png"/>
+<li>
+<p>创建 RoleBinding，关联刚刚创建的 Role 与 ServiceAccount。
 
 
 
@@ -226,14 +224,25 @@
 
 
 
+    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img6.png"/>
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img7.png"/><br>
 
 
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img7.png"/>
+
+
+</p>
 </li>
-<li>创建 Pod，指定使用的 ServiceAccount，在 Pod 内观察权限是否被限制了
+<li>
+<p>创建 Pod，指定使用的 ServiceAccount，在 Pod 内观察权限是否被限制了
 
 
 
@@ -242,22 +251,23 @@
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img8.png"/><br>
+    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img8.png"/>
 
 
-
-进入容器中，可以看到，k8s 将 ServiceAccount 对应的 Serects 对象挂载到了 <code>/run/secrets/kubernetes.io/serviceaccount</code> 目录下，包含 client 需要使用的【证书 ca.crt】、【token】:
-
-
-
-
+</p>
+<p>进入容器中，可以看到，k8s 将 ServiceAccount 对应的 Serects 对象挂载到了 <code>/run/secrets/kubernetes.io/serviceaccount</code> 目录下，包含 client 需要使用的【证书 ca.crt】、【token】:
 
 
 
 
-    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img9.png"/><br>
 
 
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/img9.png"/>
+
+
+</p>
 </li>
 </ol>
 </div><div class="post-footer" id="post-footer">
