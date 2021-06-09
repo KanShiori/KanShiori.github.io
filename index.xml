@@ -3,9 +3,16 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 09 Jun 2021 07:32:36 &#43;0000</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 09 Jun 2021 12:05:39 &#43;0000</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>K8s 学习 - RBAC 授权机制</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/rbac/</link>
+    <pubDate>Wed, 09 Jun 2021 12:05:39 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/rbac/</guid>
+    <description><![CDATA[1 概念 在 API 访问控制 中提到，Kubernetes 支持的授权机制有多种，其中 RBAC 是最常用的授权方式。RBAC 基于角色访问控制，全称 Role-Base Access Contro]]></description>
+</item><item>
     <title>K8s 学习 - API 概念</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-%E6%A6%82%E5%BF%B5/</link>
     <pubDate>Wed, 09 Jun 2021 07:32:36 &#43;0000</pubDate>
@@ -68,12 +75,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 调试方法的一个总结，基本内容来源于网络的学习]]></description>
-</item><item>
-    <title>Linux 网络收发包过程总结</title>
-    <link>https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/</link>
-    <pubDate>Thu, 04 Feb 2021 16:29:04 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/</guid>
-    <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Linux 网络收发包一个总结，基本内容来源于网络的学习]]></description>
 </item></channel>
 </rss>
