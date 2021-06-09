@@ -2,9 +2,9 @@
 
 
 ## 1 概述
-无论是基本的副本控制器，还是自定义资源，其控制的底层 Pod 的调度都是都通过 scheduer 完成的。
+无论是基本的副本控制器，还是自定义资源，其控制的底层 Pod 的调度都是都通过 Scheduler 完成的。
 
-## 2 调度
+## 2 Schedule
 
 ### 2.1 nodeSelector 
 Pod 的 `spec.nodeSelector` 可以用于控制 Pod 能被调度到哪些节点上。其内容是一组 kv 键值对，**只有节点 label 包含所有设定的 kv，才可以被调度 Pod**。
@@ -223,7 +223,7 @@ spec:
     tolerationSeconds: 3600  # 匹配到 taint 后，3600 内不会被驱逐
 ```
 
-## 3 驱逐
+## 3 Eviction
 
 ### 3.1 节点压力驱逐
 kubelet 会监控 CPU、Mem、磁盘空间、文件系统 inode 数量等资源，一旦某个资源消耗达到一个阈值，**kubelet 会主动驱逐节点上的一个或多个 Pod，以回收资源**。

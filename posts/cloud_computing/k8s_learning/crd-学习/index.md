@@ -5,15 +5,15 @@
 Kubernetes 不仅仅是一个编排框架，更是提供了极大的扩展性，可以看做一个资源框架。你可以基于 k8s 提供的种种功能，来满足你应用的需要。
 
 其中 CRD 就是允许你来自定义 Resource，可以不修改 Kubernetes 代码来实现类似于 NetworkPolicy 这样的资源。
-{{< admonition tip  >}}
-可以理解 Kubernetes 提供了基础的框架，Pod Service Volume 等都是最基础的组件，而我们可以在这些组件之上进行再次抽象与组合，将其赋予一个特定的概念 CustomResource
+{{< admonition note Note >}}
+可以理解 Kubernetes 提供了基础的框架，Pod Service Volume 等都是最基础的组件，而我们可以在这些组件之上进行**再次抽象与组合**，将其赋予一个特定的概念 CustomResource
 {{< /admonition >}}
 
 以贵司 TiDB Operator 来举个例子，Operator 用于管理 TiDB 的集群，其核心组件包括 PD、TiDB、TiKV 程序。这些核心组件在最底层都是以 Pod 方式运行的，并且是多副本形式。而我们将所有的 Pod + Service 等组合在一起，构成了 TiDBCluster 这个 CustomResource。
 
 所以，当你想部署 TiDB 集群时，只需要修改 TiDBCluster 这个资源的配置，然后提交到 Kubernetes 中。TiDB Operator（CRD Controller）就会根据 TiDBCluster 来操作，使得集群按照期望状态部署。
-{{< admonition tip Note>}}
-可以联想到，对于底层架构应该尽可能的进行拆分与解耦，这样使得上层可以有很高的扩展性。
+{{< admonition note "为什么能够做到？">}}
+Kubernetes 底层架构被尽可能的进行拆分与解耦，这样使得上层可以有很高的扩展性。
 {{< /admonition >}}
 
 对于使用自定义资源，最基本要涉及到：
@@ -230,7 +230,8 @@ Informer 是 Kubernetes 提供的代码模块，针对于特定的 API 对象，
 
 针对于 etcd 的 List 与 Watch 机制，Informer 的同步机制也包含两种：
 * 使用 Watch 的事件增量同步：当 APIServer 有对象的创建、删除或者更新，Informer.Reflector 模块会收到对应事件，解析后放入 Delta FIFO Queue；
-* 使用 List 的定期周期全量同步：经过一定周期，Informer 会通过 List 来进行本地对象的强制更新。<br>
+* 使用 List 的定期周期全量同步：经过一定周期，Informer 会通过 List 来进行本地对象的强制更新。
+
   该更新操作会强制触发“更新事件”，从而调用 UpdateFunc 回调
 {{< admonition note "主动判断 ResourceVersion">}}
 所以 UpdateFunc 要通过对象的 ResourceVersion 来判断，是否对象有着真正的更新。

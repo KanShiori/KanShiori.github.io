@@ -70,43 +70,57 @@ TLS 1.3 | 2019 | RFC 8446
 看一下具体的握手过程：
 {{< find_img "img1.png" >}}
 
-1. **`ClientHello`**：客户端**发起建立 TLS 连接请求**（TCP 连接已经建立）<br>
-	client 发送的消息中，会表明其自身支持的 TLS 以及密码套件，让 server 可以选择合适的算法。<br>
-	即包括几个重要信息：
-     * 支持的 TLS 最高版本；
-     * 支持的密码套件，按照优先级会进行排序；
-     * 支持的压缩算法；
-     * （可选）session id，通过 session 重用可以跳过一些握手过程；
-     * 随机串，后序生成密码使用，使得每次握手得到的密码都是不一样的；
+1. **`ClientHello`**：客户端**发起建立 TLS 连接请求**（TCP 连接已经建立）
 
-2. **`ServerHello`**：服务端**选出合适的密码套件** <br>
-    server 根据 client 的 hello 消息，在自己的证书中查找合适的证书（证书里包含了非对称加密算法和摘要算法），并挑选出合适的对称加密算法，也就得到了密码套件。同时，也会返回一个随机串。<br>
+   client 发送的消息中，会表明其自身支持的 TLS 以及密码套件，让 server 可以选择合适的算法。
+
+   即包括几个重要信息：
+   * 支持的 TLS 最高版本；
+   * 支持的密码套件，按照优先级会进行排序；
+   * 支持的压缩算法；
+   * （可选）session id，通过 session 重用可以跳过一些握手过程；
+   * 随机串，后序生成密码使用，使得每次握手得到的密码都是不一样的； 
+  
+2. **`ServerHello`**：服务端**选出合适的密码套件**
+
+    server 根据 client 的 hello 消息，在自己的证书中查找合适的证书（证书里包含了非对称加密算法和摘要算法），并挑选出合适的对称加密算法，也就得到了密码套件。同时，也会返回一个随机串。
+
 	如果 TLS 版本，或者密码套件无法匹配，那么直接会连接失败。
 
 3. **`Certificate`**：服务端**发送自己的证书，让 client 检查**
 
-4. **`ServerKeyExchange`**（可选）：发送非对接加密 premaster 生成所需的参数（如果算法需要的话）<br>
+4. **`ServerKeyExchange`**（可选）：发送非对接加密 premaster 生成所需的参数（如果算法需要的话）
+
 	对于一些非对称加密算法（DHE_RSA），需要 server 传递一些特殊的参数，用以生成【准密码（premaster）】，因此需要传递一些特殊参数。
 
-5. **`CertificateRequest`**（可选）：如果服务端开启双向认证，那么就发送请求，**要求 client 提供证书**<br>
-	在内部服务的 HTTPS 中，有时候 server 需要去验证 client 是否是内部的，也就是需要进行双向认证，这就需要 server 去检查 client 的证书。<br>
+5. **`CertificateRequest`**（可选）：如果服务端开启双向认证，那么就发送请求，**要求 client 提供证书**
+
+	在内部服务的 HTTPS 中，有时候 server 需要去验证 client 是否是内部的，也就是需要进行双向认证，这就需要 server 去检查 client 的证书。
+	
 	当然，大部分 Web 服务不需要，而 client 认证是通过账号密码来决定的。
 
 6. **`ServerHelloDone`**：服务端表明结束
 
-7. **`Certificate`**（可选）：**client 发送自己的证书**<br>
+7. **`Certificate`**（可选）：**client 发送自己的证书**
+
 	如果第 5 步发生，那么 client 需要发送自己的证书。就算 client 没有证书，也要发送空的消息，让 server 决定是否继续。
 
-8. **`ClientKeyExchange`**：**验证完毕证书后，生成 premaster，通过证书中公钥加密后发送**<br>
-	client 验证完毕 server 证书后，生成非对称加密算法的 premaster，然后通过证书的公钥发送。<br>
-	如果算法需要，会使用第 4 步接收的相关参数进行生成。
+8. **`ClientKeyExchange`**：**验证完毕证书后，生成 premaster，通过证书中公钥加密后发送**
 
-9. **`CertificateVerify`**（可选）：发送 client 校验码 + 私钥加密校验码的数据，让 server 尝试解密并验证，来验证 client 证书确实是属性 client 的<br>
-	如果第 7 步执行，那么为了防止 client 发送一个不属于自身的证书，所以需要进行一次非对称加密通信，使得 server 确保证书是属于 client 的（client 拥有着私钥）。
+   client 验证完毕 server 证书后，生成非对称加密算法的 premaster，然后通过证书的公钥发送。
+	
+   如果算法需要，会使用第 4 步接收的相关参数进行生成。
 
-10. **`Finished`** ：根据密码套件，双方算出 master 密码，并且使用对称加密算法进行一次通信，来验证密码无误。<br>
-	根据加密套件 + premaster，并且使用 client 随机串 + server 随机串，client server 各独立生成 master 密码，并且是一样的。<br>
-	接着 client 与 server 都会使用缓存的校验码，使用 master 密码进行对称加密，然后发送给对方，让对方使用 master 密码进行解密。这样来验证 master 密码双方使用的是一样的。<br>
+9. **`CertificateVerify`**（可选）：发送 client 校验码 + 私钥加密校验码的数据，让 server 尝试解密并验证，来验证 client 证书确实是属性 client 的
+
+   如果第 7 步执行，那么为了防止 client 发送一个不属于自身的证书，所以需要进行一次非对称加密通信，使得 server 确保证书是属于 client 的（client 拥有着私钥）。
+
+10. **`Finished`** ：根据密码套件，双方算出 master 密码，并且使用对称加密算法进行一次通信，来验证密码无误。
+   
+    根据加密套件 + premaster，并且使用 client 随机串 + server 随机串，client server 各独立生成 master 密码，并且是一样的。
+	
+    接着 client 与 server 都会使用缓存的校验码，使用 master 密码进行对称加密，然后发送给对方，让对方使用 master 密码进行解密。这样来验证 master 密码双方使用的是一样的。
+	
 
 TLS 完成后，client server 就得到了相同的 master 密码，作为后续对称加密通信的密码。
 
@@ -120,8 +134,9 @@ TLS 完成后，client server 就得到了相同的 master 密码，作为后续
 ### 3.1 原理
 我们从申请证书的过程看：
 1. 生成 **`申请（签名）文件`**，**申请文件中包含了要使用的公钥**，以及一些申请者的信息：地点、组织等。
-2. 将申请文件通过安全的方式（私下）发送给 **`CA`**。<br>
-	CA 就是一个用于分发证书的权威机构。
+2. 将申请文件通过安全的方式（私下）发送给 **`CA`**。
+
+   CA 就是一个用于分发证书的权威机构。
 3. CA 使用**自己的私钥，对申请文件进行签名**（加密），得到了证书。
 
 可以看到，最后得到的证书中包含了：

@@ -71,8 +71,10 @@ nsfs on /run/docker/netns/9779108cb6b0 type nsfs (rw)
 $ docker top br0_container
 UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
 root                92658               92640               0                   Nov06               pts/0               00:00:00            /bin/bash
+
 $ ls -lhi  /proc/92658/ns/net
 474863 lrwxrwxrwx 1 root root 0 Nov  7 12:42 /proc/92658/ns/net -> 'net:[4026532287]'
+
 # 文件 inode 与进程 net 指向 inode 相同
 $ ls -lhi /run/docker/netns/9779108cb6b0
 4026532287 -r--r--r-- 1 root root 0 Nov  6 19:47 /run/docker/netns/9779108cb6b0
@@ -170,8 +172,9 @@ target       prot opt in     out     source               destination
 RETURN     all  --  mybr0  *       0.0.0.0/0            0.0.0.0/0
 ```
 * PREROUTING 与 OUTPUT 链中规则，使得所有入和出的包都会经过 **DOCKER** 链；
-* POSTROUTING 链中，将 mybridge0 网络（192.168.100.0/24）的内网 ip 通过 **MASQUERADE** 行为进行伪装（可以简单认为内网 ip 会变为当前网卡的 ip）；<br>
-当然，如果包发往的是 mybr0 网卡，说明是 mybridge0 网络内部通信，就不需要进行 MASQUERADE 伪装（!mybr0）；
+* POSTROUTING 链中，将 mybridge0 网络（192.168.100.0/24）的内网 ip 通过 **MASQUERADE** 行为进行伪装（可以简单认为内网 ip 会变为当前网卡的 ip）；
+
+  当然，如果包发往的是 mybr0 网卡，说明是 mybridge0 网络内部通信，就不需要进行 MASQUERADE 伪装（!mybr0）；
 
 当容器发包时，会通过 mybr0 网卡转发进入内核栈，因此在 filter 表中，相关的规则都是针对于 "in=mybr0"。看一下 filter 表的规则：
 ```bash

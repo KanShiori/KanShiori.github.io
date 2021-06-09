@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/how_docker_work\/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "docker, container","wordcount":  5484 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "docker, container","wordcount":  5486 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/how_docker_work\/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93\/","datePublished": "2020-11-06T20:40:51+08:00","dateModified": "2020-11-06T20:40:51+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">容器网络总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/docker-%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/"><i class="far fa-folder fa-fw"></i>Docker 原理总结</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-06">2020-11-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 5484 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-06">2020-11-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 5486 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 11 分钟&nbsp;<span id="/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="容器网络总结">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -263,21 +263,25 @@ nsfs on /run/docker/netns/9779108cb6b0 <span class="nb">type</span> nsfs <span c
 </div><p>该文件就是对应 net namespace 的挂载，通过对比容器进程的 netns inode 与 文件 inode 可以证明：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-bash" data-lang="bash">$ docker top br0_container
 UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
 root                <span class="m">92658</span>               <span class="m">92640</span>               <span class="m">0</span>                   Nov06               pts/0               00:00:00            /bin/bash
+
 $ ls -lhi  /proc/92658/ns/net
 <span class="m">474863</span> lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Nov  <span class="m">7</span> 12:42 /proc/92658/ns/net -&gt; <span class="s1">&#39;net:[4026532287]&#39;</span>
+
 <span class="c1"># 文件 inode 与进程 net 指向 inode 相同</span>
 $ ls -lhi /run/docker/netns/9779108cb6b0
 <span class="m">4026532287</span> -r--r--r-- <span class="m">1</span> root root <span class="m">0</span> Nov  <span class="m">6</span> 19:47 /run/docker/netns/9779108cb6b0
@@ -426,9 +430,13 @@ RETURN     all  --  mybr0  *       0.0.0.0/0            0.0.0.0/0
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>PREROUTING 与 OUTPUT 链中规则，使得所有入和出的包都会经过 <strong>DOCKER</strong> 链；</li>
-<li>POSTROUTING 链中，将 mybridge0 网络（192.168.100.0/24）的内网 ip 通过 <strong>MASQUERADE</strong> 行为进行伪装（可以简单认为内网 ip 会变为当前网卡的 ip）；<br>
-当然，如果包发往的是 mybr0 网卡，说明是 mybridge0 网络内部通信，就不需要进行 MASQUERADE 伪装（!mybr0）；</li>
+<li>
+<p>PREROUTING 与 OUTPUT 链中规则，使得所有入和出的包都会经过 <strong>DOCKER</strong> 链；</p>
+</li>
+<li>
+<p>POSTROUTING 链中，将 mybridge0 网络（192.168.100.0/24）的内网 ip 通过 <strong>MASQUERADE</strong> 行为进行伪装（可以简单认为内网 ip 会变为当前网卡的 ip）；</p>
+<p>当然，如果包发往的是 mybr0 网卡，说明是 mybridge0 网络内部通信，就不需要进行 MASQUERADE 伪装（!mybr0）；</p>
+</li>
 </ul>
 <p>当容器发包时，会通过 mybr0 网卡转发进入内核栈，因此在 filter 表中，相关的规则都是针对于 &ldquo;in=mybr0&rdquo;。看一下 filter 表的规则：</p>
 <div class="highlight"><div class="chroma">

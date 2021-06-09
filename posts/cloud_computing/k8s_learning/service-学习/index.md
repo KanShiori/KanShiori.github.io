@@ -7,11 +7,13 @@
 这个固定的地址，就需要由 **`Service`** 来提供。同样，因为访问的地址固定了，Service 也可以提供负载均衡这样的功能。
 
 最简单的例子，有一个 Web 后端服务，有着 3 个 Pod 运行。而前端想访问该后端服务，想要的只是一个固定的域名或者地址，而不关系后端服务的 Pod 会怎样被调度。
-> 可以感觉，这就是分层。上下层之间只通过固定的地址通信，而不关心层内部是怎样运行的。
+{{< admonition note "为什么这样设计">}}
+可以感觉，这就是分层。上下层之间只通过固定的地址通信，而不关心层内部是怎样运行的。
+{{< /admonition >}}
 
 ## 2 Service 基础
 ### 2.1 定义
-Service 完整的定义如下：
+Service 基本的定义如下：
 ```yaml
 apiVersion: v1
 kind: Service
@@ -43,7 +45,7 @@ spec:
   externalName: string
 ```
 * `selector` ：用于 Service 选择被代理的 Pod；
-* `type` ： Service 类型，见后；
+* `type` ： Service 类型，见 [**Service 的类型**](#3-service-类型)；
 * `clusterIP` ：固定的地址，为空那么随机提供；
 * `sessionAffinity` ： 设置负载均衡策略；
 * `ports` ：提供需要代理的协议，源端口，目的端口，宿主机端口（NodePort 类型）；
@@ -54,7 +56,9 @@ spec:
 ### 2.2 Service 的 DNS
 所有 Service 都会自动对应一个 DNS 域名，其命令方式为 `<service>.<namespace>.svc.cluster.local`。
 
-当访问 nslookup \<service> 时，自动在当前的 namespace 下访问。通过 nslookup \<service>.\<namespace> 也可以跨 namespace 进行 DNS 解析。
+当执行 nslookup \<service> 时，自动在当前的 namespace 下访问。
+
+通过 nslookup \<service>.\<namespace> 也可以跨 namespace 进行 DNS 解析。
 
 ### 2.3 Service 相关的环境变量
 如果 Pod 在 Service 之后创建，那么集群中同 namespace **Service 地址信息会通过 ENV 传递给容器**（不包括 Headless Service）。
@@ -75,14 +79,15 @@ spec:
 
 ### 2.4 负载均衡策略
 k8s 默认提供两种负载均衡策略：
-* RoundRobin：轮询模式，将请求轮询到后端各个 Pod。默认模式
-* SessionAffinity：基于客户端 IP 地址进行会话保持的模式。<br>
-  即第 1 此将某个客户端发起请求到后端某个 Pod，之后相同客户端发起请求都会被转发到对应 Pod。
+* **RoundRobin** ：轮询模式，将请求轮询到后端各个 Pod。默认模式
+* **SessionAffinity** ：基于客户端 IP 地址进行会话保持的模式。
 
-通过 service.spec.sessionAffinity 指定为 "ClientIP"，就表明了开启 SessionAffinity 策略。
+  即第一次将某个客户端发起请求到后端某个 Pod，之后相同客户端发起请求都会被转发到对应 Pod。
+
+将 `service.spec.sessionAffinity` 指定为 "ClientIP"，就表明了开启 SessionAffinity 策略。
 
 ## 3 Service 类型
-Service 核心的功能是：代理。因此设计到两个点：访问代理的前端，被代理的后端。
+Service 核心的功能是：代理。代理涉及到两个点：访问代理的前端，被代理的后端。
 
 针对这个前后端的不同，Service 分为了 4 种类型：
 * **`ClusterIP`**（默认）：**代理一组后端 Pod，提供一个固定的内部地址 ClusterIP + Port**，也称为 VIP；
@@ -115,6 +120,10 @@ spec:
 ### 3.2 NodePort
 NodePort 是对 ClusterIP 的增强，增加一个宿主机上端口到代理源端口的转发，使得集群外部也可以访问集群内部的服务。
 
+{{< admonition note port-forward>}}
+当你执行 `kubectl port-forward svc/xxx` 命令时，其实也是增加了一个宿主端口到 Service 源端口转发，和 NodePort 一样。
+{{< /admonition >}}
+
 通过 `service.spec.ports[].nodePort` 指定映射的宿主机端口：
 ```yaml
 apiVersion: v1
@@ -132,13 +141,13 @@ spec:
   type: NodePort
 ```
 
-上述定义在 ClusterIP 基础上，定义了宿主机 30080 的端口转发。
+上述定义在 ClusterIP 基础上，增加了宿主机 30080 的端口转发。
 {{< find_img "img2.png" >}}
 
 ### 3.3 LoadBalancer
-在云厂商环境下，Node 都是在云的托管集群中的，所以外网访问 k8s 集群内的路径为：外网 -> 云集群 -> k8s 集群。而 NodePort 仅仅解决了 云集群 -> k8s 集群 这个问题。
+在云厂商环境下，Node 都是在云的托管集群中的，所以外网访问 k8s 集群内的路径为："外网 -> 云集群 -> k8s 集群"。而 NodePort 仅仅解决了 "云集群 -> k8s 集群" 这个问题。
 
-因此，LoadBalancer service 在 NodePort 基础上，提供了云厂商需要的负载均衡信息，而云厂商根据该信息设置好 外网 -> 云集群的转发路径。
+因此，LoadBalancer Service 在 NodePort 基础上，提供了云厂商需要的负载均衡信息，而云厂商根据该信息设置好 "外网 -> 云集群" 的转发路径。
 ```yaml
 apiVersion: v1
 kind: Service
@@ -174,6 +183,8 @@ spec 中定义仅仅是约定的规范，不同厂商所需要的更加细节的
 
 ### 3.4 ExternalName
 前面三种 Service 代理的后端都是集群内部的 Pod，而 ExternalName 不再是代理 Pod，而是将请求域名重定向另一个域名。
+
+因此，ExternalName Service 不再提供代理的功能，而是提供了**域名重定向**的功能。
 ```yaml
 kind: Service
 apiVersion: v1
@@ -192,9 +203,9 @@ spec:
 {{< find_img "img3.png" >}}
 
 ## 4 Endpoint
-当创建一个 Service 时，都自动创建一个 **`Endpoints`** 对象来代表其匹配到的代理目标，而其每一个被代理的目标称之为 **`Endpoint`**。
-```bash
-kubectl get endpoints -A
+当创建一个 Service 后，会根据 `service.spec.selector` 自动来匹配作为后端的 Pod。实际上，会对应一个 **`Endpoints`** 对象来代表其匹配到的代理目标，而其每一个被代理的 Pod 称之为 **`Endpoint`**。
+```shell
+$ kubectl get endpoints -A
 NAMESPACE     NAME                      ENDPOINTS                                                     AGE
 default       kubernetes                172.16.4.169:6443                                             3d1h
 kube-system   kube-dns                  10.36.0.4:53,10.36.0.5:53,10.36.0.4:53 + 3 more...            3d1h
@@ -229,7 +240,7 @@ subsets:
 ## 5 Headless Service
 Service 会自动发现一组 Pod，并提供代理服务与负载均衡。不过有时候，Pod 中程序并不想使用 Service 的代理功能，而是仅仅想让 Service 作为一个服务发现的作用，例如，peer2peer 程序想要知道有哪些对端的程序。
 
-通过 Service 的定义看，这种情况也就是不需要 `service.spec.clusterIP`，但是需要 `service.spec.selector`。因此 Service 提供了 **`Headless Service`**。
+通过 Service 的定义看，这种情况也就是不需要 `service.spec.clusterIP`，但是需要 `service.spec.selector`。这种特殊的 Service 被称为 **`Headless Service`**。
 ```yaml
 apiVersion: v1
 kind: Service
@@ -239,12 +250,11 @@ metadata:
   labels:
     name: mysql-balance-svc
 spec:
-  #type: NodePort
   ports:
   - port: 3308
     protocol: TCP
     targetPort: 3306
-  clusterIP: None
+  clusterIP: None  # clusterIP 指定为 None 表明不需要
   selector:
     name: mysql-balance-pod
 ```
@@ -253,11 +263,14 @@ spec:
 
 最最重要的，每个 Endpoint 对应的 Pod 是存在一个对应的 DNS 记录：`<podname>.<service>.<namespace>.svc.cluster.local`。
 
-这使得 Headless Service 在 StatefulSet 中有很好的应用，因为 StatefulSet 中每个 Pod 的命名是固定的，所以也就是其域名 \<podname>.\<service>.\<namespace>.svc.cluster.local 也固定了，那么 Pod 之间通过域名访问就不需要关心 Pod IP 的变化了。
+这使得 Headless Service 在 StatefulSet 中有很好的应用，因为 StatefulSet 中每个 Pod 的命名是固定的，所以也就是其域名 `<podname>.<service>.<namespace>.svc.cluster.local` 也固定了，那么 Pod 之间通过域名访问就不需要关心 Pod IP 的变化了。
+
+{{< admonition note Note>}}
+StatefulSet 必须使用 Headless Service 来为每个 Pod 提供固定的网络地址标识。
+{{< /admonition >}}
 
 ## 6 Ingress
 Service 提供了基于 4 层的代理，也就是基于 IP + Port 的代理。而 **`Ingress` 出现就是为了支持 7 层的代理**，典型的就是支持 HTTP/HTTPS 协议的代理。
-
 {{< find_img "img4.png" >}}
 
 Ingress 类似于 nginx 的配置，提供应用层的路由，将流量路由给基于传输层的 Service，而由 Service 将流量路由给底层的 Pod。

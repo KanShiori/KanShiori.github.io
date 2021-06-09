@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/service-%E5%AD%A6%E4%B9%A0\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2896 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3090 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/service-%E5%AD%A6%E4%B9%A0\/","datePublished": "2021-06-06T14:03:01+00:00","dateModified": "2021-06-06T14:03:01+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Service 学习</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/k8s-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>k8s 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-06">2021-06-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2896 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;<span id="/posts/cloud_computing/k8s_learning/service-%E5%AD%A6%E4%B9%A0/" class="leancloud_visitors" data-flag-title="Service 学习">
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-06">2021-06-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3090 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;<span id="/posts/cloud_computing/k8s_learning/service-%E5%AD%A6%E4%B9%A0/" class="leancloud_visitors" data-flag-title="Service 学习">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
@@ -160,13 +160,18 @@
             </div><div class="content" id="content"><h2 id="1-概述">1 概述</h2>
 <p>首先我们需要明确 Service 出现的背景：因为 Pod 设计上是无状态的，可以说没有固定的 IP，所以在<strong>其他组件访问某一个网络服务时，需要一个 “固定” 的地址</strong>。</p>
 <p>这个固定的地址，就需要由 <strong><code>Service</code></strong> 来提供。同样，因为访问的地址固定了，Service 也可以提供负载均衡这样的功能。</p>
-<p>最简单的例子，有一个 Web 后端服务，有着 3 个 Pod 运行。而前端想访问该后端服务，想要的只是一个固定的域名或者地址，而不关系后端服务的 Pod 会怎样被调度。</p>
-<blockquote>
-<p>可以感觉，这就是分层。上下层之间只通过固定的地址通信，而不关心层内部是怎样运行的。</p>
-</blockquote>
+<p>最简单的例子，有一个 Web 后端服务，有着 3 个 Pod 运行。而前端想访问该后端服务，想要的只是一个固定的域名或者地址，而不关系后端服务的 Pod 会怎样被调度。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>为什么这样设计<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">可以感觉，这就是分层。上下层之间只通过固定的地址通信，而不关心层内部是怎样运行的。</div>
+        </div>
+    </div></p>
 <h2 id="2-service-基础">2 Service 基础</h2>
 <h3 id="21-定义">2.1 定义</h3>
-<p>Service 完整的定义如下：</p>
+<p>Service 基本的定义如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -231,7 +236,7 @@
 </div>
 </div><ul>
 <li><code>selector</code> ：用于 Service 选择被代理的 Pod；</li>
-<li><code>type</code> ： Service 类型，见后；</li>
+<li><code>type</code> ： Service 类型，见 <a href="#3-service-%e7%b1%bb%e5%9e%8b" rel=""><strong>Service 的类型</strong></a>；</li>
 <li><code>clusterIP</code> ：固定的地址，为空那么随机提供；</li>
 <li><code>sessionAffinity</code> ： 设置负载均衡策略；</li>
 <li><code>ports</code> ：提供需要代理的协议，源端口，目的端口，宿主机端口（NodePort 类型）；</li>
@@ -241,7 +246,8 @@
 </ul>
 <h3 id="22-service-的-dns">2.2 Service 的 DNS</h3>
 <p>所有 Service 都会自动对应一个 DNS 域名，其命令方式为 <code>&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local</code>。</p>
-<p>当访问 nslookup &lt;service&gt; 时，自动在当前的 namespace 下访问。通过 nslookup &lt;service&gt;.&lt;namespace&gt; 也可以跨 namespace 进行 DNS 解析。</p>
+<p>当执行 nslookup &lt;service&gt; 时，自动在当前的 namespace 下访问。</p>
+<p>通过 nslookup &lt;service&gt;.&lt;namespace&gt; 也可以跨 namespace 进行 DNS 解析。</p>
 <h3 id="23-service-相关的环境变量">2.3 Service 相关的环境变量</h3>
 <p>如果 Pod 在 Service 之后创建，那么集群中同 namespace <strong>Service 地址信息会通过 ENV 传递给容器</strong>（不包括 Headless Service）。</p>
 <p>相关的环境变量包括：</p>
@@ -260,13 +266,17 @@
 <h3 id="24-负载均衡策略">2.4 负载均衡策略</h3>
 <p>k8s 默认提供两种负载均衡策略：</p>
 <ul>
-<li>RoundRobin：轮询模式，将请求轮询到后端各个 Pod。默认模式</li>
-<li>SessionAffinity：基于客户端 IP 地址进行会话保持的模式。<br>
-即第 1 此将某个客户端发起请求到后端某个 Pod，之后相同客户端发起请求都会被转发到对应 Pod。</li>
+<li>
+<p><strong>RoundRobin</strong> ：轮询模式，将请求轮询到后端各个 Pod。默认模式</p>
+</li>
+<li>
+<p><strong>SessionAffinity</strong> ：基于客户端 IP 地址进行会话保持的模式。</p>
+<p>即第一次将某个客户端发起请求到后端某个 Pod，之后相同客户端发起请求都会被转发到对应 Pod。</p>
+</li>
 </ul>
-<p>通过 service.spec.sessionAffinity 指定为 &ldquo;ClientIP&rdquo;，就表明了开启 SessionAffinity 策略。</p>
+<p>将 <code>service.spec.sessionAffinity</code> 指定为 &ldquo;ClientIP&rdquo;，就表明了开启 SessionAffinity 策略。</p>
 <h2 id="3-service-类型">3 Service 类型</h2>
-<p>Service 核心的功能是：代理。因此设计到两个点：访问代理的前端，被代理的后端。</p>
+<p>Service 核心的功能是：代理。代理涉及到两个点：访问代理的前端，被代理的后端。</p>
 <p>针对这个前后端的不同，Service 分为了 4 种类型：</p>
 <ul>
 <li><strong><code>ClusterIP</code></strong>（默认）：<strong>代理一组后端 Pod，提供一个固定的内部地址 ClusterIP + Port</strong>，也称为 VIP；</li>
@@ -322,6 +332,14 @@
 </p>
 <h3 id="32-nodeport">3.2 NodePort</h3>
 <p>NodePort 是对 ClusterIP 的增强，增加一个宿主机上端口到代理源端口的转发，使得集群外部也可以访问集群内部的服务。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>port-forward<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">当你执行 <code>kubectl port-forward svc/xxx</code> 命令时，其实也是增加了一个宿主端口到 Service 源端口转发，和 NodePort 一样。</div>
+        </div>
+    </div>
 <p>通过 <code>service.spec.ports[].nodePort</code> 指定映射的宿主机端口：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -355,7 +373,7 @@
 </span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">NodePort</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><p>上述定义在 ClusterIP 基础上，定义了宿主机 30080 的端口转发。
+</div><p>上述定义在 ClusterIP 基础上，增加了宿主机 30080 的端口转发。
 
 
 
@@ -369,8 +387,8 @@
 
 </p>
 <h3 id="33-loadbalancer">3.3 LoadBalancer</h3>
-<p>在云厂商环境下，Node 都是在云的托管集群中的，所以外网访问 k8s 集群内的路径为：外网 -&gt; 云集群 -&gt; k8s 集群。而 NodePort 仅仅解决了 云集群 -&gt; k8s 集群 这个问题。</p>
-<p>因此，LoadBalancer service 在 NodePort 基础上，提供了云厂商需要的负载均衡信息，而云厂商根据该信息设置好 外网 -&gt; 云集群的转发路径。</p>
+<p>在云厂商环境下，Node 都是在云的托管集群中的，所以外网访问 k8s 集群内的路径为：&ldquo;外网 -&gt; 云集群 -&gt; k8s 集群&rdquo;。而 NodePort 仅仅解决了 &ldquo;云集群 -&gt; k8s 集群&rdquo; 这个问题。</p>
+<p>因此，LoadBalancer Service 在 NodePort 基础上，提供了云厂商需要的负载均衡信息，而云厂商根据该信息设置好 &ldquo;外网 -&gt; 云集群&rdquo; 的转发路径。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -435,6 +453,7 @@
 </div><p>对于 LoadBalancer，更多的信息见官方文档：<a href="https://kubernetes.io/zh/docs/concepts/services-networking/service/#loadbalancer" target="_blank" rel="noopener noreffer"><strong>LoadBalancer</strong></a>。</p>
 <h3 id="34-externalname">3.4 ExternalName</h3>
 <p>前面三种 Service 代理的后端都是集群内部的 Pod，而 ExternalName 不再是代理 Pod，而是将请求域名重定向另一个域名。</p>
+<p>因此，ExternalName Service 不再提供代理的功能，而是提供了<strong>域名重定向</strong>的功能。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -477,7 +496,7 @@
 
 </p>
 <h2 id="4-endpoint">4 Endpoint</h2>
-<p>当创建一个 Service 时，都自动创建一个 <strong><code>Endpoints</code></strong> 对象来代表其匹配到的代理目标，而其每一个被代理的目标称之为 <strong><code>Endpoint</code></strong>。</p>
+<p>当创建一个 Service 后，会根据 <code>service.spec.selector</code> 自动来匹配作为后端的 Pod。实际上，会对应一个 <strong><code>Endpoints</code></strong> 对象来代表其匹配到的代理目标，而其每一个被代理的 Pod 称之为 <strong><code>Endpoint</code></strong>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -486,7 +505,7 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">kubectl get endpoints -A
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl get endpoints -A
 NAMESPACE     NAME                      ENDPOINTS                                                     AGE
 default       kubernetes                172.16.4.169:6443                                             3d1h
 kube-system   kube-dns                  10.36.0.4:53,10.36.0.5:53,10.36.0.4:53 + <span class="m">3</span> more...            3d1h
@@ -542,7 +561,7 @@ kube-system   kube-dns                  10.36.0.4:53,10.36.0.5:53,10.36.0.4:53 +
 </div><p>同名的 Endpoint 与 Service 自动被认为是相绑定的。</p>
 <h2 id="5-headless-service">5 Headless Service</h2>
 <p>Service 会自动发现一组 Pod，并提供代理服务与负载均衡。不过有时候，Pod 中程序并不想使用 Service 的代理功能，而是仅仅想让 Service 作为一个服务发现的作用，例如，peer2peer 程序想要知道有哪些对端的程序。</p>
-<p>通过 Service 的定义看，这种情况也就是不需要 <code>service.spec.clusterIP</code>，但是需要 <code>service.spec.selector</code>。因此 Service 提供了 <strong><code>Headless Service</code></strong>。</p>
+<p>通过 Service 的定义看，这种情况也就是不需要 <code>service.spec.clusterIP</code>，但是需要 <code>service.spec.selector</code>。这种特殊的 Service 被称为 <strong><code>Headless Service</code></strong>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -560,7 +579,6 @@ kube-system   kube-dns                  10.36.0.4:53,10.36.0.5:53,10.36.0.4:53 +
 </span><span class="lnt">13
 </span><span class="lnt">14
 </span><span class="lnt">15
-</span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
@@ -571,21 +589,28 @@ kube-system   kube-dns                  10.36.0.4:53,10.36.0.5:53,10.36.0.4:53 +
 </span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
 </span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mysql-balance-svc</span><span class="w">
 </span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="c">#type: NodePort</span><span class="w">
 </span><span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w">
 </span><span class="w">  </span>- <span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">3308</span><span class="w">
 </span><span class="w">    </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
 </span><span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="m">3306</span><span class="w">
-</span><span class="w">  </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l">None</span><span class="w">
+</span><span class="w">  </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l">None </span><span class="w"> </span><span class="c"># clusterIP 指定为 None 表明不需要</span><span class="w">
 </span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
 </span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mysql-balance-pod</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>上述定义将 <code>service.spec.clusterIP</code> 定义为了 &ldquo;None&rdquo;，表明创建的是一个 Headless Service。但是 <code>service.spec.selector</code> 还是能够让 Service 选择到 Pod，并创建对应的 Endpoints。也就是说，我们可以通过 Endpoints 来知道哪些对应服务的 Pod 正在运行。</p>
 <p>最最重要的，每个 Endpoint 对应的 Pod 是存在一个对应的 DNS 记录：<code>&lt;podname&gt;.&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local</code>。</p>
-<p>这使得 Headless Service 在 StatefulSet 中有很好的应用，因为 StatefulSet 中每个 Pod 的命名是固定的，所以也就是其域名 &lt;podname&gt;.&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local 也固定了，那么 Pod 之间通过域名访问就不需要关心 Pod IP 的变化了。</p>
+<p>这使得 Headless Service 在 StatefulSet 中有很好的应用，因为 StatefulSet 中每个 Pod 的命名是固定的，所以也就是其域名 <code>&lt;podname&gt;.&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local</code> 也固定了，那么 Pod 之间通过域名访问就不需要关心 Pod IP 的变化了。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">StatefulSet 必须使用 Headless Service 来为每个 Pod 提供固定的网络地址标识。</div>
+        </div>
+    </div>
 <h2 id="6-ingress">6 Ingress</h2>
-<p>Service 提供了基于 4 层的代理，也就是基于 IP + Port 的代理。而 <strong><code>Ingress</code> 出现就是为了支持 7 层的代理</strong>，典型的就是支持 HTTP/HTTPS 协议的代理。</p>
+<p>Service 提供了基于 4 层的代理，也就是基于 IP + Port 的代理。而 <strong><code>Ingress</code> 出现就是为了支持 7 层的代理</strong>，典型的就是支持 HTTP/HTTPS 协议的代理。
 
 
 
@@ -597,7 +622,7 @@ kube-system   kube-dns                  10.36.0.4:53,10.36.0.5:53,10.36.0.4:53 +
     <br><img src="/posts/cloud_computing/k8s_learning/service-%E5%AD%A6%E4%B9%A0/img4.png"/><br>
 
 
-
+</p>
 <p>Ingress 类似于 nginx 的配置，提供应用层的路由，将流量路由给基于传输层的 Service，而由 Service 将流量路由给底层的 Pod。</p>
 <p>不过 Ingress 类似于 Service，仅仅是一个规则的定义，其代理的实现依赖于 Ingress Controller。</p>
 <h3 id="61-ingress-controller">6.1 Ingress Controller</h3>

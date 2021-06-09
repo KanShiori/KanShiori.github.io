@@ -932,8 +932,10 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>d_revalidate：检查内存中各个 dentry 对象构建的结构，是否符合当前文件系统的情况。这对于网络文件系统至关重要。<br>
-因为网络文件系统不直接关联到内核与 VFS，所有的数据都要通过网络 IO 来收集。该函数用于保证 dentry 结构与实际情况的一致性。</li>
+<li>
+<p>d_revalidate：检查内存中各个 dentry 对象构建的结构，是否符合当前文件系统的情况。这对于网络文件系统至关重要。</p>
+<p>因为网络文件系统不直接关联到内核与 VFS，所有的数据都要通过网络 IO 来收集。该函数用于保证 dentry 结构与实际情况的一致性。</p>
+</li>
 </ul>
 <h3 id="25-模型总结">2.5 模型总结</h3>
 <p>首先从内核角度看，一个已经挂载的<strong>文件系统就是由 superblock + inode 组成</strong>的。文件系统信息保存在 superblock 中，每个文件由 inode 表示。</p>
@@ -1145,7 +1147,7 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" class="prev" rel="prev" title="Go 调试方法总结"><i class="fas fa-angle-left fa-fw"></i>Go 调试方法总结</a>
+    <div class="post-nav"><a href="/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" class="prev" rel="prev" title="[WIP] Go 调试方法总结"><i class="fas fa-angle-left fa-fw"></i>[WIP] Go 调试方法总结</a>
             <a href="/posts/net/tls-%E6%80%BB%E7%BB%93/" class="next" rel="next" title="SSL/TLS 总结">SSL/TLS 总结<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 <div id="comments"><div id="valine" class="comment"></div><noscript>

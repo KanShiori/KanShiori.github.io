@@ -44,22 +44,24 @@ $ cat /proc/interrupts
 
 #### 1.1.2 中断下半部
 [中断下半部]^(bottom half) 包含三种处理方式：
-* **`软中断 softirq`**：固定的 32 个接口，只留给对时间要求最严格的下半部使用。<br>
+* **`软中断 softirq`**：固定的 32 个接口，只留给对时间要求最严格的下半部使用。
+
   查看 `/proc/softirqs` 文件 可以看到目前支持的软中断：
-命名     | 含义
--|- 
-HI      |
-TIMER   | 定时中断
-NET_TX  | 网络发送
-NET_RX  | 网络接收
-BLOCK   |
-IRQ_POLL|
-TASKLET | tasklet 软中断扩展
-SCHED   | 内核调度
-HRTIMER |
-RCU     | RCU 锁
+  命名     | 含义
+  -|- 
+  HI      |
+  TIMER   | 定时中断
+  NET_TX  | 网络发送
+  NET_RX  | 网络接收
+  BLOCK   |
+  IRQ_POLL|
+  TASKLET | tasklet 软中断扩展
+  SCHED   | 内核调度
+  HRTIMER |
+  RCU     | RCU 锁
 * **`tasklet`**：因为软中断只有固定的 32 个，为了支持扩展，tasklet 基于软中断时间，在不同处理器上运行，并且支持通过代码动态注册；
-* **`工作队列 work queue`**：将一个中断的部分工作推后，可以实现一些 tasklet 不能实现的工作（比如可以睡眠）。<br>
+* **`工作队列 work queue`**：将一个中断的部分工作推后，可以实现一些 tasklet 不能实现的工作（比如可以睡眠）。
+
   一些内核线程会不断处理工作队列的数据，其运行在进程上下文中，并且可以睡眠以及被重新调度。目前，**`kworker 内核线程`** 负责处理这个工作。
 
 对于软中断与 tasklet，如果大量出现时，为了不一直进行 CPU 中断，内核会唤醒 **`ksoftirqd`** 内核线程进行异步的处理。**每个处理器有一个 ksoftirqd/n 线程，n 为 CPU 编号**。
@@ -155,12 +157,14 @@ Interrupt 70 is allowed on CPUs 31
 {{< find_img "img2.png" >}}
 
 1. packet 进入物理网卡，物理网卡会根据目的 mac **判断是否丢弃**（除非混杂模式）；
-1. 网卡通过 DMA 方式将 packet **写入到 ringbuffer**。<br>
+1. 网卡通过 DMA 方式将 packet **写入到 ringbuffer**
+
    ringbuffer 由网卡驱动程序分配并初始化。
 1. 网卡通过**硬中断通知 CPU**，有数据来了。
 1. CPU 根据**中断执行中断处理函数**，该函数会调用网卡驱动函数。
-1. 驱动程序**先禁用网卡中断**（NAPI），表示网卡下次直接写到 ringbuffer 即可，不需要中断通知了。<br>
-	这样避免 CPU 不断被中断。
+1. 驱动程序**先禁用网卡中断**（NAPI），表示网卡下次直接写到 ringbuffer 即可，不需要中断通知了。
+
+   这样避免 CPU 不断被中断。
 1. 驱动程序启动软中断，让 CPU 执行软中断处理函数**不断从 ringbuffer 读取并处理 packet**。
 
 网卡多队列就是在这里生效，网卡会将 packet 放置到不同的 ringbuffer，不同的 ringbuffer 会中断不同的 CPU（如果设置了中断亲和性），使得各个 CPU 的队列硬中断是均衡的。
@@ -309,14 +313,16 @@ $ echo 2048 > /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
 
 **所以，在数据包到达 [**socket buffer**](#51-sock) 前，数据处理都是由 ksoftirqd 线程执行的，也就是算在软中断处理时间里的。**
 
-1. ksoftirqd 调用**驱动程序的 poll 函数来一个个处理 packet**。<br>
+1. ksoftirqd 调用**驱动程序的 poll 函数来一个个处理 packet**。
+
    如果没有 packet 的话，就会重新启动网卡硬中断，等待下一次重新的流程。
 1. poll 函数将读取的每个 packet，**转换为 sk_buff 数据格式，并分析其传输层协议**。
 1. （可选）如果开启了 GRO，那么进行 **GRO 的处理**。
-1. 如果开启了 RPS，那么进行 **RPS 的处理**，否则放入当前 CPU 的 input_pkt_queue。<br>
- RPS 处理的流程如下：
-	1. 当前 CPU 将 sk_buff 放到其他 CPU 的 input_pkt_queue 中。如果 input_pkt_queue 满的话，packet 会被丢弃。
-    2. CPU 通过 IPI 硬中断通知其他 CPU 处理自己的 input_pkt_queue，也就是走 11 步流程。
+1. 如果开启了 RPS，那么进行 **RPS 的处理**，否则放入当前 CPU 的 input_pkt_queue。
+
+   RPS 处理的流程如下：
+   1. 当前 CPU 将 sk_buff 放到其他 CPU 的 input_pkt_queue 中。如果 input_pkt_queue 满的话，packet 会被丢弃。
+   2. CPU 通过 IPI 硬中断通知其他 CPU 处理自己的 input_pkt_queue，也就是走 11 步流程。
 
 到这里，而无论是否开启 RPS，接下来就是 **CPU 从各自 input_pkt_queue 取出 sk_buff 并处理**。
 
@@ -325,8 +331,10 @@ $ echo 2048 > /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
 
 ### 3.5 发送数据
 接受到网络层的数据后，来到网络访问层会经过一个非常重要的系统：Traffic Controller。这是接收数据时不会经过。
-1. 根据 sk_buff 中的设备信息，获取对应 net_device.qdisc。<br>
+1. 根据 sk_buff 中的设备信息，获取对应 net_device.qdisc。
+   
    如果 qdisc 存在的话，走流量控制系统，可能会丢弃包：
+   
    TODO
 1. 拷贝一份 sk_buff 给 "packet taps"。
 1. 调用具体驱动的发送数据的函数发送。

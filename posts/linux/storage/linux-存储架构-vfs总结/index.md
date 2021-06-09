@@ -428,8 +428,9 @@ struct dentry_operations {
 	struct dentry *(*d_real)(struct dentry *, const struct inode *);
 } ____cacheline_aligned;
 ```
-* d_revalidate：检查内存中各个 dentry 对象构建的结构，是否符合当前文件系统的情况。这对于网络文件系统至关重要。<br>
-因为网络文件系统不直接关联到内核与 VFS，所有的数据都要通过网络 IO 来收集。该函数用于保证 dentry 结构与实际情况的一致性。
+* d_revalidate：检查内存中各个 dentry 对象构建的结构，是否符合当前文件系统的情况。这对于网络文件系统至关重要。
+
+  因为网络文件系统不直接关联到内核与 VFS，所有的数据都要通过网络 IO 来收集。该函数用于保证 dentry 结构与实际情况的一致性。
 
 ### 2.5 模型总结
 首先从内核角度看，一个已经挂载的**文件系统就是由 superblock + inode 组成**的。文件系统信息保存在 superblock 中，每个文件由 inode 表示。

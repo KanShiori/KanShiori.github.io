@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/crd-%E5%AD%A6%E4%B9%A0\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2603 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2601 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/crd-%E5%AD%A6%E4%B9%A0\/","datePublished": "2021-06-08T11:45:54+00:00","dateModified": "2021-06-08T11:45:54+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">[WIP] CRD 学习</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/k8s-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>k8s 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-08">2021-06-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2603 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-08">2021-06-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2601 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;<span id="/posts/cloud_computing/k8s_learning/crd-%E5%AD%A6%E4%B9%A0/" class="leancloud_visitors" data-flag-title="[WIP] CRD 学习">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -160,22 +160,22 @@
             </div><div class="content" id="content"><h2 id="1-概述">1 概述</h2>
 <p>Kubernetes 不仅仅是一个编排框架，更是提供了极大的扩展性，可以看做一个资源框架。你可以基于 k8s 提供的种种功能，来满足你应用的需要。</p>
 <p>其中 CRD 就是允许你来自定义 Resource，可以不修改 Kubernetes 代码来实现类似于 NetworkPolicy 这样的资源。
-<div class="details admonition tip open">
+<div class="details admonition note open">
         <div class="details-summary admonition-title">
-            <i class="icon fas fa-lightbulb fa-fw"></i>技巧<i class="details-icon fas fa-angle-right fa-fw"></i>
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">可以理解 Kubernetes 提供了基础的框架，Pod Service Volume 等都是最基础的组件，而我们可以在这些组件之上进行再次抽象与组合，将其赋予一个特定的概念 CustomResource</div>
+            <div class="admonition-content">可以理解 Kubernetes 提供了基础的框架，Pod Service Volume 等都是最基础的组件，而我们可以在这些组件之上进行<strong>再次抽象与组合</strong>，将其赋予一个特定的概念 CustomResource</div>
         </div>
     </div></p>
 <p>以贵司 TiDB Operator 来举个例子，Operator 用于管理 TiDB 的集群，其核心组件包括 PD、TiDB、TiKV 程序。这些核心组件在最底层都是以 Pod 方式运行的，并且是多副本形式。而我们将所有的 Pod + Service 等组合在一起，构成了 TiDBCluster 这个 CustomResource。</p>
 <p>所以，当你想部署 TiDB 集群时，只需要修改 TiDBCluster 这个资源的配置，然后提交到 Kubernetes 中。TiDB Operator（CRD Controller）就会根据 TiDBCluster 来操作，使得集群按照期望状态部署。
-<div class="details admonition tip open">
+<div class="details admonition note open">
         <div class="details-summary admonition-title">
-            <i class="icon fas fa-lightbulb fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+            <i class="icon fas fa-pencil-alt fa-fw"></i>为什么能够做到？<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">可以联想到，对于底层架构应该尽可能的进行拆分与解耦，这样使得上层可以有很高的扩展性。</div>
+            <div class="admonition-content">Kubernetes 底层架构被尽可能的进行拆分与解耦，这样使得上层可以有很高的扩展性。</div>
         </div>
     </div></p>
 <p>对于使用自定义资源，最基本要涉及到：</p>
@@ -535,9 +535,12 @@
 </ol>
 <p>针对于 etcd 的 List 与 Watch 机制，Informer 的同步机制也包含两种：</p>
 <ul>
-<li>使用 Watch 的事件增量同步：当 APIServer 有对象的创建、删除或者更新，Informer.Reflector 模块会收到对应事件，解析后放入 Delta FIFO Queue；</li>
-<li>使用 List 的定期周期全量同步：经过一定周期，Informer 会通过 List 来进行本地对象的强制更新。<br>
-该更新操作会强制触发“更新事件”，从而调用 UpdateFunc 回调
+<li>
+<p>使用 Watch 的事件增量同步：当 APIServer 有对象的创建、删除或者更新，Informer.Reflector 模块会收到对应事件，解析后放入 Delta FIFO Queue；</p>
+</li>
+<li>
+<p>使用 List 的定期周期全量同步：经过一定周期，Informer 会通过 List 来进行本地对象的强制更新。</p>
+<p>该更新操作会强制触发“更新事件”，从而调用 UpdateFunc 回调
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw"></i>主动判断 ResourceVersion<i class="details-icon fas fa-angle-right fa-fw"></i>
@@ -545,7 +548,8 @@
         <div class="details-content">
             <div class="admonition-content">所以 UpdateFunc 要通过对象的 ResourceVersion 来判断，是否对象有着真正的更新。</div>
         </div>
-    </div></li>
+    </div></p>
+</li>
 </ul>
 <p>同时，Informer 中异步的不断读取 Delta FIFO Queue 中事件，并触发其注册的<strong>回调函数</strong>（AddFunc UpdateFunc DeleteFunc）。</p>
 <h2 id="5-自定义资源示例">5 自定义资源示例</h2>

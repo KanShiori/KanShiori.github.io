@@ -6,7 +6,7 @@
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
         <title>StatefulSet 学习 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="StatefulSet 学习" />
-<meta property="og:description" content="1 StatefulSet 概述 Pod 在设计的理念上是无状态的，因为 Pod 可以被认为任意时刻被销毁，或者任意时刻可以被在别的节点创建。 Deployment 与 RelicSets 就是基于这个理念设计的，它们仅仅" />
+<meta property="og:description" content="1 概述 Pod 在设计的理念上是无状态的，Pod 可以在任意时刻被销毁，可以在任意时刻被在别的节点创建相同的副本。 Deployment 与 RelicSets 就是基于这个理念设计的，它们仅" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/statefulset-%E5%AD%A6%E4%B9%A0/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-07T11:55:46&#43;00:00" />
@@ -16,7 +16,7 @@
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
 <meta name="twitter:title" content="StatefulSet 学习"/>
-<meta name="twitter:description" content="1 StatefulSet 概述 Pod 在设计的理念上是无状态的，因为 Pod 可以被认为任意时刻被销毁，或者任意时刻可以被在别的节点创建。 Deployment 与 RelicSets 就是基于这个理念设计的，它们仅仅"/>
+<meta name="twitter:description" content="1 概述 Pod 在设计的理念上是无状态的，Pod 可以在任意时刻被销毁，可以在任意时刻被在别的节点创建相同的副本。 Deployment 与 RelicSets 就是基于这个理念设计的，它们仅"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
 <meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/statefulset-%E5%AD%A6%E4%B9%A0/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/service-%E5%AD%A6%E4%B9%A0/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/crd-%E5%AD%A6%E4%B9%A0/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/statefulset-%E5%AD%A6%E4%B9%A0\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1545 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1543 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/statefulset-%E5%AD%A6%E4%B9%A0\/","datePublished": "2021-06-07T11:55:46+00:00","dateModified": "2021-06-07T11:55:46+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">StatefulSet 学习</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/k8s-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>k8s 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-07">2021-06-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1545 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-07">2021-06-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1543 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 4 分钟&nbsp;<span id="/posts/cloud_computing/k8s_learning/statefulset-%E5%AD%A6%E4%B9%A0/" class="leancloud_visitors" data-flag-title="StatefulSet 学习">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -129,10 +129,10 @@
                 </div>
                 <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
   <ul>
-    <li><a href="#1-statefulset-概述">1 StatefulSet 概述</a>
+    <li><a href="#1-概述">1 概述</a>
       <ul>
-        <li><a href="#11-状态是什么">1.1 “状态”是什么</a></li>
-        <li><a href="#11-如何保存状态">1.1 如何保存“状态”</a></li>
+        <li><a href="#11-状态-是什么">1.1 “状态” 是什么</a></li>
+        <li><a href="#11-如何保存-状态">1.1 如何保存 “状态”</a></li>
       </ul>
     </li>
     <li><a href="#statefulset-基础">StatefulSet 基础</a>
@@ -151,22 +151,22 @@
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><h2 id="1-statefulset-概述">1 StatefulSet 概述</h2>
-<p>Pod 在设计的理念上是<strong>无状态</strong>的，因为 Pod 可以被认为任意时刻被销毁，或者任意时刻可以被在别的节点创建。</p>
-<p>Deployment 与 RelicSets 就是基于这个理念设计的，它们仅仅保证 Pod 的数量，而不关心其他。</p>
-<p>对于大多数程序，其都是需要“状态”的，也就是重启能够恢复之前的数据。这个状态可能包括：</p>
+            </div><div class="content" id="content"><h2 id="1-概述">1 概述</h2>
+<p>Pod 在设计的理念上是<strong>无状态</strong>的，Pod 可以在任意时刻被销毁，可以在任意时刻被在别的节点创建相同的副本。</p>
+<p>Deployment 与 RelicSets 就是基于这个理念设计的，它们仅仅保证 Pod 的副本数量，而不关心其他。</p>
+<p>对于大多数程序，其都是需要 “状态” 的，也就是重启能够恢复之前的数据。这个状态可能包括：</p>
 <ul>
 <li><strong>存储</strong></li>
 <li><strong>网络</strong></li>
 <li><strong>启停顺序</strong></li>
 </ul>
-<h3 id="11-状态是什么">1.1 “状态”是什么</h3>
-<p>对于存储很好理解，大多数程序会将数据保存到磁盘或者云盘，而重启后重新读取数据，来恢复状态。所以，同一个 Pod 重启前后读取到的存储要是一样的。</p>
-<p>对于网络，基于 Service 的存在，一般的后端服务可以不用关系其所处于的网络环境。但是对于分布式程序或者 p2p 程序，每个程序是需要知道其他程序的网络地址的。所以，同一个 Pod 重启前后的网络地址要是一样的。</p>
-<p>还有一点是基于 Pod 之间的关系，有时候多个 Pod 实例之间的启停顺序也应该是一样的。</p>
-<h3 id="11-如何保存状态">1.1 如何保存“状态”</h3>
-<p>对于存储，PVC 是与 Pod 生命周期不耦合的，所以我们让 Pod 重启前后都使用同一个 PVC，那么其数据就是相同的。所以问题变为了：建立 Pod 与 PVC 的映射关系。</p>
-<p>对于网络，Pod 的 IP 不是恒定的，这个是 Pod 的基本概念，无能更改。所以问题变为了：要找到一个可以代表这个 Pod 的恒定网络地址。</p>
+<h3 id="11-状态-是什么">1.1 “状态” 是什么</h3>
+<p>对于存储很好理解，大多数程序会将数据保存到磁盘或者云盘，而重启后重新读取数据，来恢复状态。所以，<strong>Pod 重启前后读取到的存储要是一样的</strong>。</p>
+<p>对于网络，基于 Service 的存在，一般的后端服务可以不用关系其所处于的网络环境。但是对于分布式程序或者 p2p 程序，每个程序是需要知道其他程序的网络地址的。所以，<strong>Pod 重启前后的网络地址要是一样的</strong>。</p>
+<p>还有一点是基于 Pod 之间的关系，有时候<strong>多个 Pod 实例之间的启停顺序也应该是一样的</strong>。</p>
+<h3 id="11-如何保存-状态">1.1 如何保存 “状态”</h3>
+<p>对于存储，PVC 是与 Pod 生命周期不耦合的，所以我们让 Pod 重启前后都使用同一个 PVC，那么其数据就是相同的。所以问题变为了：<strong>建立 Pod 与 PVC 的映射关系</strong>。</p>
+<p>对于网络，Pod 的 IP 不是恒定的，这个是 Pod 的基本概念，无能更改。所以问题变为了：<strong>要找到一个可以代表这个 Pod 的恒定网络地址</strong>。</p>
 <p>对于启动顺序，要保证 Pod 之间的运行顺序，那么需要认得每一个 Pod，也就是 Pod 的命名必须是有规范与固定的。</p>
 <p>所有的问题都由固定的 Pod 命名来解决，Pod 会按照 0-N 的方式来进行命名，而这样 Pod0 可以固定到 Pod0 PVC，固定到 Pod0 DNS 域名，启动顺序按照 Pod0 Pod1 … 来启动。</p>
 <p>这就是 StatefulSet 做的事情，总结一下：</p>
@@ -271,13 +271,13 @@
 <li>删除 StatefulSet 不会使其清理所有的 Pod，应该通过将 .spec.replicas 设置为 0 来让其清理所有的 Pod；</li>
 </ul>
 <h3 id="23-pod-管理策略">2.3 Pod 管理策略</h3>
-<p>通过 <code>.spec.podManagementPolicy</code> 可以设置管理的 Pod 的策略：</p>
+<p>通过 <code>spec.podManagementPolicy</code> 可以设置管理的 Pod 的策略：</p>
 <ul>
 <li><strong>OrderedReady</strong> ：默认策略，按照 Pod 的顺序依次创建或停止，前一个 Pod 完成后才会进行下一个 Pod 的操作；</li>
 <li><strong>Parallel</strong> ：所有 Pod 创建或停止都是并行的，也就是说你不需要启停顺序的特性；</li>
 </ul>
 <h3 id="24-pod-升级策略">2.4 Pod 升级策略</h3>
-<p>通过 .spec.updateStrategy 可以设置 Pod 的升级策略，也就是当你更新 <code>.spec.template</code> 的镜像版本时，触发的操作。</p>
+<p>通过 <code>spec.updateStrategy</code> 可以设置 Pod 的升级策略，也就是当你更新 <code>spec.template</code> 的镜像版本时，触发的操作。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -302,12 +302,11 @@
 </ul>
 <p>目前支持两种策略：</p>
 <ul>
-<li><strong>OnDelete</strong> ：需要升级时，并不会自动删除旧版本 Pod，需要用户手动停止旧版本的 Pod，才会创建对应新版本 Pod。
-这是默认行为。</li>
+<li><strong>OnDelete</strong> （默认）：需要升级时，并不会自动删除旧版本 Pod，需要用户手动停止旧版本的 Pod，才会创建对应新版本 Pod。</li>
 <li><strong>RollingUpdate</strong> ：自动删除旧版本的 Pod，并创建新版本 Pod。管理方式依赖于 Pod 管理策略。</li>
 </ul>
 <h4 id="241-partitions">2.4.1 Partitions</h4>
-<p>设置 <code>.spec.updateStrategy.rollingUpdate.partition</code> 可以对 Pod 进行分区管理。只有序号大于或等于的 Pod 才会进行滚动升级，其他 Pod 保持不变（即使被删除后重新创建）。</p>
+<p>设置 <code>spec.updateStrategy.rollingUpdate.partition</code> 可以对 Pod 进行<strong>分区管理</strong>。只有序号大于或等于的 Pod 才会进行滚动升级，其他 Pod 保持不变（即使被删除后重新创建）。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
