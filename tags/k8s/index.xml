@@ -3,7 +3,14 @@
         <title>k8s - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/k8s/</link>
         <description>k8s - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 09 Jun 2021 12:05:39 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 12 Jun 2021 16:29:21 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 学习 - Pod</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pod/</link>
+    <pubDate>Sat, 12 Jun 2021 16:29:21 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pod/</guid>
+    <description><![CDATA[1 Pod 的进程模型 Pod 是一组容器的集合，而为什么实现上需要多个容器？据传，因为开发 Borg 项目的工程师发现，部署的应用往往都是一个进程组，而不是一个进程]]></description>
+</item><item>
     <title>K8s 学习 - RBAC 授权机制</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/rbac/</link>
     <pubDate>Wed, 09 Jun 2021 12:05:39 &#43;0000</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/rbac-%E5%AE%9E%E8%B7%B5/</guid>
     <description><![CDATA[Kubernetes 中，通过 RBAC 机制来实现集群 Pod 中对 APIServer 的访问权限控制与授权。 RBAC 机制有三个最基本的概念： Role：一组规则，定义了对 API 对象的操作权限； Subjec]]></description>
-</item><item>
-    <title>CRD 实践</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/crd-%E5%AE%9E%E8%B7%B5/</link>
-    <pubDate>Fri, 30 Oct 2020 15:57:36 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/crd-%E5%AE%9E%E8%B7%B5/</guid>
-    <description><![CDATA[CRD 是 Kubernetes 可扩展性的第一个体现，因为 Kubernetes 提供的是一个编排的框架，因此不止可以对 Pod 进行编排，也支持通过 CRD 对你自定义的类型的编排。 1 CRD 构建 目的：通过 CRD]]></description>
 </item></channel>
 </rss>
