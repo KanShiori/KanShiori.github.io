@@ -162,7 +162,9 @@ spec:
   selector:
     run: pod-python
   type: LoadBalancer
+  externalTrafficPolicy: Local
 ```
+* externalTrafficPolicy 
 
 spec 中定义仅仅是约定的规范，不同厂商所需要的更加细节的 LoadBalancer 的参数，大多数是通过 `service.metadata.annotations` 来提供：
 ```yaml

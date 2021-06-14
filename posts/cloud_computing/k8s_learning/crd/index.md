@@ -64,7 +64,7 @@ spec:
 ```
 * `metadata.name` ：命名，必须是 `<plural>.<group>`；
 * spec
-    * `group` ：组织，用以 REST API 注册（`/apis/<group>/<version>`），基本以 URL 方式；
+    * `group` ：API Group，用以 REST API 注册（`/apis/<group>/<version>`），基本以 URL 方式；
     * `versions` ：版本号，用以 REST API 注册（`/apis/<group>/<version>`）；
     * `scope` ：资源的范围，Namespaced 或者 Cluster；
     * names
@@ -86,9 +86,6 @@ spec:
 > 该功能需要配置 kube-apiserver 的 --feature-gates=CustomResourceValidation=true。
 
 我们对上面的示例对其增加两个检查：
-* spec.cronSpec 必须是匹配正则表达式的字符串
-* spec.replicas 必须是从 1 到 10 的整数
-
 ```yaml
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -118,6 +115,9 @@ spec:
               minimum: 1
               maximum: 10
 ```
+* spec.cronSpec 必须是匹配正则表达式的字符串
+* spec.replicas 必须是从 1 到 10 的整数
+
 更多的 openAPIV3Schema 检查语法见 [**OpenAPI v3 schemas**](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.0.md#schemaObject)。
 
 ### 2.3 Defaulting 与 Nullable 
@@ -164,8 +164,33 @@ spec:
     shortNames:
     - ct
 ```
+
 ### 2.4 Subresources
-TODO
+subresouces 支持设置 status 和 scale 两类：
+* **status** ：API URL 启动 /status 路径，请求后得到对应资源对象的当前 status
+* **scale** ：API URL 启用 /scale 路径，使得 Kubernetes 控制器（如 HPA）能够控制 CRD 对象。用户通过 kubectl scale 也可以对 CRD 对象进行缩扩容操作。
+{{< admonition note 前提>}}
+当然，scale 的前提是你的 CustomResource 能够支持多副本的形式。
+{{< /admonition >}}
+
+示例如下：
+```yaml
+# ...
+spec:
+  group: stable.example.com
+  versions:
+    - name: v1
+      subresources:
+        status: {}
+        scale:
+          specReplicasPath: .spec.replicas
+          statusReplicasPath: .status.replicas
+          labelSelectorPath: .status.labelSelector
+```
+* scale
+  * `specReplicasPath` ：从 CR 获取期望副本数量的路径；
+  * `statusReplicasPath` ：从 CR 获取当前副本数量的路径；
+  * `labelSelectorPath` ：从 CR 获取 Label Selector 的路径；
 
 ### 2.5 Categories
 `spec.names.categories` 可以将资源分组，通过使用 `kubectl get <categories>` 来获取一组资源。
@@ -182,6 +207,27 @@ spec:
     - all
 ```
 上面例子将 CR 分类到 "all" 类别中，使得 `kubectl get all` 可以获取到该类别下的所有已经创建的资源。
+
+### 2.6 Finalizer
+Finalizer 会在删除 CR 时自动被调用，可以实现对 CR 的清理工作。
+```yaml
+apiVersion: "stable.example.com/v1"
+kind: CronTab
+metadata:
+  finalizers:
+  - stable.example.com/finalizer
+```
+* finalizers ：设置 Finalizer，仅仅是一个名称，用于 Controller 判断
+
+当用户请求删除资源对象时，Kubernetes 会先将 metadata.deletionTimestamp 的值，然后将其标记为开始删除。设置该值后，不断的轮询检查是否所有的 finalizers 被移除。
+
+对于旁路的 Controller，发现 metadata.deletionTimestamp 被设置，知道了资源对象正在删除流程，于是开始执行其负责的的清理工作。执行完成后，从 finalizers 中移除对应的一项。
+{{< admonition note Note>}}
+Controler 可以读取 metadata.deletionGracePeriodSeconds 的值，用以得到期望的优雅删除时间是多久。
+{{< /admonition >}}
+
+所有 finalizers 移除后，Kubernetes 才将其真正的资源对象删除。
+
 
 ## 3 CR
 在提交 CRD 后，我们就可以创建 CR 来提交了。当然，CR 中的 spec 相关的属性 k8s 是不会使用的，而是在 Controller 中解析并使用。

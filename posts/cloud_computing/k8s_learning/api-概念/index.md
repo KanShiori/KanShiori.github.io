@@ -3,6 +3,7 @@
 
 
 ## 1 概述
+### 1.1 组织对象的方式
 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。
 * **`Group`** 用以来对 API 进行分组（分类）；
 * **`Version`** 用以对相同的 API 进行版本控制；
@@ -32,6 +33,28 @@ kind: CronJob  # Resource
 
 而 Kubernetes 就是通过比较 Group Version Resource，再加上资源对象的 name 来寻找一个资源。
 
+### 1.2 REST 风格
+Kubernetes 系统大部分情况下，API 定义和标准都符合 HTTP REST 标准，即通过 POST、PUT、GET、DELETE 等 HTTP method 来进行对象的增删改查操作。
+
+目前，Kubernetes 使用 OpenAPI 文档格式生成接口文档。你可以通过 `https://<master_ip>:<master_port>/openapi/v2` 来访问 API 文档。
+```
+# 获取 TOEKN
+$ TOKEN=$(kubectl describe secrets $(kubectl get secrets -n kube-system |grep admin |cut -f1 -d ' ') -n kube-system |grep -E '^token' |cut -f2 -d':'|tr -d '\t'|tr -d ' ')
+
+# 获取 APIServer 地址
+$ APISERVER=$(kubectl config view |grep server|cut -f 2- -d ":" | tr -d " ")
+
+$ curl -H "Authorization: Bearer $TOKEN" $APISERVER/openapi/v2 -k  | jq | more
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Kubernetes",
+    "version": "v1.21.1"
+  },
+  "paths": {
+# ...
+```
+
 
 ## 2 版本控制
 Kubernetes 对于版本的控制体现在 URL 中，每个 API 对应的 URL 基于 `/apis/<group>/<version>/namespaces/<ns>/<resource>` 的格式构建，所以不同的版本有着不同的 URL。
@@ -54,10 +77,28 @@ Kubernetes 对于版本的控制体现在 URL 中，每个 API 对应的 URL 基
   verison 以 **`<v>`** 格式，例如 v1。
 
 
-## 3 API Group
-对于比较核心的 API 对象，其 URL 路径前缀为 **`/api/v1`**。其 Group 为空，因此使用 `spec.apiVersion : v1`。
+## 3 API Groups
+为了更容易扩展 API，Kubernetes 将 API 分组为多个逻辑集合，称为 `API Groups`。
+当前支持两类的 API Groups：
+* **Core Groups**
 
-对于其他的 API 对象，URL 路径前缀为 **`/apis/<Group>/<Version>`**，使用 `spec.apiVersion: <Group>/<Version>`。
+  又称为 **Legacy Groups**，大部分核心资源对象都在该组里，例如 Container、Pod、Service 等。
+
+  其 URL 路径前缀为 **`/api/v1`**。其 Group 为空，因此使用 `spec.apiVersion : v1`。
+
+* **其他 API Groups**
+  
+  URL 路径前缀为 **`/apis/<Group>/<Version>`**，使用 `spec.apiVersion: <Group>/<Version>`。
+
+  常见的分组包括：
+    * `apps/v1` ：主要包含与用户发布、部署有关资源，包括 Deployments，RollingUpdates，ReplicaSet。
+    * `extensions/<Version>` ：扩展 API 组，包括 DaemonSet、ReplicaSet，Ingresses。
+    * `batch/<Version>` ：批处理和作业任务的对象，包括 Job。
+    * `autoscaling<Version>` ：HPA 相关资源对象。
+    * `certificate.k8s.io/<Version>` ：集群证书操作相关资源对象。
+    * `rbac.authorization.k8s.io/v1` ：RBAC 权限相关资源对象。
+    * `policy/<Version>` ：Pod 权限性相关的资源。
+    * 其他 CRD 定义的分组
 
 Kubernetes 内置的所有 API Group 可以见 [**API 参考文档**](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#-strong-api-groups-strong-)。
 

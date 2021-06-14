@@ -6,7 +6,7 @@
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
         <title>K8s 学习 - API 概念 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="K8s 学习 - API 概念" />
-<meta property="og:description" content="1 概述 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用以对相同的 API 进行" />
+<meta property="og:description" content="1 概述 1.1 组织对象的方式 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-%E6%A6%82%E5%BF%B5/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-09T07:32:36&#43;00:00" />
@@ -16,7 +16,7 @@
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
 <meta name="twitter:title" content="K8s 学习 - API 概念"/>
-<meta name="twitter:description" content="1 概述 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用以对相同的 API 进行"/>
+<meta name="twitter:description" content="1 概述 1.1 组织对象的方式 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
 <meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-%E6%A6%82%E5%BF%B5/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/schedule-preemption-eviction/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/rbac/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/api-%E6%A6%82%E5%BF%B5\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2242 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2737 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/api-%E6%A6%82%E5%BF%B5\/","datePublished": "2021-06-09T07:32:36+00:00","dateModified": "2021-06-09T07:32:36+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">K8s 学习 - API 概念</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/k8s-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>k8s 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-09">2021-06-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2242 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 5 分钟&nbsp;<span id="/posts/cloud_computing/k8s_learning/api-%E6%A6%82%E5%BF%B5/" class="leancloud_visitors" data-flag-title="K8s 学习 - API 概念">
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-09">2021-06-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2737 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;<span id="/posts/cloud_computing/k8s_learning/api-%E6%A6%82%E5%BF%B5/" class="leancloud_visitors" data-flag-title="K8s 学习 - API 概念">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
@@ -129,9 +129,14 @@
                 </div>
                 <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
   <ul>
-    <li><a href="#1-概述">1 概述</a></li>
+    <li><a href="#1-概述">1 概述</a>
+      <ul>
+        <li><a href="#11-组织对象的方式">1.1 组织对象的方式</a></li>
+        <li><a href="#12-rest-风格">1.2 REST 风格</a></li>
+      </ul>
+    </li>
     <li><a href="#2-版本控制">2 版本控制</a></li>
-    <li><a href="#3-api-group">3 API Group</a>
+    <li><a href="#3-api-groups">3 API Groups</a>
       <ul>
         <li><a href="#31-启用或禁用-api-group">3.1 启用或禁用 API Group</a></li>
       </ul>
@@ -155,6 +160,7 @@
   </ul>
 </nav></div>
             </div><div class="content" id="content"><h2 id="1-概述">1 概述</h2>
+<h3 id="11-组织对象的方式">1.1 组织对象的方式</h3>
 <p>Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。</p>
 <ul>
 <li><strong><code>Group</code></strong> 用以来对 API 进行分组（分类）；</li>
@@ -216,7 +222,46 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><p>而 Kubernetes 就是通过比较 Group Version Resource，再加上资源对象的 name 来寻找一个资源。</p>
-<h2 id="2-版本控制">2 版本控制</h2>
+<h3 id="12-rest-风格">1.2 REST 风格</h3>
+<p>Kubernetes 系统大部分情况下，API 定义和标准都符合 HTTP REST 标准，即通过 POST、PUT、GET、DELETE 等 HTTP method 来进行对象的增删改查操作。</p>
+<p>目前，Kubernetes 使用 OpenAPI 文档格式生成接口文档。你可以通过 <code>https://&lt;master_ip&gt;:&lt;master_port&gt;/openapi/v2</code> 来访问 API 文档。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># 获取 TOEKN
+$ TOKEN=$(kubectl describe secrets $(kubectl get secrets -n kube-system |grep admin |cut -f1 -d &#39; &#39;) -n kube-system |grep -E &#39;^token&#39; |cut -f2 -d&#39;:&#39;|tr -d &#39;\t&#39;|tr -d &#39; &#39;)
+
+# 获取 APIServer 地址
+$ APISERVER=$(kubectl config view |grep server|cut -f 2- -d &#34;:&#34; | tr -d &#34; &#34;)
+
+$ curl -H &#34;Authorization: Bearer $TOKEN&#34; $APISERVER/openapi/v2 -k  | jq | more
+{
+  &#34;swagger&#34;: &#34;2.0&#34;,
+  &#34;info&#34;: {
+    &#34;title&#34;: &#34;Kubernetes&#34;,
+    &#34;version&#34;: &#34;v1.21.1&#34;
+  },
+  &#34;paths&#34;: {
+# ...
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="2-版本控制">2 版本控制</h2>
 <p>Kubernetes 对于版本的控制体现在 URL 中，每个 API 对应的 URL 基于 <code>/apis/&lt;group&gt;/&lt;version&gt;/namespaces/&lt;ns&gt;/&lt;resource&gt;</code> 的格式构建，所以不同的版本有着不同的 URL。</p>
 <p>对于一个特定的版本，例如 v1，包含三种级别的版本：</p>
 <ul>
@@ -236,9 +281,31 @@
 <p>verison 以 <strong><code>&lt;v&gt;</code></strong> 格式，例如 v1。</p>
 </li>
 </ul>
-<h2 id="3-api-group">3 API Group</h2>
-<p>对于比较核心的 API 对象，其 URL 路径前缀为 <strong><code>/api/v1</code></strong>。其 Group 为空，因此使用 <code>spec.apiVersion : v1</code>。</p>
-<p>对于其他的 API 对象，URL 路径前缀为 <strong><code>/apis/&lt;Group&gt;/&lt;Version&gt;</code></strong>，使用 <code>spec.apiVersion: &lt;Group&gt;/&lt;Version&gt;</code>。</p>
+<h2 id="3-api-groups">3 API Groups</h2>
+<p>为了更容易扩展 API，Kubernetes 将 API 分组为多个逻辑集合，称为 <code>API Groups</code>。
+当前支持两类的 API Groups：</p>
+<ul>
+<li>
+<p><strong>Core Groups</strong></p>
+<p>又称为 <strong>Legacy Groups</strong>，大部分核心资源对象都在该组里，例如 Container、Pod、Service 等。</p>
+<p>其 URL 路径前缀为 <strong><code>/api/v1</code></strong>。其 Group 为空，因此使用 <code>spec.apiVersion : v1</code>。</p>
+</li>
+<li>
+<p><strong>其他 API Groups</strong></p>
+<p>URL 路径前缀为 <strong><code>/apis/&lt;Group&gt;/&lt;Version&gt;</code></strong>，使用 <code>spec.apiVersion: &lt;Group&gt;/&lt;Version&gt;</code>。</p>
+<p>常见的分组包括：</p>
+<ul>
+<li><code>apps/v1</code> ：主要包含与用户发布、部署有关资源，包括 Deployments，RollingUpdates，ReplicaSet。</li>
+<li><code>extensions/&lt;Version&gt;</code> ：扩展 API 组，包括 DaemonSet、ReplicaSet，Ingresses。</li>
+<li><code>batch/&lt;Version&gt;</code> ：批处理和作业任务的对象，包括 Job。</li>
+<li><code>autoscaling&lt;Version&gt;</code> ：HPA 相关资源对象。</li>
+<li><code>certificate.k8s.io/&lt;Version&gt;</code> ：集群证书操作相关资源对象。</li>
+<li><code>rbac.authorization.k8s.io/v1</code> ：RBAC 权限相关资源对象。</li>
+<li><code>policy/&lt;Version&gt;</code> ：Pod 权限性相关的资源。</li>
+<li>其他 CRD 定义的分组</li>
+</ul>
+</li>
+</ul>
 <p>Kubernetes 内置的所有 API Group 可以见 <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#-strong-api-groups-strong-" target="_blank" rel="noopener noreffer"><strong>API 参考文档</strong></a>。</p>
 <h3 id="31-启用或禁用-api-group">3.1 启用或禁用 API Group</h3>
 <p>所有 API Group 默认情况都是可用的。可以通过 API Server 启动配置开启用或禁用某个 API 组。</p>

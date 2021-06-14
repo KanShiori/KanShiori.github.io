@@ -10,7 +10,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/crd/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-08T11:45:54&#43;00:00" />
-<meta property="article:modified_time" content="2021-06-09T15:55:05&#43;08:00" />
+<meta property="article:modified_time" content="2021-06-14T12:58:14&#43;08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -27,8 +27,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/crd\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2601 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/crd\/","datePublished": "2021-06-08T11:45:54+00:00","dateModified": "2021-06-09T15:55:05+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3042 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/crd\/","datePublished": "2021-06-08T11:45:54+00:00","dateModified": "2021-06-14T12:58:14+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">[WIP] K8s 学习 - CRD</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/k8s-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>k8s 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-08">2021-06-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2601 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;<span id="/posts/cloud_computing/k8s_learning/crd/" class="leancloud_visitors" data-flag-title="[WIP] K8s 学习 - CRD">
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-08">2021-06-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3042 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;<span id="/posts/cloud_computing/k8s_learning/crd/" class="leancloud_visitors" data-flag-title="[WIP] K8s 学习 - CRD">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
@@ -137,6 +137,7 @@
         <li><a href="#23-defaulting-与-nullable">2.3 Defaulting 与 Nullable</a></li>
         <li><a href="#24-subresources">2.4 Subresources</a></li>
         <li><a href="#25-categories">2.5 Categories</a></li>
+        <li><a href="#26-finalizer">2.6 Finalizer</a></li>
       </ul>
     </li>
     <li><a href="#3-cr">3 CR</a></li>
@@ -267,7 +268,7 @@
 <li><code>metadata.name</code> ：命名，必须是 <code>&lt;plural&gt;.&lt;group&gt;</code>；</li>
 <li>spec
 <ul>
-<li><code>group</code> ：组织，用以 REST API 注册（<code>/apis/&lt;group&gt;/&lt;version&gt;</code>），基本以 URL 方式；</li>
+<li><code>group</code> ：API Group，用以 REST API 注册（<code>/apis/&lt;group&gt;/&lt;version&gt;</code>），基本以 URL 方式；</li>
 <li><code>versions</code> ：版本号，用以 REST API 注册（<code>/apis/&lt;group&gt;/&lt;version&gt;</code>）；</li>
 <li><code>scope</code> ：资源的范围，Namespaced 或者 Cluster；</li>
 <li>names
@@ -292,10 +293,6 @@
 <p>该功能需要配置 kube-apiserver 的 &ndash;feature-gates=CustomResourceValidation=true。</p>
 </blockquote>
 <p>我们对上面的示例对其增加两个检查：</p>
-<ul>
-<li>spec.cronSpec 必须是匹配正则表达式的字符串</li>
-<li>spec.replicas 必须是从 1 到 10 的整数</li>
-</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -356,7 +353,11 @@
 </span><span class="w">              </span><span class="nt">maximum</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><p>更多的 openAPIV3Schema 检查语法见 <a href="https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.0.md#schemaObject" target="_blank" rel="noopener noreffer"><strong>OpenAPI v3 schemas</strong></a>。</p>
+</div><ul>
+<li>spec.cronSpec 必须是匹配正则表达式的字符串</li>
+<li>spec.replicas 必须是从 1 到 10 的整数</li>
+</ul>
+<p>更多的 openAPIV3Schema 检查语法见 <a href="https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.0.md#schemaObject" target="_blank" rel="noopener noreffer"><strong>OpenAPI v3 schemas</strong></a>。</p>
 <h3 id="23-defaulting-与-nullable">2.3 Defaulting 与 Nullable</h3>
 <p>在 OpenAPI v3 validation schema 下，允许你为某些项指定默认值。</p>
 <blockquote>
@@ -444,7 +445,57 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><h3 id="24-subresources">2.4 Subresources</h3>
-<p>TODO</p>
+<p>subresouces 支持设置 status 和 scale 两类：</p>
+<ul>
+<li><strong>status</strong> ：API URL 启动 /status 路径，请求后得到对应资源对象的当前 status</li>
+<li><strong>scale</strong> ：API URL 启用 /scale 路径，使得 Kubernetes 控制器（如 HPA）能够控制 CRD 对象。用户通过 kubectl scale 也可以对 CRD 对象进行缩扩容操作。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>前提<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">当然，scale 的前提是你的 CustomResource 能够支持多副本的形式。</div>
+        </div>
+    </div></li>
+</ul>
+<p>示例如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l">stable.example.com</span><span class="w">
+</span><span class="w">  </span><span class="nt">versions</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w">      </span><span class="nt">subresources</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">scale</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">specReplicasPath</span><span class="p">:</span><span class="w"> </span><span class="l">.spec.replicas</span><span class="w">
+</span><span class="w">          </span><span class="nt">statusReplicasPath</span><span class="p">:</span><span class="w"> </span><span class="l">.status.replicas</span><span class="w">
+</span><span class="w">          </span><span class="nt">labelSelectorPath</span><span class="p">:</span><span class="w"> </span><span class="l">.status.labelSelector</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>scale
+<ul>
+<li><code>specReplicasPath</code> ：从 CR 获取期望副本数量的路径；</li>
+<li><code>statusReplicasPath</code> ：从 CR 获取当前副本数量的路径；</li>
+<li><code>labelSelectorPath</code> ：从 CR 获取 Label Selector 的路径；</li>
+</ul>
+</li>
+</ul>
 <h3 id="25-categories">2.5 Categories</h3>
 <p><code>spec.names.categories</code> 可以将资源分组，通过使用 <code>kubectl get &lt;categories&gt;</code> 来获取一组资源。</p>
 <div class="highlight"><div class="chroma">
@@ -474,6 +525,38 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><p>上面例子将 CR 分类到 &ldquo;all&rdquo; 类别中，使得 <code>kubectl get all</code> 可以获取到该类别下的所有已经创建的资源。</p>
+<h3 id="26-finalizer">2.6 Finalizer</h3>
+<p>Finalizer 会在删除 CR 时自动被调用，可以实现对 CR 的清理工作。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;stable.example.com/v1&#34;</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CronTab</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">finalizers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="l">stable.example.com/finalizer</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>finalizers ：设置 Finalizer，仅仅是一个名称，用于 Controller 判断</li>
+</ul>
+<p>当用户请求删除资源对象时，Kubernetes 会先将 metadata.deletionTimestamp 的值，然后将其标记为开始删除。设置该值后，不断的轮询检查是否所有的 finalizers 被移除。</p>
+<p>对于旁路的 Controller，发现 metadata.deletionTimestamp 被设置，知道了资源对象正在删除流程，于是开始执行其负责的的清理工作。执行完成后，从 finalizers 中移除对应的一项。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">Controler 可以读取 metadata.deletionGracePeriodSeconds 的值，用以得到期望的优雅删除时间是多久。</div>
+        </div>
+    </div></p>
+<p>所有 finalizers 移除后，Kubernetes 才将其真正的资源对象删除。</p>
 <h2 id="3-cr">3 CR</h2>
 <p>在提交 CRD 后，我们就可以创建 CR 来提交了。当然，CR 中的 spec 相关的属性 k8s 是不会使用的，而是在 Controller 中解析并使用。</p>
 <p>基于上面示例，创建一个 CronTab 资源：</p>
@@ -602,8 +685,8 @@ TODO</p>
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2021-06-09&nbsp;<a class="git-hash" href="https://github.com/dillonzq/LoveIt/commit/18c0f9fffda4e537910d72fdd84eadea65a54e20" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 18c0f9fffda4e537910d72fdd84eadea65a54e20: post: API 概念">
-                                    <i class="fas fa-hashtag fa-fw"></i>18c0f9f</a></span>
+                <span>更新于 2021-06-14&nbsp;<a class="git-hash" href="https://github.com/dillonzq/LoveIt/commit/d5bc229132166e79f4c51ad6236f34086458bfc1" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) d5bc229132166e79f4c51ad6236f34086458bfc1: 优化文章">
+                                    <i class="fas fa-hashtag fa-fw"></i>d5bc229</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>

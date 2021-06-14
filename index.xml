@@ -25,7 +25,7 @@
     <pubDate>Wed, 09 Jun 2021 07:32:36 &#43;0000</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-%E6%A6%82%E5%BF%B5/</guid>
-    <description><![CDATA[1 概述 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用以对相同的 API 进行]]></description>
+    <description><![CDATA[1 概述 1.1 组织对象的方式 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用]]></description>
 </item><item>
     <title>K8s 学习 - Schedule Preemption Eviction</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/schedule-preemption-eviction/</link>
