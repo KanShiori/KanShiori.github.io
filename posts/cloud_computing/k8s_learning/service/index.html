@@ -10,7 +10,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/service/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-06T14:03:01&#43;00:00" />
-<meta property="article:modified_time" content="2021-06-14T12:58:14&#43;08:00" />
+<meta property="article:modified_time" content="2021-06-17T21:47:48&#43;08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -27,8 +27,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/service\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3092 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/service\/","datePublished": "2021-06-06T14:03:01+00:00","dateModified": "2021-06-14T12:58:14+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3146 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/service\/","datePublished": "2021-06-06T14:03:01+00:00","dateModified": "2021-06-17T21:47:48+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">K8s 学习 - Service</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/k8s-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>k8s 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-06">2021-06-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3092 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-06">2021-06-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3146 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;<span id="/posts/cloud_computing/k8s_learning/service/" class="leancloud_visitors" data-flag-title="K8s 学习 - Service">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -584,6 +584,7 @@ kube-system   kube-dns                  10.36.0.4:53,10.36.0.5:53,10.36.0.4:53 +
 </span><span class="lnt">13
 </span><span class="lnt">14
 </span><span class="lnt">15
+</span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
@@ -601,9 +602,13 @@ kube-system   kube-dns                  10.36.0.4:53,10.36.0.5:53,10.36.0.4:53 +
 </span><span class="w">  </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l">None </span><span class="w"> </span><span class="c"># clusterIP 指定为 None 表明不需要</span><span class="w">
 </span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
 </span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mysql-balance-pod</span><span class="w">
+</span><span class="w">  </span><span class="nt">publishNotReadyAddresses</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><p>上述定义将 <code>service.spec.clusterIP</code> 定义为了 &ldquo;None&rdquo;，表明创建的是一个 Headless Service。但是 <code>service.spec.selector</code> 还是能够让 Service 选择到 Pod，并创建对应的 Endpoints。也就是说，我们可以通过 Endpoints 来知道哪些对应服务的 Pod 正在运行。</p>
+</div><ul>
+<li><code>publishNotReadyAddresses</code> ：为 true 时，即使 Pod 还不是 Ready 状态，也会提供 DNS 记录</li>
+</ul>
+<p>上述定义将 <code>service.spec.clusterIP</code> 定义为了 &ldquo;None&rdquo;，表明创建的是一个 Headless Service。但是 <code>service.spec.selector</code> 还是能够让 Service 选择到 Pod，并创建对应的 Endpoints。也就是说，我们可以通过 Endpoints 来知道哪些对应服务的 Pod 正在运行。</p>
 <p>最最重要的，每个 Endpoint 对应的 Pod 是存在一个对应的 DNS 记录：<code>&lt;podname&gt;.&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local</code>。</p>
 <p>这使得 Headless Service 在 StatefulSet 中有很好的应用，因为 StatefulSet 中每个 Pod 的命名是固定的，所以也就是其域名 <code>&lt;podname&gt;.&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local</code> 也固定了，那么 Pod 之间通过域名访问就不需要关心 Pod IP 的变化了。</p>
 <div class="details admonition note open">
@@ -696,8 +701,8 @@ kube-system   kube-dns                  10.36.0.4:53,10.36.0.5:53,10.36.0.4:53 +
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2021-06-14&nbsp;<a class="git-hash" href="https://github.com/dillonzq/LoveIt/commit/d5bc229132166e79f4c51ad6236f34086458bfc1" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) d5bc229132166e79f4c51ad6236f34086458bfc1: 优化文章">
-                                    <i class="fas fa-hashtag fa-fw"></i>d5bc229</a></span>
+                <span>更新于 2021-06-17&nbsp;<a class="git-hash" href="https://github.com/dillonzq/LoveIt/commit/c7cc1e96655c7742a9c9003ef0d30caf3b15d9ca" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) c7cc1e96655c7742a9c9003ef0d30caf3b15d9ca: 优化文章">
+                                    <i class="fas fa-hashtag fa-fw"></i>c7cc1e9</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>

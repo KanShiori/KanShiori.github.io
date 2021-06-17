@@ -79,6 +79,7 @@ PV 生命周期包括 5 个阶段：
 {{< /admonition >}}
 
 ### 2.1 PVC 定义
+#### 2.1.1 spec
 PVC 定义中主要是描述了对 PV 的需求，也就是**告诉调度如何选择一个合适的 PV**。
 ```yaml
 apiVersion: v1
@@ -89,6 +90,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   volumeMode: Filesystem
+  volumeName: foo-pv
   resources:
     requests:
       storage: 8Gi
@@ -99,16 +101,29 @@ spec:
     matchExpressions:
       - {key: environment, operator: In, values: [dev]}
 ```
-* `Access Modes`：访问模式，与 PV 的访问模式要匹配；
-* `Volume Modes`：使用模式，与 PV 的访问模式要匹配；
-* `Resources`：Pod 所需求的资源；
-* `Selector`：进一步来过滤选择的 PV，只有满足匹配条件的 PV 才可以被绑定；
-* `StorageClass`：指定所属的 StorageClass，只有相同 StorageClass 的 PV PVC 才可以绑定；
+* `accessModes` ：访问模式，与 PV 的访问模式要匹配
+* `volumeMode` ：使用模式，与 PV 的访问模式要匹配
+* `volumeName` ：指定绑定的 PV name，或者 Bind 后也会填充为对应的 PV name
+* `resources` ：Pod 所需求的资源
+* `selector`：进一步来过滤选择的 PV，只有满足匹配条件的 PV 才可以被绑定
+* `storageClassName` ：指定所属的 StorageClass，只有相同 StorageClass 的 PV PVC 才可以绑定
 
   如果没有指定 StorageClass，如果系统设置了 Default StorageClass 则使用，否则只能绑定没有设置 StorageClass 的 PV。
 {{< admonition note "不指定 StorageClass">}}
 在没有指定 `storageClassName` 下，行为是有多种情况的，见 [**Class**](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1)。
 {{< /admonition >}}
+#### 2.1.2 status
+```yaml
+status:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 446Gi
+  phase: Bound
+```
+* `accessModes` ：访问模式
+* `capacity` ：可使用的容量
+* `phase` ：是否已经绑定
 
 ### 2.2 PVC 的使用
 在 Pod 定义或者 Pod template 中，使用 pvc 类型 `volume` 来指定使用的 PVC。

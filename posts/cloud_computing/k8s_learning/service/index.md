@@ -259,7 +259,9 @@ spec:
   clusterIP: None  # clusterIP 指定为 None 表明不需要
   selector:
     name: mysql-balance-pod
+  publishNotReadyAddresses: false
 ```
+* `publishNotReadyAddresses` ：为 true 时，即使 Pod 还不是 Ready 状态，也会提供 DNS 记录
 
 上述定义将 `service.spec.clusterIP` 定义为了 "None"，表明创建的是一个 Headless Service。但是 `service.spec.selector` 还是能够让 Service 选择到 Pod，并创建对应的 Endpoints。也就是说，我们可以通过 Endpoints 来知道哪些对应服务的 Pod 正在运行。
 

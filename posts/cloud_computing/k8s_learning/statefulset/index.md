@@ -32,7 +32,7 @@ Deployment 与 RelicSets 就是基于这个理念设计的，它们仅仅保证 
 * **固定的网络标识**，通过 [**Headless Service**](http://kanshiori.cn/posts/cloud_computing/k8s_learning/service-%E5%AD%A6%E4%B9%A0/#5-headless-service) 使得 `<podname>.<service>.<namespace>` 与固定命名的 Pod 绑定；
 * **按照编号进行有序的启动与停止**；
 
-##  StatefulSet 基础
+## 2 StatefulSet 基础
 
 ### 2.1 定义
 StatefuleSet 基本定义如下：
@@ -79,19 +79,46 @@ spec:
   * `metadata.name` ：创建的 PVC 基础命名，命名以 `<name>-<podname>` 格式；
   * `spec` ：与创建一个 PVC 的 spec 相同；
 
-### 2.2 使用
+### 2.2 Status
+StatefulSet 会将升级与版本信息记录到 status 字段：
+```yaml
+status:
+  collisionCount: 0
+  currentReplicas: 3
+  currentRevision: my-cluster-69545dcd7d
+  observedGeneration: 1
+  readyReplicas: 3
+  replicas: 3
+  updateRevision: my-cluster-69545dcd7d
+  updatedReplicas: 3
+```
+* currentReplicas ：当前版本的 Pod 数量；
+* currentRevision ：当前版本的标识；
+* updatedReplicas ：升级完成的 Pod 数量；
+* updateRevision ：需要升级的版本标识；
+
+而在对应的 Pod label 中，`controller-revision-hash` 会保存着其对应的 Revision，也就是创建其 Pod 的 StatefulSet 添加的：
+```yaml
+metadata:
+  labels:
+    controller-revision-hash: my-cluster-69545dcd7d
+```
+
+通过对比 Pod 的 `controller-revision-hash` label 与 StatefulSet 保存的 `updateRevision` 就可以判断这个 Pod 是否已经升级过了。因此，StatefulSet 可以不断对未升级的 Pod 执行升级操作。
+
+### 2.3 使用
 注意事项：
 * PV 或者 StorageClass 需要预先创建，不会自动创建与删除；
 * 虽然 PVC 是由 StatefulSet 自动创建的，但是不会进行自动删除，这是为了保留数据；
 * Headless Service 需要预先创建，不会自动创建与删除；
 * 删除 StatefulSet 不会使其清理所有的 Pod，应该通过将 .spec.replicas 设置为 0 来让其清理所有的 Pod；
 
-### 2.3 Pod 管理策略
+### 2.4 Pod 管理策略
 通过 `spec.podManagementPolicy` 可以设置管理的 Pod 的策略：
 * **OrderedReady** ：默认策略，按照 Pod 的顺序依次创建或停止，前一个 Pod 完成后才会进行下一个 Pod 的操作；
 * **Parallel** ：所有 Pod 创建或停止都是并行的，也就是说你不需要启停顺序的特性；
 
-### 2.4 Pod 升级策略
+### 2.5 Pod 升级策略
 通过 `spec.updateStrategy` 可以设置 Pod 的升级策略，也就是当你更新 `spec.template` 的镜像版本时，触发的操作。
 ```yaml
 # …
@@ -108,7 +135,7 @@ spec:
 * **OnDelete** （默认）：需要升级时，并不会自动删除旧版本 Pod，需要用户手动停止旧版本的 Pod，才会创建对应新版本 Pod。
 * **RollingUpdate** ：自动删除旧版本的 Pod，并创建新版本 Pod。管理方式依赖于 Pod 管理策略。
 
-#### 2.4.1 Partitions
+#### 2.5.1 Partitions
 设置 `spec.updateStrategy.rollingUpdate.partition` 可以对 Pod 进行**分区管理**。只有序号大于或等于的 Pod 才会进行滚动升级，其他 Pod 保持不变（即使被删除后重新创建）。
 ```bash
 # 设置 partition 为 1
