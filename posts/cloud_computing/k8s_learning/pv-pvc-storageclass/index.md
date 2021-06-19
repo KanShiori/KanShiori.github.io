@@ -79,7 +79,7 @@ PV 生命周期包括 5 个阶段：
 {{< /admonition >}}
 
 ### 2.1 PVC 定义
-#### 2.1.1 spec
+#### 2.1.1 Spec
 PVC 定义中主要是描述了对 PV 的需求，也就是**告诉调度如何选择一个合适的 PV**。
 ```yaml
 apiVersion: v1
@@ -112,7 +112,7 @@ spec:
 {{< admonition note "不指定 StorageClass">}}
 在没有指定 `storageClassName` 下，行为是有多种情况的，见 [**Class**](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1)。
 {{< /admonition >}}
-#### 2.1.2 status
+#### 2.1.2 Status
 ```yaml
 status:
   accessModes:
@@ -123,7 +123,10 @@ status:
 ```
 * `accessModes` ：访问模式
 * `capacity` ：可使用的容量
-* `phase` ：是否已经绑定
+* `phase` ：PVC 的阶段，包括：
+  * **Pending** ：没有绑定 PV；
+  * **Bound** ：已经绑定到 PV；
+  * **Lost** ：已经绑定到 PV，但是 PV 丢失了；
 
 ### 2.2 PVC 的使用
 在 Pod 定义或者 Pod template 中，使用 pvc 类型 `volume` 来指定使用的 PVC。
