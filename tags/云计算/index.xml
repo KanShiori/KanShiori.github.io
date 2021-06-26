@@ -3,48 +3,55 @@
         <title>云计算 - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/</link>
         <description>云计算 - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 12 Jun 2021 16:29:21 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
-    <title>K8s 学习 - Pod</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pod/</link>
-    <pubDate>Sat, 12 Jun 2021 16:29:21 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pod/</guid>
-    <description><![CDATA[1 Pod 的进程模型 Pod 是一组容器的集合，而为什么实现上需要多个容器？据传，因为开发 Borg 项目的工程师发现，部署的应用往往都是一个进程组，而不是一个进程]]></description>
-</item><item>
-    <title>K8s 学习 - RBAC 授权机制</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/rbac/</link>
-    <pubDate>Wed, 09 Jun 2021 12:05:39 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/rbac/</guid>
-    <description><![CDATA[1 概念 在 API 访问控制 中提到，Kubernetes 支持的授权机制有多种，其中 RBAC 是最常用的授权方式。RBAC 基于角色访问控制，全称 Role-Base Access Contro]]></description>
-</item><item>
-    <title>K8s 学习 - API 概念</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-%E6%A6%82%E5%BF%B5/</link>
-    <pubDate>Wed, 09 Jun 2021 07:32:36 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-%E6%A6%82%E5%BF%B5/</guid>
-    <description><![CDATA[1 概述 1.1 组织对象的方式 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用]]></description>
-</item><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 23 Jun 2021 12:09:25 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
     <title>K8s 学习 - Schedule Preemption Eviction</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/schedule-preemption-eviction/</link>
-    <pubDate>Tue, 08 Jun 2021 12:09:25 &#43;0000</pubDate>
+    <pubDate>Wed, 23 Jun 2021 12:09:25 &#43;0000</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/schedule-preemption-eviction/</guid>
     <description><![CDATA[1 概述 无论是基本的副本控制器，还是自定义资源，其控制的底层 Pod 的调度都是都通过 Scheduler 完成的。 2 Schedule 2.1 nodeSelector Pod 的 spec.nodeSelector 可以用于控制 Pod 能被调度到哪些节点上。其内]]></description>
 </item><item>
-    <title>[WIP] K8s 学习 - CRD</title>
+    <title>K8s 学习 - API</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api/</link>
+    <pubDate>Sat, 12 Jun 2021 07:32:36 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api/</guid>
+    <description><![CDATA[1 概述 1.1 组织对象的方式 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用]]></description>
+</item><item>
+    <title>K8s 学习 - CRD</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/crd/</link>
-    <pubDate>Tue, 08 Jun 2021 11:45:54 &#43;0000</pubDate>
+    <pubDate>Thu, 10 Jun 2021 11:45:54 &#43;0000</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/crd/</guid>
     <description><![CDATA[1 概述 Kubernetes 不仅仅是一个编排框架，更是提供了极大的扩展性，可以看做一个资源框架。你可以基于 k8s 提供的种种功能，来满足你应用的需要。 其中 CRD 就是允许你]]></description>
 </item><item>
     <title>K8s 学习 - StatefulSet</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/statefulset/</link>
-    <pubDate>Mon, 07 Jun 2021 11:55:46 &#43;0000</pubDate>
+    <pubDate>Wed, 09 Jun 2021 11:55:46 &#43;0000</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/statefulset/</guid>
     <description><![CDATA[1 概述 Pod 在设计的理念上是无状态的，Pod 可以在任意时刻被销毁，可以在任意时刻被在别的节点创建相同的副本。 Deployment 与 RelicSets 就是基于这个理念设计的，它们仅]]></description>
+</item><item>
+    <title>K8s 学习 - RBAC 授权机制</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/rbac/</link>
+    <pubDate>Tue, 08 Jun 2021 12:05:39 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/rbac/</guid>
+    <description><![CDATA[1 概念 在 API 访问控制 中提到，Kubernetes 支持的授权机制有多种，其中 RBAC 是最常用的授权方式。RBAC 基于角色访问控制，全称 Role-Base Access Contro]]></description>
+</item><item>
+    <title>K8s 学习 - PV PVC StorageClass</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pv-pvc-storageclass/</link>
+    <pubDate>Tue, 08 Jun 2021 07:43:09 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pv-pvc-storageclass/</guid>
+    <description><![CDATA[1 PV <strong><ruby>PV<rt>Persistent Volume</rt></ruby></strong> 代表一个实际可用的后端存储（也可能不是后端，而是 Local PV）。大多数情况下，PV 是一个网络文件系统，或者分布式存储，或者云厂商的云盘。 1.1]]></description>
+</item><item>
+    <title>K8s 学习 - DNS</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/dns/</link>
+    <pubDate>Mon, 07 Jun 2021 13:16:11 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/dns/</guid>
+    <description><![CDATA[1 Pod 的 DNS 1.1 Pod 的 DNS 域名 对每个 Pod 来说，CoreDNS 会为其设置一个 &lt;pod_ip&gt;.&lt;namespace&gt;.pod.&lt;clust-domain&gt; 格式的 DNS 域名。 1 2 3 4 5 6 7 # 访问 POD IP DNS $ nslookup 192-168-166-168.tidb-cluster-dev.pod.cluster.local Server: 10.96.0.10 Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local Name: 192-168-166-168.tidb-cluster-dev.pod.cluster.local Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-peer.tidb-cluster-dev.svc.cluster.local 对于 Deployment]]></description>
 </item><item>
     <title>K8s 学习 - Service</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/service/</link>
@@ -53,12 +60,12 @@
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/service/</guid>
     <description><![CDATA[1 概述 首先我们需要明确 Service 出现的背景：因为 Pod 设计上是无状态的，可以说没有固定的 IP，所以在其他组件访问某一个网络服务时，需要一个 “固定” 的地址]]></description>
 </item><item>
-    <title>K8s 学习 - PV PVC StorageClass</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pv-pvc-storageclass/</link>
-    <pubDate>Sat, 05 Jun 2021 07:43:09 &#43;0000</pubDate>
+    <title>K8s 学习 - Pod</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pod/</link>
+    <pubDate>Sat, 05 Jun 2021 16:29:21 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pv-pvc-storageclass/</guid>
-    <description><![CDATA[1 PV <strong><ruby>PV<rt>Persistent Volume</rt></ruby></strong> 代表一个实际可用的后端存储（也可能不是后端，而是 Local PV）。大多数情况下，PV 是一个网络文件系统，或者分布式存储，或者云厂商的云盘。 1.1]]></description>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pod/</guid>
+    <description><![CDATA[1 Pod 的进程模型 Pod 是一组容器的集合，而为什么实现上需要多个容器？据传，因为开发 Borg 项目的工程师发现，部署的应用往往都是一个进程组，而不是一个进程]]></description>
 </item><item>
     <title>KVM 虚拟机的存储与网络总结</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</link>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文主要总结一些遇到的虚拟机使用存储与网络的方式，挖了]]></description>
-</item><item>
-    <title>制作虚拟机镜像</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/</link>
-    <pubDate>Sat, 31 Oct 2020 17:47:42 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/</guid>
-    <description><![CDATA[中心思想：通过 libvirt 运行一个虚拟机（domain），并保存其对应的 domain 的镜像文件与配置文件，然后就可以在其他机器通过 virsh define + start 或者 virt-install 启动。 说明：下面]]></description>
 </item></channel>
 </rss>

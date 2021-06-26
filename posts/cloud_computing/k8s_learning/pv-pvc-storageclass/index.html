@@ -9,8 +9,8 @@
 <meta property="og:description" content="1 PV [PV]^(Persistent Volume) 代表一个实际可用的后端存储（也可能不是后端，而是 Local PV）。大多数情况下，PV 是一个网络文件系统，或者分布式存储，或者云厂商的云盘。 1.1" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pv-pvc-storageclass/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2021-06-05T07:43:09&#43;00:00" />
-<meta property="article:modified_time" content="2021-06-19T23:41:47&#43;08:00" />
+<meta property="article:published_time" content="2021-06-08T07:43:09&#43;00:00" />
+<meta property="article:modified_time" content="2021-06-26T22:10:22&#43;08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -18,7 +18,7 @@
 <meta name="twitter:title" content="K8s 学习 - PV PVC StorageClass"/>
 <meta name="twitter:description" content="1 PV [PV]^(Persistent Volume) 代表一个实际可用的后端存储（也可能不是后端，而是 Local PV）。大多数情况下，PV 是一个网络文件系统，或者分布式存储，或者云厂商的云盘。 1.1"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pv-pvc-storageclass/" /><link rel="prev" href="https://KanShiori.github.io/posts/net/tls-%E6%80%BB%E7%BB%93/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/service/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pv-pvc-storageclass/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/dns/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/rbac/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -28,7 +28,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/pv-pvc-storageclass\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3685 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/pv-pvc-storageclass\/","datePublished": "2021-06-05T07:43:09+00:00","dateModified": "2021-06-19T23:41:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/pv-pvc-storageclass\/","datePublished": "2021-06-08T07:43:09+00:00","dateModified": "2021-06-26T22:10:22+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">K8s 学习 - PV PVC StorageClass</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/k8s-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>k8s 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-05">2021-06-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3685 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-08">2021-06-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3685 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 8 分钟&nbsp;<span id="/posts/cloud_computing/k8s_learning/pv-pvc-storageclass/" class="leancloud_visitors" data-flag-title="K8s 学习 - PV PVC StorageClass">
                         <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
                     </span>&nbsp;</div>
@@ -804,8 +804,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2021-06-19&nbsp;<a class="git-hash" href="https://github.com/dillonzq/LoveIt/commit/4e0fcd74ee362d6e3203c0e7b50d4e19170c5bf2" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 4e0fcd74ee362d6e3203c0e7b50d4e19170c5bf2: [WIP]: TiDB Operator ControlManager 学习">
-                                    <i class="fas fa-hashtag fa-fw"></i>4e0fcd7</a></span>
+                <span>更新于 2021-06-26&nbsp;<a class="git-hash" href="https://github.com/dillonzq/LoveIt/commit/1d0f62ffe3c7148c77442d93e727dc8f6b0c7144" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 1d0f62ffe3c7148c77442d93e727dc8f6b0c7144: post: DNS">
+                                    <i class="fas fa-hashtag fa-fw"></i>1d0f62f</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
@@ -826,8 +826,8 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/net/tls-%E6%80%BB%E7%BB%93/" class="prev" rel="prev" title="SSL/TLS 总结"><i class="fas fa-angle-left fa-fw"></i>SSL/TLS 总结</a>
-            <a href="/posts/cloud_computing/k8s_learning/service/" class="next" rel="next" title="K8s 学习 - Service">K8s 学习 - Service<i class="fas fa-angle-right fa-fw"></i></a></div>
+    <div class="post-nav"><a href="/posts/cloud_computing/k8s_learning/dns/" class="prev" rel="prev" title="K8s 学习 - DNS"><i class="fas fa-angle-left fa-fw"></i>K8s 学习 - DNS</a>
+            <a href="/posts/cloud_computing/k8s_learning/rbac/" class="next" rel="next" title="K8s 学习 - RBAC 授权机制">K8s 学习 - RBAC 授权机制<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 <div id="comments"><div id="valine" class="comment"></div><noscript>
                 Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.

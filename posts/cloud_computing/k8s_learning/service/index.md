@@ -44,23 +44,46 @@ spec:
     - "key"
   externalName: string
 ```
-* `selector` ：用于 Service 选择被代理的 Pod；
-* `type` ： Service 类型，见 [**Service 的类型**](#3-service-类型)；
-* `clusterIP` ：固定的地址，为空那么随机提供；
-* `sessionAffinity` ： 设置负载均衡策略；
-* `ports` ：提供需要代理的协议，源端口，目的端口，宿主机端口（NodePort 类型）；
-* `status` ：使用 LoadBalancer 类型下，提供相关参数；
-* `topologyKeys` ：控制流量转发的拓扑控制，优先将流量转发到相同 key 的 Node 上的 Pod；
-* `externalName` ：ExternalName 类型 service 代理的集群外的服务域名；
+* `spec.selector` ：用于 Service 选择被代理的 Pod；
+* `spec.type` ： Service 类型，见 [**Service 的类型**](#3-service-类型)；
+* `spec.clusterIP` ：固定的地址，为空那么随机提供；
+* `spec.sessionAffinity` ： 设置负载均衡策略；
+* `spec.ports` ：提供需要代理的协议，源端口，目的端口，宿主机端口（NodePort 类型）；
+* `spec.status` ：使用 LoadBalancer 类型下，提供相关参数；
+* `spec.topologyKeys` ：控制流量转发的拓扑控制，优先将流量转发到相同 key 的 Node 上的 Pod；
+* `spec.externalName` ：ExternalName 类型 service 代理的集群外的服务域名；
 
-### 2.2 Service 的 DNS
-所有 Service 都会自动对应一个 DNS 域名，其命令方式为 `<service>.<namespace>.svc.cluster.local`。
+### 2.2 负载均衡策略
+k8s 默认提供两种负载均衡策略：
+* **RoundRobin** ：轮询模式，将请求轮询到后端各个 Pod。默认模式
+* **SessionAffinity** ：基于客户端 IP 地址进行会话保持的模式。
 
-当执行 nslookup \<service> 时，自动在当前的 namespace 下访问。
+  即第一次将某个客户端发起请求到后端某个 Pod，之后相同客户端发起请求都会被转发到对应 Pod。
 
-通过 nslookup \<service>.\<namespace> 也可以跨 namespace 进行 DNS 解析。
+将 `spec.sessionAffinity` 指定为 "ClientIP"，就表明了开启 SessionAffinity 策略。
 
-### 2.3 Service 相关的环境变量
+### 2.3 支持的网络协议
+目前 Service 支持如下网络协议：
+* TCP: 默认网络协议，可用于所有类型 Service
+* UDP: 可用于大多数类型 Service。LoadBalancer 类型取决于云服务是否支持
+* HTTP: 取决于云服务是否支持
+* PROXY: 取决于云服务是否支持
+* SCTP
+
+从 1.17 版本开始，可以为 Service 和 Endpoint 资源对象设置 `spec.ports[].AppProtocol` 字段，用于表示后端服务在某端口停的应用层协议类型。
+```yaml
+# ...
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    AppProtocol: HTTP
+```
+
+## 3 服务发现
+Kubernetes 提供了两种机制供客户端以固定的范式获取后端 Service 的访问地址：环境变量和 DNS。
+
+### 3.1 环境变量方式
 如果 Pod 在 Service 之后创建，那么集群中同 namespace **Service 地址信息会通过 ENV 传递给容器**（不包括 Headless Service）。
 
 相关的环境变量包括：
@@ -77,16 +100,24 @@ spec:
 
 环境变量默认还会提供 kubernetes 的 service 地址，用于 Pod 来访问 APIServer。
 
-### 2.4 负载均衡策略
-k8s 默认提供两种负载均衡策略：
-* **RoundRobin** ：轮询模式，将请求轮询到后端各个 Pod。默认模式
-* **SessionAffinity** ：基于客户端 IP 地址进行会话保持的模式。
+### 3.2 DNS 方式
+所有 Service 都会自动对应一个 DNS 域名，其命令方式为 `<service>.<namespace>.svc.cluster.<cluster_domain>`。由 CoreDNS 作为集群的默认 DNS 服务器，提供域名解析服务。
 
-  即第一次将某个客户端发起请求到后端某个 Pod，之后相同客户端发起请求都会被转发到对应 Pod。
+如果 Service 定义中设置了 `spec.ports[].name`，那么该端口号也会有一个域名：`_<port_name>._<protocol>.<service>.<namespace>.svc.<cluster_domain>。
+```yaml
+# 提供了 _http._tcp.<name>.<namspace>.svc.local 的 DNS 域名
+spec:
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      name: http
+```
 
-将 `service.spec.sessionAffinity` 指定为 "ClientIP"，就表明了开启 SessionAffinity 策略。
+当执行 nslookup \<service> 时，自动在当前的 namespace 下访问。通过 nslookup \<service>.\<namespace> 可以跨 namespace 进行 DNS 解析。
 
-## 3 Service 类型
+
+## 4 Service 类型
 Service 核心的功能是：代理。代理涉及到两个点：访问代理的前端，被代理的后端。
 
 针对这个前后端的不同，Service 分为了 4 种类型：
@@ -97,7 +128,7 @@ Service 核心的功能是：代理。代理涉及到两个点：访问代理的
 
 可以看到，ClusterIP NodePort LoadBalancer 是针对访问代理的前端做了区分，而 ExternalName 是在被代理后端的不同。
 
-### 3.1 ClusterIP
+### 4.1 ClusterIP
 ClusterIP 是最基本的 Service，通过一个 VIP + Port 来在集群内部代理了一组 Pod 的 Port。始终要记得，VIP 是在集群内部才能使用。
 ```yaml
 apiVersion: v1
@@ -117,7 +148,7 @@ spec:
 上述定义创建了一个随机选择 IP，代理 TCP 3000 -> 443 端口的 Service。
 {{< find_img "img1.png" >}}
 
-### 3.2 NodePort
+### 4.2 NodePort
 NodePort 是对 ClusterIP 的增强，增加一个宿主机上端口到代理源端口的转发，使得集群外部也可以访问集群内部的服务。
 
 {{< admonition note port-forward>}}
@@ -144,7 +175,7 @@ spec:
 上述定义在 ClusterIP 基础上，增加了宿主机 30080 的端口转发。
 {{< find_img "img2.png" >}}
 
-### 3.3 LoadBalancer
+### 4.3 LoadBalancer
 在云厂商环境下，Node 都是在云的托管集群中的，所以外网访问 k8s 集群内的路径为："外网 -> 云集群 -> k8s 集群"。而 NodePort 仅仅解决了 "云集群 -> k8s 集群" 这个问题。
 
 因此，LoadBalancer Service 在 NodePort 基础上，提供了云厂商需要的负载均衡信息，而云厂商根据该信息设置好 "外网 -> 云集群" 的转发路径。
@@ -164,7 +195,7 @@ spec:
   type: LoadBalancer
   externalTrafficPolicy: Local
 ```
-* externalTrafficPolicy 
+* spec.externalTrafficPolicy 
 
 spec 中定义仅仅是约定的规范，不同厂商所需要的更加细节的 LoadBalancer 的参数，大多数是通过 `service.metadata.annotations` 来提供：
 ```yaml
@@ -183,7 +214,7 @@ spec 中定义仅仅是约定的规范，不同厂商所需要的更加细节的
 
 对于 LoadBalancer，更多的信息见官方文档：[**LoadBalancer**](https://kubernetes.io/zh/docs/concepts/services-networking/service/#loadbalancer)。
 
-### 3.4 ExternalName
+### 4.4 ExternalName
 前面三种 Service 代理的后端都是集群内部的 Pod，而 ExternalName 不再是代理 Pod，而是将请求域名重定向另一个域名。
 
 因此，ExternalName Service 不再提供代理的功能，而是提供了**域名重定向**的功能。
@@ -204,7 +235,7 @@ spec:
 通过 `serivce.spec.externalName` 指定被代理的域名，而集群内部的 Pod 就可以通过该 Service 访问外部服务了。
 {{< find_img "img3.png" >}}
 
-## 4 Endpoint
+## 5 Endpoint
 当创建一个 Service 后，会根据 `service.spec.selector` 自动来匹配作为后端的 Pod。实际上，会对应一个 **`Endpoints`** 对象来代表其匹配到的代理目标，而其每一个被代理的 Pod 称之为 **`Endpoint`**。
 ```shell
 $ kubectl get endpoints -A
@@ -239,7 +270,7 @@ subsets:
 
 同名的 Endpoint 与 Service 自动被认为是相绑定的。
 
-## 5 Headless Service
+## 6 Headless Service
 Service 会自动发现一组 Pod，并提供代理服务与负载均衡。不过有时候，Pod 中程序并不想使用 Service 的代理功能，而是仅仅想让 Service 作为一个服务发现的作用，例如，peer2peer 程序想要知道有哪些对端的程序。
 
 通过 Service 的定义看，这种情况也就是不需要 `service.spec.clusterIP`，但是需要 `service.spec.selector`。这种特殊的 Service 被称为 **`Headless Service`**。
@@ -249,8 +280,6 @@ kind: Service
 metadata:
   name: mysql-balance-svc
   namespace: mysql-space
-  labels:
-    name: mysql-balance-svc
 spec:
   ports:
   - port: 3308
@@ -261,19 +290,79 @@ spec:
     name: mysql-balance-pod
   publishNotReadyAddresses: false
 ```
-* `publishNotReadyAddresses` ：为 true 时，即使 Pod 还不是 Ready 状态，也会提供 DNS 记录
+* `spec.clusterIP`: None 表明其为 Headless Service
+* `sepc.publishNotReadyAddresses` ：为 true 时，即使 Pod 还不是 Ready 状态，也会提供 DNS 记录
 
-上述定义将 `service.spec.clusterIP` 定义为了 "None"，表明创建的是一个 Headless Service。但是 `service.spec.selector` 还是能够让 Service 选择到 Pod，并创建对应的 Endpoints。也就是说，我们可以通过 Endpoints 来知道哪些对应服务的 Pod 正在运行。
+`service.spec.selector` 让 Service 匹配到后端 Pod，并创建对应的 Endpoints。
 
-最最重要的，每个 Endpoint 对应的 Pod 是存在一个对应的 DNS 记录：`<podname>.<service>.<namespace>.svc.cluster.local`。
+当我们直接使用 Service DNS 进行解析时，会得到 DNS 系统返回的全部 Endpoint 地址。
+```shell
+$ nsloopup mysql-balance-svc.mysql-space.svc.cluster.local
 
-这使得 Headless Service 在 StatefulSet 中有很好的应用，因为 StatefulSet 中每个 Pod 的命名是固定的，所以也就是其域名 `<podname>.<service>.<namespace>.svc.cluster.local` 也固定了，那么 Pod 之间通过域名访问就不需要关心 Pod IP 的变化了。
+Server: 169.169.0.100
+Address: 169.169.0.100#53
+Name :mysql-balance-svc.mysql-space.svc.cluster.local
+Address: 10.0.95.13
+Name :mysql-balance-svc.mysql-space.svc.cluster.local
+Address: 10.0.95.12
+Name :mysql-balance-svc.mysql-space.svc.cluster.local
+```
 
-{{< admonition note Note>}}
-StatefulSet 必须使用 Headless Service 来为每个 Pod 提供固定的网络地址标识。
+通过 Headless Service，然后设置 Pod 的 hostname 与 subdomain，就可以实现通过固定 DNS 记录访问某个 Pod。也就是 StatefulSet 使用 Headless Service 的方式。
+
+这里提及一下，StatefulSet Pod 对应的 DNS 记录为：`<podname>.<service>.<namespace>.svc.cluster.local`。
+{{< admonition note "DNS 记录不是由 Headless Service 提供的">}}
+要注意，StatefulSet Pod 的 DNS 记录不是由 Headless Service 提供的。
 {{< /admonition >}}
 
-## 6 Ingress
+## 7 EndpointSlice 与 Service Topology
+由前面知道，Service 后端是一组 Endpoint，随着集群规模的扩大，Endpoint 数量不断的增长，使得 kube-proxy 需要维护非常多的负载分发规则。
+
+通过 EndpointSlice 与 Service Topology 配合，可以让 kube-proxy 仅仅转发部分的节点，实现对 Endpoint 的分片管理。
+
+### 7.1 EndpointSlice
+1.16 版本引入了 **`EndpointSlice`** 机制，包括 EndpointSlice 资源对象和 EndpointSlice Controller。
+
+EndpointSlice 就是代表着一组 Endpoint，kube-proxy 可以使用 EndpointSlice 中的 Endpoint 进行路由转发。
+{{< find_img "img5.png" >}}
+
+{{< admonition tip "kube-proxy 开启 EndpointSlice">}}
+kube-proxy 默认仍然使用 Endpoint 对象，通过设置其启动参数 --feature-gates="EndpointSlice=true" 来让其使用 EndpointSlice 对象。
+{{< /admonition >}}
+
+默认情况下，创建一个 Service 后，就会存在对应的 EndpointSlice 对象，包含匹配到的 Endpoint 对象。
+```shell
+$ kubectl get endpointslices.discovery.k8s.io
+NAME                                                   ADDRESSTYPE   PORTS              ENDPOINTS                                         AGE
+my-tidb-cluster-dev-discovery-sm8ns                    IPv4          10262,10261        192.168.54.139                                    2d3h
+my-tidb-cluster-dev-pd-dsktv                           IPv4          2379               192.168.135.18,192.168.166.186,192.168.54.140     2d3h
+my-tidb-cluster-dev-pd-peer-n6wbg                      IPv4          2380               192.168.135.18,192.168.166.186,192.168.54.140     2d3h
+```
+
+### 7.2 Service Topology
+
+Service Topology 可以根据业务需求对 Node 进行分组，设置有意义的指标值来标识 Node 是 “近” 或者 “远”。对于公有云环境来说，通常会进行 Zone 或 Region 的划分。
+
+通过 Service Topology 就实现了对 Endpoint 进行分组，也就是创建多个 EndpointSlice，进行分片管理。
+
+{{< admonition tip "开启 Service Topology">}}
+通过设置 kube-apiserver 和 kube-proxy 启动参数 *--feature-gates="ServiceTopology=true,EndpointSlice=true* 开启。
+{{< /admonition >}}
+
+通过 Service 定义上的 `spec.topologyKeys` 字段来进行 Service 流量控制。转发流量时，会去按照 topologyKeys 字段顺序匹配 Node 的 label，同样的 key 对应的 value 算作匹配成功，那么才能将流量转发到该 Node 上。
+```yaml
+spec:
+  topologyKeys:
+  - "kubernetes.io/hostname"  # 匹配 Node 与要转发的 Node，该 key 的 label 相同才可以转发流量
+---
+spec:
+  topologyKeys:
+  - "topology.kubernetes.io/zone"   # 优先转发到同 zone
+  - "topology.kubernetes.io/region" # 其次转发到同 region
+  - "*" # 最后随意转发
+```
+
+## 8 Ingress
 Service 提供了基于 4 层的代理，也就是基于 IP + Port 的代理。而 **`Ingress` 出现就是为了支持 7 层的代理**，典型的就是支持 HTTP/HTTPS 协议的代理。
 {{< find_img "img4.png" >}}
 
@@ -281,14 +370,14 @@ Ingress 类似于 nginx 的配置，提供应用层的路由，将流量路由�
 
 不过 Ingress 类似于 Service，仅仅是一个规则的定义，其代理的实现依赖于 Ingress Controller。
 
-### 6.1 Ingress Controller
+### 8.1 Ingress Controller
 **`Ingress Controller`** 基于定义好的 Ingress 来**实现实际的路由**，可以理解为就是实际上的 nginx。
 
 Ingress Controller 是不包含在 controller manager 默认启动的 controller 的，需要手动进行 controller。
 
 当然，目前有着许多种的 Ingress Controller 的实现，具体见 [**Ingress Controller**](https://kubernetes.io/zh/docs/concepts/services-networking/ingress-controllers/#%E5%85%B6%E4%BB%96%E6%8E%A7%E5%88%B6%E5%99%A8)。
 
-### 6.2 Ingress 定义
+### 8.2 Ingress 定义
 Ingress 的配置和配置 nginx 类似，基于 HTTP path 路径进行路由的配置。
 
 看一个示例定义：
@@ -314,12 +403,13 @@ spec:
                 kind: StorageBucket
                 name: icon-assets
 ```
-* `defaultBackend` ： 用于配置默认的后端，当 rules 中所有都不满足时，就会使用 default 路由；
-* `rules` ：定义路由策略
+* `sepc.defaultBackend` ： 用于配置默认的后端，当 rules 中所有都不满足时，就会使用 default 路由；
+* `spec.rules` ：定义路由策略
 
 
 ## 参考
 * [**《Kubernetes in Action》**](https://book.douban.com/subject/30418855/)
+* [**《Kubernetes 权威指南》**](https://book.douban.com/subject/35458432/)
 * [**Blog: 详解 k8s 4 种类型 Service**](https://segmentfault.com/a/1190000023125587)
 
 

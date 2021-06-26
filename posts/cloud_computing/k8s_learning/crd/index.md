@@ -1,4 +1,4 @@
-# [WIP] K8s 学习 - CRD
+# K8s 学习 - CRD
 
 
 ## 1 概述
@@ -284,29 +284,4 @@ Informer 是 Kubernetes 提供的代码模块，针对于特定的 API 对象，
 {{< /admonition >}}
 
 同时，Informer 中异步的不断读取 Delta FIFO Queue 中事件，并触发其注册的**回调函数**（AddFunc UpdateFunc DeleteFunc）。
-
-## 5 自定义资源示例
-### 5.1 使用 kubebuilder
-整体过程来自于官方文档 [**QuickStart**](https://book.kubebuilder.io/quick-start.html)
-1. 安装 kubebuilder
-1. 进行初始化
-```bash
-$ kubebuilder init --domain shiori.me --repo shiori.me/crd-practice --skip-go-version-check
-…
-Next: define a resource with:
-$ kubebuilder create api
-```
-3. 创建一个 API
-```bash
-$ kubebuilder create api --group shiori --version v1 --kind Echo
-Create Resource [y/n]
-y
-Create Controller [y/n]
-y
-```
-* Resource 会让其生成资源的定义文件 api/v1/echo_types.go
-* Controller 会让其生成 Controller 逻辑框架 controllers/echo_controller.go
-
-我们看一下基本的目录结构：
-TODO
 
