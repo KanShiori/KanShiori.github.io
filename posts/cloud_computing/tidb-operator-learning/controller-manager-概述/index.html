@@ -18,7 +18,7 @@
 <meta name="twitter:title" content="[WIP] TiDB Operator 学习 - ControllerManager 概述"/>
 <meta name="twitter:description" content="1 概述 TiDB Operator 中的 ControllerManager 用于管理 TiDBCluster 这个 CustomResource。 下面 ControllerManager 都是指的 TiDB Operator 的 ControllerManager。 TiDBCluster 是一个抽象的概念，其稳"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/tidb-operator-learning/controller-manager-%E6%A6%82%E8%BF%B0/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pod/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/tidb-operator-learning/controller-manager-%E6%A6%82%E8%BF%B0/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pod/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/aws_learning/vpc/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -491,7 +491,8 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud_computing/k8s_learning/pod/" class="prev" rel="prev" title="K8s 学习 - Pod"><i class="fas fa-angle-left fa-fw"></i>K8s 学习 - Pod</a></div>
+    <div class="post-nav"><a href="/posts/cloud_computing/k8s_learning/pod/" class="prev" rel="prev" title="K8s 学习 - Pod"><i class="fas fa-angle-left fa-fw"></i>K8s 学习 - Pod</a>
+            <a href="/posts/cloud_computing/aws_learning/vpc/" class="next" rel="next" title="[WIP] AWS 学习 - VPC">[WIP] AWS 学习 - VPC<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 <div id="comments"><div id="valine" class="comment"></div><noscript>
                 Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.

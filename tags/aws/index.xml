@@ -1,9 +1,9 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-        <title>net - 标签 - Shiori&#39;s Blog</title>
-        <link>https://KanShiori.github.io/tags/net/</link>
-        <description>net - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 23 Jun 2021 14:13:47 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/net/" rel="self" type="application/rss+xml" /><item>
+        <title>aws - 标签 - Shiori&#39;s Blog</title>
+        <link>https://KanShiori.github.io/tags/aws/</link>
+        <description>aws - 标签 - Shiori&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 23 Jun 2021 14:13:47 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/aws/" rel="self" type="application/rss+xml" /><item>
     <title>[WIP] AWS 学习 - VPC</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/vpc/</link>
     <pubDate>Wed, 23 Jun 2021 14:13:47 &#43;0000</pubDate>
