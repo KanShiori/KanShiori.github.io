@@ -3,7 +3,14 @@
         <title>k8s - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/k8s/</link>
         <description>k8s - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 23 Jun 2021 12:09:25 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 03 Jul 2021 05:47:25 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 学习 - API Server 认证</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-server-%E8%AE%A4%E8%AF%81/</link>
+    <pubDate>Sat, 03 Jul 2021 05:47:25 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-server-%E8%AE%A4%E8%AF%81/</guid>
+    <description><![CDATA[1 概述 Kubernetes 中所有的资源访问与操作都是通过 API Server 执行的，因此 API Server 有着一套安全机制。 APIServer 的权限检查从大体上分为三个阶段： Authentication ：身份认证，用于验证请求者的]]></description>
+</item><item>
     <title>K8s 学习 - Schedule Preemption Eviction</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/schedule-preemption-eviction/</link>
     <pubDate>Wed, 23 Jun 2021 12:09:25 &#43;0000</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pod/</guid>
     <description><![CDATA[1 Pod 的进程模型 Pod 是一组容器的集合，而为什么实现上需要多个容器？据传，因为开发 Borg 项目的工程师发现，部署的应用往往都是一个进程组，而不是一个进程]]></description>
-</item><item>
-    <title>PV PVC 与 StorageClass</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/</link>
-    <pubDate>Fri, 30 Oct 2020 16:14:11 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/pv-pvc-%E4%B8%8E-storageclass/</guid>
-    <description><![CDATA[1 PV 与 PVC 目的：使用 NFS 做 PV，创建 Pod 使用该 PV Node-1 构建 nfs 服务，位于 &ldquo;/nfs&rdquo; 目录。 创建 PV，使用 nfs 类型。 声明、创建 PVC，使用上述指定的 StorageCl]]></description>
 </item></channel>
 </rss>

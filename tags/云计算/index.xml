@@ -3,7 +3,14 @@
         <title>云计算 - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/</link>
         <description>云计算 - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 23 Jun 2021 12:09:25 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 03 Jul 2021 05:47:25 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 学习 - API Server 认证</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-server-%E8%AE%A4%E8%AF%81/</link>
+    <pubDate>Sat, 03 Jul 2021 05:47:25 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-server-%E8%AE%A4%E8%AF%81/</guid>
+    <description><![CDATA[1 概述 Kubernetes 中所有的资源访问与操作都是通过 API Server 执行的，因此 API Server 有着一套安全机制。 APIServer 的权限检查从大体上分为三个阶段： Authentication ：身份认证，用于验证请求者的]]></description>
+</item><item>
     <title>K8s 学习 - Schedule Preemption Eviction</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/schedule-preemption-eviction/</link>
     <pubDate>Wed, 23 Jun 2021 12:09:25 &#43;0000</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pod/</guid>
     <description><![CDATA[1 Pod 的进程模型 Pod 是一组容器的集合，而为什么实现上需要多个容器？据传，因为开发 Borg 项目的工程师发现，部署的应用往往都是一个进程组，而不是一个进程]]></description>
-</item><item>
-    <title>KVM 虚拟机的存储与网络总结</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</link>
-    <pubDate>Sat, 28 Nov 2020 17:29:39 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</guid>
-    <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文主要总结一些遇到的虚拟机使用存储与网络的方式，挖了]]></description>
 </item></channel>
 </rss>
