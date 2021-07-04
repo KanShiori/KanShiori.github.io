@@ -8,7 +8,7 @@
 * **`Role`** ：角色，代表一组对 Kubernetes API 对象操作的权限。
 * **`Subject`** ：被作用者，包括 User、Group、ServiceAccount
 
-  见 [K8s 学习 - API Server 认证](http://localhost:1313/posts/cloud_computing/k8s_learning/api-server-%E8%AE%A4%E8%AF%81/#2-Subject)
+  见 [K8s 学习 - API Server 认证](http://kanshiori.cn/posts/cloud_computing/k8s_learning/api-server-%E8%AE%A4%E8%AF%81/#2-subject)
 * **`RoleBinding`** ：定义 Role 与 Subject 的映射关系；
 
 因此，**我们会预先创建一些 Role，然后创建 Subject 时，定义 RoleBinding 来表明对 Subject 的权限控制。**
