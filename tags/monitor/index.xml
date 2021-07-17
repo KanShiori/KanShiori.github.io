@@ -3,12 +3,19 @@
         <title>monitor - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/monitor/</link>
         <description>monitor - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 05 Jul 2021 14:04:28 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/monitor/" rel="self" type="application/rss+xml" /><item>
-    <title>Prometheus 学习 - 基本概念</title>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 08 Jul 2021 14:31:22 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/monitor/" rel="self" type="application/rss+xml" /><item>
+    <title>Prom 学习 - PromQL</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/promql/</link>
+    <pubDate>Thu, 08 Jul 2021 14:31:22 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/promql/</guid>
+    <description><![CDATA[1 数据类型 首先，还是先理解 时间序列 这个概念： 1 2 3 4 5 6 7 ^ - │ . . . . . . . . . . . . . . . |.| . . . │ . . . . . . . . . . . . . . |.| . . .]]></description>
+</item><item>
+    <title>Prom 学习 - 基本概念</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/basic/</link>
     <pubDate>Mon, 05 Jul 2021 14:04:28 &#43;0000</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/basic/</guid>
-    <description><![CDATA[1 数据模型 Prometheus 保存的所有数据都是<strong><ruby>时间序列<rt>time series</rt></ruby></strong>数据，也就是每个数据会带有一个时间戳。 通过图表可以理解其模型： 图表中每个]]></description>
+    <description><![CDATA[1 数据模型 Prometheus 保存的所有数据都是 <strong><ruby>时间序列<rt>time series</rt></ruby></strong> 数据，也就是每个数据会带有一个时间戳。 通过图表可以理解其模型： 图表中每个点都是一个时]]></description>
 </item></channel>
 </rss>

@@ -186,7 +186,12 @@ var _ = AfterSuite(func() {
 ```
 
 ### 2.5 SynchronizedBeforeSuite SynchronizedAfterSuite
-SynchronizedBeforeSuite 用于开启并行运行后，指定在主进程执行的函数，以及在各个子进程执行的函数。函数都在运行测试之前执行。
+SynchronizedBeforeSuite 用于指定在主进程执行的函数，以及在各个子进程执行的函数。函数都在运行测试之前执行。
+{{< admonition note Note>}}
+如果没有通过 *"--nodes <count>"* 指定进程数量，那么默认就是一个主进程，一个子进程执行测试。
+
+因此，SynchronizedBeforeSuite/SynchronizedAfterSuite 类似于 BeforeSuite/AfterSuite 会被执行。
+{{< /admonition >}}
 
 例如，下面示例在子进程创建前，运行创建数据库。在各个子进程运行测试前，执行创建 client。
 ```go

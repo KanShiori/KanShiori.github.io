@@ -11,7 +11,7 @@ VPC 需要通过 CIDR 块来指定其的地址范围，相当于给局域网指�
 
 **Subnet 是针对 AZ 而言的**，也就是说 Subnet 无法跨 AZ 覆盖。
 
-#### 1.1 Default 与 Nondefault
+### 1.1 Default 与 Nondefault
 对于每个 Region，都会自动为账户创建一个 **`Default VPC`**。
 
 Default VPC 会默认包含以下组件：
@@ -23,7 +23,7 @@ Default VPC 会默认包含以下组件：
 
 相反，你手动创建的 VPC 与 Subnet 都称为 **`Nondefault VPC`** 或者 **`Nondefault Subnet`**。
 
-#### 1.2 Public 与 Private
+### 1.2 Public 与 Private
 
 能够连接 Internet Gateway 的 Subnet 称为 **`Public Subnet`**。反之就称之为 **`Private Subnet`**。
 

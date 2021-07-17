@@ -3,15 +3,22 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 05 Jul 2021 14:04:28 &#43;0000</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 08 Jul 2021 14:31:22 &#43;0000</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
-    <title>Prometheus 学习 - 基本概念</title>
+    <title>Prom 学习 - PromQL</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/promql/</link>
+    <pubDate>Thu, 08 Jul 2021 14:31:22 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/promql/</guid>
+    <description><![CDATA[1 数据类型 首先，还是先理解 时间序列 这个概念： 1 2 3 4 5 6 7 ^ - │ . . . . . . . . . . . . . . . |.| . . . │ . . . . . . . . . . . . . . |.| . . .]]></description>
+</item><item>
+    <title>Prom 学习 - 基本概念</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/basic/</link>
     <pubDate>Mon, 05 Jul 2021 14:04:28 &#43;0000</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/basic/</guid>
-    <description><![CDATA[1 数据模型 Prometheus 保存的所有数据都是<strong><ruby>时间序列<rt>time series</rt></ruby></strong>数据，也就是每个数据会带有一个时间戳。 通过图表可以理解其模型： 图表中每个]]></description>
+    <description><![CDATA[1 数据模型 Prometheus 保存的所有数据都是 <strong><ruby>时间序列<rt>time series</rt></ruby></strong> 数据，也就是每个数据会带有一个时间戳。 通过图表可以理解其模型： 图表中每个点都是一个时]]></description>
 </item><item>
     <title>K8s 学习 - API Server 认证</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-server-%E8%AE%A4%E8%AF%81/</link>
@@ -68,12 +75,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/statefulset/</guid>
     <description><![CDATA[1 概述 Pod 在设计的理念上是无状态的，Pod 可以在任意时刻被销毁，可以在任意时刻被在别的节点创建相同的副本。 Deployment 与 RelicSets 就是基于这个理念设计的，它们仅]]></description>
-</item><item>
-    <title>K8s 学习 - RBAC 授权机制</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/rbac/</link>
-    <pubDate>Tue, 08 Jun 2021 12:05:39 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/rbac/</guid>
-    <description><![CDATA[1 概念 在 API 访问控制 中提到，Kubernetes 支持的授权机制有多种，其中 RBAC 是最常用的授权方式。RBAC 基于角色访问控制，全称 Role-Base Access Contro]]></description>
 </item></channel>
 </rss>
