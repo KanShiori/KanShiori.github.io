@@ -5,20 +5,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Prom 学习 - PromQL - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Prom 学习 - PromQL" />
-<meta property="og:description" content="1 数据类型 首先，还是先理解 时间序列 这个概念： 1 2 3 4 5 6 7 ^ - │ . . . . . . . . . . . . . . . |.| . . . │ . . . . . . . . . . . . . . |.| . . ." />
+        <title>Prom 学习 - PromQL - Shiori&#39;s Blog</title><meta name="Description" content="PromQL 概念以及语法"><meta property="og:title" content="Prom 学习 - PromQL" />
+<meta property="og:description" content="PromQL 概念以及语法" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/promql/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-07-08T14:31:22&#43;00:00" />
-<meta property="article:modified_time" content="2021-07-17T14:56:45&#43;08:00" />
+<meta property="article:modified_time" content="2021-07-18T06:58:38&#43;00:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
 <meta name="twitter:title" content="Prom 学习 - PromQL"/>
-<meta name="twitter:description" content="1 数据类型 首先，还是先理解 时间序列 这个概念： 1 2 3 4 5 6 7 ^ - │ . . . . . . . . . . . . . . . |.| . . . │ . . . . . . . . . . . . . . |.| . . ."/>
+<meta name="twitter:description" content="PromQL 概念以及语法"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/promql/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/basic/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/promql/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/basic/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/grafana-basic/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -28,12 +28,12 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/prometheus-learning\/promql\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "prometheus, monitor","wordcount":  3054 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/prometheus-learning\/promql\/","datePublished": "2021-07-08T14:31:22+00:00","dateModified": "2021-07-17T14:56:45+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/prometheus-learning\/promql\/","datePublished": "2021-07-08T14:31:22+00:00","dateModified": "2021-07-18T06:58:38+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
                 "name": "Shiori"
-            },"description": ""
+            },"description": "PromQL 概念以及语法"
     }
     </script></head>
     <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
@@ -804,14 +804,14 @@
 </ul>
 <h2 id="参考">参考</h2>
 <ul>
-<li>《<a href="https://book.douban.com/subject/35034115/" target="_blank" rel="noopener noreffer"><strong>Prometheus 监控技术与实践》</strong></a></li>
+<li><a href="https://book.douban.com/subject/35034115/" target="_blank" rel="noopener noreffer"><strong>《Prometheus 监控技术与实践》</strong></a></li>
 </ul>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2021-07-17&nbsp;<a class="git-hash" href="https://github.com/dillonzq/LoveIt/commit/0e9bfb06c27eba01311f873f729d985313f86177" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 0e9bfb06c27eba01311f873f729d985313f86177: post: promql">
-                                    <i class="fas fa-hashtag fa-fw"></i>0e9bfb0</a></span>
+                <span>更新于 2021-07-18&nbsp;<a class="git-hash" href="https://github.com/dillonzq/LoveIt/commit/117d0fd11ae9dad2cdb910bb5da5feae2c588ff1" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 117d0fd11ae9dad2cdb910bb5da5feae2c588ff1: publish new site">
+                                    <i class="fas fa-hashtag fa-fw"></i>117d0fd</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
@@ -832,7 +832,8 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud_computing/prometheus-learning/basic/" class="prev" rel="prev" title="Prom 学习 - 基本概念"><i class="fas fa-angle-left fa-fw"></i>Prom 学习 - 基本概念</a></div>
+    <div class="post-nav"><a href="/posts/cloud_computing/prometheus-learning/basic/" class="prev" rel="prev" title="Prom 学习 - 基本概念"><i class="fas fa-angle-left fa-fw"></i>Prom 学习 - 基本概念</a>
+            <a href="/posts/cloud_computing/prometheus-learning/grafana-basic/" class="next" rel="next" title="Grafana 基础">Grafana 基础<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

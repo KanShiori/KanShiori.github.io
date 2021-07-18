@@ -360,4 +360,4 @@ Prometheus 提供了两种向量匹配模式：
 
 ## 参考
 
-* 《[**Prometheus 监控技术与实践》**](https://book.douban.com/subject/35034115/)
+* [**《Prometheus 监控技术与实践》**](https://book.douban.com/subject/35034115/)

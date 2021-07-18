@@ -3,7 +3,14 @@
         <title>monitor - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/monitor/</link>
         <description>monitor - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 08 Jul 2021 14:31:22 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/monitor/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 17 Jul 2021 08:19:12 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/monitor/" rel="self" type="application/rss+xml" /><item>
+    <title>Grafana 基础</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/grafana-basic/</link>
+    <pubDate>Sat, 17 Jul 2021 08:19:12 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/grafana-basic/</guid>
+    <description><![CDATA[1 基本概念 1.1 数据源 Data Source Grafana 支持多种不同类型的时序数据库，称为<strong><ruby>数据源<rt>Data Source</rt></ruby></strong>。目前官方支持：Graphite、Influx]]></description>
+</item><item>
     <title>Prom 学习 - PromQL</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/promql/</link>
     <pubDate>Thu, 08 Jul 2021 14:31:22 &#43;0000</pubDate>

@@ -3,7 +3,14 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 08 Jul 2021 14:31:22 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 17 Jul 2021 08:19:12 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>Grafana 基础</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/grafana-basic/</link>
+    <pubDate>Sat, 17 Jul 2021 08:19:12 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/grafana-basic/</guid>
+    <description><![CDATA[1 基本概念 1.1 数据源 Data Source Grafana 支持多种不同类型的时序数据库，称为<strong><ruby>数据源<rt>Data Source</rt></ruby></strong>。目前官方支持：Graphite、Influx]]></description>
+</item><item>
     <title>Prom 学习 - PromQL</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/promql/</link>
     <pubDate>Thu, 08 Jul 2021 14:31:22 &#43;0000</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/crd/</guid>
     <description><![CDATA[1 概述 Kubernetes 不仅仅是一个编排框架，更是提供了极大的扩展性，可以看做一个资源框架。你可以基于 k8s 提供的种种功能，来满足你应用的需要。 其中 CRD 就是允许你]]></description>
-</item><item>
-    <title>K8s 学习 - StatefulSet</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/statefulset/</link>
-    <pubDate>Wed, 09 Jun 2021 11:55:46 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/statefulset/</guid>
-    <description><![CDATA[1 概述 Pod 在设计的理念上是无状态的，Pod 可以在任意时刻被销毁，可以在任意时刻被在别的节点创建相同的副本。 Deployment 与 RelicSets 就是基于这个理念设计的，它们仅]]></description>
 </item></channel>
 </rss>
