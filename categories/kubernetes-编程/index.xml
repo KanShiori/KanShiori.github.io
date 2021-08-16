@@ -1,0 +1,21 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Kubernetes 编程 - 分类 - Shiori&#39;s Blog</title>
+        <link>https://KanShiori.github.io/categories/kubernetes-%E7%BC%96%E7%A8%8B/</link>
+        <description>Kubernetes 编程 - 分类 - Shiori&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 10 Aug 2021 11:15:27 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E7%BC%96%E7%A8%8B/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 编程 - 编程基础</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/client-go/</link>
+    <pubDate>Tue, 10 Aug 2021 11:15:27 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/client-go/</guid>
+    <description><![CDATA[1 核心代码库 1.1 k8s.io/client-go 编写 Operator 代码时，最核心的库就是 k8s.io/client-go，其提供了访问 Kubernetes 最基本的 client 实现。 client-go 与 Kubernetes 同时发布，对应 Kubernetes 1.x.y 版本就会]]></description>
+</item><item>
+    <title>K8s 编程 - 基本概念</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/basic/</link>
+    <pubDate>Fri, 06 Aug 2021 05:59:17 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/basic/</guid>
+    <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 Controller 模式 1.1 Control Loop 所有]]></description>
+</item></channel>
+</rss>

@@ -1,4 +1,4 @@
-# Grafana 基础
+# Prom 学习 - Grafana 基础
 
 
 ## 1 基本概念

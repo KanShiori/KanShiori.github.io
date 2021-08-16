@@ -3,10 +3,24 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 17 Jul 2021 08:19:12 &#43;0000</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 10 Aug 2021 11:15:27 &#43;0000</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
-    <title>Grafana 基础</title>
+    <title>K8s 编程 - 编程基础</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/client-go/</link>
+    <pubDate>Tue, 10 Aug 2021 11:15:27 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/client-go/</guid>
+    <description><![CDATA[1 核心代码库 1.1 k8s.io/client-go 编写 Operator 代码时，最核心的库就是 k8s.io/client-go，其提供了访问 Kubernetes 最基本的 client 实现。 client-go 与 Kubernetes 同时发布，对应 Kubernetes 1.x.y 版本就会]]></description>
+</item><item>
+    <title>K8s 编程 - 基本概念</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/basic/</link>
+    <pubDate>Fri, 06 Aug 2021 05:59:17 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/basic/</guid>
+    <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 Controller 模式 1.1 Control Loop 所有]]></description>
+</item><item>
+    <title>Prom 学习 - Grafana 基础</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/grafana-basic/</link>
     <pubDate>Sat, 17 Jul 2021 08:19:12 &#43;0000</pubDate>
     <author>作者</author>
@@ -61,19 +75,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/tidb-operator-learning/controller-manager-%E6%A6%82%E8%BF%B0/</guid>
     <description><![CDATA[1 概述 TiDB Operator 中的 ControllerManager 用于管理 TiDBCluster 这个 CustomResource。 下面 ControllerManager 都是指的 TiDB Operator 的 ControllerManager。 TiDBCluster 是一个抽象的概念，其稳]]></description>
-</item><item>
-    <title>K8s 学习 - API</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api/</link>
-    <pubDate>Sat, 12 Jun 2021 07:32:36 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api/</guid>
-    <description><![CDATA[1 概述 1.1 组织对象的方式 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用]]></description>
-</item><item>
-    <title>K8s 学习 - CRD</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/crd/</link>
-    <pubDate>Thu, 10 Jun 2021 11:45:54 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/crd/</guid>
-    <description><![CDATA[1 概述 Kubernetes 不仅仅是一个编排框架，更是提供了极大的扩展性，可以看做一个资源框架。你可以基于 k8s 提供的种种功能，来满足你应用的需要。 其中 CRD 就是允许你]]></description>
 </item></channel>
 </rss>
