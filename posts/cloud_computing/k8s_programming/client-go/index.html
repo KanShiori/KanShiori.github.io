@@ -6,19 +6,19 @@
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
         <title>K8s 编程 - 编程基础 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="K8s 编程 - 编程基础" />
-<meta property="og:description" content="1 核心代码库 1.1 k8s.io/client-go 编写 Operator 代码时，最核心的库就是 k8s.io/client-go，其提供了访问 Kubernetes 最基本的 client 实现。 client-go 与 Kubernetes 同时发布，对应 Kubernetes 1.x.y 版本就会" />
+<meta property="og:description" content="Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 核心代码库 1.1 k8s.io/client-go 编" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/client-go/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-08-10T11:15:27&#43;00:00" />
-<meta property="article:modified_time" content="2021-08-16T23:42:00&#43;08:00" />
+<meta property="article:modified_time" content="2021-08-19T22:09:05&#43;08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
 <meta name="twitter:title" content="K8s 编程 - 编程基础"/>
-<meta name="twitter:description" content="1 核心代码库 1.1 k8s.io/client-go 编写 Operator 代码时，最核心的库就是 k8s.io/client-go，其提供了访问 Kubernetes 最基本的 client 实现。 client-go 与 Kubernetes 同时发布，对应 Kubernetes 1.x.y 版本就会"/>
+<meta name="twitter:description" content="Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 核心代码库 1.1 k8s.io/client-go 编"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/client-go/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/basic/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/client-go/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/basic/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/custom-resource/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -27,8 +27,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_programming\/client-go\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  7132 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_programming\/client-go\/","datePublished": "2021-08-10T11:15:27+00:00","dateModified": "2021-08-16T23:42:00+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  7193 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_programming\/client-go\/","datePublished": "2021-08-10T11:15:27+00:00","dateModified": "2021-08-19T22:09:05+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">K8s 编程 - 编程基础</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw"></i>Kubernetes 编程</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-08-10">2021-08-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 7132 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-08-10">2021-08-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 7193 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 15 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -171,7 +171,10 @@
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><h2 id="1-核心代码库">1 核心代码库</h2>
+            </div><div class="content" id="content"><blockquote>
+<p><strong>Kubernetes 编程系列</strong> 主要记录一些开发 Controller 所相关的知识，大部分内容来自于<a href="https://www.oreilly.com/library/view/programming-kubernetes/9781492047094/" target="_blank" rel="noopener noreffer">《Programming Kubernetes》</a>（推荐直接阅读）。</p>
+</blockquote>
+<h2 id="1-核心代码库">1 核心代码库</h2>
 <h3 id="11-k8sioclient-go">1.1 k8s.io/client-go</h3>
 <p>编写 Operator 代码时，最核心的库就是 <a href="https://github.com/kubernetes/client-go" target="_blank" rel="noopener noreffer"><strong>k8s.io/client-go</strong></a>，其提供了访问 Kubernetes <strong>最基本的 client 实现</strong>。</p>
 <p>client-go 与 Kubernetes 同时发布，对应 Kubernetes 1.x.y 版本就会有着对应的 client-go 版本。不过 client-go 还会发布独立的版本号，例如 client-go 9.0.0。</p>
@@ -1430,8 +1433,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2021-08-16&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/abeaf56d0a9ae5d7137d8f2711d8824c167df027" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) abeaf56d0a9ae5d7137d8f2711d8824c167df027: post : program kubernetes">
-                                    <i class="fas fa-hashtag fa-fw"></i>abeaf56</a></span>
+                <span>更新于 2021-08-19&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/d7c60993d23e5c2de34b581b263ff63f9c3be6b2" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) d7c60993d23e5c2de34b581b263ff63f9c3be6b2: new post">
+                                    <i class="fas fa-hashtag fa-fw"></i>d7c6099</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
@@ -1452,7 +1455,8 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud_computing/k8s_programming/basic/" class="prev" rel="prev" title="K8s 编程 - 基本概念"><i class="fas fa-angle-left fa-fw"></i>K8s 编程 - 基本概念</a></div>
+    <div class="post-nav"><a href="/posts/cloud_computing/k8s_programming/basic/" class="prev" rel="prev" title="K8s 编程 - 基本概念"><i class="fas fa-angle-left fa-fw"></i>K8s 编程 - 基本概念</a>
+            <a href="/posts/cloud_computing/k8s_programming/custom-resource/" class="next" rel="next" title="K8s 编程 - Custom Resource">K8s 编程 - Custom Resource<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

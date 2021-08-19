@@ -166,5 +166,3 @@ Kind 与 Resource 是不一样的概念，区别主要在于：
 * [**OperatorHub**](https://operatorhub.io/)
 * [**API 参考文档**](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/)
 * [**《Programming Kubernetes》**](https://book.douban.com/subject/33393681/)
-
-
