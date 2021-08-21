@@ -3,28 +3,42 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 17 Aug 2021 14:55:49 &#43;0000</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 20 Aug 2021 14:53:38 &#43;0000</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>K8s 编程 - 发布 Operator</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/5-shipping-controllers/</link>
+    <pubDate>Fri, 20 Aug 2021 14:53:38 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/5-shipping-controllers/</guid>
+    <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 打包 1.1 Helm Helm 已经成]]></description>
+</item><item>
+    <title>K8s 编程 - 代码生成</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/4-generate-code/</link>
+    <pubDate>Thu, 19 Aug 2021 14:41:24 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/4-generate-code/</guid>
+    <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 最简单的方式是调用]]></description>
+</item><item>
     <title>K8s 编程 - Custom Resource</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/custom-resource/</link>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/3-custom-resource/</link>
     <pubDate>Tue, 17 Aug 2021 14:55:49 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/custom-resource/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/3-custom-resource/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 自定义资源定义 从]]></description>
 </item><item>
     <title>K8s 编程 - 编程基础</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/client-go/</link>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/2-client-go/</link>
     <pubDate>Tue, 10 Aug 2021 11:15:27 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/client-go/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/2-client-go/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 核心代码库 1.1 k8s.io/client-go 编]]></description>
 </item><item>
     <title>K8s 编程 - 基本概念</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/basic/</link>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/1-basic/</link>
     <pubDate>Fri, 06 Aug 2021 05:59:17 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/basic/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/1-basic/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 Controller 模式 1.1 Control Loop 所有]]></description>
 </item><item>
     <title>Prom 学习 - Grafana 基础</title>
@@ -61,19 +75,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/language/golang/ginkgo-%E5%AD%A6%E4%B9%A0/</guid>
     <description><![CDATA[1 概述 ginkgo 是一个 BDD 框架，Kubernetes 的 E2E 测试使用该框架实现集群的测试。 ginkgo 是集成在 Go 测试框架的，在目录下执行 ginkgo bootstrap 就会构建测试的入口： 1 2]]></description>
-</item><item>
-    <title>[WIP] AWS 学习 - VPC</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/vpc/</link>
-    <pubDate>Wed, 23 Jun 2021 14:13:47 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/vpc/</guid>
-    <description><![CDATA[1 VPC 与 Subnet 首先，云上的网络是由 <strong><ruby>VPC<rt>Virtual Private Cloud</rt></ruby></strong> 为基础的，VPC 是针对 Region 而言的。 VPC 需要通过 CIDR 块来指定其的地址范围，相当于给局域网指定的网段。 然而，VPC 仅]]></description>
-</item><item>
-    <title>K8s 学习 - Schedule Preemption Eviction</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/schedule-preemption-eviction/</link>
-    <pubDate>Wed, 23 Jun 2021 12:09:25 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/schedule-preemption-eviction/</guid>
-    <description><![CDATA[1 概述 无论是基本的副本控制器，还是自定义资源，其控制的底层 Pod 的调度都是都通过 Scheduler 完成的。 2 Schedule 2.1 nodeSelector Pod 的 spec.nodeSelector 可以用于控制 Pod 能被调度到哪些节点上。其内]]></description>
 </item></channel>
 </rss>

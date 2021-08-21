@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>K8s 编程 - 编程基础 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="K8s 编程 - 编程基础" />
+<meta property="og:description" content="Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 核心代码库 1.1 k8s.io/client-go 编" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/2-client-go/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-08-10T11:15:27&#43;00:00" />
+<meta property="article:modified_time" content="2021-08-10T11:15:27&#43;00:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="K8s 编程 - 编程基础"/>
+<meta name="twitter:description" content="Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 核心代码库 1.1 k8s.io/client-go 编"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/2-client-go/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/1-basic/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/3-custom-resource/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "K8s 编程 - 编程基础",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_programming\/2-client-go\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  7193 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_programming\/2-client-go\/","datePublished": "2021-08-10T11:15:27+00:00","dateModified": "2021-08-10T11:15:27+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">K8s 编程 - 编程基础</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw"></i>Kubernetes 编程</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-08-10">2021-08-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 7193 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 15 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-核心代码库">1 核心代码库</a>
+      <ul>
+        <li><a href="#11-k8sioclient-go">1.1 k8s.io/client-go</a></li>
+        <li><a href="#12-k8sioapi">1.2 k8s.io/api</a></li>
+        <li><a href="#13-k8sioapimachinery">1.3 k8s.io/apimachinery</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-使用-client-go">2 使用 client-go</a>
+      <ul>
+        <li><a href="#21-创建并使用">2.1 创建并使用</a></li>
+        <li><a href="#22-版本与兼容性">2.2 版本与兼容性</a></li>
+        <li><a href="#23-api-兼容性保证">2.3 API 兼容性保证</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-kubernetes-对象">3 Kubernetes 对象</a>
+      <ul>
+        <li><a href="#31-object">3.1 Object</a></li>
+        <li><a href="#32-typemeta">3.2 TypeMeta</a></li>
+        <li><a href="#33-objectmeta">3.3 ObjectMeta</a></li>
+        <li><a href="#34-spec-与-status">3.4 Spec 与 Status</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-clientset">4 ClientSet</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#41-clientset-option">4.1 ClientSet Option</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#5-informer">5 Informer</a></li>
+    <li><a href="#6-workqueue">6 WorkQueue</a></li>
+    <li><a href="#7-基本类型系统">7 基本类型系统</a>
+      <ul>
+        <li><a href="#71-groupversionkind">7.1 GroupVersionKind</a></li>
+        <li><a href="#72-groupversionresource">7.2 GroupVersionResource</a></li>
+        <li><a href="#73-rest-map">7.3 REST Map</a></li>
+        <li><a href="#74-scheme">7.4 Scheme</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><blockquote>
+<p><strong>Kubernetes 编程系列</strong> 主要记录一些开发 Controller 所相关的知识，大部分内容来自于<a href="https://www.oreilly.com/library/view/programming-kubernetes/9781492047094/" target="_blank" rel="noopener noreffer">《Programming Kubernetes》</a>（推荐直接阅读）。</p>
+</blockquote>
+<h2 id="1-核心代码库">1 核心代码库</h2>
+<h3 id="11-k8sioclient-go">1.1 k8s.io/client-go</h3>
+<p>编写 Operator 代码时，最核心的库就是 <a href="https://github.com/kubernetes/client-go" target="_blank" rel="noopener noreffer"><strong>k8s.io/client-go</strong></a>，其提供了访问 Kubernetes <strong>最基本的 client 实现</strong>。</p>
+<p>client-go 与 Kubernetes 同时发布，对应 Kubernetes 1.x.y 版本就会有着对应的 client-go 版本。不过 client-go 还会发布独立的版本号，例如 client-go 9.0.0。</p>
+<h3 id="12-k8sioapi">1.2 k8s.io/api</h3>
+<p><a href="https://github.com/kubernetes/api" target="_blank" rel="noopener noreffer"><strong>k8s.io/api</strong></a> 库包含了<strong>所有 Kubernetes 基本对象的结构体</strong>，其按照 GroupVersion 进行组织。</p>
+<p>例如 Pod 一类的最基本的对象，包含在 core Group 中，因此放在 k8s.io/api/core/v1 包中的 types.go 文件中。其他对象也是类似。</p>
+<a class="lightgallery" href="/posts/cloud_computing/k8s_programming/2-client-go/img1.png" title="/posts/cloud_computing/k8s_programming/2-client-go/img1.png" data-thumbnail="/posts/cloud_computing/k8s_programming/2-client-go/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img1.png"
+            data-srcset="/posts/cloud_computing/k8s_programming/2-client-go/img1.png, img1.png 1.5x, /posts/cloud_computing/k8s_programming/2-client-go/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud_computing/k8s_programming/2-client-go/img1.png" height="400" />
+    </a>
+<h3 id="13-k8sioapimachinery">1.3 k8s.io/apimachinery</h3>
+<p><a href="https://github.com/kubernetes/apimachinery" target="_blank" rel="noopener noreffer"><strong>k8s.io/apimachinery</strong></a> 提供了 Kubernetes API 所需要的一些通用代码。</p>
+<p>apimachinery 也包含了很多<strong>通用的 API 类型</strong>，例如 ObjectMeta、TypeMeta、GetOptions。</p>
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw"></i>Tip<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">因为 API Machinery 的设计优秀，你可以在任何 API 相关的业务代码上尝试使用该库。</div>
+        </div>
+    </div>
+<h2 id="2-使用-client-go">2 使用 client-go</h2>
+<h3 id="21-创建并使用">2.1 创建并使用</h3>
+<p>下面是最基本在一个 Go 项目中使用 client-go 的方式（省略了异常处理）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="p">(</span> 
+    <span class="nx">metav1</span> <span class="s">&#34;k8s.io/apimachinery/pkg/apis/meta/v1&#34;</span>
+    <span class="s">&#34;k8s.io/client-go/tools/clientcmd&#34;</span> 
+    <span class="s">&#34;k8s.io/client-go/kubernetes&#34;</span> 
+<span class="p">)</span> 
+
+<span class="c1">// 读取 config
+</span><span class="c1"></span><span class="nx">kubeconfig</span> <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="s">&#34;kubeconfig&#34;</span><span class="p">,</span> <span class="s">&#34;~/.kube/config&#34;</span><span class="p">,</span> <span class="s">&#34;kubeconfig file&#34;</span><span class="p">)</span> 
+<span class="nx">flag</span><span class="p">.</span><span class="nf">Parse</span><span class="p">()</span> 
+<span class="nx">config</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientcmd</span><span class="p">.</span><span class="nf">BuildConfigFromFlags</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">kubeconfig</span><span class="p">)</span> 
+
+<span class="c1">// 创建 client set
+</span><span class="c1"></span><span class="nx">clientset</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">kubernetes</span><span class="p">.</span><span class="nf">NewForConfig</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span> 
+
+<span class="c1">// 通过 client set 访问资源
+</span><span class="c1"></span><span class="nx">pod</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientset</span><span class="p">.</span><span class="nf">CoreV1</span><span class="p">().</span><span class="nf">Pods</span><span class="p">(</span><span class="s">&#34;book&#34;</span><span class="p">).</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;example&#34;</span><span class="p">,</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">GetOptions</span><span class="p">{})</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在项目中，所有的资源（包括 CR）都是通过 <strong><code>ClientSet</code></strong> 类的对象来访问。<strong>ClientSet 包含了多个 Group 多个 Version 的 Client</strong>。</p>
+<p>在集群内部 Pod 中，每个容器会挂载一个 ServiceAccount，路径为目录 <em>/var/run/secrets/kubernetes.io/serviceaccount</em>。通过该目录下提供的证书与 Token，可以替代 kubeconfig 文件来创建 ClientSet，用于访问 Kubernetes。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 读取 ServiceAccount 的目录创建 config
+</span><span class="c1"></span><span class="nx">config</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">rest</span><span class="p">.</span><span class="nf">InClusterConfig</span><span class="p">()</span> 
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> 
+    <span class="c1">// 回滚使用 kubeconfig 文件创建 config
+</span><span class="c1"></span>    <span class="nx">kubeconfig</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="s">&#34;~&#34;</span><span class="p">,</span> <span class="s">&#34;.kube&#34;</span><span class="p">,</span> <span class="s">&#34;config&#34;</span><span class="p">)</span> 
+    <span class="k">if</span> <span class="nx">envvar</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="s">&#34;KUBECONFIG&#34;</span><span class="p">);</span> <span class="nb">len</span><span class="p">(</span><span class="nx">envvar</span><span class="p">)</span> <span class="p">&gt;</span><span class="mi">0</span> <span class="p">{</span> 
+        <span class="nx">kubeconfig</span> <span class="p">=</span> <span class="nx">envvar</span> 
+    <span class="p">}</span> 
+    <span class="nx">config</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">clientcmd</span><span class="p">.</span><span class="nf">BuildConfigFromFlags</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">kubeconfig</span><span class="p">)</span> 
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> 
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;The kubeconfig cannot be loaded: %v\n&#34;</span><span class="p">,</span> <span class="nx">err</span> 
+        <span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="p">}</span> 
+<span class="p">}</span>
+
+<span class="c1">// 创建 client set
+</span><span class="c1"></span><span class="nx">clientset</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">kubernetes</span><span class="p">.</span><span class="nf">NewForConfig</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>默认下所有 Client 以 JSON 格式与 APIServer 进行通信，你可以通过以下方式使用 Protobuf 格式：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">cfg</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientcmd</span><span class="p">.</span><span class="nf">BuildConfigFromFlags</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">kubeconfig</span><span class="p">)</span> 
+<span class="nx">cfg</span><span class="p">.</span><span class="nx">AcceptContentTypes</span> <span class="p">=</span> <span class="s">&#34;application/vnd.kubernetes.protobuf,application/json&#34;</span>   <span class="c1">// 允许回复的格式
+</span><span class="c1"></span><span class="nx">cfg</span><span class="p">.</span><span class="nx">ContentType</span> <span class="p">=</span> <span class="s">&#34;application/vnd.kubernetes.protobuf&#34;</span>  <span class="c1">// 发送请求的格式
+</span><span class="c1"></span><span class="nx">clientset</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">kubernetes</span><span class="p">.</span><span class="nf">NewForConfig</span><span class="p">(</span><span class="nx">cfg</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="22-版本与兼容性">2.2 版本与兼容性</h3>
+<p>可以看到，ClientSet 使用的资源类型都是静态通过 api 库导入的，与 APIServer 使用的资源类型没有直接关系。也就是说，<strong>如果 client-go 库与 Kubernetes APIServer 对应的版本不同，那么就可能双方使用的资源定义不同</strong>。</p>
+<p>为此，client-go 仓库的 <a href="https://github.com/kubernetes/client-go#compatibility-matrix" target="_blank" rel="noopener noreffer"><strong>README</strong></a> 中，会发布一个兼容性矩阵。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_programming/2-client-go/img2.png"/>
+
+
+</p>
+<ul>
+<li>√ 表示 client-go 与 Kubernetes 集群有着完全相同的 API 组版本。</li>
+<li>+ 表示 client-go 包含一些功能或者 API 对象，Kubernetes 集群还不支持。不过公共的部分还是能够正常工作。</li>
+<li>- 表示 Kubernetes 的一些特性 client-go 不能使用。不过大部分公共的部分能够正常工作。</li>
+</ul>
+<p>因此，当你使用的 client-go 库与 Kubernetes 版本不一致时，需要清楚某些特性是否能够兼容。</p>
+<h3 id="23-api-兼容性保证">2.3 API 兼容性保证</h3>
+<p>在 Kubernetes 风格中，API 可能包含以下版本：</p>
+<ul>
+<li>
+<p><strong><code>Alpha</code></strong> - v1alpha1、v1aplpha2 等称为 Alpha 版本，表示不稳定的版本。</p>
+<p>这些版本可能随时会消失或者进行不兼容的改变。默认是被禁用的，需要管理员手动启用它们。</p>
+</li>
+<li>
+<p><strong><code>Beta</code></strong> - v1beta1、v1beta2、v2beta1 等称为 Beta 版本，表示相对稳定的版本。</p>
+<p>通常不会发生不兼容的改动，但是不是严格保证。Beta 版本功能默认会被启用。</p>
+</li>
+<li>
+<p><strong><code>GA</code></strong> - v1、v2 等不带后缀的都是稳定版本。</p>
+<p>会一直存在，并且一直保持兼容性。</p>
+</li>
+</ul>
+<p>在进行项目开发时，要记住两点：</p>
+<ul>
+<li>
+<p>代码中一个资源定义的某些字段也可能准许上述版本定义（注释中说明）。</p>
+</li>
+<li>
+<p>访问 APIServer 时，APIServer 会在相同的资源不同版本间自动进行转换。</p>
+<p>例如，某个资源是由 v1beta1 版本的 API 创建的，但是你可以通过 v1 版本的 API 来访问该资源。</p>
+</li>
+</ul>
+<h2 id="3-kubernetes-对象">3 Kubernetes 对象</h2>
+<h3 id="31-object">3.1 Object</h3>
+<p>Go 语言中的 Kubernetes 对象都实现了 <strong><code>runtime.Object</code></strong> interface，该接口位于 <em>k8s.io/apimachinery/pkg/runtime</em> 包：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Object interface must be supported by all API types registered with Scheme. Since objects in a scheme are
+</span><span class="c1">// expected to be serialized to the wire, the interface an Object must provide to the Scheme allows
+</span><span class="c1">// serializers to set the kind, version, and group the object is represented as. An Object may choose
+</span><span class="c1">// to return a no-op ObjectKindAccessor in cases where it is not expected to be serialized.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Object</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">GetObjectKind</span><span class="p">()</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">ObjectKind</span>
+	<span class="nf">DeepCopyObject</span><span class="p">()</span> <span class="nx">Object</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>GetObjectKind()</code> - 得到 ObjectKind，用以返回或设置 GVK</li>
+<li><code>DeepCopyObject()</code> - 深拷贝得到一个 Object</li>
+</ul>
+<p><strong><code>schema.ObjectKind</code></strong> 就是代表一个具有 Kind 的 Object：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// All objects that are serialized from a Scheme encode their type information. This interface is used
+</span><span class="c1">// by serialization to set type information from the Scheme onto the serialized version of an object.
+</span><span class="c1">// For objects that cannot be serialized or have unique requirements, this interface may be a no-op.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">ObjectKind</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="c1">// SetGroupVersionKind sets or clears the intended serialized kind of an object. Passing kind nil
+</span><span class="c1"></span>	<span class="c1">// should clear the current setting.
+</span><span class="c1"></span>	<span class="nf">SetGroupVersionKind</span><span class="p">(</span><span class="nx">kind</span> <span class="nx">GroupVersionKind</span><span class="p">)</span>
+	<span class="c1">// GroupVersionKind returns the stored group, version, and kind of an object, or an empty struct
+</span><span class="c1"></span>	<span class="c1">// if the object does not expose or provide these fields.
+</span><span class="c1"></span>	<span class="nf">GroupVersionKind</span><span class="p">()</span> <span class="nx">GroupVersionKind</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>SetGroupVersionKind()</code> - 设置 Object 的 GVK</li>
+<li><code>GroupVersionKind()</code> - 得到 Object 的 GVK</li>
+</ul>
+<p>总结一下，Object 对象可以得到对应的 Kind，以及允许进行深拷贝。</p>
+<h3 id="32-typemeta">3.2 TypeMeta</h3>
+<p>Object 仅仅是一个 interface，所有实际的 Kubernetes 对象都是通过内嵌 <strong><code>metav1.TypeMeta</code></strong> 结构来包含 GroupVersionKind 方法的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// TypeMeta describes an individual object in an API response or request
+</span><span class="c1">// with strings representing the type of the object and its API schema version.
+</span><span class="c1">// Structures that are versioned or persisted should inline TypeMeta.
+</span><span class="c1">//
+</span><span class="c1">// +k8s:deepcopy-gen=false
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">TypeMeta</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// Kind is a string value representing the REST resource this object represents.
+</span><span class="c1"></span>	<span class="c1">// Servers may infer this from the endpoint the client submits requests to.
+</span><span class="c1"></span>	<span class="c1">// Cannot be updated.
+</span><span class="c1"></span>	<span class="c1">// In CamelCase.
+</span><span class="c1"></span>	<span class="c1">// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+</span><span class="c1"></span>	<span class="c1">// +optional
+</span><span class="c1"></span>	<span class="nx">Kind</span> <span class="kt">string</span> <span class="s">`json:&#34;kind,omitempty&#34; protobuf:&#34;bytes,1,opt,name=kind&#34;`</span>
+
+	<span class="c1">// APIVersion defines the versioned schema of this representation of an object.
+</span><span class="c1"></span>	<span class="c1">// Servers should convert recognized schemas to the latest internal value, and
+</span><span class="c1"></span>	<span class="c1">// may reject unrecognized values.
+</span><span class="c1"></span>	<span class="c1">// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+</span><span class="c1"></span>	<span class="c1">// +optional
+</span><span class="c1"></span>	<span class="nx">APIVersion</span> <span class="kt">string</span> <span class="s">`json:&#34;apiVersion,omitempty&#34; protobuf:&#34;bytes,2,opt,name=apiVersion&#34;`</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">obj</span> <span class="o">*</span><span class="nx">TypeMeta</span><span class="p">)</span> <span class="nf">GetObjectKind</span><span class="p">()</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">ObjectKind</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">obj</span> <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>Kind</code> - 对象的类型；</li>
+<li><code>APIVersion</code> - 对象的 API 版本；</li>
+</ul>
+<p>这也就是你在资源定义 YAML 时看到的 apiVersion 与 kind 字段了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="c"># ...</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw"></i>Core Group Version<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>Pod 以及一些其他类型是 Kubernetes 很早就有的 Core Group，<strong>它们的 Group 为空，因此 apiVersion 就是 v1</strong>。</p>
+<p>后来，Kubernetes 引入了 API Group 的概念，apiVersion 通过 <code>&lt;Group&gt;/&lt;version&gt;</code> 表示，例如 apps/v1。</p>
+<p>而 Core Group 因为历史原因其 Group 为空，所以 apiVersion 的值看上去可能不太一样。</p>
+</div>
+        </div>
+    </div>
+<div class="details admonition warning open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-exclamation-triangle fa-fw"></i>不要直接使用 Kind 与 Version 字段<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>在前面使用示例获取 Pod 后，你会发现返回的 Pod 对象并没有设置 Kind 与 Version 字段。这是 Kubernetes 在解码时故意抹去的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Decode does not do conversion. It removes the gvk during deserialization.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <span class="nx">WithoutVersionDecoder</span><span class="p">)</span> <span class="nf">Decode</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">defaults</span> <span class="o">*</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">,</span> <span class="nx">into</span> <span class="nx">Object</span><span class="p">)</span> <span class="p">(</span><span class="nx">Object</span><span class="p">,</span> <span class="o">*</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">obj</span><span class="p">,</span> <span class="nx">gvk</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">Decoder</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">defaults</span><span class="p">,</span> <span class="nx">into</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">obj</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">kind</span> <span class="o">:=</span> <span class="nx">obj</span><span class="p">.</span><span class="nf">GetObjectKind</span><span class="p">()</span>
+		<span class="c1">// clearing the gvk is just a convention of a codec
+</span><span class="c1"></span>		<span class="nx">kind</span><span class="p">.</span><span class="nf">SetGroupVersionKind</span><span class="p">(</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">{})</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">obj</span><span class="p">,</span> <span class="nx">gvk</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>不清楚为啥，目前可以通过这个 <a href="https://github.com/kubernetes/kubernetes/issues/80609" target="_blank" rel="noopener noreffer"><strong>issue</strong></a> 跟进这个问题。</p>
+</div>
+        </div>
+    </div>
+<h3 id="33-objectmeta">3.3 ObjectMeta</h3>
+<p>除了 TypeMeta，所有的对象都有一个 <strong><code>metav1.ObjectMeta</code></strong> 类型的字段：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// ObjectMeta is metadata that all persisted resources must have, which includes all objects
+</span><span class="c1">// users must create.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">ObjectMeta</span> <span class="kd">struct</span> <span class="p">{</span><span class="nx">Clayton</span> <span class="nx">Coleman</span><span class="p">,</span> <span class="mi">5</span> <span class="nx">years</span> <span class="nx">ago</span><span class="p">:</span> <span class="err">•</span>  <span class="nx">iQEcBAABCAAGBQJYfoneAAoJED0WkGtPHFyzBGEH</span><span class="o">/</span><span class="nx">ROj</span><span class="err">…</span>
+	<span class="nx">Name</span> <span class="kt">string</span> <span class="s">`json:&#34;name,omitempty&#34; protobuf:&#34;bytes,1,opt,name=name&#34;`</span>
+
+	<span class="nx">GenerateName</span> <span class="kt">string</span> <span class="s">`json:&#34;generateName,omitempty&#34; protobuf:&#34;bytes,2,opt,name=generateName&#34;`</span>
+
+	<span class="nx">Namespace</span> <span class="kt">string</span> <span class="s">`json:&#34;namespace,omitempty&#34; protobuf:&#34;bytes,3,opt,name=namespace&#34;`</span>
+
+	<span class="c1">// DEPRECATED
+</span><span class="c1"></span>	<span class="nx">SelfLink</span> <span class="kt">string</span> <span class="s">`json:&#34;selfLink,omitempty&#34; protobuf:&#34;bytes,4,opt,name=selfLink&#34;`</span>
+
+	<span class="nx">UID</span> <span class="nx">types</span><span class="p">.</span><span class="nx">UID</span> <span class="s">`json:&#34;uid,omitempty&#34; protobuf:&#34;bytes,5,opt,name=uid,casttype=k8s.io/kubernetes/pkg/types.UID&#34;`</span>
+
+	<span class="nx">ResourceVersion</span> <span class="kt">string</span> <span class="s">`json:&#34;resourceVersion,omitempty&#34; protobuf:&#34;bytes,6,opt,name=resourceVersion&#34;`</span>
+
+	<span class="nx">Generation</span> <span class="kt">int64</span> <span class="s">`json:&#34;generation,omitempty&#34; protobuf:&#34;varint,7,opt,name=generation&#34;`</span>
+
+	<span class="nx">CreationTimestamp</span> <span class="nx">Time</span> <span class="s">`json:&#34;creationTimestamp,omitempty&#34; protobuf:&#34;bytes,8,opt,name=creationTimestamp&#34;`</span>
+
+    <span class="nx">DeletionTimestamp</span> <span class="o">*</span><span class="nx">Time</span> <span class="s">`json:&#34;deletionTimestamp,omitempty&#34; protobuf:&#34;bytes,9,opt,name=deletionTimestamp&#34;`</span>
+
+	<span class="nx">DeletionGracePeriodSeconds</span> <span class="o">*</span><span class="kt">int64</span> <span class="s">`json:&#34;deletionGracePeriodSeconds,omitempty&#34; protobuf:&#34;varint,10,opt,name=deletionGracePeriodSeconds&#34;`</span>
+
+	<span class="nx">Labels</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span> <span class="s">`json:&#34;labels,omitempty&#34; protobuf:&#34;bytes,11,rep,name=labels&#34;`</span>
+
+	<span class="nx">Annotations</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span> <span class="s">`json:&#34;annotations,omitempty&#34; protobuf:&#34;bytes,12,rep,name=annotations&#34;`</span>
+
+	<span class="nx">OwnerReferences</span> <span class="p">[]</span><span class="nx">OwnerReference</span> <span class="s">`json:&#34;ownerReferences,omitempty&#34; patchStrategy:&#34;merge&#34; patchMergeKey:&#34;uid&#34; protobuf:&#34;bytes,13,rep,name=ownerReferences&#34;`</span>
+
+	<span class="nx">Finalizers</span> <span class="p">[]</span><span class="kt">string</span> <span class="s">`json:&#34;finalizers,omitempty&#34; patchStrategy:&#34;merge&#34; protobuf:&#34;bytes,14,rep,name=finalizers&#34;`</span>
+
+	<span class="nx">ClusterName</span> <span class="kt">string</span> <span class="s">`json:&#34;clusterName,omitempty&#34; protobuf:&#34;bytes,15,opt,name=clusterName&#34;`</span>
+
+	<span class="nx">ManagedFields</span> <span class="p">[]</span><span class="nx">ManagedFieldsEntry</span> <span class="s">`json:&#34;managedFields,omitempty&#34; protobuf:&#34;bytes,17,rep,name=managedFields&#34;`</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>Name</code> - Object 的命名。</p>
+</li>
+<li>
+<p><code>GenerateName</code> - 生成基于 GenerateName 的随机名字，填充到 Name。</p>
+</li>
+<li>
+<p><code>Namespace</code> - 对象所属的 namespace，对于 namespace 下的对象，空代表着 &ldquo;default&rdquo;。</p>
+</li>
+<li>
+<p><code>UID</code> - 对象的的唯一 ID。</p>
+<p>系统填充，只读不允许更改。</p>
+</li>
+<li>
+<p><code>ResourceVersion</code> - 对象的版本号，可用于 client 判断资源是否发生变更。</p>
+<p>可以用于乐观并发，变更检测，watch 操作时使用，client 必须将其原封不动传递给 APIServer。</p>
+<p>系统填充，只读不允许更改。</p>
+</li>
+<li>
+<p><code>Generation</code>  - 资源期望状态的序列号。</p>
+<p>系统填充，只读不允许更改。</p>
+</li>
+<li>
+<p><code>CreationTimestamp</code> - Server 创建对象的时间。</p>
+<p>系统填充，只读不允许更改。</p>
+</li>
+<li>
+<p><code>DeletionTimestamp</code> - 对象将被删除的时间。</p>
+<p>当用户优雅删除一个资源时，由系统设置。资源将预计在该时间后被删除。</p>
+<p>如果存在着 finalizer，删除会阻塞等待 finalizer 去除。</p>
+<p>一旦调用删除之后，无法取消删除。</p>
+</li>
+<li>
+<p><code>DeletionGracePeriodSeconds</code> - 优雅停止时间。当 DeletionTimestamp 设置时才会设置。</p>
+</li>
+<li>
+<p><code>Labels</code> - 对象的 label。</p>
+</li>
+<li>
+<p><code>Annotations</code> - 对象的 annotation。</p>
+</li>
+<li>
+<p><code>OwnerReferences</code> - 此对象依赖的对象的列表。</p>
+<p>如果列表中所有的对象都被删除，该对象也会被垃圾回收。</p>
+<p>如果该对象要由 Controller 来管理，将列表中其中一个对象指向 Controller，并设置 controler 字段。</p>
+</li>
+<li>
+<p><code>Finalizers</code> - 在对象被集群删除前，Finalizers 必须为空。</p>
+<p>一旦 DeletionTimestamp 被设置后，表明组件可以开始进行清理操作，清理完成后删除对应的 Finalizer。</p>
+</li>
+<li>
+<p><code>ClusterName</code> - 对象所属的集群名字，用于区分不同集群内同名同 namespace 的资源。</p>
+<p>目前该资源没有被 APIServer 使用到。</p>
+</li>
+<li>
+<p><code>ManagedFields</code> - ??</p>
+</li>
+</ul>
+<h3 id="34-spec-与-status">3.4 Spec 与 Status</h3>
+<p>几乎所有顶级对象都包含 <strong><code>spec</code></strong> 与 <strong><code>status</code></strong> 字段，这体现了 Kubernetes 的声明式 API 设计。</p>
+<p>spec 是用户期望的对象的状态，status 是对象的当前状态。</p>
+<p>spec 通常由用户部署时配置，status 主要由系统中的 Controller 进行填充。</p>
+<h2 id="4-clientset">4 ClientSet</h2>
+<p>在前面的例子，通过 <code>kubernetes.NewForConfig(config)</code> 会返回一个 ClientSet。ClientSet 包含可以访问多个 APIGroup 的资源。</p>
+<p><strong>对于 client-go 返回的 ClientSet，几乎可以访问 Kubernetes APIServer 的所有资源</strong>（除了 APIService 与 CRD）。其主要的接口如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Interface</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Discovery</span><span class="p">()</span> <span class="nx">discovery</span><span class="p">.</span><span class="nx">DiscoveryInterface</span>
+	<span class="nf">AdmissionregistrationV1</span><span class="p">()</span> <span class="nx">admissionregistrationv1</span><span class="p">.</span><span class="nx">AdmissionregistrationV1Interface</span>
+	<span class="nf">AdmissionregistrationV1beta1</span><span class="p">()</span> <span class="nx">admissionregistrationv1beta1</span><span class="p">.</span><span class="nx">AdmissionregistrationV1beta1Interface</span>
+	<span class="nf">InternalV1alpha1</span><span class="p">()</span> <span class="nx">internalv1alpha1</span><span class="p">.</span><span class="nx">InternalV1alpha1Interface</span>
+	<span class="nf">AppsV1</span><span class="p">()</span> <span class="nx">appsv1</span><span class="p">.</span><span class="nx">AppsV1Interface</span>
+	<span class="nf">AppsV1beta1</span><span class="p">()</span> <span class="nx">appsv1beta1</span><span class="p">.</span><span class="nx">AppsV1beta1Interface</span>
+	<span class="nf">AppsV1beta2</span><span class="p">()</span> <span class="nx">appsv1beta2</span><span class="p">.</span><span class="nx">AppsV1beta2Interface</span>
+	<span class="nf">AuthenticationV1</span><span class="p">()</span> <span class="nx">authenticationv1</span><span class="p">.</span><span class="nx">AuthenticationV1Interface</span>
+	<span class="nf">AuthenticationV1beta1</span><span class="p">()</span> <span class="nx">authenticationv1beta1</span><span class="p">.</span><span class="nx">AuthenticationV1beta1Interface</span>
+	<span class="nf">AuthorizationV1</span><span class="p">()</span> <span class="nx">authorizationv1</span><span class="p">.</span><span class="nx">AuthorizationV1Interface</span>
+	<span class="nf">AuthorizationV1beta1</span><span class="p">()</span> <span class="nx">authorizationv1beta1</span><span class="p">.</span><span class="nx">AuthorizationV1beta1Interface</span>
+	<span class="nf">AutoscalingV1</span><span class="p">()</span> <span class="nx">autoscalingv1</span><span class="p">.</span><span class="nx">AutoscalingV1Interface</span>
+	<span class="nf">AutoscalingV2beta1</span><span class="p">()</span> <span class="nx">autoscalingv2beta1</span><span class="p">.</span><span class="nx">AutoscalingV2beta1Interface</span>
+	<span class="nf">AutoscalingV2beta2</span><span class="p">()</span> <span class="nx">autoscalingv2beta2</span><span class="p">.</span><span class="nx">AutoscalingV2beta2Interface</span>
+	<span class="nf">BatchV1</span><span class="p">()</span> <span class="nx">batchv1</span><span class="p">.</span><span class="nx">BatchV1Interface</span>
+	<span class="nf">BatchV1beta1</span><span class="p">()</span> <span class="nx">batchv1beta1</span><span class="p">.</span><span class="nx">BatchV1beta1Interface</span>
+	<span class="nf">CertificatesV1</span><span class="p">()</span> <span class="nx">certificatesv1</span><span class="p">.</span><span class="nx">CertificatesV1Interface</span>
+	<span class="nf">CertificatesV1beta1</span><span class="p">()</span> <span class="nx">certificatesv1beta1</span><span class="p">.</span><span class="nx">CertificatesV1beta1Interface</span>
+	<span class="nf">CoordinationV1beta1</span><span class="p">()</span> <span class="nx">coordinationv1beta1</span><span class="p">.</span><span class="nx">CoordinationV1beta1Interface</span>
+	<span class="nf">CoordinationV1</span><span class="p">()</span> <span class="nx">coordinationv1</span><span class="p">.</span><span class="nx">CoordinationV1Interface</span>
+	<span class="nf">CoreV1</span><span class="p">()</span> <span class="nx">corev1</span><span class="p">.</span><span class="nx">CoreV1Interface</span>
+	<span class="nf">DiscoveryV1</span><span class="p">()</span> <span class="nx">discoveryv1</span><span class="p">.</span><span class="nx">DiscoveryV1Interface</span>
+	<span class="nf">DiscoveryV1beta1</span><span class="p">()</span> <span class="nx">discoveryv1beta1</span><span class="p">.</span><span class="nx">DiscoveryV1beta1Interface</span>
+	<span class="nf">EventsV1</span><span class="p">()</span> <span class="nx">eventsv1</span><span class="p">.</span><span class="nx">EventsV1Interface</span>
+	<span class="nf">EventsV1beta1</span><span class="p">()</span> <span class="nx">eventsv1beta1</span><span class="p">.</span><span class="nx">EventsV1beta1Interface</span>
+	<span class="nf">ExtensionsV1beta1</span><span class="p">()</span> <span class="nx">extensionsv1beta1</span><span class="p">.</span><span class="nx">ExtensionsV1beta1Interface</span>
+	<span class="nf">FlowcontrolV1alpha1</span><span class="p">()</span> <span class="nx">flowcontrolv1alpha1</span><span class="p">.</span><span class="nx">FlowcontrolV1alpha1Interface</span>
+	<span class="nf">FlowcontrolV1beta1</span><span class="p">()</span> <span class="nx">flowcontrolv1beta1</span><span class="p">.</span><span class="nx">FlowcontrolV1beta1Interface</span>
+	<span class="nf">NetworkingV1</span><span class="p">()</span> <span class="nx">networkingv1</span><span class="p">.</span><span class="nx">NetworkingV1Interface</span>
+	<span class="nf">NetworkingV1beta1</span><span class="p">()</span> <span class="nx">networkingv1beta1</span><span class="p">.</span><span class="nx">NetworkingV1beta1Interface</span>
+	<span class="nf">NodeV1</span><span class="p">()</span> <span class="nx">nodev1</span><span class="p">.</span><span class="nx">NodeV1Interface</span>
+	<span class="nf">NodeV1alpha1</span><span class="p">()</span> <span class="nx">nodev1alpha1</span><span class="p">.</span><span class="nx">NodeV1alpha1Interface</span>
+	<span class="nf">NodeV1beta1</span><span class="p">()</span> <span class="nx">nodev1beta1</span><span class="p">.</span><span class="nx">NodeV1beta1Interface</span>
+	<span class="nf">PolicyV1</span><span class="p">()</span> <span class="nx">policyv1</span><span class="p">.</span><span class="nx">PolicyV1Interface</span>
+	<span class="nf">PolicyV1beta1</span><span class="p">()</span> <span class="nx">policyv1beta1</span><span class="p">.</span><span class="nx">PolicyV1beta1Interface</span>
+	<span class="nf">RbacV1</span><span class="p">()</span> <span class="nx">rbacv1</span><span class="p">.</span><span class="nx">RbacV1Interface</span>
+	<span class="nf">RbacV1beta1</span><span class="p">()</span> <span class="nx">rbacv1beta1</span><span class="p">.</span><span class="nx">RbacV1beta1Interface</span>
+	<span class="nf">RbacV1alpha1</span><span class="p">()</span> <span class="nx">rbacv1alpha1</span><span class="p">.</span><span class="nx">RbacV1alpha1Interface</span>
+	<span class="nf">SchedulingV1alpha1</span><span class="p">()</span> <span class="nx">schedulingv1alpha1</span><span class="p">.</span><span class="nx">SchedulingV1alpha1Interface</span>
+	<span class="nf">SchedulingV1beta1</span><span class="p">()</span> <span class="nx">schedulingv1beta1</span><span class="p">.</span><span class="nx">SchedulingV1beta1Interface</span>
+	<span class="nf">SchedulingV1</span><span class="p">()</span> <span class="nx">schedulingv1</span><span class="p">.</span><span class="nx">SchedulingV1Interface</span>
+	<span class="nf">StorageV1beta1</span><span class="p">()</span> <span class="nx">storagev1beta1</span><span class="p">.</span><span class="nx">StorageV1beta1Interface</span>
+	<span class="nf">StorageV1</span><span class="p">()</span> <span class="nx">storagev1</span><span class="p">.</span><span class="nx">StorageV1Interface</span>
+	<span class="nf">StorageV1alpha1</span><span class="p">()</span> <span class="nx">storagev1alpha1</span><span class="p">.</span><span class="nx">StorageV1alpha1Interface</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到，包含了所有 Kubernetes 原生的 GroupVersion 接口，用于操作所有 GroupVersion 下的资源。</p>
+<p>在每个 GroupVersion 方法内部（例如 AppsV1beta1），就是该 APIGroup 下的所有资源了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">AppsV1beta1Interface</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">RESTClient</span><span class="p">()</span> <span class="nx">rest</span><span class="p">.</span><span class="nx">Interface</span>
+	<span class="nx">ControllerRevisionsGetter</span>
+	<span class="nx">DeploymentsGetter</span>
+	<span class="nx">StatefulSetsGetter</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>RESTClient 是一个通用的 REST Client：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Interface captures the set of operations for generically interacting with Kubernetes REST apis.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Interface</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">GetRateLimiter</span><span class="p">()</span> <span class="nx">flowcontrol</span><span class="p">.</span><span class="nx">RateLimiter</span>
+	<span class="nf">Verb</span><span class="p">(</span><span class="nx">verb</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="nx">Request</span>
+	<span class="nf">Post</span><span class="p">()</span> <span class="o">*</span><span class="nx">Request</span>
+	<span class="nf">Put</span><span class="p">()</span> <span class="o">*</span><span class="nx">Request</span>
+	<span class="nf">Patch</span><span class="p">(</span><span class="nx">pt</span> <span class="nx">types</span><span class="p">.</span><span class="nx">PatchType</span><span class="p">)</span> <span class="o">*</span><span class="nx">Request</span>
+	<span class="nf">Get</span><span class="p">()</span> <span class="o">*</span><span class="nx">Request</span>
+	<span class="nf">Delete</span><span class="p">()</span> <span class="o">*</span><span class="nx">Request</span>
+	<span class="nf">APIVersion</span><span class="p">()</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersion</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>而其他资源接口就是可以操作对应的资源了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// DeploymentsGetter has a method to return a DeploymentInterface.
+</span><span class="c1">// A group&#39;s client should implement this interface.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">DeploymentsGetter</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Deployments</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">DeploymentInterface</span>
+<span class="p">}</span>
+
+<span class="c1">// DeploymentInterface has methods to work with Deployment resources.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">DeploymentInterface</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Create</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">deployment</span> <span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">Deployment</span><span class="p">,</span> <span class="nx">opts</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">CreateOptions</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">Deployment</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Update</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">deployment</span> <span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">Deployment</span><span class="p">,</span> <span class="nx">opts</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">UpdateOptions</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">Deployment</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">UpdateStatus</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">deployment</span> <span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">Deployment</span><span class="p">,</span> <span class="nx">opts</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">UpdateOptions</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">Deployment</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Delete</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">opts</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">DeleteOptions</span><span class="p">)</span> <span class="kt">error</span>
+	<span class="nf">DeleteCollection</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">opts</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">DeleteOptions</span><span class="p">,</span> <span class="nx">listOpts</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">ListOptions</span><span class="p">)</span> <span class="kt">error</span>
+	<span class="nf">Get</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">opts</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">GetOptions</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">Deployment</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">List</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">opts</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">ListOptions</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">DeploymentList</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Watch</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">opts</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">ListOptions</span><span class="p">)</span> <span class="p">(</span><span class="nx">watch</span><span class="p">.</span><span class="nx">Interface</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Patch</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">pt</span> <span class="nx">types</span><span class="p">.</span><span class="nx">PatchType</span><span class="p">,</span> <span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">opts</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">PatchOptions</span><span class="p">,</span> <span class="nx">subresources</span> <span class="o">...</span><span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">result</span> <span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">Deployment</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Apply</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">deployment</span> <span class="o">*</span><span class="nx">appsv1beta1</span><span class="p">.</span><span class="nx">DeploymentApplyConfiguration</span><span class="p">,</span> <span class="nx">opts</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">ApplyOptions</span><span class="p">)</span> <span class="p">(</span><span class="nx">result</span> <span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">Deployment</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">ApplyStatus</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">deployment</span> <span class="o">*</span><span class="nx">appsv1beta1</span><span class="p">.</span><span class="nx">DeploymentApplyConfiguration</span><span class="p">,</span> <span class="nx">opts</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">ApplyOptions</span><span class="p">)</span> <span class="p">(</span><span class="nx">result</span> <span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">Deployment</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nx">DeploymentExpansion</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>大部分接口就是字面上的意思，下面是一些特殊的接口：</p>
+<ul>
+<li>
+<p><code>UpdateStatus</code></p>
+<p>Deployment 包含一个子资源 /status，前面的 UpdateStatus 接口就是通过请求 /status 的 HTTP API 访问的。</p>
+<p>举个例子，通过 <em>&quot;/apis/apps/v1beta1/namespace/&lt;ns&gt;/depolyments/&lt;name&gt;&quot;</em> HTTP Path <strong>只能修改该对象的 spec</strong>，而通过 <em>&quot;/apis/apps/v1beta1/namespace/&lt;ns&gt;/depolyments/&lt;name&gt;/status&quot;</em> <strong>可以修改该对象的 status</strong>。</p>
+<p>默认情况下，生成 client 代码时会自动生成 UpdateStatus 方法的，但是不代表该资源可以支持修改 status。</p>
+</li>
+<li>
+<p><code>DeleteCollection</code></p>
+<p>DeleteCollection 用于<strong>一次性删除命名空间中的多个对象</strong>，在 ListOption 参数中使用 label selector 和 field selector 来筛选对象。</p>
+</li>
+<li>
+<p><code>Watch</code></p>
+<p>Watch 提供了<strong>发现该资源各种状态变化（增删改）的机制</strong>。返回的 interface 如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Interface can be implemented by anything that knows how to watch and report changes.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Interface</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="c1">// Stops watching. Will close the channel returned by ResultChan(). Releases
+</span><span class="c1"></span>	<span class="c1">// any resources used by the watch.
+</span><span class="c1"></span>	<span class="nf">Stop</span><span class="p">()</span>
+	<span class="c1">// Returns a chan which will receive all the events. If an error occurs
+</span><span class="c1"></span>	<span class="c1">// or Stop() is called, the implementation will close this channel and
+</span><span class="c1"></span>	<span class="c1">// release any resources used by the watch.
+</span><span class="c1"></span>	<span class="nf">ResultChan</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="nx">Event</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过 ResultChan() 返回的 channel 就可以监听到资源的变更事件了。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>不建议使用 Watch<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">实践中，不建议使用 Watch 监听对象，应该使用 Informer 提供的事件通知接口。因为 Informer 提供了缓存，并支持了 Resync 机制，也能正确处理各种出错的情况。</div>
+        </div>
+    </div>
+</li>
+</ul>
+<h4 id="41-clientset-option">4.1 ClientSet Option</h4>
+<p>下面看下在生成 ClientSet 时可以配置的一些选项。</p>
+<p>为了能够区分访问 APIServer 的不同 client，可以设置配置中的 User Agent 字段标识不同的 client。它的默认值为 binary/version (os/arch) kubernetes/commit，例如 kubectl 设置的 User Agent 为 kubectl/v1.14.0 (darwin/amd64) kubernetes/d654b49。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">cfg</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientcmd</span><span class="p">.</span><span class="nf">BuildConfigFromFlags</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">kubeconfig</span><span class="p">)</span> 
+<span class="nx">cfg</span><span class="p">.</span><span class="nx">AcceptContentTypes</span> <span class="p">=</span> <span class="s">&#34;application/vnd.kubernetes.protobuf,application/json&#34;</span> 
+<span class="nx">cfg</span><span class="p">.</span><span class="nx">UserAgent</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span> 
+    <span class="s">&#34;book-example/v1.0 (%s/%s) kubernetes/v1.0&#34;</span><span class="p">,</span> 
+    <span class="nx">runtime</span><span class="p">.</span><span class="nx">GOOS</span><span class="p">,</span> <span class="nx">runtime</span><span class="p">.</span><span class="nx">GOARCH</span> 
+<span class="p">)</span> 
+<span class="nx">clientset</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">kubernetes</span><span class="p">.</span><span class="nf">NewForConfig</span><span class="p">(</span><span class="nx">cfg</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>配置中还可以设置 client 发送请求的速率限制和超时的配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Config holds the common attributes that can be passed to a Kubernetes
+</span><span class="c1">// client on initialization.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Config</span> <span class="kd">struct</span> <span class="p">{</span> 
+	<span class="c1">// QPS indicates the maximum QPS to the master from this client.
+</span><span class="c1"></span>    <span class="c1">// If it&#39;s zero, the created RESTClient will use DefaultQPS: 5
+</span><span class="c1"></span>    <span class="nx">QPS</span> <span class="kt">float32</span> 
+	<span class="c1">// Maximum burst for throttle.
+</span><span class="c1"></span>	<span class="c1">// If it&#39;s zero, the created RESTClient will use DefaultBurst: 10.
+</span><span class="c1"></span>    <span class="nx">Burst</span> <span class="kt">int</span> 
+	<span class="c1">// The maximum length of time to wait before giving up on a server request.
+</span><span class="c1"></span>	<span class="c1">// A value of zero means no timeout.
+</span><span class="c1"></span>    <span class="nx">Timeout</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span> 
+    <span class="o">...</span> 
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>虽然 Client 默认没有设置请求的超时时间，但是 APIServer 会对非长时间运行请求有着 60s 的超时时间。</p>
+<h2 id="5-informer">5 Informer</h2>
+<p>Controller 如果每次需要查询就去访问 APIServer，会造成比较大的压力。Informer 提供了对象的 <strong><code>内存缓存</code></strong>，而<strong>通过 Watch 机制来监听对象的即时变化</strong>。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_programming/2-client-go/img3.png"/>
+
+
+</p>
+<p><strong><code>Informer</code></strong> 内部实现了<strong>完善的错误处理能力</strong>：当与 APIServer Watch 的长连接发生断开时，它会通过一个新的 Watch 请求尝试恢复，从事件中找到正确的事件继续处理。也就是不会丢失事件。如果连接断开时间很长，Informer 会获取完整的对象列表重新构建缓存。</p>
+<p>Informer 还提供了 <strong>resync</strong> 的机制：没经过一定的时间，它就会<strong>调用注册过的事件处理函数（Update 回调）</strong>，提供完成的对象列表。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">resync 也是基于 Informer 内存缓存提供的对象列表，不会向 APIServer 发起请求。</div>
+        </div>
+    </div></p>
+<p>为了减少程序中使用多个 Informer 带来的开销，可以通过 <strong><code>SharedInformerFactory</code></strong> 来方便地对 Informer 进行复用。<strong>SharedInformerFactory 允许在一个应用程序中复用 Informer，这样底层只有一个与 APIServer 构建的 Watch 连接</strong>。</p>
+<p>通过 ClientSet 可以很方便的创建一个 SharedInformerFactory：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="p">(</span> 
+    <span class="c1">// ... 
+</span><span class="c1"></span>    <span class="s">&#34;k8s.io/client-go/informers&#34;</span> 
+<span class="p">)</span> 
+<span class="nx">clientset</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">kubernetes</span><span class="p">.</span><span class="nf">NewForConfig</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span> 
+<span class="c1">// 创建 SharedInformerFactory：
+</span><span class="c1"></span><span class="nx">informerFactory</span> <span class="o">:=</span> <span class="nx">informers</span><span class="p">.</span><span class="nf">NewSharedInformerFactory</span><span class="p">(</span><span class="nx">clientset</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="o">*</span><span class="mi">30</span><span class="p">)</span>
+<span class="c1">// 注册事件回调
+</span><span class="c1"></span><span class="nx">podInformer</span> <span class="o">:=</span> <span class="nx">informerFactory</span><span class="p">.</span><span class="nf">Core</span><span class="p">().</span><span class="nf">V1</span><span class="p">().</span><span class="nf">Pods</span><span class="p">()</span> 
+<span class="nx">podInformer</span><span class="p">.</span><span class="nf">Informer</span><span class="p">().</span><span class="nf">AddEventHandler</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">ResourceEventHandlerFuncs</span><span class="p">{</span> 
+    <span class="nx">AddFunc</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">new</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span> 
+    <span class="nx">UpdateFunc</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">old</span><span class="p">,</span> <span class="nx">new</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span> 
+    <span class="nx">DeleteFunc</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">obj</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span> 
+<span class="p">})</span>
+<span class="c1">// 启动
+</span><span class="c1"></span><span class="nx">informerFactory</span><span class="p">.</span><span class="nf">Start</span><span class="p">(</span><span class="nx">wait</span><span class="p">.</span><span class="nx">NeverStop</span><span class="p">)</span>
+<span class="c1">// Cache 同步
+</span><span class="c1"></span><span class="nx">informerFactory</span><span class="p">.</span><span class="nf">WaitForCacheSync</span><span class="p">(</span><span class="nx">wait</span><span class="p">.</span><span class="nx">NeverStop</span><span class="p">)</span> 
+<span class="c1">// 使用（纯内存的查询）
+</span><span class="c1"></span><span class="nx">pod</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">podInformer</span><span class="p">.</span><span class="nf">Lister</span><span class="p">().</span><span class="nf">Pods</span><span class="p">(</span><span class="s">&#34;programming-kubernetes&#34;</span><span class="p">).</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;client-go&#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>AddEventHandler</code> - 添加事件回调，这也是 Controller 的基础。</li>
+<li><code>Start</code> - 启动 InformerFactory，内部会启动一些 groutine 去访问 APIServer。</li>
+<li><code>WaitForCacheSync</code> - 让代码停下来，等待 InformerFactory 第一次同步所有的缓存。</li>
+</ul>
+<p>例子中设置了 30s 的 resync 周期，也就是每隔 30s Informer 针对所有的对象会，触发一次 UpdateFunc 函数回调。因此，UpdateFunc 可能需要通过 <code>ObjectMeta.resourceVersion</code> 字段来判断是否是真正的更新事件。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>ReadOnly<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">程序只能从 Informer 中读取、查询对象，不能通过 Informer 修改对象（需通过 ClientSet），而且也不能修改 Informer 返回的对象，因为这些对象是由 Informer 管理的。</div>
+        </div>
+    </div>
+<h2 id="6-workqueue">6 WorkQueue</h2>
+<p>client-go 库中在 <em>&ldquo;k8s.io/client-go/util/workqueue&rdquo;</em> 中提供了一种强大的优先队列，可以实现让控制变得更加方便。</p>
+<p>所有的 WorkQueue 都实现了下面的 interface：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Interface</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Add</span><span class="p">(</span><span class="nx">item</span> <span class="kd">interface</span><span class="p">{})</span>
+	<span class="nf">Len</span><span class="p">()</span> <span class="kt">int</span>
+	<span class="nf">Get</span><span class="p">()</span> <span class="p">(</span><span class="nx">item</span> <span class="kd">interface</span><span class="p">{},</span> <span class="nx">shutdown</span> <span class="kt">bool</span><span class="p">)</span>
+	<span class="nf">Done</span><span class="p">(</span><span class="nx">item</span> <span class="kd">interface</span><span class="p">{})</span>
+	<span class="nf">ShutDown</span><span class="p">()</span>
+	<span class="nf">ShuttingDown</span><span class="p">()</span> <span class="kt">bool</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Add(item) - 用于添加一个元素，反复添加同一个未出队的 item 只会对该元素打上标记。</li>
+<li>Len() - 返回队列的当前长度。</li>
+<li>Get() - 返回一个最高优先级的元素，Get() 并不代表元素从队列中取出。</li>
+<li>Done(item) - 表明元素处理完成，从队列中移出。</li>
+</ul>
+<p><strong><code>DelayingInterface</code></strong> 是基于基础 interface 的扩展，<strong>用于延迟添加元素</strong>。这适用于很方便地把处理失败的元素延时重新加入队列。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// DelayingInterface is an Interface that can Add an item at a later time. This makes it easier to
+</span><span class="c1">// requeue items after failures without ending up in a hot-loop.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">DelayingInterface</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nx">Interface</span>
+	<span class="c1">// AddAfter adds an item to the workqueue after the indicated duration has passed
+</span><span class="c1"></span>	<span class="nf">AddAfter</span><span class="p">(</span><span class="nx">item</span> <span class="kd">interface</span><span class="p">{},</span> <span class="nx">duration</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>AddAfter() - 在指定时间后将元素重新加入队列。</li>
+</ul>
+<p><strong><code>RateLimitingInterface</code></strong> 是更加常用的 interface 的扩展，对元素加入队列进行频率限流：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// RateLimitingInterface is an interface that rate limits items being added to the queue.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">RateLimitingInterface</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nx">DelayingInterface</span>
+
+	<span class="c1">// AddRateLimited adds an item to the workqueue after the rate limiter says it&#39;s ok
+</span><span class="c1"></span>	<span class="nf">AddRateLimited</span><span class="p">(</span><span class="nx">item</span> <span class="kd">interface</span><span class="p">{})</span>
+
+	<span class="c1">// Forget indicates that an item is finished being retried.  Doesn&#39;t matter whether it&#39;s for perm failing
+</span><span class="c1"></span>	<span class="c1">// or for success, we&#39;ll stop the rate limiter from tracking it.  This only clears the `rateLimiter`, you
+</span><span class="c1"></span>	<span class="c1">// still have to call `Done` on the queue.
+</span><span class="c1"></span>	<span class="nf">Forget</span><span class="p">(</span><span class="nx">item</span> <span class="kd">interface</span><span class="p">{})</span>
+
+	<span class="c1">// NumRequeues returns back how many times the item was requeued
+</span><span class="c1"></span>	<span class="nf">NumRequeues</span><span class="p">(</span><span class="nx">item</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">int</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>AddRateLimited() - 添加元素到队列，收到频率限制。</li>
+<li>Forget() - 表明一个元素处理结束，重置该元素的限频值（仅仅针对频率限制，还是依旧要调用 Done()）。</li>
+<li>NumRequeues() - 返回一个元素入队的次数。</li>
+</ul>
+<p>client-go 提供了多种方式的限频算法，包括：</p>
+<ul>
+<li>BucketRateLimiter</li>
+<li>ItemExponentialFailureRateLimiter</li>
+<li>ItemFastSlowRateLimiter</li>
+<li>MaxOfRateLimiter</li>
+</ul>
+<p>不过大部分情况下，我们都只需要使用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">DefaultControllerRateLimiter</span><span class="p">()</span> <span class="o">*</span><span class="nx">RateLimiter</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>指数级的退避策略</strong>，从 5ms 考试，最大 1000s，每次退避时间翻倍。</li>
+<li><strong>允许每秒向队列中添加 10 个元素，允许突发添加 100 个元素</strong>。</li>
+</ul>
+<h2 id="7-基本类型系统">7 基本类型系统</h2>
+<p>首先，我们看着下图，有着在对代码中类型系统的转化路径的整体概念：</p>
+<a class="lightgallery" href="/posts/cloud_computing/k8s_programming/2-client-go/img4.png" title="/posts/cloud_computing/k8s_programming/2-client-go/img4.png" data-thumbnail="/posts/cloud_computing/k8s_programming/2-client-go/img4.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img4.png"
+            data-srcset="/posts/cloud_computing/k8s_programming/2-client-go/img4.png, img4.png 1.5x, /posts/cloud_computing/k8s_programming/2-client-go/img4.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud_computing/k8s_programming/2-client-go/img4.png" />
+    </a>
+<ol>
+<li>代码中，我们得到一个对象，可以通过 <a href="#74-scheme" rel=""><strong>Scheme</strong></a> 得到对应的 <a href="#71-groupversionkind" rel=""><strong>GroupVersionKind</strong></a></li>
+<li>从 GroupVersionKind，通过 <a href="#73-rest-mapping" rel=""><strong>RESTMapper</strong></a> 可以映射到对应的 <a href="#72-groupversionresource" rel=""><strong>GroupVersionResource</strong></a></li>
+<li>client 基于 GroupVersionResource 就可以请求对应的 HTTP API Path</li>
+</ol>
+<h3 id="71-groupversionkind">7.1 GroupVersionKind</h3>
+<p>在 <a href="../basic/#221-kind" rel=""><strong>API 基本概念 - Kind</strong></a> 中说过，Kind 表示一个对象的类型。因为对象都是基于 GroupVersion 来说的，所以在代码中，Kind 的代表就是核心概念：<strong><code>GroupVersionKind</code></strong>，简写为 <strong><code>GVK</code></strong>。
+看下具体的结构：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// GroupVersionKind unambiguously identifies a kind.  It doesn&#39;t anonymously include GroupVersion
+</span><span class="c1">// to avoid automatic coercion.  It doesn&#39;t use a GroupVersion to avoid custom marshalling
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">GroupVersionKind</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Group</span>   <span class="kt">string</span>
+	<span class="nx">Version</span> <span class="kt">string</span>
+	<span class="nx">Kind</span>    <span class="kt">string</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="72-groupversionresource">7.2 GroupVersionResource</h3>
+<p>在 <a href="../basic/#224-resource" rel=""><strong>API 基本概念 - Resource</strong></a> 中说明了 Resource 的概念，Resource 也是基于 GroupVersion 来说的，所以代码中也有着对应的 <strong><code>GroupVersionResource</code></strong> 的概念，简写为 <strong><code>GVR</code></strong>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// GroupVersionResource unambiguously identifies a resource.  It doesn&#39;t anonymously include GroupVersion
+</span><span class="c1">// to avoid automatic coercion.  It doesn&#39;t use a GroupVersion to avoid custom marshalling
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">GroupVersionResource</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Group</span>    <span class="kt">string</span>
+	<span class="nx">Version</span>  <span class="kt">string</span>
+	<span class="nx">Resource</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="c1">// GroupKind specifies a Group and a Kind, but does not force a version.  This is useful for identifying
+</span><span class="c1">// concepts during lookup stages without having partially valid types
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">GroupKind</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Group</span> <span class="kt">string</span>
+	<span class="nx">Kind</span>  <span class="kt">string</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>每个 GVR 都对应了一个 HTTP API Path。例如 apps/v1.deployments 这个 GVR 对应于 HTTP APi /apis/apps/v1/$namespace/deployments。</p>
+<h3 id="73-rest-map">7.3 REST Map</h3>
+<p>大多数 Kind 与 Resource 存在着一一对应的关系，<strong>用于记录 GVK 与 GVR 之间的映射关系</strong>被称为 <strong><code>REST Map</code></strong>。</p>
+<p>代码中 <strong><code>RestMapper</code></strong> 为记录 RESTMap 的抽象 interface，其<strong>提供多个用于 GVK 与 GVR 之间转换的方法</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// RESTMapper allows clients to map resources to kind, and map kind and version
+</span><span class="c1">// to interfaces for manipulating those objects. It is primarily intended for
+</span><span class="c1">// consumers of Kubernetes compatible REST APIs as defined in docs/devel/api-conventions.md.
+</span><span class="c1">//
+</span><span class="c1">// The Kubernetes API provides versioned resources and object kinds which are scoped
+</span><span class="c1">// to API groups. In other words, kinds and resources should not be assumed to be
+</span><span class="c1">// unique across groups.
+</span><span class="c1">//
+</span><span class="c1">// TODO: split into sub-interfaces
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">RESTMapper</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="c1">// KindFor takes a partial resource and returns the single match.  Returns an error if there are multiple matches
+</span><span class="c1"></span>	<span class="nf">KindFor</span><span class="p">(</span><span class="nx">resource</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionResource</span><span class="p">)</span> <span class="p">(</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+	<span class="c1">// KindsFor takes a partial resource and returns the list of potential kinds in priority order
+</span><span class="c1"></span>	<span class="nf">KindsFor</span><span class="p">(</span><span class="nx">resource</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionResource</span><span class="p">)</span> <span class="p">([]</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+	<span class="c1">// ResourceFor takes a partial resource and returns the single match.  Returns an error if there are multiple matches
+</span><span class="c1"></span>	<span class="nf">ResourceFor</span><span class="p">(</span><span class="nx">input</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionResource</span><span class="p">)</span> <span class="p">(</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionResource</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+	<span class="c1">// ResourcesFor takes a partial resource and returns the list of potential resource in priority order
+</span><span class="c1"></span>	<span class="nf">ResourcesFor</span><span class="p">(</span><span class="nx">input</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionResource</span><span class="p">)</span> <span class="p">([]</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionResource</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+	<span class="c1">// RESTMapping identifies a preferred resource mapping for the provided group kind.
+</span><span class="c1"></span>	<span class="nf">RESTMapping</span><span class="p">(</span><span class="nx">gk</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupKind</span><span class="p">,</span> <span class="nx">versions</span> <span class="o">...</span><span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">RESTMapping</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="c1">// RESTMappings returns all resource mappings for the provided group kind if no
+</span><span class="c1"></span>	<span class="c1">// version search is provided. Otherwise identifies a preferred resource mapping for
+</span><span class="c1"></span>	<span class="c1">// the provided version(s).
+</span><span class="c1"></span>	<span class="nf">RESTMappings</span><span class="p">(</span><span class="nx">gk</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupKind</span><span class="p">,</span> <span class="nx">versions</span> <span class="o">...</span><span class="kt">string</span><span class="p">)</span> <span class="p">([]</span><span class="o">*</span><span class="nx">RESTMapping</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+	<span class="nf">ResourceSingularizer</span><span class="p">(</span><span class="nx">resource</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">singular</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>KindFor() - 部分 GVR 转换为单个 GVK</li>
+<li>KindsFor() - 部分 GVR 转换为所有 GVK</li>
+<li>ResourceFor() - 部分 GVR 转换为单个 GVR</li>
+<li>ResourcesFor() - 部分 GVR 转换为所有 GVR</li>
+<li>RESTMapping() - 从一个 Kind 得到对应最优先的 RestMapping</li>
+<li>RESTMappings() - 从一个 Kind 得到所有对应的 RestMapping</li>
+</ul>
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw"></i>部分 GVR<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">部分 GVR 指的是仅仅设置了部分字段的 GVR。例如 kubectl get pods 时，没有指定 Group 与 Version，但是能够映射到 v1 Pod 这样的 Kind。</div>
+        </div>
+    </div>
+<p><strong><code>RESTMapping</code></strong> 就代表了一个 GVK 与 GVR 的一对一映射：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// RESTMapping contains the information needed to deal with objects of a specific
+</span><span class="c1">// resource and kind in a RESTful manner.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">RESTMapping</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// Resource is the GroupVersionResource (location) for this endpoint
+</span><span class="c1"></span>	<span class="nx">Resource</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionResource</span>
+
+	<span class="c1">// GroupVersionKind is the GroupVersionKind (data format) to submit to this endpoint
+</span><span class="c1"></span>	<span class="nx">GroupVersionKind</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span>
+
+	<span class="c1">// Scope contains the information needed to deal with REST Resources that are in a resource hierarchy
+</span><span class="c1"></span>	<span class="nx">Scope</span> <span class="nx">RESTScope</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>RESTMapper interface 有着许多的 implement，不过在编写 Operator 时，通常我们使用基于发现机制的 DeferredDiscoveryRESTMapper 实现。它通过调用 APIServer 的接口动态解析 REST Mapping。</p>
+<h3 id="74-scheme">7.4 Scheme</h3>
+<p><strong><code>Scheme</code></strong> 用于将 Golang 中某个对象与可能的 GVK 之间建立映射，看下其接口就知道了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// ObjectKinds returns all possible group,version,kind of the go object, true if the
+</span><span class="c1">// object is considered unversioned, or an error if it&#39;s not a pointer or is unregistered.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">ObjectKinds</span><span class="p">(</span><span class="nx">obj</span> <span class="nx">Object</span><span class="p">)</span> <span class="p">([]</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">,</span> <span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+<span class="c1">// AddKnownTypeWithName is like AddKnownTypes, but it lets you specify what this type should
+</span><span class="c1">// be encoded as. Useful for testing when you don&#39;t want to make multiple packages to define
+</span><span class="c1">// your structs. Version may not be empty - use the APIVersionInternal constant if you have a
+</span><span class="c1">// type that does not have a formal version.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">AddKnownTypes</span><span class="p">(</span><span class="nx">gv</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersion</span><span class="p">,</span> <span class="nx">types</span> <span class="o">...</span><span class="nx">Object</span><span class="p">)</span>
+
+<span class="c1">// AllKnownTypes returns the all known types.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">AllKnownTypes</span><span class="p">()</span> <span class="kd">map</span><span class="p">[</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">]</span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Type</span> 
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>ObjectKinds() - 从一个对象得到其对应的 GVK。</li>
+</ul>
+<p><strong>Scheme 通过 Go 的反射机制来获取某个对象的类型，并将其与一个注册过该类型的 GVK 进行映射</strong>。例如，我们将 Pod 的结构体与对应的 GVK 注册到 scheme 中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">scheme</span><span class="p">.</span><span class="nf">AddKnownTypes</span><span class="p">(</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">{</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;v1&#34;</span><span class="p">,</span> <span class="s">&#34;Pod&#34;</span><span class="p">},</span> <span class="o">&amp;</span><span class="nx">Pod</span><span class="p">{})</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这样，Go 类型与 GVK 就有着映射关系了。</p>
+<p>Scheme 不仅用于注册 Golang 类型与 GVK 的关系，还用于存储一系列转换函数和默认构造器。</p>
+<p>client-go 中有着一些预定义的 Scheme，位于 k8s.io/client-go/kubernetes/scheme 包中，其包含了 Kubernetes 所有的核心类型。而对于 CR，各个生成器生成代码后都会包含一个 scheme 的自保，里面包含对应的 Scheme 实现。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://book.douban.com/subject/33393681/" target="_blank" rel="noopener noreffer"><strong>《Programming Kubernetes》</strong></a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-08-10</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud_computing/k8s_programming/2-client-go/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/2-client-go/" data-title="K8s 编程 - 编程基础"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/2-client-go/" data-title="K8s 编程 - 编程基础"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/2-client-go/" data-title="K8s 编程 - 编程基础"><i class="fab fa-evernote fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud_computing/k8s_programming/1-basic/" class="prev" rel="prev" title="K8s 编程 - 基本概念"><i class="fas fa-angle-left fa-fw"></i>K8s 编程 - 基本概念</a>
+            <a href="/posts/cloud_computing/k8s_programming/3-custom-resource/" class="next" rel="next" title="K8s 编程 - Custom Resource">K8s 编程 - Custom Resource<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":25},"comment":{},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
