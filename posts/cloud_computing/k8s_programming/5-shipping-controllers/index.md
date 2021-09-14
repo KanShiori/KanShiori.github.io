@@ -163,7 +163,7 @@ in CI for Integration and E2E tests**](https://xmudrii.com/posts/spawn-kubernete
 基于容器的部署方案中，日志一般都打印在 stdout 上，通过 `kubectl logs` 命令查看。
 
 在 Kubernetes 代码库中，有两个广泛使用的方法：
-* **`logger interface`**，httplog.go 里提供了该 interface，以及一个具体的实现（respLogger），它可以捕捉状态或错误等信息。
+* **logger interface**，httplog.go 里提供了该 interface，以及一个具体的实现（respLogger），它可以捕捉状态或错误等信息。
 * [**klog**](https://github.com/kubernetes/klog)，Google glog 的一个分支，是 Kubernetes 项目中使用的结构化日志。
 
 ## 参考

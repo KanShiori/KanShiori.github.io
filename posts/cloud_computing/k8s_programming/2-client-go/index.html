@@ -10,7 +10,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/2-client-go/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-08-10T11:15:27&#43;00:00" />
-<meta property="article:modified_time" content="2021-08-21T08:14:23&#43;00:00" />
+<meta property="article:modified_time" content="2021-09-14T21:46:21&#43;08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -27,8 +27,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_programming\/2-client-go\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  7193 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_programming\/2-client-go\/","datePublished": "2021-08-10T11:15:27+00:00","dateModified": "2021-08-21T08:14:23+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  8188 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_programming\/2-client-go\/","datePublished": "2021-08-10T11:15:27+00:00","dateModified": "2021-09-14T21:46:21+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">K8s 编程 - 编程基础</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw"></i>Kubernetes 编程</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-08-10">2021-08-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 7193 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 15 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-08-10">2021-08-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 8188 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 17 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -165,7 +165,14 @@
         <li><a href="#71-groupversionkind">7.1 GroupVersionKind</a></li>
         <li><a href="#72-groupversionresource">7.2 GroupVersionResource</a></li>
         <li><a href="#73-rest-map">7.3 REST Map</a></li>
-        <li><a href="#74-scheme">7.4 Scheme</a></li>
+        <li><a href="#74-scheme">7.4 Scheme</a>
+          <ul>
+            <li><a href="#741-类型转换">7.4.1 类型转换</a></li>
+            <li><a href="#742-不同版本类型间转换">7.4.2 不同版本类型间转换</a></li>
+            <li><a href="#743-设置默认值">7.4.3 设置默认值</a></li>
+            <li><a href="#744-原生的-scheme">7.4.4 原生的 Scheme</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
     <li><a href="#参考">参考</a></li>
@@ -1379,7 +1386,24 @@
 </div>
 </div><p>RESTMapper interface 有着许多的 implement，不过在编写 Operator 时，通常我们使用基于发现机制的 DeferredDiscoveryRESTMapper 实现。它通过调用 APIServer 的接口动态解析 REST Mapping。</p>
 <h3 id="74-scheme">7.4 Scheme</h3>
-<p><strong><code>Scheme</code></strong> 用于将 Golang 中某个对象与可能的 GVK 之间建立映射，看下其接口就知道了：</p>
+<p><strong><code>Scheme</code></strong>  应该是编写代码时最重要的结构了。其包含了多个 Golang 类型与 GVK 的映射，并且特定的 Kind，可以注册不同版本的转换函数，以及设置默认值的函数。</p>
+<p>总结一下其主要作用：</p>
+<ul>
+<li>GVK 与 Golang 类型的转换；</li>
+<li>注册 Convert 函数，用于 Kind 不同版本对象之间的转换；</li>
+<li>注册 Default 函数，用于设置对象的默认值；</li>
+</ul>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">当我们需要实现 Custom APIServer 时，就会要了解到 Convert 与 Default。</div>
+        </div>
+    </div>
+<h4 id="741-类型转换">7.4.1 类型转换</h4>
+<p>Scheme 提供 GVK 与特定类型转换功能。</p>
+<p>首先，我们需要通过 Scheme.AddKnownTypes 接口来注册 Golang 类型与 GroupVersion。通常，代码生成器会在 register.go 文件中生成该代码。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -1394,37 +1418,199 @@
 </span><span class="lnt">10
 </span><span class="lnt">11
 </span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// ObjectKinds returns all possible group,version,kind of the go object, true if the
-</span><span class="c1">// object is considered unversioned, or an error if it&#39;s not a pointer or is unregistered.
-</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">ObjectKinds</span><span class="p">(</span><span class="nx">obj</span> <span class="nx">Object</span><span class="p">)</span> <span class="p">([]</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">,</span> <span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// SchemeGroupVersion is group version used to register these objects
+</span><span class="c1"></span><span class="kd">var</span> <span class="nx">SchemeGroupVersion</span> <span class="p">=</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersion</span><span class="p">{</span><span class="nx">Group</span><span class="p">:</span> <span class="nx">groupName</span><span class="p">,</span> <span class="nx">Version</span><span class="p">:</span> <span class="s">&#34;v1alpha1&#34;</span><span class="p">}</span>
 
-<span class="c1">// AddKnownTypeWithName is like AddKnownTypes, but it lets you specify what this type should
-</span><span class="c1">// be encoded as. Useful for testing when you don&#39;t want to make multiple packages to define
-</span><span class="c1">// your structs. Version may not be empty - use the APIVersionInternal constant if you have a
-</span><span class="c1">// type that does not have a formal version.
-</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">AddKnownTypes</span><span class="p">(</span><span class="nx">gv</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersion</span><span class="p">,</span> <span class="nx">types</span> <span class="o">...</span><span class="nx">Object</span><span class="p">)</span>
+<span class="kd">func</span> <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// We only register manually written functions here. The registration of the
+</span><span class="c1"></span>	<span class="c1">// generated functions takes place in the generated files. The separation
+</span><span class="c1"></span>	<span class="c1">// makes the code compile even when the generated files are missing.
+</span><span class="c1"></span>	<span class="nx">localSchemeBuilder</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span><span class="nx">addKnownTypes</span><span class="p">)</span>
+<span class="p">}</span>
 
-<span class="c1">// AllKnownTypes returns the all known types.
-</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">AllKnownTypes</span><span class="p">()</span> <span class="kd">map</span><span class="p">[</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">]</span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Type</span> 
+<span class="kd">func</span> <span class="nf">addKnownTypes</span><span class="p">(</span><span class="nx">scheme</span> <span class="o">*</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">Scheme</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="nx">Scheme</span> <span class="p">=</span> <span class="nx">scheme</span> <span class="c1">// Scheme 是全局的 Scheme 对象
+</span><span class="c1"></span>	<span class="nx">scheme</span><span class="p">.</span><span class="nf">AddKnownTypes</span><span class="p">(</span><span class="nx">SchemeGroupVersion</span><span class="p">,</span>
+		<span class="o">&amp;</span><span class="nx">TidbCluster</span><span class="p">{},</span>  <span class="c1">// 自定义的类型
+</span><span class="c1"></span>	<span class="p">)</span>
+
+	<span class="nx">metav1</span><span class="p">.</span><span class="nf">AddToGroupVersion</span><span class="p">(</span><span class="nx">scheme</span><span class="p">,</span> <span class="nx">SchemeGroupVersion</span><span class="p">)</span>
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><ul>
-<li>ObjectKinds() - 从一个对象得到其对应的 GVK。</li>
-</ul>
-<p><strong>Scheme 通过 Go 的反射机制来获取某个对象的类型，并将其与一个注册过该类型的 GVK 进行映射</strong>。例如，我们将 Pod 的结构体与对应的 GVK 注册到 scheme 中：</p>
+</div><p>通常，我们会有一个全局的 Scheme 对象，然后通过向其中注册 Golang 类型。这样，我们就可以通过 Scheme.New 方法从一个 GVK 得到一个 Golang 对象，然后通过类型断言转换为特定的类型。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">scheme</span><span class="p">.</span><span class="nf">AddKnownTypes</span><span class="p">(</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">{</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;v1&#34;</span><span class="p">,</span> <span class="s">&#34;Pod&#34;</span><span class="p">},</span> <span class="o">&amp;</span><span class="nx">Pod</span><span class="p">{})</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">robj</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">scheme</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">gvk</span><span class="p">)</span> <span class="c1">// 得到 GVK 对应的空的对象
+</span><span class="c1"></span>
+<span class="nx">cobj</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">robj</span><span class="p">.(</span><span class="o">*</span><span class="nx">TidbCluster</span><span class="p">)</span> <span class="c1">// 类型断言得到具体的对象
+</span></code></pre></td></tr></table>
+</div>
+</div><p>总结一下，Scheme 提供的相关接口：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// AddKnownTypeWithName 注册 GVK 与类型（obj 的类型）
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">AddKnownTypeWithName</span><span class="p">(</span><span class="nx">gvk</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">,</span> <span class="nx">obj</span> <span class="nx">Object</span><span class="p">)</span>
+
+<span class="c1">// AddKnownTypes 注册 GV 与其下的多个类型，Kind 就是类型的名字
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">AddKnownTypes</span><span class="p">(</span><span class="nx">gv</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersion</span><span class="p">,</span> <span class="nx">types</span> <span class="o">...</span><span class="nx">Object</span><span class="p">)</span>
+
+<span class="c1">// KnownTypes 从 GV 中取出包含的类型
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">KnownTypes</span><span class="p">(</span><span class="nx">gv</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersion</span><span class="p">)</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Type</span>
+
+<span class="c1">// New 根据 GVK 创建一个对应类型的对象
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">New</span><span class="p">(</span><span class="nx">kind</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">)</span> <span class="p">(</span><span class="nx">Object</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+<span class="c1">// ObjectKinds 返回对象对应的可能的 GVK，如果是 unversioned object 返回 true，如果类型未注册返回错误
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">ObjectKinds</span><span class="p">(</span><span class="nx">obj</span> <span class="nx">Object</span><span class="p">)</span> <span class="p">([]</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">,</span> <span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+<span class="c1">// PreferredVersionAllGroups 返回每个 Group 的优先级最高 Version
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">PreferredVersionAllGroups</span><span class="p">()</span> <span class="p">[]</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersion</span>
+
+<span class="c1">// PrioritizedVersionsForGroup 按照优先级顺序返回所有的 GroupVersion
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">PrioritizedVersionsForGroup</span><span class="p">(</span><span class="nx">group</span> <span class="kt">string</span><span class="p">)</span> <span class="p">[]</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersion</span>
+
+<span class="c1">// PrioritizedVersionsForGroup 按照优先级返回一个 group 所有的 version
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">PrioritizedVersionsForGroup</span><span class="p">(</span><span class="nx">group</span> <span class="kt">string</span><span class="p">)</span> <span class="p">[]</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersion</span>
+
+<span class="c1">// Recognizes GVK 是否是注册过的
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">Recognizes</span><span class="p">(</span><span class="nx">gvk</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">)</span> <span class="kt">bool</span>
+
+<span class="c1">// SetVersionPriority 设置一个 Group 下的 Version 的优先级
+</span><span class="c1">// NOTE: versions 必须是同一个 Group 下的不同 Version
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">SetVersionPriority</span><span class="p">(</span><span class="nx">versions</span> <span class="o">...</span><span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersion</span><span class="p">)</span> <span class="kt">error</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>这样，Go 类型与 GVK 就有着映射关系了。</p>
-<p>Scheme 不仅用于注册 Golang 类型与 GVK 的关系，还用于存储一系列转换函数和默认构造器。</p>
-<p>client-go 中有着一些预定义的 Scheme，位于 k8s.io/client-go/kubernetes/scheme 包中，其包含了 Kubernetes 所有的核心类型。而对于 CR，各个生成器生成代码后都会包含一个 scheme 的自保，里面包含对应的 Scheme 实现。</p>
+</div><p>可以看到，这样就实现了 Kind 与对象类型的互转。<strong>这也就是 Client 与 APIServer 通信时，进行数据序列化与反序列化的核心</strong>。</p>
+<h4 id="742-不同版本类型间转换">7.4.2 不同版本类型间转换</h4>
+<p>前面可以看到，Scheme 存储着许多 Group，其 Group 下可以有着不同 Version 的类型。在 APIServer 中，为了能够处理多个 Version 共存的情况，又有着一个 Internal Version。作为不同 Version 间转换中转。</p>
+<a class="lightgallery" href="/posts/cloud_computing/k8s_programming/2-client-go/img5.png" title="/posts/cloud_computing/k8s_programming/2-client-go/img5.png" data-thumbnail="/posts/cloud_computing/k8s_programming/2-client-go/img5.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img5.png"
+            data-srcset="/posts/cloud_computing/k8s_programming/2-client-go/img5.png, img5.png 1.5x, /posts/cloud_computing/k8s_programming/2-client-go/img5.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud_computing/k8s_programming/2-client-go/img5.png" />
+    </a>
+<p>而 Scheme 也是保存着各个版本之间转换的地方（因为其知道所有版本的类型），通过以下函数提供功能：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// AddConversionFunc 注册一个转换路径，对应 a 类型到 b 类型的转换，使用 fn 进行转换
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">AddConversionFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kd">interface</span><span class="p">{},</span> <span class="nx">fn</span> <span class="nx">conversion</span><span class="p">.</span><span class="nx">ConversionFunc</span><span class="p">)</span> <span class="kt">error</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">AddFieldLabelConversionFunc</span><span class="p">(</span><span class="nx">gvk</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">,</span> <span class="nx">conversionFunc</span> <span class="nx">FieldLabelConversionFunc</span><span class="p">)</span> <span class="kt">error</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">AddGeneratedConversionFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kd">interface</span><span class="p">{},</span> <span class="nx">fn</span> <span class="nx">conversion</span><span class="p">.</span><span class="nx">ConversionFunc</span><span class="p">)</span> <span class="kt">error</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">AddIgnoredConversionType</span><span class="p">(</span><span class="nx">from</span><span class="p">,</span> <span class="nx">to</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">error</span>
+
+<span class="c1">// Convert 将 in 类型对象转换为 out 类型对象
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">Convert</span><span class="p">(</span><span class="nx">in</span><span class="p">,</span> <span class="nx">out</span> <span class="kd">interface</span><span class="p">{},</span> <span class="nx">context</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">error</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">ConvertFieldLabel</span><span class="p">(</span><span class="nx">gvk</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionKind</span><span class="p">,</span> <span class="nx">label</span><span class="p">,</span> <span class="nx">value</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+<span class="c1">// ConvertToVersion 将 in 类型对象转化为 taget 指定的版本对象
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">ConvertToVersion</span><span class="p">(</span><span class="nx">in</span> <span class="nx">Object</span><span class="p">,</span> <span class="nx">target</span> <span class="nx">GroupVersioner</span><span class="p">)</span> <span class="p">(</span><span class="nx">Object</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>我们将在后面的 Custom APIServer 编写中看到何时使用这些函数。</p>
+<h4 id="743-设置默认值">7.4.3 设置默认值</h4>
+<p>Scheme 在处理数据类型序列化，和处理数据类型转换时，会通过默认值相关函数设置对象的默认值。通过以下函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// AddTypeDefaultingFunc 注册一个对象的默认值处理函数
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">AddTypeDefaultingFunc</span><span class="p">(</span><span class="nx">srcType</span> <span class="nx">Object</span><span class="p">,</span> <span class="nx">fn</span> <span class="kd">func</span><span class="p">(</span><span class="kd">interface</span><span class="p">{}))</span>
+
+<span class="c1">// Default 设置一个对象的默认值，就是使用注册的默认值处理函数
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Scheme</span><span class="p">)</span> <span class="nf">Default</span><span class="p">(</span><span class="nx">src</span> <span class="nx">Object</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>注意，默认值设置在 APIServer 转换时是自动进行的，而 Scheme 中仅仅是用于 Default() 接口，不会自动进行。</p>
+<p>因此，在编写 Custom APIServer 时要正确设置好设置默认值的函数。</p>
+</div>
+        </div>
+    </div>
+<p>我们将在后面的 Custom APIServer 编写中看到何时使用这些函数。</p>
+<h4 id="744-原生的-scheme">7.4.4 原生的 Scheme</h4>
+<p>client-go 中有着一些预定义的 Scheme，位于 k8s.io/client-go/kubernetes/scheme 包中。其包含了 Kubernetes 所有的核心类型，也就是原生类型都已经注册到了该 Scheme 中（包括 Convert 与 Default 相关）。</p>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://book.douban.com/subject/33393681/" target="_blank" rel="noopener noreffer"><strong>《Programming Kubernetes》</strong></a></li>
@@ -1433,8 +1619,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2021-08-21&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/07bf7768bddfec8eb4849cfbdb5efa124ed1991f" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 07bf7768bddfec8eb4849cfbdb5efa124ed1991f: publish new site">
-                                    <i class="fas fa-hashtag fa-fw"></i>07bf776</a></span>
+                <span>更新于 2021-09-14&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/3f9099d251b9928772f9445ccd522697067fca8a" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 3f9099d251b9928772f9445ccd522697067fca8a: post: Custom APIServer">
+                                    <i class="fas fa-hashtag fa-fw"></i>3f9099d</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>

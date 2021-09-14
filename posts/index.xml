@@ -3,7 +3,14 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 20 Aug 2021 14:53:38 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 22 Aug 2021 07:32:49 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 编程 - Custom APIServer</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/6-custom-api-server/</link>
+    <pubDate>Sun, 22 Aug 2021 07:32:49 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/6-custom-api-server/</guid>
+    <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 Custom APIServer 可以作为 CRD 的替]]></description>
+</item><item>
     <title>K8s 编程 - 发布 Operator</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/5-shipping-controllers/</link>
     <pubDate>Fri, 20 Aug 2021 14:53:38 &#43;0000</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-server-%E8%AE%A4%E8%AF%81/</guid>
     <description><![CDATA[1 概述 Kubernetes 中所有的资源访问与操作都是通过 API Server 执行的，因此 API Server 有着一套安全机制。 APIServer 的权限检查从大体上分为三个阶段： Authentication ：身份认证，用于验证请求者的]]></description>
-</item><item>
-    <title>Ginkgo 学习</title>
-    <link>https://KanShiori.github.io/posts/language/golang/ginkgo-%E5%AD%A6%E4%B9%A0/</link>
-    <pubDate>Sun, 27 Jun 2021 07:26:25 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/language/golang/ginkgo-%E5%AD%A6%E4%B9%A0/</guid>
-    <description><![CDATA[1 概述 ginkgo 是一个 BDD 框架，Kubernetes 的 E2E 测试使用该框架实现集群的测试。 ginkgo 是集成在 Go 测试框架的，在目录下执行 ginkgo bootstrap 就会构建测试的入口： 1 2]]></description>
 </item></channel>
 </rss>

@@ -702,33 +702,137 @@ type RESTMapping struct {
 RESTMapper interface 有着许多的 implement，不过在编写 Operator 时，通常我们使用基于发现机制的 DeferredDiscoveryRESTMapper 实现。它通过调用 APIServer 的接口动态解析 REST Mapping。
 
 ### 7.4 Scheme
-**`Scheme`** 用于将 Golang 中某个对象与可能的 GVK 之间建立映射，看下其接口就知道了：
-```go
-// ObjectKinds returns all possible group,version,kind of the go object, true if the
-// object is considered unversioned, or an error if it's not a pointer or is unregistered.
-func (s *Scheme) ObjectKinds(obj Object) ([]schema.GroupVersionKind, bool, error)
+**`Scheme`**  应该是编写代码时最重要的结构了。其包含了多个 Golang 类型与 GVK 的映射，并且特定的 Kind，可以注册不同版本的转换函数，以及设置默认值的函数。
 
-// AddKnownTypeWithName is like AddKnownTypes, but it lets you specify what this type should
-// be encoded as. Useful for testing when you don't want to make multiple packages to define
-// your structs. Version may not be empty - use the APIVersionInternal constant if you have a
-// type that does not have a formal version.
+总结一下其主要作用：
+* GVK 与 Golang 类型的转换；
+* 注册 Convert 函数，用于 Kind 不同版本对象之间的转换；
+* 注册 Default 函数，用于设置对象的默认值；
+
+{{< admonition note Note>}}
+当我们需要实现 Custom APIServer 时，就会要了解到 Convert 与 Default。
+{{< /admonition >}}
+
+#### 7.4.1 类型转换
+Scheme 提供 GVK 与特定类型转换功能。
+
+首先，我们需要通过 Scheme.AddKnownTypes 接口来注册 Golang 类型与 GroupVersion。通常，代码生成器会在 register.go 文件中生成该代码。
+```go
+// SchemeGroupVersion is group version used to register these objects
+var SchemeGroupVersion = schema.GroupVersion{Group: groupName, Version: "v1alpha1"}
+
+func init() {
+	// We only register manually written functions here. The registration of the
+	// generated functions takes place in the generated files. The separation
+	// makes the code compile even when the generated files are missing.
+	localSchemeBuilder.Register(addKnownTypes)
+}
+
+func addKnownTypes(scheme *runtime.Scheme) error {
+	Scheme = scheme // Scheme 是全局的 Scheme 对象
+	scheme.AddKnownTypes(SchemeGroupVersion,
+		&TidbCluster{},  // 自定义的类型
+	)
+
+	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
+	return nil
+}
+```
+
+通常，我们会有一个全局的 Scheme 对象，然后通过向其中注册 Golang 类型。这样，我们就可以通过 Scheme.New 方法从一个 GVK 得到一个 Golang 对象，然后通过类型断言转换为特定的类型。
+```go
+robj, err := t.scheme.New(gvk) // 得到 GVK 对应的空的对象
+
+cobj, ok := robj.(*TidbCluster) // 类型断言得到具体的对象
+```
+
+总结一下，Scheme 提供的相关接口：
+```go
+// AddKnownTypeWithName 注册 GVK 与类型（obj 的类型）
+func (s *Scheme) AddKnownTypeWithName(gvk schema.GroupVersionKind, obj Object)
+
+// AddKnownTypes 注册 GV 与其下的多个类型，Kind 就是类型的名字
 func (s *Scheme) AddKnownTypes(gv schema.GroupVersion, types ...Object)
 
-// AllKnownTypes returns the all known types.
-func (s *Scheme) AllKnownTypes() map[schema.GroupVersionKind]reflect.Type 
-```
-* ObjectKinds() - 从一个对象得到其对应的 GVK。
+// KnownTypes 从 GV 中取出包含的类型
+func (s *Scheme) KnownTypes(gv schema.GroupVersion) map[string]reflect.Type
 
-**Scheme 通过 Go 的反射机制来获取某个对象的类型，并将其与一个注册过该类型的 GVK 进行映射**。例如，我们将 Pod 的结构体与对应的 GVK 注册到 scheme 中：
+// New 根据 GVK 创建一个对应类型的对象
+func (s *Scheme) New(kind schema.GroupVersionKind) (Object, error)
+
+// ObjectKinds 返回对象对应的可能的 GVK，如果是 unversioned object 返回 true，如果类型未注册返回错误
+func (s *Scheme) ObjectKinds(obj Object) ([]schema.GroupVersionKind, bool, error)
+
+// PreferredVersionAllGroups 返回每个 Group 的优先级最高 Version
+func (s *Scheme) PreferredVersionAllGroups() []schema.GroupVersion
+
+// PrioritizedVersionsForGroup 按照优先级顺序返回所有的 GroupVersion
+func (s *Scheme) PrioritizedVersionsForGroup(group string) []schema.GroupVersion
+
+// PrioritizedVersionsForGroup 按照优先级返回一个 group 所有的 version
+func (s *Scheme) PrioritizedVersionsForGroup(group string) []schema.GroupVersion
+
+// Recognizes GVK 是否是注册过的
+func (s *Scheme) Recognizes(gvk schema.GroupVersionKind) bool
+
+// SetVersionPriority 设置一个 Group 下的 Version 的优先级
+// NOTE: versions 必须是同一个 Group 下的不同 Version
+func (s *Scheme) SetVersionPriority(versions ...schema.GroupVersion) error
+```
+
+可以看到，这样就实现了 Kind 与对象类型的互转。**这也就是 Client 与 APIServer 通信时，进行数据序列化与反序列化的核心**。
+
+#### 7.4.2 不同版本类型间转换
+
+前面可以看到，Scheme 存储着许多 Group，其 Group 下可以有着不同 Version 的类型。在 APIServer 中，为了能够处理多个 Version 共存的情况，又有着一个 Internal Version。作为不同 Version 间转换中转。
+
+{{< image src="img5.png" >}}
+
+而 Scheme 也是保存着各个版本之间转换的地方（因为其知道所有版本的类型），通过以下函数提供功能：
 ```go
-scheme.AddKnownTypes(schema.GroupVersionKind{"", "v1", "Pod"}, &Pod{})
+// AddConversionFunc 注册一个转换路径，对应 a 类型到 b 类型的转换，使用 fn 进行转换
+func (s *Scheme) AddConversionFunc(a, b interface{}, fn conversion.ConversionFunc) error
+
+func (s *Scheme) AddFieldLabelConversionFunc(gvk schema.GroupVersionKind, conversionFunc FieldLabelConversionFunc) error
+
+func (s *Scheme) AddGeneratedConversionFunc(a, b interface{}, fn conversion.ConversionFunc) error
+
+func (s *Scheme) AddIgnoredConversionType(from, to interface{}) error
+
+// Convert 将 in 类型对象转换为 out 类型对象
+func (s *Scheme) Convert(in, out interface{}, context interface{}) error
+
+func (s *Scheme) ConvertFieldLabel(gvk schema.GroupVersionKind, label, value string) (string, string, error)
+
+// ConvertToVersion 将 in 类型对象转化为 taget 指定的版本对象
+func (s *Scheme) ConvertToVersion(in Object, target GroupVersioner) (Object, error)
 ```
 
-这样，Go 类型与 GVK 就有着映射关系了。
+我们将在后面的 Custom APIServer 编写中看到何时使用这些函数。
 
-Scheme 不仅用于注册 Golang 类型与 GVK 的关系，还用于存储一系列转换函数和默认构造器。
 
-client-go 中有着一些预定义的 Scheme，位于 k8s.io/client-go/kubernetes/scheme 包中，其包含了 Kubernetes 所有的核心类型。而对于 CR，各个生成器生成代码后都会包含一个 scheme 的自保，里面包含对应的 Scheme 实现。
+#### 7.4.3 设置默认值
+
+Scheme 在处理数据类型序列化，和处理数据类型转换时，会通过默认值相关函数设置对象的默认值。通过以下函数：
+```go
+// AddTypeDefaultingFunc 注册一个对象的默认值处理函数
+func (s *Scheme) AddTypeDefaultingFunc(srcType Object, fn func(interface{}))
+
+// Default 设置一个对象的默认值，就是使用注册的默认值处理函数
+func (s *Scheme) Default(src Object)
+```
+
+{{< admonition note Note>}}
+注意，默认值设置在 APIServer 转换时是自动进行的，而 Scheme 中仅仅是用于 Default() 接口，不会自动进行。
+
+因此，在编写 Custom APIServer 时要正确设置好设置默认值的函数。
+{{< /admonition >}}
+
+我们将在后面的 Custom APIServer 编写中看到何时使用这些函数。
+
+#### 7.4.4 原生的 Scheme
+
+client-go 中有着一些预定义的 Scheme，位于 k8s.io/client-go/kubernetes/scheme 包中。其包含了 Kubernetes 所有的核心类型，也就是原生类型都已经注册到了该 Scheme 中（包括 Convert 与 Default 相关）。
 
 
 ## 参考

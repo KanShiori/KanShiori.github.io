@@ -387,12 +387,22 @@ kind: Ingress
 metadata:
   name: ingress-resource-backend
 spec:
+  ingressClassName: istio
+  tls:
+    - hosts: []
+    secretName: secret
   defaultBackend:
+    service:
+      name: server-name
+      port:
+        name: port-name
+        number: 80
     resource:
       apiGroup: k8s.example.com
       kind: StorageBucket
       name: static-assets
   rules:
+    host: ""
     - http:
         paths:
           - path: /icons
@@ -403,8 +413,16 @@ spec:
                 kind: StorageBucket
                 name: icon-assets
 ```
-* `sepc.defaultBackend` ： 用于配置默认的后端，当 rules 中所有都不满足时，就会使用 default 路由；
-* `spec.rules` ：定义路由策略
+* `spec.ingressClassName` - 指定使用的 Ingress Controller 的名字，为保持兼容 annotation `kubernetes.io/ingress.class` 依旧可以使用
+* `spec.tls` - 证书对应的 secret 与允许的 hosts
+* `spec.defaultBackend` - 用于配置默认的后端，当 rules 中所有都不满足时，就会使用 default 路由
+  * `service` - 转发到一个 Kubernetes Service
+    * `name` - service 的名字
+    * `port` - 转发给 service 的 port，可以是名字或者端口号
+  * `resource` - 转发给 Ingress 对象同 Namespace 下的一个 Resource（与 service 选项互斥）
+* `spec.rules` - 定义路由策略
+  * `host` - 匹配请求的 host，可以是精确匹配或者通配符匹配
+  * `http` - http 层的多个匹配路径
 
 
 ## 参考
