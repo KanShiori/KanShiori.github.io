@@ -10,35 +10,37 @@ Custom APIServer 可以作为 CRD 的替代品，它可以像 Kubernetes 的原�
 ## 1 Custom APISever 的适用场景
 
 自定义 APIServer 以一定开发与使用复杂性的代价，而做到十分灵活的功能。我们通过对比 CRD 与 APIServer 来看一下其特有的好处：
-* CRD 的缺陷：
-  * 只能使用 Kubernetes 使用的存储方式（默认 etcd）
-  * 不支持 protobuf，只支持 JSON
-  * 仅仅支持 /status 和 /scale 两种子资源
-  * 不支持平滑删除，你需要靠 Finalizer 来模拟这个行为
-  * 显著增加了 Kubernetes APIServer 的 CPU 负载，因为所有算法都用一个通用方式实现
-  * 对 API HTTP Endpoint 仅仅实现了标准的 CRUD 语义，不能扩展
-  * 不支持资源共栖（即不同 APIGroup 的资源或不同名字的资源在底层共栖存储）
-* APIServer 可以实现：
-  * 可以使用任何的存储介质
-  * 可以实现 Protobuf 支持
-  * 可以提供任意自定义的子资源，例如 /exec、/logs、/port-forward 等
-  * 可以实现平滑删除逻辑
-  * 可以用 Go 高效的实现所有操作，包括验证、准入和转换
-  * 可以自定义语义
-  * 可以为相同存储机制的不同 APIGroup 或不同名称资源提供服务，例如 Deployment 最初存储在 extension/v1 组，后来挪到了 apps/v1
+
+CRD 的缺陷：
+* 只能使用 Kubernetes 使用的存储方式（默认 etcd）
+* 不支持 protobuf，只支持 JSON
+* 仅仅支持 /status 和 /scale 两种子资源
+* 不支持平滑删除，你需要靠 Finalizer 来模拟这个行为
+* 显著增加了 Kubernetes APIServer 的 CPU 负载，因为所有算法都用一个通用方式实现
+* 对 API HTTP Endpoint 仅仅实现了标准的 CRUD 语义，不能扩展
+* 不支持资源共栖（即不同 APIGroup 的资源或不同名字的资源在底层共栖存储）
+
+APIServer 可以实现：
+* **可以使用任何存储作为后端存储**
+* **可以实现 Protobuf 支持**
+* **可以提供任意自定义的子资源**，例如 /exec、/logs、/port-forward 等
+* **可以实现平滑删除逻辑**
+* **可以用 Go 高效的实现所有操作，包括验证、准入和转换**
+* **可以自定义语义**，即定义 CRUD 之外的 API
+* **可以为相同存储机制的不同 APIGroup 或不同名称资源提供服务**，例如 Deployment 最初存储在 extension/v1 组，后来挪到了 apps/v1
 
 
 ## 2 架构
 
-自定义 APIServer 是为 APIGroup 提供服务的进程，通常会使用 k8s.io/apiserver 这个库来实现。
+自定义 APIServer 是为 APIGroup 提供服务的进程，通常会使用 [**k8s.io/apiserver**](https://github.com/kubernetes/apiserver) 这个库来实现。
 
-自定义 APIServer 可以在 Kubernetes 集群内运行，也可以在集群外运行。通常它们运行在 Pod 中，并通过 Service 提供服务。
+自定义 APIServer 可以在 Kubernetes 集群内运行，也可以在集群外运行。**通常它们运行在 Pod 中，并通过 Service 提供服务**。
 
-Kubernetes 原生的 APIServer 称为 kube-apiserver。当 client 请求自定义 APIServer 时，请求首先会访问 kube-apiserver，然后由其转发给自定义 APIServer。也就是说，kube-apiserver 知道所有的自定义 APIServer。
+Kubernetes 原生的 APIServer 称为 **`kube-apiserver`**。**当 client 请求自定义 APIServer 时，请求首先会访问 kube-apiserver，然后由其转发给自定义 APIServer**。这也代表了，kube-apiserver 知道所有的自定义 APIServer。
 
-在 kube-apiserver 实现中，这个转发代理的组件称为 kube-aggregator，代理 API 请求的过程称为 API Aggregate。
+在 kube-apiserver 实现中，这个转发代理的组件称为 **`kube-aggregator`**，代理 API 请求的过程称为 **`API Aggregate`**。
 
-向自定义 APIServer 发起请求的过程如下：
+向自定义 APIServer 发起请求的过程如下（下图中最左侧的流程）：
 1. kube-apiserver 收到请求。
 2. 请求经过处理链处理，包括身份认证、审计日志、切换用户、限流、授权等流程。
 3. kube-apiserver 对相关 /apis/\<aggregate-API-group-name> HTTP Path 下的请求进行拦截。
@@ -47,12 +49,12 @@ Kubernetes 原生的 APIServer 称为 kube-apiserver。当 client 请求自定�
 {{< find_img "img1.png" >}}
 
 总结一下，kube-aggregator 提供两种功能：
-* Proxy - 可以为某个 HTTP Path 下的一个特定版本提供代理服务，例如 /apis/group-name/version
-* Discovery - kube-aggregator 可以为所有聚合的 APIServer 提供 Discovery Endpoint，也是就说，你可以通过 /apis 和 /apis/group-name 找到所有的自定义 APIServer。
+* **Proxy** - 可以为某个 HTTP Path 下的一个特定版本提供代理服务，例如 **"/apis/group-name/version"**
+* **Discovery** - kube-aggregator 可以为所有聚合的 APIServer 提供 Discovery Endpoint，也是就说，你可以通过 **"/apis"** 和 **"/apis/group-name"** 找到所有的自定义 APIServer。
 
-### 2.1 API Service
+### 2.1 APIService
 
-如同 CRD 一样，为了让 Kubernetes APIServer 知道一个自定义 APIServer 的存在，必须创建一个 APIService 对象。
+如同 CRD 一样，为了让 Kubernetes APIServer 知道一个自定义 APIServer 的存在，必须创建一个 **`APIService`** 对象。
 ```yaml
 apiVersion: apiregistration.k8s.io/v1
 kind: APIService 
@@ -118,35 +120,35 @@ var apiVersionPriorities = map[schema.GroupVersion]priority{
 }
 ```
 {{< admonition tip "替换原生的 API">}}
-如果你替换原生的 API Group，就可以对自定义 APIService 指定为比上表中更低的优先级实现。
+**如果你替换原生的 API Group，就可以对自定义 APIService 指定为比上表中更低的优先级实现。**
 {{< /admonition >}}
 
-### 2.2 自定义 APIServer 的内部架构
+### 2.2 Custom APIServer 的内部架构
 
-自定义 APIServer 大体上与 Kubernetes APIServer 相同，不过没有嵌入 kube-aggregator 和 apiextension-apiserver。
+Custom APIServer 大体上与 Kubernetes APIServer 相同，不过没有嵌入 kube-aggregator 和 apiextension-apiserver。
 {{< find_img "img2.png" >}}
 
 总结一下自定义 APIServer 的特点：
-* 与 Kubernetes APIServer 内部结构一致。
-* 拥有自己的处理链，包括身份认证、审计、切换用户等
-* 拥有自己的资源处理流水线，包括解码、转换、准入、REST 映射和编码。
-* 会调用 Webhook。
-* 可以写 etcd，或者其他的后端存储。
-* 拥有自己的 Scheme 并实现了自定义 API 组的 Registry。
-* 再次进行身份认证。通常会发送一个 TokenAccessReview 请求对 Kubernetes APIServer 回调，实现基于 client 的证书认证和 token 认证。
-* 自己进行审计。
-* 使用 SubjectAccessReview 请求 Kubernetes APIServer 完成身份认证。
+* **与 Kubernetes APIServer 内部结构一致**。
+* **拥有自己的处理链，包括身份认证、审计、切换用户等**
+* **拥有自己的资源处理流水线**，包括解码、转换、准入、REST 映射和编码。
+* **会调用 Webhook**。
+* **可以写 etcd，或者其他的后端存储**。
+* **拥有自己的 Scheme 并实现了自定义 API 组的 Registry**。
+* **再次进行身份认证**。通常会发送一个 TokenAccessReview 请求对 Kubernetes APIServer 回调，实现基于 client 的证书认证和 token 认证。
+* **自己进行审计**。
+* 使用 SubjectAccessReview 请求 Kubernetes APIServer 完成授权。
 
 ### 2.3 身份认证机制
 
-自定义 APIServer 的处理在于 Kubernetes APIServer 之后，所以 Kubernetes APIServer 会先对请求进行认证，通过后再转发给自定义 APIServer。
+Custom APIServer 的处理在于 Kubernetes APIServer 之后，所以 **Kubernetes APIServer 会先对请求进行认证，通过后再转发给自定义 APIServer**。
 
-Kubernetes APIServer 会将身份认证的结果保存在 HTTP 请求头里，通常是 X-Remote-User 和 X-Remote-Group Head。
+Kubernetes APIServer 会将身份认证的结果保存在 HTTP 请求头里，通常是 **`X-Remote-User`** 和 **`X-Remote-Group Head`**。
 {{< admonition note Note>}}
-通过 APIServer 的启动命令参数 --requestheader-username-headers 和 --requestheader-group-headers 可以配置。
+通过 APIServer 的启动命令参数 **"--requestheader-username-headers"** 和 **"--requestheader-group-headers"** 可以配置。
 {{< /admonition >}}
 
-为了让自定义 APIServer 信任这两个 HTTP Head，自定义 APIServer 会验证发送请求者的 CA。因此，需要通过一个 ConfigMap 配置 Kubernetes APIServer 的证书：
+为了让 Custom APIServer 信任这两个 HTTP Head，Custom APIServer 会验证发送请求者的 CA。因此，需要**通过一个 ConfigMap 配置 Kubernetes APIServer 的证书**，证书要与 Custom APIServer 相同的根证书签名：
 ```yaml
 apiVersion: v1 
 kind: ConfigMap 
@@ -171,20 +173,20 @@ data:
 这样认证的过程如下：
 1. Kubernetes APIServer 就会使用 `data.client-ca-file` 指定的客户端证书发起请求，进行 “预认证”
 2. 预认证后需要通过 `data.requestheader-client-ca-file` 证书发起转发请求，同时设置好相关的 Head。
-3. 最后，自定义 APIServer 会通过 TokenAccessReview 的机制发送 Bearer Token（通过 HTTP Head：Authorization: bearer token）给 Kubernetes APIServer 来验证是否合法。
+3. 最后，Custom APIServer 会通过 **`TokenAccessReview`** 的机制发送 Bearer Token（通过 HTTP Head：Authorization: bearer token）给 Kubernetes APIServer 来验证是否合法。
 
 {{< admonition note Note>}}
-上面这些过程主要是由 k8s.io/apiserver 库自动完成。
+上面这些过程主要是由 k8s.io/apiserver 库自动完成，我们只需要配置好证书。
 {{< /admonition >}}
 
 ### 2.4 授权
 
 完成身份认证后，每个请求都需要授权，Kubernetes 的授权机制是基于 RBAC 来完成的。
 
-RBAC 将身份映射到角色，再将角色映射到授权规则，授权规则最终决定接受或者拒绝请求。我们需要理解，自定义 APIServer 是通过 SubjectAccessReview 代理授权来对请求授权的，它自身不会处理 RBAC 规则，而是委托给 Kubernetes APIServer 完成的。
+RBAC 将身份映射到角色，再将角色映射到授权规则，授权规则最终决定接受或者拒绝请求。我们需要理解，自定义 APIServer 是通过 **`SubjectAccessReview`** 代理授权来对请求授权的，**它自身不会处理 RBAC 规则，而是委托给 Kubernetes APIServer 完成的**。
 
 {{< admonition note "为了什么需要 APIServer 授权">}}
-由于可能发送给自定义 APIServer 的请求是没有经过授权的，所以需要通过 Kubernetes APIServer 来进行授权。
+由于可能发送给 Custom APIServer 的请求是没有经过授权的，所以需要通过 Kubernetes APIServer 来进行授权。
 {{< /admonition >}}
 
 自定义 APIServer 会发送一个 SubjectAccessReview 请求到 Kubernetes APIServer。
@@ -221,37 +223,43 @@ status:
 allowed 与 denied 可能同时为 false，这表明 Kubernetes APIServer 无法对请求做出判断。这应该依靠自定义 APIServer 里的权限逻辑进行判断。
     {{< /admonition >}}
 
-注意，处于性能方面考虑，委托授权机制在每个自定义 APIServer 中都维护了一个本地缓存：
+注意，处于性能方面考虑，**委托授权机制在每个 Custom APIServer 中都维护了一个本地缓存**：
 * 默认缓存 1024 个授权条目。
 * 所有通过的授权请求缓存过期时间为 5min。
 * 所有拒绝的授权请求缓存过期时间为 30s。
 
 {{< admonition note Note>}}
-可以通过 --authorization-webhook-cache-authorized-ttl 和 --authorization-webhook-cache-unauthorized-ttl 来进行配置。
+可以通过 **"--authorization-webhook-cache-authorized-ttl"** 和 **"--authorization-webhook-cache-unauthorized-ttl"** 来进行配置。
 {{< /admonition >}}
+
 
 ## 3 多版本类型实现
 
 ### 3.1 处理流程
 
-每个 APIServer 都可以提供多个资源和版本的接口。为了让一个资源的多版本共存称为可能，APIServer 需要将资源在多个版本之间进行转换。
+每个 APIServer 都可以提供多个资源和版本的接口。为了让一个资源的多版本共存称为可能，**APIServer 需要将资源在多个版本之间进行转换**。
 {{< find_img "img3.png" >}}
 
 APIServer 在真正实现 API 逻辑时，会使用一个 [内部版本]^(internal version)，也称为 [中枢版本]^(hub version)。它可以用作每个版本都可以与之转换的中间版本，所以内部 API 逻辑都是根据中枢版本实现的。
 
-下图展示了 APIServer 在一个 API 请求的生命周期中如何使用内部版本的：
+所以，APIServer 中存在三个版本的概念：
+* **`External Version`** - 能够处理的版本，例如 v1beta1 v1 等；
+* **`Internal Version`** - 用于 External Version 之间转换的中间版本；
+* **`Storage Version`** - 保存到后端存储（etcd）的版本，属于 External Version 其中一个（通过 CRD 定义设置）；
+
+下图展示了 APIServer 在一个 API 请求的生命周期中，三个版本之间的转换情况：
 {{< find_img "img4.png" >}}
 
-1. 用户发送一个特定版本的请求（例如 v1）。
-2. APIServer 将请求解码，并转换为内部版本。
-3. APIServer 对内部版本进行准入检测与验证。
-4. 注册表中的 API 逻辑都是使用内部版本的。
-5. etcd 读写或写入特定版本对象（例如使用 v2 作为存储版本），这个过程中，它需要与内部版本进行互转。
-6. 结果转换为请求中的版本，例如 v1。
+1. 用户发送一个特定版本的请求（例如 v1，但是可以是任何支持的版本）。**[External Version]**
+2. APIServer 将请求解码，并转换为内部版本。**[External Version -> Internal Version]**
+3. APIServer 对内部版本进行准入检测与验证。**[Internal Version]**
+4. 注册表中的 API 逻辑都是使用内部版本的。**[Internal Version]**
+5. etcd 读写或写入特定版本对象（例如使用 v2 作为存储版本），这个过程中，它需要与内部版本进行互转。**[Internal Version -> Storage Version]**
+6. 结果转换为请求中的版本，例如 v1。**[Internal Version -> External Version]**
 
-从上图可以看到，一次写请求操作中，至少要做四次转换。如果部署了准入 webhook，还会发生更多次的转换。
+从上图可以看到，一次写请求操作中，至少要做三次转换（步骤 2 5 6）。如果部署了 admission webhook，还会发生更多次的转换。
 
-除了转换，下图中展示了默认值会何时处理，默认值处理是填充未设置值字段的过程。默认值处理总是和转换一起出现，并且总是在用户请求、etcd或者准入 webhook 时的外部版本进行（也就是只在外部版本转换到中枢版本时进行），不会发生在中枢版本向外部版本转换过程中。
+除了转换，下图中展示了默认值会何时处理，Default 填充未设置值字段的过程。默认值处理总是和转换一起出现，并且总是在用户请求、etcd 或者 admission webhook 时的 External Version 进行（也就是只在**External Version 转换到 Internal Version 时进行**），不会发生在中枢版本向外部版本转换过程中。
 {{< find_img "img5.png" >}}
 
 {{< admonition note Note>}}
@@ -260,7 +268,7 @@ APIServer 在真正实现 API 逻辑时，会使用一个 [内部版本]^(intern
 
 ### 3.2 Internal Version 类型实现
 
-我们看下 Internal Version 实现，位于 *"pkg/apis/<group>/types.go"* 文件中：
+我们看下 Internal Version 实现，位于 **"pkg/apis/\<group>/types.go"** 文件中：
 ```go
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -289,7 +297,7 @@ type Fischer struct {
 // ...
 ```
 {{< admonition note 没有标签>}}
-注意，Internal Version 类型是没有 JSON 和 protobuf 标签的。因为 JSON 标签会被一些生成器用于探测一个 types.go 文件是对应内部版本还是外部版本，所以不能包含标签。
+注意，**Internal Version 类型是没有 JSON 和 protobuf 标签的**。因为 JSON 标签会被一些生成器用于探测一个 types.go 文件是对应内部版本还是外部版本，所以不能包含标签。
 {{< /admonition >}}
 
 在将 Internal Version 类型注册到 Scheme 时，我们可以看到其注册的 GroupVersion 是一个特殊的 `runtime.APIVersionInternal`：
@@ -314,7 +322,7 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 
 在 sample-apiserver 中实现了 v1alpha1 v1beta1 两个 External Version。我们以 v1alpha1 版本主要说明。
 
-一个 External Version 类型放置于 *"pkg/apis/<group>/<version>/types.go"* 文件中。当然，其是必须包含 JSON 标签的。
+一个 External Version 类型放置于 **"pkg/apis/\<group>/\<version>/types.go"** 文件中。当然，其是必须包含 JSON 标签的。
 ```go
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -355,9 +363,11 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 }
 ```
 
-在 [**3.1 类型处理**](#31-类型处理) 中看到，APIServer 处理请求过程中有着多次 External Version 与 Internal Version 双向的转换，因此其需要注册对应的转换函数，其注册函数会自动生成位于 **"pkg/apis/\<group>/\<version>/zz_generated.conversion.go"**。
+#### 3.3.1 Convert
 
-可以看到，其类型转换函数通过 Scheme.AddGeneratedConversionFunc() 接口注册到 Scheme 中。而在 APIServer 抽象实现中，会按照 [**3.1 类型处理**](#31-类型处理) 中的请求处理流程调用 Scheme.Convert() 接口进行转换。
+在 [**3.1 处理流程**](#31-处理流程) 中看到，APIServer 处理请求过程中有着多次 External Version 与 Internal Version 双向的转换，因此其需要注册对应的转换函数，其注册函数会自动生成位于 **"pkg/apis/\<group>/\<version>/zz_generated.conversion.go"**。
+
+可以看到，其类型转换函数通过 `Scheme.AddGeneratedConversionFunc()` 接口注册到 Scheme 中。而在 APIServer 抽象实现中，会按照 [**3.1 处理流程**](#31-处理流程) 中的请求处理流程调用 `Scheme.Convert()` 接口进行转换。
 ```go
 func init() {
 	// 注册转换函数
@@ -451,8 +461,9 @@ func autoConvert_v1alpha1_FischerList_To_wardle_FischerList(in *FischerList, out
 上面这种转换方式也说明了，在转换后，源对象应该不要再修改了，否则会影响到转换后的对象。
 {{< /admonition >}}
 
-对于版本之间不同的结构体，就需要我们自己实现对应的转换函数了。在 **"pkg/apis/\<group>/\<version>/conversion.go"** 文件中，我们按照对应的格式实现特殊的转换函数。而生成器判断到对应的转换函数已经存在，就会跳过自动生成。
+**对于版本之间不同的结构体，就需要我们自己实现对应的转换函数了**。在 **"pkg/apis/\<group>/\<version>/conversion.go"** 文件中，我们按照对应的格式实现特殊的转换函数。而生成器判断到对应的转换函数已经存在，就会跳过自动生成。
 ```go
+// 自定义的版本转换函数
 func Convert_v1alpha1_FlunderSpec_To_wardle_FlunderSpec(in *FlunderSpec, out *wardle.FlunderSpec, s conversion.Scope) error {
 	if in.ReferenceType != nil {
 		// assume that ReferenceType is defaulted
@@ -469,6 +480,7 @@ func Convert_v1alpha1_FlunderSpec_To_wardle_FlunderSpec(in *FlunderSpec, out *wa
 	return nil
 }
 
+// 自定义的版本转换函数
 func Convert_wardle_FlunderSpec_To_v1alpha1_FlunderSpec(in *wardle.FlunderSpec, out *FlunderSpec, s conversion.Scope) error {
 	switch in.ReferenceType {
 	case wardle.FlunderReferenceType:
@@ -488,7 +500,9 @@ func Convert_wardle_FlunderSpec_To_v1alpha1_FlunderSpec(in *wardle.FlunderSpec, 
 转换的过程中，源对象一定不能被修改。
 {{< /admonition >}}
 
-除了 Convert 函数之外，External Version 类型也可以设置 Default 函数。在 [**3.1.1 处理流程**](#311-处理流程) 中提到过，APIServer 会在 External Version 转换到 Internal Version 时进行处理。
+#### 3.3.1 Default
+
+除了 Convert 函数之外，External Version 类型也可以设置 Default 函数。在 [**3.1.1 处理流程**](#311-处理流程) 中提到过，APIServer 会在 External Version 转换到 Internal Version 时进行默认值处理。
 
 同样，生成器也会自动生成 Default 相关函数，位于文件 **"pkg/apis/\<group>/\<version>/zz_generated.defaults.go"**，但是底层设置默认值的函数还是要我们自己编写。
 ```go
@@ -524,7 +538,7 @@ func SetDefaults_FlunderSpec(obj *FlunderSpec) {
 
 ### 3.4 向 Scheme 注册
 
-最后在说明一下类型、Convert 函数、Default 函数是如何注册到 Scheme 中的。这三类都会注册到代码生成的一个 `SchemeBuilder` 对象，其作用就是用于调用注册的 `funcs ...func(*Scheme) error` 去设置 Scheme。
+最后在说明一下类型、Convert 函数、Default 函数是如何注册到 Scheme 中的。这三类都会注册到代码生成的一个 `SchemeBuilder` 对象，其作用就是用于调用注册的 `funcs (scheme *Scheme) error` 去设置 Scheme。
 
 而前面看到的各个 Register 函数都是注册到 `SchemeBuilder` 对象中。
 ```go
@@ -568,11 +582,11 @@ func init() {
 ```go
 // Install registers the API group and adds types to a scheme
 func Install(scheme *runtime.Scheme) {
-	// 注册 中间类型的 Scheme
+	// 注册 Internal Version
 	utilruntime.Must(wardle.AddToScheme(scheme))
-	// 注册 v1beta1 Scheme
+	// 注册 v1beta1
 	utilruntime.Must(v1beta1.AddToScheme(scheme))
-	// 注册 v1alpha1 Scheme
+	// 注册 v1alpha1
 	utilruntime.Must(v1alpha1.AddToScheme(scheme))
 	// 设置优先级（优先级用于客户端选择版本）
 	utilruntime.Must(scheme.SetVersionPriority(v1beta1.SchemeGroupVersion, v1alpha1.SchemeGroupVersion))
@@ -591,6 +605,7 @@ func init() {
   // ...
 }
 ```
+
 
 ## 4 Registry 与 Strategy 
 
@@ -653,7 +668,7 @@ func (c completedConfig) New() (*WardleServer, error) {
 
 ### 4.2 APIGroupInfo
 
-APIGroupInfo 能够变为一个 Group 下所有 Version 所有 Resource 的的 HTTP Handle。因此，我们可以想到，我们提供给 APIGroupInfo 什么信息：
+**`APIGroupInfo`** 能够变为一个 Group 下所有 Version 所有 Resource 的的 HTTP Handle。因此，我们可以想到，我们提供给 APIGroupInfo 什么信息：
 * 该 Group 支持的所有 Version，以及每个 Version 支持的所有 Resource；
   
   由调用 `genericapiserver.NewDefaultAPIGroupInfo()` 传入的 Group + Scheme + Codecs 提供。这样，处理 HTTP 请求时能够将数据序列化为特定的对象。
@@ -790,14 +805,14 @@ type Watcher interface {
 所有嵌套的 Handle interface 都是包含名字对应的 HTTP Handle 实现，从名字上就可以知道对应的功能。之外还有许多个 Handle interface：
 | Interface         | HTTP Method      | Endpoint              | 作用                                          |
 | ----------------- | ---------------- | --------------------- | --------------------------------------------- |
-| Lister            | List             | <ResourcePath>        | 可以匹配指定 Field 和 Label 获取 ResourceList |
-| Creater           | POST             | <ResourcePath>        | 创建一个 Resource                             |
-| CollectionDeleter | DELETECOLLECTION |                       | 删除一组 Resource                             |
-| Getter            | GET              | <ResourcePath>/{name} | 按 name 获取一个 Resource                     |
-| Updater           | PUT              | <ResourcePath>/{name} | 更新一个 Resource                             |
-| Patcher           | PATCH            | <ResourcePath>/{name} | Patch 方式更新一个 Resource Resource          |
-| GracefulDeleter   | DELETE           | <ResourcePath>/{name} | 删除一个 Resource                             |
-| Watcher           | HTTP Method      | <ResourcePath>        | 删除一组 Resource                             |
+| Lister            | List             | \<ResourcePath>        | 可以匹配指定 Field 和 Label 获取 ResourceList |
+| Creater           | POST             | \<ResourcePath>        | 创建一个 Resource                             |
+| CollectionDeleter | DELETECOLLECTION | \<ResourcePath>         删除一组 Resource                             |
+| Getter            | GET              | \<ResourcePath>/{name} | 按 name 获取一个 Resource                     |
+| Updater           | PUT              | \<ResourcePath>/{name} | 更新一个 Resource                             |
+| Patcher           | PATCH            | \<ResourcePath>/{name} | Patch 方式更新一个 Resource Resource          |
+| GracefulDeleter   | DELETE           | \<ResourcePath>/{name} | 删除一个 Resource                             |
+| Watcher           | HTTP Method      | \<ResourcePath>        | 删除一组 Resource                             |
 | Connecter     | Connect           | -       | Creater + Updater                             |
 | CreateUpdater     | GET/PUT          | -       | Creater + Updater                             |
 | Scoper            | -                | -                     | （必须实现）用于代码中判断是否是 Namespaced   |
@@ -927,7 +942,7 @@ func (flunderStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Ob
 
 ## 5 Validate
 
-准入过程中的 Validate 能够实现针对字段动态验证，比 CRD 定义中的静态验证更加灵活。由下图可见，Validate 过程是在 Mutate Plugin 与 Validate Plugin 之间完成的。
+**准入过程中的 Validate 能够实现针对字段动态验证**，比 CRD 定义中的静态验证更加灵活。由下图可见，Validate 过程是在 Mutate Plugin 与 Validate Plugin 之间完成的。
 {{< find_img "img1.png" >}}
 
 因此 Validate 只需要为 Internal Version 实现一次，不许为各个 External Version 分别实现。Registry 与 Strategy 为我们封装了上面的真个 Resource Handler，因此 Validate 的入口其实就是 Strategy 中对于 Create/Update 的检查。
@@ -937,44 +952,12 @@ type flunderStrategy struct {
 	names.NameGenerator
 }
 
-func (flunderStrategy) NamespaceScoped() bool {
-	return true
-}
-
-func (flunderStrategy) PrepareForCreate(ctx context.Context, obj runtime.Object) {
-}
-
-func (flunderStrategy) PrepareForUpdate(ctx context.Context, obj, old runtime.Object) {
-}
+// ...
 
 // Validate 用于对 Create Object 时进行验证
 func (flunderStrategy) Validate(ctx context.Context, obj runtime.Object) field.ErrorList {
 	flunder := obj.(*wardle.Flunder)
 	return validation.ValidateFlunder(flunder)
-}
-
-// WarningsOnCreate returns warnings for the creation of the given object.
-func (flunderStrategy) WarningsOnCreate(ctx context.Context, obj runtime.Object) []string { return nil }
-
-func (flunderStrategy) AllowCreateOnUpdate() bool {
-	return false
-}
-
-func (flunderStrategy) AllowUnconditionalUpdate() bool {
-	return false
-}
-
-func (flunderStrategy) Canonicalize(obj runtime.Object) {
-}
-
-// Validate 用于 Update Object 时调用
-func (flunderStrategy) ValidateUpdate(ctx context.Context, obj, old runtime.Object) field.ErrorList {
-	return field.ErrorList{}
-}
-
-// WarningsOnUpdate returns warnings for the given update.
-func (flunderStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
-	return nil
 }
 ```
 
@@ -995,12 +978,12 @@ func ValidateFlunder(f *wardle.Flunder) field.ErrorList {
 
 ## 6 Admission
 
-还是下图，每个请求在经过反序列化、默认值处理、转换为 Internal Version 后，都会经过 Admission Plugin Chain 处理。
+还是下图，每个请求在经过反序列化、默认值处理、转换为 Internal Version 后，都会经过 **`Admission Plugin Chain`** 处理（图中的 Admission 一块）。
 {{< find_img "img1.png" >}}
 
 Admission Plugin 因为两个阶段，也就是可以分为两类插件：
-* Mutate Plugin
-* Validate Plugin
+* **Mutate Plugin**
+* **Validate Plugin**
 
 一个 Admission Plugin 可以同时属于这两类，那么在 Admission Controll 过程中，该插件会被调用两次（要么同时启动、要么同时禁用）。
 * Mutate 阶段，所有 Mutate Plugin 会依次调用；
@@ -1257,7 +1240,249 @@ type WantsInternalWardleInformerFactory interface {
 
 ## 7 初始化与启动
 
-我们假设集群里有着可用的 Kubernetes APIServer，也有着可用的 etcd。
+看 main 函数，一切的入口是一个 Option:
+```go
+func main() {
+	// 初始化日志
+	logs.InitLogs()
+	defer logs.FlushLogs()
+
+	// 注册 SIGTERM 与 SIGINT 信号
+	stopCh := genericapiserver.SetupSignalHandler()
+
+	// 构建 Option
+	options := server.NewWardleServerOptions(os.Stdout, os.Stderr)
+
+	// 得到 cmd 命令行
+	cmd := server.NewCommandStartWardleServer(options, stopCh)
+	cmd.Flags().AddGoFlagSet(flag.CommandLine)
+	if err := cmd.Execute(); err != nil {
+		klog.Fatal(err)
+	}
+}
+```
+
+`NewCommandStartWardleServer` 得到一个 cobra.Command，所以其真正的运行入口在这里面：
+```go
+// NewCommandStartWardleServer provides a CLI handler for 'start master' command
+// with a default WardleServerOptions.
+func NewCommandStartWardleServer(defaults *WardleServerOptions, stopCh <-chan struct{}) *cobra.Command {
+	o := *defaults
+	cmd := &cobra.Command{
+		Short: "Launch a wardle API server",
+		Long:  "Launch a wardle API server",
+		RunE: func(c *cobra.Command, args []string) error {
+			if err := o.Complete(); err != nil {
+				return err
+			}
+
+			if err := o.Validate(args); err != nil {
+				return err
+			}
+
+			if err := o.RunWardleServer(stopCh); err != nil {
+				return err
+			}
+			return nil
+		},
+	}
+
+	// 注册命令行参数，Option 中所有字段都可以使用命令行参数配置
+	flags := cmd.Flags()
+	o.RecommendedOptions.AddFlags(flags)
+	utilfeature.DefaultMutableFeatureGate.AddFlag(flags)
+
+	return cmd
+}
+```
+
+### 7.1 Options
+
+启动 Server 的第一个阶段是得到 Option，代码中创建的是 `WardleServerOptions`，其最重要的就是包含了 `RecommendedOptions`，这是 k8s.io/apiserver 库提供的包含所有最基本的 APIServer 配置。
+```go
+// WardleServerOptions contains state for master/api server
+type WardleServerOptions struct {
+	// RecommendedOptions 记录官方的配置，包含大多数 APIServer 指定的配置
+	RecommendedOptions *genericoptions.RecommendedOptions
+
+	SharedInformerFactory informers.SharedInformerFactory
+	StdOut                io.Writer
+	StdErr                io.Writer
+}
+
+// RecommendedOptions contains the recommended options for running an API server.
+// If you add something to this list, it should be in a logical grouping.
+// Each of them can be nil to leave the feature unconfigured on ApplyTo.
+type RecommendedOptions struct {
+	Etcd           *EtcdOptions  // 后端存储相关
+	SecureServing  *SecureServingOptionsWithLoopback // HTTPS 相关配置
+	Authentication *DelegatingAuthenticationOptions 
+	Authorization  *DelegatingAuthorizationOptions
+	Audit          *AuditOptions   // 审计相关，默认关闭，开启后可以输出审计日志或者发送审计事件到外部后端系统
+	Features       *FeatureOptions // 开启或禁用某些 Alpha 或 Beta 功能
+	CoreAPI        *CoreAPIOptions // 访问 Kubernetes APIServer 的 kubeconfig 文件路径
+
+	// FeatureGate is a way to plumb feature gate through if you have them.
+	FeatureGate featuregate.FeatureGate
+	// ExtraAdmissionInitializers is called once after all ApplyTo from the options above, to pass the returned
+	// admission plugin initializers to Admission.ApplyTo.
+	ExtraAdmissionInitializers func(c *server.RecommendedConfig) ([]admission.PluginInitializer, error)
+	Admission                  *AdmissionOptions
+	// API Server Egress Selector is used to control outbound traffic from the API Server
+	EgressSelector *EgressSelectorOptions
+	// Traces contains options to control distributed request tracing.
+	Traces *TracingOptions
+}
+```
+
+我们重点关注使用 `RecommendedOptions`，使用提供的 `genericoptions.NewRecommendedOptions()` 来创建：
+```go
+const defaultEtcdPathPrefix = "/registry/wardle.example.com"
+
+// NewWardleServerOptions returns a new WardleServerOptions
+func NewWardleServerOptions(out, errOut io.Writer) *WardleServerOptions {
+	o := &WardleServerOptions{
+		// NewRecommendedOptions 创建 APIServer 推荐的配置，大多数都包含了默认的配置
+		RecommendedOptions: genericoptions.NewRecommendedOptions(
+			defaultEtcdPathPrefix, // 存在 Etcd 中的 path 前缀
+			apiserver.Codecs.LegacyCodec(v1alpha1.SchemeGroupVersion), // 注册解码器
+		),
+
+		StdOut: out,
+		StdErr: errOut,
+	}
+	o.RecommendedOptions.Etcd.StorageConfig.EncodeVersioner = runtime.NewMultiGroupVersioner(v1alpha1.SchemeGroupVersion, schema.GroupKind{Group: v1alpha1.GroupName})
+	return o
+}
+```
+* L13 - 定义 ETCD 存储的版本
+
+#### 7.1.1 Complete Option
+
+启动 Server 的第一步，就是调用 `WardleServerOptions.Complete()`，其中主要作用就是注册自定义的 Admission Plugin：
+```go
+// Complete fills in fields required to have valid data
+func (o *WardleServerOptions) Complete() error {
+	// 注册 BanFlunder 的 Admission Plugin
+	// register admission plugins
+	banflunder.Register(o.RecommendedOptions.Admission.Plugins)
+
+	// 记录到 Plugins 中
+	// add admission plugins to the RecommendedPluginOrder
+	o.RecommendedOptions.Admission.RecommendedPluginOrder = append(o.RecommendedOptions.Admission.RecommendedPluginOrder, "BanFlunder")
+
+	return nil
+}
+```
+
+#### 7.1.2 Validate Option
+
+启动 Server 的第二步，调用 `WardleServerOptions.Validate()` 进行参数验证。因为我们没有使用额外的参数，所以直接调用 `RecommendedOptions.Validate()`:
+```go
+// Validate validates WardleServerOptions
+func (o WardleServerOptions) Validate(args []string) error {
+	errors := []error{}
+	// 验证 Option 的合法性，执行各个 XXXOptions.Validate()
+	errors = append(errors, o.RecommendedOptions.Validate()...)
+	return utilerrors.NewAggregate(errors)
+}
+```
+
+#### 7.1.3 Run Server
+
+启动 Server 的第三步，调用 `WardleServerOptions.RunWardleServer` 运行一个 Server。其流程为：Options -> Config -> APIServer，最后真正运行：
+```go
+// RunWardleServer starts a new WardleServer given WardleServerOptions
+func (o WardleServerOptions) RunWardleServer(stopCh <-chan struct{}) error {
+	// Option 转化为 APIServer Config
+	config, err := o.Config()
+	if err != nil {
+		return err
+	}
+
+	// config.Complete() 填充一些默认的参数
+	// New() 得到一个 Server 对象，并注册 APIGroup 到 Kubernetes APIServer
+	// NOTE: Custom APIServer 的关键就在这里，注册了一个 APIGroup，Kubernetes APIServer
+	// 会根据注册的 APIGroup 来转发请求
+	server, err := config.Complete().New()
+	if err != nil {
+		return err
+	}
+
+	// 注册一个 PostStart Hook
+	// Hook 会在 HTTPs Server 启动并监听后被调用
+	server.GenericAPIServer.AddPostStartHookOrDie("start-sample-server-informers", func(context genericapiserver.PostStartHookContext) error {
+		// 启动原生对象的 SharedInformer
+		config.GenericConfig.SharedInformerFactory.Start(context.StopCh)
+		// 启动 Custom Resource Informer
+		o.SharedInformerFactory.Start(context.StopCh)
+		return nil
+	})
+
+	// PrepareRun 执行启动前的准备工作
+	// Run 运行 HTTPs Server
+	return server.GenericAPIServer.PrepareRun().Run(stopCh)
+}
+```
+
+可以看到，Option 对视为针对于命令行参数的数据结构，Config 是针对于 APIServer 配置的数据结构。其通过 `WardleServerOptions.Config()` 进行转化。
+```go
+// Config returns config for the api server given WardleServerOptions
+func (o *WardleServerOptions) Config() (*apiserver.Config, error) {
+	// 创建一个自签名的证书，用于用户没有传预生成证书时使用
+	// TODO have a "real" external address
+	if err := o.RecommendedOptions.SecureServing.MaybeDefaultWithSelfSignedCerts("localhost", nil, []net.IP{netutils.ParseIPSloppy("127.0.0.1")}); err != nil {
+		return nil, fmt.Errorf("error creating self-signed certificates: %v", err)
+	}
+
+	// 设置 Storage Paging
+	o.RecommendedOptions.Etcd.StorageConfig.Paging = utilfeature.DefaultFeatureGate.Enabled(features.APIListChunking)
+
+	// 注册 ExtraAdmissionInitializers
+	// AdmissionInitializers 在 Option.ApplyTo 调用后执行一次，并将返回值 []admission.PluginInitializer 传递给 Admission.Applyto
+	// 这里用来初始化了 ClientSet 与 Informer，并传递给了自身 Server 的 Admission Plugin
+	// NOTE: 所以这里是用于让 Custom APIServer 与 Custom Admission Plugin 传递对象用的
+	o.RecommendedOptions.ExtraAdmissionInitializers = func(c *genericapiserver.RecommendedConfig) ([]admission.PluginInitializer, error) {
+		// 创建 ClientSet
+		client, err := clientset.NewForConfig(c.LoopbackClientConfig)
+		if err != nil {
+			return nil, err
+		}
+		// 创建 CustomResource Informer，并记录到 Option 中
+		informerFactory := informers.NewSharedInformerFactory(client, c.LoopbackClientConfig.Timeout)
+		o.SharedInformerFactory = informerFactory
+
+		// 构建 Admission Plugin Initializer，传递了 Informer
+		// Initializer.Initialize 将 Informer 传递给了 Admission Plugin
+		return []admission.PluginInitializer{wardleinitializer.New(informerFactory)}, nil
+	}
+
+	// 新建 RecommendedConfig
+	serverConfig := genericapiserver.NewRecommendedConfig(apiserver.Codecs)
+
+	// 配置生成 OpenAPI 相关配置
+	serverConfig.OpenAPIConfig = genericapiserver.DefaultOpenAPIConfig(sampleopenapi.GetOpenAPIDefinitions, openapi.NewDefinitionNamer(apiserver.Scheme))
+	serverConfig.OpenAPIConfig.Info.Title = "Wardle"
+	serverConfig.OpenAPIConfig.Info.Version = "0.1"
+
+	// 将 Option 转换为 Config
+	if err := o.RecommendedOptions.ApplyTo(serverConfig); err != nil {
+		return nil, err
+	}
+
+	// 得到 APIServer Config
+	// 包含:
+	//	1. RecommendedConfig - 预定的通用 Config
+	//	2. ExtraConfig - 自身可传递的一些 Config
+	config := &apiserver.Config{
+		GenericConfig: serverConfig,
+		ExtraConfig:   apiserver.ExtraConfig{},
+	}
+	return config, nil
+}
+```
+
+可以看到，Option 转化为 Config 过程中，执行了之前讲过的向 Admission Plugin 传递基础组件的过程。
 
 k8s.io/apiserver 中，我们基于 RecommendOptions 来实现所有的选项。
 ```go
@@ -1290,69 +1515,316 @@ apiserver"),
 }
 ```
 
-看一下 NewRecommendedOptions 的实现：
-```go
-return &RecommendedOptions{ 
-    Etcd:           NewEtcdOptions(storagebackend.NewDefaultConfig(prefix, codec)), 
-    SecureServing:  sso.WithLoopback(), 
-    Authentication: NewDelegatingAuthenticationOptions(), 
-    Authorization:  NewDelegatingAuthorizationOptions(), 
-    Audit:          NewAuditOptions(), 
-    Features:       NewFeatureOptions(), 
-    CoreAPI:        NewCoreAPIOptions(), 
-    ExtraAdmissionInitializers: 
-      func(c *server.RecommendedConfig) ([]admission.PluginInitializer, error) { 
-          return nil, nil 
-      }, 
-    Admission:      NewAdmissionOptions(), 
-    ProcessInfo:    processInfo,
-    Webhook:        NewWebhookOptions(), 
-}
-```
-* Etcd - 设置存储后端
-* SecureServing - 设置 HTTPS 相关配置（端口、证书等）
-* Authentication - 前面所述的[**身份认证**](#33-身份认证机制)相关配置
-* Authorization - 前面所述的[**授权**](#34-授权)相关配置
-* Audit - 默认禁用，配置后可以输出到审计日志或者将审计事件发送到外部后端系统
-* Features - 开启或禁用某些 Alpha 或 Beta 功能
-* CoreAPI - 访问 Kubernetes APIServer 的 kubeconfig 文件路径
-* Admission - 执行于每个 API 请求上的准入控制
-* ExtraAdmissionInitializers - 允许配置准入初始化逻辑
-* ProcessInfo - 存储事件对象的创建信息
-* Webhook 决定了 Webhook 的配置
+### 7.2 Config
 
-Option 可以通过 Config() 方法转换为 Config。
+启动 Server 的第二阶段是 Config 类，与 Option 类似，我们会包含 k8s.io/apiserver 库提供的 `RecommendedConfig`:
 ```go
-func (o *CustomServerOptions) Config() (*apiserver.Config, error) { 
-    err := o.RecommendedOptions.SecureServing.MaybeDefaultWithSelfSignedCerts( 
-        "localhost", nil, []net.IP{net.ParseIP("127.0.0.1")}, 
-    ) 
-    if err != nil { 
-        return nil, fmt.Errorf("error creating self-signed cert: %v", err) 
-    } 
- 
-    // [... omitted o.RecommendedOptions.ExtraAdmissionInitializers ...] 
- 
-    serverConfig := genericapiserver.NewRecommendedConfig(apiserver.Codecs) 
-    err = o.RecommendedOptions.ApplyTo(serverConfig, apiserver.Scheme); 
-    if err != nil { 
-        return nil, err 
-    } 
- 
-    config := &apiserver.Config{ 
-        GenericConfig: serverConfig, 
-        ExtraConfig:   apiserver.ExtraConfig{}, 
-    } 
-    return config, nil 
+type Config struct {
+	GenericConfig *genericapiserver.RecommendedConfig
+	ExtraConfig   ExtraConfig
 }
 ```
+
+`RecommendedConfig` 有着许多的配置项，所以我们不深入其实现，主要观察如何使用它。也就是如何从 Config，得到 APIServer 对象。
+
+正如之前看到的，由 Option 转化为 Config 对象：
+```go
+	// 新建 RecommendedConfig
+	serverConfig := genericapiserver.NewRecommendedConfig(apiserver.Codecs)
+
+	// 配置生成 OpenAPI 相关配置
+	serverConfig.OpenAPIConfig = genericapiserver.DefaultOpenAPIConfig(sampleopenapi.GetOpenAPIDefinitions, openapi.NewDefinitionNamer(apiserver.Scheme))
+	serverConfig.OpenAPIConfig.Info.Title = "Wardle"
+	serverConfig.OpenAPIConfig.Info.Version = "0.1"
+
+	// 将 Option 转换为 Config
+	if err := o.RecommendedOptions.ApplyTo(serverConfig); err != nil {
+		return nil, err
+	}
+
+	// 得到 APIServer Config
+	// 包含:
+	//	1. RecommendedConfig - 预定的通用 Config
+	//	2. ExtraConfig - 自身可传递的一些 Config
+	config := &apiserver.Config{
+		GenericConfig: serverConfig,
+		ExtraConfig:   apiserver.ExtraConfig{},
+	}
+```
+
+从 Config 得到 Server 对象就很简单了：
+```go
+	server, err := config.Complete().New()
+	if err != nil {
+		return err
+	}
+```
+
+#### 7.2.1 Complete Config
+
+Complete 过程依旧简单，执行 `GenericConfig.Complete()` 以及设置到版本号即可，返回一个 `CompletedConfig` 对象：
+```go
+// CompletedConfig embeds a private pointer that cannot be instantiated outside of this package.
+type CompletedConfig struct {
+	*completedConfig
+}
+
+func (cfg *Config) Complete() CompletedConfig {
+	c := completedConfig{
+		cfg.GenericConfig.Complete(),
+		&cfg.ExtraConfig,
+	}
+
+	c.GenericConfig.Version = &version.Info{
+		Major: "1",
+		Minor: "0",
+	}
+
+	return CompletedConfig{&c}
+}
+```
+{{< admonition tip "为何使用新的对象 CompletedConfig?">}}
+CompletedConfig 才包含 New() 方法，这样能保证 New APIServer 时一定是经过 Complete Config 的。
+{{< /admonition >}}
+
+#### 7.2.2 New APIServer
+
+New APIServer 过程在创建一个 APIServer 对象后，就完成了 HTTP API Handle 的注册了，而这就是最关键的地方：
+```go
+// New returns a new instance of WardleServer from the given config.
+func (c completedConfig) New() (*WardleServer, error) {
+	// CompletedConfig 得到一个 GenericAPIServer
+	genericServer, err := c.GenericConfig.New("sample-apiserver", genericapiserver.NewEmptyDelegate())
+	if err != nil {
+		return nil, err
+	}
+
+	// Custom APIServer 对象
+	s := &WardleServer{
+		GenericAPIServer: genericServer,
+	}
+
+	// 构建 APIGroupInfo
+	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(wardle.GroupName, Scheme, metav1.ParameterCodec, Codecs)
+
+	// 构建 APIGroup
+	// 一个 rest.Storage 对应了一个 HTTP API Endpoint
+	// 即 /apis/<group>/<version>/<resource>
+
+	// 下面注册了两个 Endpoint
+	//	+ /apis/wardle.example.com/v1alpha1/flunders
+	//	+ /apis/wardle.example.com/v1alpha1/fischers
+	v1alpha1storage := map[string]rest.Storage{}
+	v1alpha1storage["flunders"] = wardleregistry.RESTInPeace(flunderstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
+	v1alpha1storage["fischers"] = wardleregistry.RESTInPeace(fischerstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
+	apiGroupInfo.VersionedResourcesStorageMap["v1alpha1"] = v1alpha1storage
+
+	// 下面注册了一个 Endpoint
+	//	+ /apis/wardle.example.com/v1beta1/flunders
+	v1beta1storage := map[string]rest.Storage{}
+	v1beta1storage["flunders"] = wardleregistry.RESTInPeace(flunderstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
+	apiGroupInfo.VersionedResourcesStorageMap["v1beta1"] = v1beta1storage
+
+	// 注册 APIGroup 到 Kubernetes APIServer
+	if err := s.GenericAPIServer.InstallAPIGroup(&apiGroupInfo); err != nil {
+		return nil, err
+	}
+
+	return s, nil
+}
+```
+
+### 7.3 Server
+
+总算来到最后的阶段，Server 对象就是一个 APIServer 的实现了，我们只需要调用库提供的 `GenericAPIServer` 实现的 PrepareRun() 与 Run() 接口实现即可运行。
+```go
+	server, err := config.Complete().New()
+	if err != nil {
+		return err
+	}
+
+	// 注册一个 PostStart Hook
+	// Hook 会在 HTTPs Server 启动并监听后被调用
+	server.GenericAPIServer.AddPostStartHookOrDie("start-sample-server-informers", func(context genericapiserver.PostStartHookContext) error {
+		// 启动原生对象的 SharedInformer
+		config.GenericConfig.SharedInformerFactory.Start(context.StopCh)
+		// 启动 Custom Resource Informer
+		o.SharedInformerFactory.Start(context.StopCh)
+		return nil
+	})
+
+	// PrepareRun 执行启动前的准备工作
+	// Run 运行 HTTPs Server
+	return server.GenericAPIServer.PrepareRun().Run(stopCh)
+```
+
 
 ## 8 部署
 
-### 8.1 第一次启动
+### 8.1 部署清单
+
+清单：
+* APIService
+* Service
+* Deployment
+* ServiceAccount + ClusterRole + ClusterRoleBinding
+
+之前提到，APIService 对象向原生 Kubernetes APIServer 注册一个 Custom APISever。因此这是必须要部署的。
+```yaml
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1alpha1.wardle.example.com
+spec:
+  insecureSkipTLSVerify: true
+  group: wardle.example.com
+  groupPriorityMinimum: 1000
+  versionPriority: 15
+  service:
+    name: api
+    namespace: wardle
+  version: v1alpha1
+```
+
+注意，测试环境我们将 `spec.insecureSkipTLSVerify` 设为 true，而生产环境不能这么做。
+
+APIService 仅仅是让 Kubernetes APIServer 知晓 Custom APIServer 存在，为了能够转发请求，我们还需要部署 Custom APIServer 使用的 Service 对象。
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: wardle
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+    targetPort: 443
+  selector:
+    apiserver: "true"
+```
+
+运行我们 Custom APIServer 程序的 Deployment。
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wardle-server
+  namespace: wardle
+  labels:
+    apiserver: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      apiserver: "true"
+  template:
+    metadata:
+      labels:
+        apiserver: "true"
+    spec:
+      serviceAccountName: apiserver
+      containers:
+      - name: wardle-server
+        # build from staging/src/k8s.io/sample-apiserver/artifacts/simple-image/Dockerfile
+        # or
+        # docker pull k8s.gcr.io/e2e-test-images/sample-apiserver:1.17.4
+        # docker tag k8s.gcr.io/e2e-test-images/sample-apiserver:1.17.4 kube-sample-apiserver:latest
+        image: kube-sample-apiserver:latest
+        imagePullPolicy: Never
+        args: [ "--etcd-servers=http://localhost:2379" ]
+      - name: etcd
+        image: quay.io/coreos/etcd:v3.5.0
+```
+{{< admonition note Note>}}
+APIServer 是无状态的，所以如果你只部署一个 etcd 作为后端存储情况下，可以运行多个 Custom APIServer，并且不需要进行选举。
+{{< /admonition >}}
+
+访问 Kubernetes APIServer 使用的 ServiceAccount：
+```yaml
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: apiserver
+  namespace: wardle
+```
+
+ClusterRole 提供相关的访问权限，主要包括：
+* namespace - 为了实现 Namespace 删除时，其下相关对象也被删除，需要 namespace 相关权限
+* admission webhook - 为了能够支持 admission webhook
+```yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: aggregated-apiserver-clusterrole
+rules:
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["admissionregistration.k8s.io"]
+  resources: ["mutatingwebhookconfigurations", "validatingwebhookconfigurations"]
+  verbs: ["get", "watch", "list"]
+```
+
+ClusterRoleBinding 连接 ClusterRole 与 ServiceAccount，并且还需要绑定一些预创建的 ClusterRole。
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sample-apiserver-clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: aggregated-apiserver-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: apiserver
+  namespace: wardle
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: wardle:system:auth-delegator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+- kind: ServiceAccount
+  name: apiserver
+  namespace: wardle
+
+# 为了代理认证和授权
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: wardle-auth-reader
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: extension-apiserver-authentication-reader
+subjects:
+- kind: ServiceAccount
+  name: apiserver
+  namespace: wardle
+```
+
+### 8.2 配置证书
+
+前面我们使用 APIService 中的 `spec.insecureSkipTLSVerify` 为 false 来让 Custom APIServer 与 Kubernetes APIServer 之前通信跳过 TLS 鉴权。
+
+如果需要配置 TLS，可以在 APIService 中的 `spec.caBundle` 字段配置 Custom APISever 的根证书，这样 Kubernetes APIServer 就会使用该证书来对 Custom APISever 进行鉴权。
+
+对于 Custom APIServer，我们创建好 Server 的证书与私钥后，创建一个 Secret 对象，然后将其挂载到 Pod 的 /var/run/apiserver/serving-cert/tls.{crt,key} 文件中。
+{{< admonition note Note>}}
+/var/run/apiserver/serving-cert/tls.{crt,key} 是默认的放置 APIServer 证书与私钥的目录。
+
+你可以通过命令行参数 --cert-dir "dir" 指定证书与私钥的目录。
+
+或者，通过 --tls-cert-file "file" 与 --tls-private-key-file "file" 指定证书文件与私钥文件。
+{{< /admonition >}}
 
 
-
-
-
-
+## 参考
+* [**k8s.io/apiserver**](https://github.com/kubernetes/apiserver)
