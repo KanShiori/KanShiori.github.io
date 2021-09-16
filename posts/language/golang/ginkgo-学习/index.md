@@ -306,7 +306,8 @@ Should 等函数后跟着 Matcher interface 变量，代表一个表达式。
 
 ### 4.2 Matcher
 
-判断类型与值相等：
+#### 4.2.1 判断类型与值相等
+
 * Equal 使用 reflect.DeepEqual 进行比较。
 * BeEquivalentTo 会先将 ACTUAL 转换为 EXPECTED 的类型，然后使用 reflect.DeepEqual 进行比较。
 ```go
@@ -314,10 +315,12 @@ Expect(ACTUAL).Should(Equal(EXPECTED))
 Expect(ACTUAL).Should(BeEquivalentTo(EXPECTED))
 ```
 
-接口相容：
+#### 4.2.2 接口相容
+
 * BeAssignableToTypeOf 仅仅用于判断能否将 EXPECTED 赋值给 ACTUAL。常用于判断 interface 是否满足。
 
-空值与零值：
+#### 4.2.3 空值与零值
+
 * BeNil 判断是否为 nil
 * BeZero 判断是否为零值
 ```go
@@ -325,7 +328,8 @@ Expect(ACTUAL).Should(BeNil())
 Expect(ACTUAL).Should(BeZero())
 ```
 
-布尔值：
+#### 4.2.4 布尔值
+
 * BeTrue 判断为 true
 * BeFalse 判断为 false
 ```go
@@ -333,7 +337,8 @@ Expect(ACTUAL).Should(BeTrue())
 Expect(ACTUAL).Should(BeFalse())
 ```
 
-error 处理：
+#### 4.2.5 error 处理
+
 * HaveOccurred 判断 error 为 nil
 * Succeed 判断 error 不为 nil
 * MatchError 以判断 error 或者 string 是否相同
@@ -344,7 +349,8 @@ Expect(err).Should(MatchError("an error")) //asserts that err.Error() == "an err
 Expect(err).Should(MatchError(SomeError)) //asserts that err == SomeError (via reflect.DeepEqual)
 ```
 
-channel 处理：
+#### 4.2.6 channel 处理
+
 * BeClosed 判断 channel 已经关闭，会读取 channel 数据来判断
 * Receive 判断 channel 中能否读取到数据
 * BeSent 判断 channel 能否无阻塞发送消息
@@ -354,7 +360,8 @@ Expect(ch).Should(Receive(<optionalPointer>))
 Expect(ch).Should(BeSent(VALUE))
 ```
 
-文件处理：
+#### 4.2.7 文件处理
+
 * BeAnExistingFile 判断文件/目录是否存在
 * BeARegularFile 判断是否为普通文件
 * BeADirectory 判断是否为目录
@@ -364,7 +371,8 @@ Expect(ACTUAL).Should(BeARegularFile())
 Expect(ACTUAL).Should(BeADirectory())
 ```
 
-字符串处理：
+#### 4.2.8 字符串处理
+
 * ContainSubstring 判断是否包含子串
 * HavePrefix 判断是否包含前缀
 * HaveSuffix 判断是否包含后缀
@@ -376,12 +384,14 @@ Expect(ACTUAL).Should(HaveSuffix(STRING, ARGS...))
 Expect(ACTUAL).Should(MatchRegexp(STRING, ARGS...))
 ```
 
-JSON/XML/YAML 处理：
+#### 4.2.9 JSON/XML/YAML 处理
+
 * MatchJSON 判断 JSON 是否相同
 * MatchXML 判断 XML 是否相同
 * MatchYAML 判断 YAML 是否相同
 
-集合（string、array、map、chan、slice）处理：
+#### 4.2.10 集合 string array map chan slice 处理
+
 * BeEmpty 判断为空
 * HaveLen 判断长度
 * HaveCap 判断容量
@@ -404,11 +414,12 @@ Expect(m).Should(HaveKey("a"))
 Expect(m).Should(HaveKeyWithValue("a", "b"))
 ```
 
-数字/时间处理：
+#### 4.2.11 数字/时间处理
+
 * BeNumerically 进行数值的比较，包含以下运算符:
   * == 判断数值是否相等
   * ~ 判断数值是否相似（一定范围内）
-  * > >= < <= 比较大小
+  * \> >= < <= 比较大小
 * BeBetween 判断是否在范围内
 * BeTemporally 进行 time.Time 类型比较，方式与 BeNumerically 相同
 ```go
@@ -423,13 +434,15 @@ Expect(a).Should(BeNumerically("<=", b))
 Expect(a).Should(BeBetween(0, 10))
 ```
 
-panic：
+#### 4.2.12 panic
+
 * Panic 判断函数是否会发生 panic
 ```go
 Expect(func(){}).Should(Panic())
 ```
 
-逻辑组合：
+#### 4.2.13 逻辑组合
+
 * SatisfyAll/And 进行逻辑与的组合
 * SatisfyAny/Or 进行逻辑或的组合
 ```go

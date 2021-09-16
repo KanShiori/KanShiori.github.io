@@ -1828,3 +1828,5 @@ subjects:
 
 ## 参考
 * [**k8s.io/apiserver**](https://github.com/kubernetes/apiserver)
+* [**《Programming Kubernetes》**](https://book.douban.com/subject/33393681/)
+* [**Configure the Aggregation Layer**](https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/)

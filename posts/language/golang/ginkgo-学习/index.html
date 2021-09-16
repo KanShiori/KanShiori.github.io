@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/ginkgo-%E5%AD%A6%E4%B9%A0\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Test","wordcount":  2466 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Test","wordcount":  2439 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/ginkgo-%E5%AD%A6%E4%B9%A0\/","datePublished": "2021-06-27T07:26:25+00:00","dateModified": "2021-06-27T07:26:25+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Ginkgo 学习</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw"></i>Golang</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-27">2021-06-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2466 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-27">2021-06-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2439 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -153,7 +153,23 @@
     <li><a href="#4-gomega">4 Gomega</a>
       <ul>
         <li><a href="#41-断言">4.1 断言</a></li>
-        <li><a href="#42-matcher">4.2 Matcher</a></li>
+        <li><a href="#42-matcher">4.2 Matcher</a>
+          <ul>
+            <li><a href="#421-判断类型与值相等">4.2.1 判断类型与值相等</a></li>
+            <li><a href="#422-接口相容">4.2.2 接口相容</a></li>
+            <li><a href="#423-空值与零值">4.2.3 空值与零值</a></li>
+            <li><a href="#424-布尔值">4.2.4 布尔值</a></li>
+            <li><a href="#425-error-处理">4.2.5 error 处理</a></li>
+            <li><a href="#426-channel-处理">4.2.6 channel 处理</a></li>
+            <li><a href="#427-文件处理">4.2.7 文件处理</a></li>
+            <li><a href="#428-字符串处理">4.2.8 字符串处理</a></li>
+            <li><a href="#429-jsonxmlyaml-处理">4.2.9 JSON/XML/YAML 处理</a></li>
+            <li><a href="#4210-集合-string-array-map-chan-slice-处理">4.2.10 集合 string array map chan slice 处理</a></li>
+            <li><a href="#4211-数字时间处理">4.2.11 数字/时间处理</a></li>
+            <li><a href="#4212-panic">4.2.12 panic</a></li>
+            <li><a href="#4213-逻辑组合">4.2.13 逻辑组合</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
   </ul>
@@ -675,7 +691,7 @@
 </div>
 </div><p>Should 等函数后跟着 Matcher interface 变量，代表一个表达式。</p>
 <h3 id="42-matcher">4.2 Matcher</h3>
-<p>判断类型与值相等：</p>
+<h4 id="421-判断类型与值相等">4.2.1 判断类型与值相等</h4>
 <ul>
 <li>Equal 使用 reflect.DeepEqual 进行比较。</li>
 <li>BeEquivalentTo 会先将 ACTUAL 转换为 EXPECTED 的类型，然后使用 reflect.DeepEqual 进行比较。</li>
@@ -690,11 +706,11 @@
 <span class="nf">Expect</span><span class="p">(</span><span class="nx">ACTUAL</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">BeEquivalentTo</span><span class="p">(</span><span class="nx">EXPECTED</span><span class="p">))</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>接口相容：</p>
+</div><h4 id="422-接口相容">4.2.2 接口相容</h4>
 <ul>
 <li>BeAssignableToTypeOf 仅仅用于判断能否将 EXPECTED 赋值给 ACTUAL。常用于判断 interface 是否满足。</li>
 </ul>
-<p>空值与零值：</p>
+<h4 id="423-空值与零值">4.2.3 空值与零值</h4>
 <ul>
 <li>BeNil 判断是否为 nil</li>
 <li>BeZero 判断是否为零值</li>
@@ -709,7 +725,7 @@
 <span class="nf">Expect</span><span class="p">(</span><span class="nx">ACTUAL</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">BeZero</span><span class="p">())</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>布尔值：</p>
+</div><h4 id="424-布尔值">4.2.4 布尔值</h4>
 <ul>
 <li>BeTrue 判断为 true</li>
 <li>BeFalse 判断为 false</li>
@@ -724,7 +740,7 @@
 <span class="nf">Expect</span><span class="p">(</span><span class="nx">ACTUAL</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">BeFalse</span><span class="p">())</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>error 处理：</p>
+</div><h4 id="425-error-处理">4.2.5 error 处理</h4>
 <ul>
 <li>HaveOccurred 判断 error 为 nil</li>
 <li>Succeed 判断 error 不为 nil</li>
@@ -744,7 +760,7 @@
 </span><span class="c1"></span><span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">MatchError</span><span class="p">(</span><span class="nx">SomeError</span><span class="p">))</span> <span class="c1">//asserts that err == SomeError (via reflect.DeepEqual)
 </span></code></pre></td></tr></table>
 </div>
-</div><p>channel 处理：</p>
+</div><h4 id="426-channel-处理">4.2.6 channel 处理</h4>
 <ul>
 <li>BeClosed 判断 channel 已经关闭，会读取 channel 数据来判断</li>
 <li>Receive 判断 channel 中能否读取到数据</li>
@@ -762,7 +778,7 @@
 <span class="nf">Expect</span><span class="p">(</span><span class="nx">ch</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">BeSent</span><span class="p">(</span><span class="nx">VALUE</span><span class="p">))</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>文件处理：</p>
+</div><h4 id="427-文件处理">4.2.7 文件处理</h4>
 <ul>
 <li>BeAnExistingFile 判断文件/目录是否存在</li>
 <li>BeARegularFile 判断是否为普通文件</li>
@@ -780,7 +796,7 @@
 <span class="nf">Expect</span><span class="p">(</span><span class="nx">ACTUAL</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">BeADirectory</span><span class="p">())</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>字符串处理：</p>
+</div><h4 id="428-字符串处理">4.2.8 字符串处理</h4>
 <ul>
 <li>ContainSubstring 判断是否包含子串</li>
 <li>HavePrefix 判断是否包含前缀</li>
@@ -801,13 +817,13 @@
 <span class="nf">Expect</span><span class="p">(</span><span class="nx">ACTUAL</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">MatchRegexp</span><span class="p">(</span><span class="nx">STRING</span><span class="p">,</span> <span class="nx">ARGS</span><span class="o">...</span><span class="p">))</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>JSON/XML/YAML 处理：</p>
+</div><h4 id="429-jsonxmlyaml-处理">4.2.9 JSON/XML/YAML 处理</h4>
 <ul>
 <li>MatchJSON 判断 JSON 是否相同</li>
 <li>MatchXML 判断 XML 是否相同</li>
 <li>MatchYAML 判断 YAML 是否相同</li>
 </ul>
-<p>集合（string、array、map、chan、slice）处理：</p>
+<h4 id="4210-集合-string-array-map-chan-slice-处理">4.2.10 集合 string array map chan slice 处理</h4>
 <ul>
 <li>BeEmpty 判断为空</li>
 <li>HaveLen 判断长度</li>
@@ -846,19 +862,13 @@
 <span class="nf">Expect</span><span class="p">(</span><span class="nx">m</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">HaveKeyWithValue</span><span class="p">(</span><span class="s">&#34;a&#34;</span><span class="p">,</span> <span class="s">&#34;b&#34;</span><span class="p">))</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>数字/时间处理：</p>
+</div><h4 id="4211-数字时间处理">4.2.11 数字/时间处理</h4>
 <ul>
 <li>BeNumerically 进行数值的比较，包含以下运算符:
 <ul>
 <li>== 判断数值是否相等</li>
 <li>~ 判断数值是否相似（一定范围内）</li>
-<li>
-<blockquote>
-<blockquote>
-<p>= &lt; &lt;= 比较大小</p>
-</blockquote>
-</blockquote>
-</li>
+<li>&gt; &gt;= &lt; &lt;= 比较大小</li>
 </ul>
 </li>
 <li>BeBetween 判断是否在范围内</li>
@@ -888,7 +898,7 @@
 <span class="nf">Expect</span><span class="p">(</span><span class="nx">a</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">BeBetween</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>panic：</p>
+</div><h4 id="4212-panic">4.2.12 panic</h4>
 <ul>
 <li>Panic 判断函数是否会发生 panic</li>
 </ul>
@@ -900,7 +910,7 @@
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="nf">Expect</span><span class="p">(</span><span class="kd">func</span><span class="p">(){}).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">Panic</span><span class="p">())</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>逻辑组合：</p>
+</div><h4 id="4213-逻辑组合">4.2.13 逻辑组合</h4>
 <ul>
 <li>SatisfyAll/And 进行逻辑与的组合</li>
 <li>SatisfyAny/Or 进行逻辑或的组合</li>
