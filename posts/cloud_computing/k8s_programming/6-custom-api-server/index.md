@@ -1,4 +1,4 @@
-# K8s 编程 - Custom APIServer
+# K8s 编程 - 6 - Custom APIServer
 
 
 > **Kubernetes 编程系列** 主要记录一些开发 Controller 所相关的知识，大部分内容来自于[《Programming Kubernetes》](https://www.oreilly.com/library/view/programming-kubernetes/9781492047094/)（推荐直接阅读）。

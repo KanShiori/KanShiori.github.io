@@ -174,9 +174,24 @@ openssl x509 -req  -days 3650 -in client.csr -CA root.crt -CAkey root.key -CAcre
 ```
 
 ### 3.2 总结
-换个角度看，为了证书使用需要的条件：
-* server 使用 CA 私钥加密后的证书；
-* client 内置了 CA 根证书（公钥）；
+换个角度看，为了实现自签名，双向 TLS，两边需要的文件
+* server 端需要
+  1. server.key - server 端私钥
+  2. server.crt - 通过 server.csr，由 CA 签名后的证书
+  ```go
+  certfile := filepath.Join(global.ConfDir(), "server.crt")
+  keyfile := filepath.Join(global.ConfDir(), "server.key")
+
+  err := s.server.ListenAndServeTLS(certfile, keyfile)
+  ```
+* client 端需要
+  1. client.key - client 端私钥
+  2. client.crt - 通过 client.csr，由 CA 签名后的证书
+  3. ca.crt - CA 证书，因为是自签名
+
+{{< admonition note Note>}}
+如果是单向 TLS，那么就不需要 client 私钥与证书，CA 证书还是需要内置。
+{{< /admonition >}}
 
 而验证就是 client 使用公钥正常解密数据，然后检查下数据。
 

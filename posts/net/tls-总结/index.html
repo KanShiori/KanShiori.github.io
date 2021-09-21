@@ -18,7 +18,7 @@
 <meta name="twitter:title" content="SSL/TLS 总结"/>
 <meta name="twitter:description" content="SSL/TLS 总结"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/net/tls-%E6%80%BB%E7%BB%93/" /><link rel="prev" href="https://KanShiori.github.io/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/pod/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/net/tls-%E6%80%BB%E7%BB%93/" /><link rel="prev" href="https://KanShiori.github.io/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/1-pod/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/net\/tls-%E6%80%BB%E7%BB%93\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "网络","wordcount":  3094 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "网络","wordcount":  3205 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/net\/tls-%E6%80%BB%E7%BB%93\/","datePublished": "2021-05-01T15:09:13+00:00","dateModified": "2021-05-01T15:09:13+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">SSL/TLS 总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/%E7%BD%91%E7%BB%9C/"><i class="far fa-folder fa-fw"></i>网络</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-05-01">2021-05-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3094 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-05-01">2021-05-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3205 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -386,11 +386,44 @@ openssl x509 -req  -days <span class="m">3650</span> -in client.csr -CA root.crt
 </code></pre></td></tr></table>
 </div>
 </div><h3 id="32-总结">3.2 总结</h3>
-<p>换个角度看，为了证书使用需要的条件：</p>
+<p>换个角度看，为了实现自签名，双向 TLS，两边需要的文件</p>
 <ul>
-<li>server 使用 CA 私钥加密后的证书；</li>
-<li>client 内置了 CA 根证书（公钥）；</li>
+<li>server 端需要
+<ol>
+<li>server.key - server 端私钥</li>
+<li>server.crt - 通过 server.csr，由 CA 签名后的证书</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">certfile</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">global</span><span class="p">.</span><span class="nf">ConfDir</span><span class="p">(),</span> <span class="s">&#34;server.crt&#34;</span><span class="p">)</span>
+<span class="nx">keyfile</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">global</span><span class="p">.</span><span class="nf">ConfDir</span><span class="p">(),</span> <span class="s">&#34;server.key&#34;</span><span class="p">)</span>
+
+<span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">server</span><span class="p">.</span><span class="nf">ListenAndServeTLS</span><span class="p">(</span><span class="nx">certfile</span><span class="p">,</span> <span class="nx">keyfile</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>client 端需要
+<ol>
+<li>client.key - client 端私钥</li>
+<li>client.crt - 通过 client.csr，由 CA 签名后的证书</li>
+<li>ca.crt - CA 证书，因为是自签名</li>
+</ol>
+</li>
 </ul>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">如果是单向 TLS，那么就不需要 client 私钥与证书，CA 证书还是需要内置。</div>
+        </div>
+    </div>
 <p>而验证就是 client 使用公钥正常解密数据，然后检查下数据。</p>
 <p>所以证书，<strong>其实就是给 server “盖了一个章”，表明其是权威机构认证的</strong>。而 client 内置的根证书使得 client 可以认到这个权威机构。</p>
 <h2 id="参考">参考</h2>
@@ -421,7 +454,7 @@ openssl x509 -req  -days <span class="m">3650</span> -in client.csr -CA root.crt
     </div>
 
     <div class="post-nav"><a href="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/" class="prev" rel="prev" title="Linux 存储架构 - VFS 总结"><i class="fas fa-angle-left fa-fw"></i>Linux 存储架构 - VFS 总结</a>
-            <a href="/posts/cloud_computing/k8s_learning/pod/" class="next" rel="next" title="K8s 学习 - Pod">K8s 学习 - Pod<i class="fas fa-angle-right fa-fw"></i></a></div>
+            <a href="/posts/cloud_computing/k8s_learning/1-pod/" class="next" rel="next" title="K8s 学习 - 1 - Pod">K8s 学习 - 1 - Pod<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

@@ -3,75 +3,75 @@
         <title>k8s - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/k8s/</link>
         <description>k8s - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 22 Aug 2021 07:32:49 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
-    <title>K8s 编程 - Custom APIServer</title>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 21 Sep 2021 06:58:07 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 编程 - 7 - Admission Webhook</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/7-admission-webhook/</link>
+    <pubDate>Tue, 21 Sep 2021 06:58:07 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/7-admission-webhook/</guid>
+    <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 下面代码都来自于 a]]></description>
+</item><item>
+    <title>K8s 编程 - 6 - Custom APIServer</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/6-custom-api-server/</link>
     <pubDate>Sun, 22 Aug 2021 07:32:49 &#43;0000</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/6-custom-api-server/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 Custom APIServer 可以作为 CRD 的替]]></description>
 </item><item>
-    <title>K8s 编程 - 发布 Operator</title>
+    <title>K8s 编程 - 5 - 发布 Operator</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/5-shipping-controllers/</link>
     <pubDate>Fri, 20 Aug 2021 14:53:38 &#43;0000</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/5-shipping-controllers/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 打包 1.1 Helm Helm 已经成]]></description>
 </item><item>
-    <title>K8s 编程 - 代码生成</title>
+    <title>K8s 编程 - 4 - 代码生成</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/4-generate-code/</link>
     <pubDate>Thu, 19 Aug 2021 14:41:24 &#43;0000</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/4-generate-code/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 最简单的方式是调用]]></description>
 </item><item>
-    <title>K8s 编程 - Custom Resource</title>
+    <title>K8s 编程 - 3 - Custom Resource</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/3-custom-resource/</link>
     <pubDate>Tue, 17 Aug 2021 14:55:49 &#43;0000</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/3-custom-resource/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 自定义资源定义 从]]></description>
 </item><item>
-    <title>K8s 编程 - 编程基础</title>
+    <title>K8s 编程 - 2 - 编程基础</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/2-client-go/</link>
     <pubDate>Tue, 10 Aug 2021 11:15:27 &#43;0000</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/2-client-go/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 核心代码库 1.1 k8s.io/client-go 编]]></description>
 </item><item>
-    <title>K8s 编程 - 基本概念</title>
+    <title>K8s 编程 - 1 - 基本概念</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/1-basic/</link>
     <pubDate>Fri, 06 Aug 2021 05:59:17 &#43;0000</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/1-basic/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 Controller 模式 1.1 Control Loop 所有]]></description>
 </item><item>
-    <title>K8s 学习 - API Server 认证</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-server-%E8%AE%A4%E8%AF%81/</link>
+    <title>K8s 学习 - 10 - API Server 认证</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/10-apiserver-auth/</link>
     <pubDate>Sat, 03 Jul 2021 05:47:25 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api-server-%E8%AE%A4%E8%AF%81/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/10-apiserver-auth/</guid>
     <description><![CDATA[1 概述 Kubernetes 中所有的资源访问与操作都是通过 API Server 执行的，因此 API Server 有着一套安全机制。 APIServer 的权限检查从大体上分为三个阶段： Authentication ：身份认证，用于验证请求者的]]></description>
 </item><item>
-    <title>K8s 学习 - Schedule Preemption Eviction</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/schedule-preemption-eviction/</link>
+    <title>K8s 学习 - 9 - Schedule Preemption Eviction</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/9-schedule-preemption-eviction/</link>
     <pubDate>Wed, 23 Jun 2021 12:09:25 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/schedule-preemption-eviction/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/9-schedule-preemption-eviction/</guid>
     <description><![CDATA[1 概述 无论是基本的副本控制器，还是自定义资源，其控制的底层 Pod 的调度都是都通过 Scheduler 完成的。 2 Schedule 2.1 nodeSelector Pod 的 spec.nodeSelector 可以用于控制 Pod 能被调度到哪些节点上。其内]]></description>
 </item><item>
-    <title>K8s 学习 - API</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api/</link>
+    <title>K8s 学习 - 8 - API</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/8-api/</link>
     <pubDate>Sat, 12 Jun 2021 07:32:36 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/api/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/8-api/</guid>
     <description><![CDATA[1 概述 1.1 组织对象的方式 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用]]></description>
-</item><item>
-    <title>K8s 学习 - CRD</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/crd/</link>
-    <pubDate>Thu, 10 Jun 2021 11:45:54 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/crd/</guid>
-    <description><![CDATA[1 概述 Kubernetes 不仅仅是一个编排框架，更是提供了极大的扩展性，可以看做一个资源框架。你可以基于 k8s 提供的种种功能，来满足你应用的需要。 其中 CRD 就是允许你]]></description>
 </item></channel>
 </rss>

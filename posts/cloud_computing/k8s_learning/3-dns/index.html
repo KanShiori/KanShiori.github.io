@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>K8s 学习 - 3 - DNS - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="K8s 学习 - 3 - DNS" />
+<meta property="og:description" content="1 Pod 的 DNS 1.1 Pod 的 DNS 域名 对每个 Pod 来说，CoreDNS 会为其设置一个 &lt;pod_ip&gt;.&lt;namespace&gt;.pod.&lt;clust-domain&gt; 格式的 DNS 域名。 1 2 3 4 5 6 7 # 访问 POD IP DNS $ nslookup 192-168-166-168.tidb-cluster-dev.pod.cluster.local Server: 10.96.0.10 Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local Name: 192-168-166-168.tidb-cluster-dev.pod.cluster.local Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-peer.tidb-cluster-dev.svc.cluster.local 对于 Deployment" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/3-dns/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-06-07T13:16:11&#43;00:00" />
+<meta property="article:modified_time" content="2021-09-21T18:37:46&#43;08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="K8s 学习 - 3 - DNS"/>
+<meta name="twitter:description" content="1 Pod 的 DNS 1.1 Pod 的 DNS 域名 对每个 Pod 来说，CoreDNS 会为其设置一个 &lt;pod_ip&gt;.&lt;namespace&gt;.pod.&lt;clust-domain&gt; 格式的 DNS 域名。 1 2 3 4 5 6 7 # 访问 POD IP DNS $ nslookup 192-168-166-168.tidb-cluster-dev.pod.cluster.local Server: 10.96.0.10 Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local Name: 192-168-166-168.tidb-cluster-dev.pod.cluster.local Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-peer.tidb-cluster-dev.svc.cluster.local 对于 Deployment"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/3-dns/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/2-service/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/4-pv-pvc-storageclass/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "K8s 学习 - 3 - DNS",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/3-dns\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1406 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/3-dns\/","datePublished": "2021-06-07T13:16:11+00:00","dateModified": "2021-09-21T18:37:46+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">K8s 学习 - 3 - DNS</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>Kubernetes 学习</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-07">2021-06-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1406 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-pod-的-dns">1 Pod 的 DNS</a>
+      <ul>
+        <li><a href="#11-pod-的-dns-域名">1.1 Pod 的 DNS 域名</a></li>
+        <li><a href="#12-自定义-hostname-和-subdomain">1.2 自定义 hostname 和 subdomain</a></li>
+        <li><a href="#13-自定义-dns-配置">1.3 自定义 DNS 配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-service-中的-dns">2 Service 中的 DNS</a></li>
+    <li><a href="#3-node-本地-dns-缓存">3 Node 本地 DNS 缓存</a></li>
+    <li><a href="#4-coredns">4 CoreDNS</a>
+      <ul>
+        <li><a href="#41-配置-coredns">4.1 配置 CoreDNS</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-pod-的-dns">1 Pod 的 DNS</h2>
+<h3 id="11-pod-的-dns-域名">1.1 Pod 的 DNS 域名</h3>
+<p>对每个 Pod 来说，CoreDNS 会为其设置一个 <code>&lt;pod_ip&gt;.&lt;namespace&gt;.pod.&lt;clust-domain&gt;</code> 格式的 DNS 域名。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 访问 POD IP DNS</span>
+$ nslookup 192-168-166-168.tidb-cluster-dev.pod.cluster.local
+Server:    10.96.0.10
+Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
+
+Name:      192-168-166-168.tidb-cluster-dev.pod.cluster.local
+Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-peer.tidb-cluster-dev.svc.cluster.local
+</code></pre></td></tr></table>
+</div>
+</div><p>对于 Deployment 或 DaemonSet 类型创建的 Pod，CoreDNS 会为其管理的每个 Pod 设置一个 <code>&lt;pod_ip&gt;.&lt;depolyment/daemonset_name&gt;.svc.&lt;cluster_domain&gt;</code> 格式的 DNS 域名。</p>
+<h3 id="12-自定义-hostname-和-subdomain">1.2 自定义 hostname 和 subdomain</h3>
+<p>默认情况下，Pod 内容器的 hostname 被设置为 Pod 的名称。因此，使用副本控制器时 Pod 名称会包含随机串，因此 hostname 无法固定。</p>
+<p>可以通过 <code>spec.hostname</code> 字段定义容器环境的 hostname，通过 <code>spec.subdomain</code> 字段定义容器环境的子域名。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">webapp-1</span><span class="w">
+</span><span class="w">  </span><span class="nt">subdomain</span><span class="p">:</span><span class="w"> </span><span class="l">mysubdomain</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Pod 创建成功后，Kubernetes 为其设置 DNS 域名为 <code>&lt;hostname&gt;.&lt;subdomain&gt;.&lt;namespace&gt;.svc.&lt;cluster_domain&gt;</code>。这时通过部署一个 Headless Service 就可以在 DNS 服务器中自动创建对应 DNS 记录。这样就可以通过该 DNS 域名来访问 Pod。</p>
+<p>实际上，StatefulSet 就是通过这种方式来使用 Headless Service 的。查看一个 StatefulSet 管理的 Pod：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">$ kubectl get po my-tidb-cluster-dev-pd-0 -o yaml</span><span class="w">
+</span><span class="w"></span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">my-tidb-cluster-dev-pd-0</span><span class="w"> </span><span class="c"># 固定 pod 的 hostname</span><span class="w">
+</span><span class="w">  </span><span class="nt">subdomain</span><span class="p">:</span><span class="w"> </span><span class="l">my-tidb-cluster-dev-pd-peer </span><span class="w"> </span><span class="c"># 在 StatefulSet 中定义的 Headless Service name</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="13-自定义-dns-配置">1.3 自定义 DNS 配置</h3>
+<p>通过 Pod 定义中的 <code>spec.dnsPolicy</code> 可以定义使用的 DNS 策略。</p>
+<p>目前包含以下的 DNS 策略：</p>
+<ul>
+<li>Default ：从 Node 继承 DNS</li>
+<li>ClusterFirst ：与配置的集群 domain 后缀不匹配的 DNS 查询，都会转发到从 Node 继承的上游服务器</li>
+<li>ClusterFirstWithHostNet ：如果 Pod 使用 hostNetwork 运行，DNS 应该使用 host</li>
+<li>None ：忽略 Kubernetes DNS 设置，由用户通过 <code>spec.dnsConfig</code> 字段进行配置</li>
+</ul>
+<p>通过 <code>spec.dnsConfig</code> 字段进行更加细节的 DNS 相关配置。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">dnsPolicy</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;None&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">dnsConfig</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">nameservers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="m">8.8.8.8</span><span class="w">
+</span><span class="w">    </span><span class="nt">searches</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="l">ns1.svc.cluster-domain.example</span><span class="w">
+</span><span class="w">      </span>- <span class="l">my.dns.search.suffix</span><span class="w">
+</span><span class="w">    </span><span class="nt">options</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ndots</span><span class="w">
+</span><span class="w">        </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2&#34;</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">edns0</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Pod 创建后，容器内的 <em>/etc/resolv.conf</em> 文件会被设置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">nameserver 8.8.8.8
+search ns1.svc.cluster-domain.example my.dns.search.suffix
+option natods:2 eth0
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="2-service-中的-dns">2 Service 中的 DNS</h2>
+<p>Service DNS 相关已经在 <a href="http://kanshiori.cn/posts/cloud_computing/k8s_learning/service/" target="_blank" rel="noopener noreffer"><strong>Service</strong></a> 一文中说明，这里仅仅简单提及一下。</p>
+<p>每个 Service 会自动对应一个 DNS 域名，命名方式为 <code>&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local</code>。</p>
+<p>通过改变 namespace 可以访问不同 namespace 下的 Service</p>
+<h2 id="3-node-本地-dns-缓存">3 Node 本地 DNS 缓存</h2>
+<p>集群中的 DNS 服务都是通过 &ldquo;kube-dns&rdquo; 的 Service 提供的，所有容器都可以通过其 ClusterIP 地址去进行 DNS 域名解析。</p>
+<p>为了缓解 DNS 服务的压力，Kubernetes 引入了 Node 本地 DNS 缓存，使得 DNS 域名解析可以在 Node 本地缓存，不用每次跨主机去 CoreDNS 进行解析。</p>
+<p>使用 Node 本地 DNS 缓存后，Pod 进行 DNS 解析的流程如下：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_learning/3-dns/img1.png"/>
+
+
+</p>
+<p>Node 本地 DNS 缓存的功能是通过部署一个 DaemonSet 实现的，其 Pod 运行的 <em>k8s.gcr.io/k8s-dns-node-cache</em> 镜像实现了 DNS 缓存功能。</p>
+<p>具体部署方式见文档：<a href="https://kubernetes.io/zh/docs/tasks/administer-cluster/nodelocaldns/" target="_blank" rel="noopener noreffer"><strong>在 Kubernetes 集群中使用 NodeLocal DNSCache</strong></a></p>
+<h2 id="4-coredns">4 CoreDNS</h2>
+<p>从 1.11 版本开始，Kubernetes 集群的 DNS 服务由 CoreDNS 提供，其用 Go 实现的一个高性能、插件式、易扩展的 DNS 服务器。</p>
+<h3 id="41-配置-coredns">4.1 配置 CoreDNS</h3>
+<p>CoreDNS 的主要功能是通过插件系统实现的，CoreDNS 实现了一种链式插件结构，将 DNS 逻辑抽象为一个个插件，能够组合灵活配置。</p>
+<p>常见的插件如下：</p>
+<ul>
+<li>loadbalance ：提供基于 DNS 负载均衡功能</li>
+<li>loop ：检查 DNS 解析出现的循环问题</li>
+<li>cache ：提供前端缓存功能</li>
+<li>health ：对 Endpoint 进行健康检查</li>
+<li>kubernetes ：从 Kubernetes 中读取 zone 数据</li>
+<li>etcd ：从 etcd 中读取 zone 记录，可用于自定义域名记录</li>
+<li>file ：从 RFC11035 格式文件读取 zone 数据</li>
+<li>hosts ：使用 /etc/hosts 文件或者其他文件读取 zone 数据，可用于自定义域名记录</li>
+<li>auto ：从磁盘中自动加载区域文件</li>
+<li>reload ：定时重新加载 Corefile 配置文件内容</li>
+<li>forward ：转发域名查询到上游 DNS 服务器上</li>
+<li>prometheus ：为 Prometheus 系统提供采集性能指标数据 URL</li>
+<li>pprof ：在 URL 路径 /debug/pprof 提供性能数据</li>
+<li>log ：对 DNS 查询进行日志记录</li>
+<li>errors ：对错误信息进行日志记录</li>
+</ul>
+<p>默认下，CoreDNS 的 Pod 会使用 <em>coredns</em> ConfigMap 提供对 CoreDNS 的配置。因此，你可以通过配置此 ConfigMap 进行 CoreDNS 的配置。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ k get configmaps  coredns -n kube-system -o yaml
+<span class="c1"># ...</span>
+kind: ConfigMap
+data:
+  Corefile: <span class="p">|</span>
+    .:53 <span class="o">{</span>
+        errors
+        health <span class="o">{</span>
+           lameduck 5s
+        <span class="o">}</span>
+        ready
+        kubernetes cluster.local in-addr.arpa ip6.arpa <span class="o">{</span>
+           pods insecure
+           fallthrough in-addr.arpa ip6.arpa
+           ttl <span class="m">30</span>
+        <span class="o">}</span>
+        prometheus :9153
+        forward . /etc/resolv.conf <span class="o">{</span>
+           max_concurrent <span class="m">1000</span>
+        <span class="o">}</span>
+        cache <span class="m">30</span>
+        loop
+        reload
+        loadbalance
+    <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://book.douban.com/subject/35458432/" target="_blank" rel="noopener noreffer"><strong>《Kubernetes 权威指南》</strong></a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-09-21&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/dbafc6e8a4b5dc430bee16137cd15897e361eeff" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) dbafc6e8a4b5dc430bee16137cd15897e361eeff: post: Admission Webhook">
+                                    <i class="fas fa-hashtag fa-fw"></i>dbafc6e</a></span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud_computing/k8s_learning/3-dns/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/3-dns/" data-title="K8s 学习 - 3 - DNS"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/3-dns/" data-title="K8s 学习 - 3 - DNS"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/3-dns/" data-title="K8s 学习 - 3 - DNS"><i class="fab fa-evernote fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud_computing/k8s_learning/2-service/" class="prev" rel="prev" title="K8s 学习 - 2 - Service"><i class="fas fa-angle-left fa-fw"></i>K8s 学习 - 2 - Service</a>
+            <a href="/posts/cloud_computing/k8s_learning/4-pv-pvc-storageclass/" class="next" rel="next" title="K8s 学习 - 4 - PV PVC StorageClass">K8s 学习 - 4 - PV PVC StorageClass<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":25},"comment":{},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
