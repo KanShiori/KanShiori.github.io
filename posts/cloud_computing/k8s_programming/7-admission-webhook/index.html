@@ -10,7 +10,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_programming/7-admission-webhook/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-09-21T06:58:07&#43;00:00" />
-<meta property="article:modified_time" content="2021-09-21T18:37:46&#43;08:00" />
+<meta property="article:modified_time" content="2021-09-22T10:14:13&#43;08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -27,8 +27,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_programming\/7-admission-webhook\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3445 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_programming\/7-admission-webhook\/","datePublished": "2021-09-21T06:58:07+00:00","dateModified": "2021-09-21T18:37:46+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  5717 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_programming\/7-admission-webhook\/","datePublished": "2021-09-21T06:58:07+00:00","dateModified": "2021-09-22T10:14:13+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">K8s 编程 - 7 - Admission Webhook</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw"></i>Kubernetes 编程</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-09-21">2021-09-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3445 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-09-21">2021-09-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 5717 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 12 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -155,6 +155,19 @@
       </ul>
     </li>
     <li><a href="#3-与-apiserver-的鉴权方式">3 与 APIServer 的鉴权方式</a></li>
+    <li><a href="#4-实现">4 实现</a>
+      <ul>
+        <li><a href="#41-http-server">4.1 HTTP Server</a></li>
+        <li><a href="#42-通用处理逻辑-serve">4.2 通用处理逻辑 serve</a></li>
+        <li><a href="#43-业务处理逻辑-admithandler">4.3 业务处理逻辑 admitHandler</a></li>
+        <li><a href="#44-业务逻辑">4.4 业务逻辑</a>
+          <ul>
+            <li><a href="#441-validate">4.4.1 Validate</a></li>
+            <li><a href="#442-mutate">4.4.2 Mutate</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
@@ -165,7 +178,7 @@
 <p>下面代码都来自于 <a href="https://github.com/kubernetes/kubernetes/tree/master/test/images/agnhost/webhook" target="_blank" rel="noopener noreffer"><em>agnhost/webhook</em></a>，这是官方的 Admission Webhook 的示例</p>
 </blockquote>
 <p>在 <a href="../6-custom-api-server/#6-admission" rel=""><strong>Custom APIServer/Admission</strong></a> 一节中看到，APISever 提供了 Admission Plugin 机制来进行 Mutating 与 Validating 的插件式扩展。不过 Admission Plugin 是要重新编译 APISever 来实现的，因此 APISever 提供了更加灵活的 Admission Webhook。</p>
-<p>Admission Webhook 的调用时机在 Admission Plugin 的尾部，在 Quota Plugin 之前。
+<p><strong>Admission Webhook 的调用时机在 Admission Plugin 的尾部，在 Quota Plugin 之前</strong>。
 
 
 
@@ -180,12 +193,12 @@
 </p>
 <p>Admission Webhook 的使用包含：</p>
 <ul>
-<li>部署 Webhook Server，用于 APISever 转发请求；</li>
-<li>部署 ValidatingWebhookConfiguration/MutatingWebhookConfiguration 资源，向 APISever 注册 Webhook Server；</li>
+<li>部署 <strong><code>Webhook Server</code></strong>，用于 APISever 转发请求；</li>
+<li>部署 <strong><code>ValidatingWebhookConfiguration</code></strong>/<strong><code>MutatingWebhookConfiguration</code></strong> 资源，向 APISever 注册 Webhook Server；</li>
 <li>RBAC（如果 Webhook Server 需要）</li>
 </ul>
 <h2 id="1-webhookconfiguration">1 WebhookConfiguration</h2>
-<p>通过部署 ValidatingWebhookConfiguration/MutatingWebhookConfiguration 来向 APIServer 注册 Validating/Mutating Webhook server。下面是一个 ValidatingWebhookConfiguration 示例，而 MutatingWebhookConfiguration 是类似的。</p>
+<p>通过部署 <strong><code>ValidatingWebhookConfiguration</code></strong>/<strong><code>MutatingWebhookConfiguration</code></strong> 来<strong>向 APIServer 注册 Validating/Mutating Webhook Server</strong>。下面是一个 ValidatingWebhookConfiguration 示例，而 MutatingWebhookConfiguration 是类似的。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -275,7 +288,7 @@
 </ul>
 <h3 id="11-请求匹配规则">1.1 请求匹配规则</h3>
 <h4 id="111-rules">1.1.1 rules</h4>
-<p>每个 webhook 必须指定一组 rules，用以让 APIServer 决定是否转发请求给 webhook server。当一个请求能够匹配 operation、group、version、resource、scope，那么请求就会转发。</p>
+<p><strong>每个 webhook 必须指定一组 <code>rules</code>，用以让 APIServer 决定是否转发请求给 webhook server</strong>。当一个请求能够匹配 operation、group、version、resource、scope，那么请求就会转发。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -295,7 +308,7 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>operations - 匹配请求的操作，支持 CREATE UPDATE DELETE CONNECT *</li>
+<li>operations - 匹配请求的操作，支持 <strong>CREATE UPDATE DELETE CONNECT *</strong></li>
 <li>apiGroups - 匹配请求的操作的 API Group，&quot;&quot; 表示 core API，&quot;*&quot; 匹配所有的 API Group</li>
 <li>apiVersions - 匹配 API Group 下的多个版本，&quot;*&quot; 匹配所有版本</li>
 <li>resources - 匹配 API Group 下多个 resource
@@ -309,7 +322,7 @@
 <li>scope - 定义需要匹配 resource 与 subresource 的范围，支持 Cluster Namespaced *</li>
 </ul>
 <h4 id="112-objectselector">1.1.2 objectSelector</h4>
-<p>通过 objectSelector 根据请求操作的 object 的 label 来筛选请求，成功匹配的请求才会被转发。</p>
+<p><strong>通过 <code>objectSelector</code> 根据请求操作的 object 的 label 来筛选请求，成功匹配的请求才会被转发</strong>。</p>
 <p>下面示例中，经过 rules 匹配后的请求，还会经过 objectSelector 筛选（需要包含 label foo:bar）。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -348,7 +361,7 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><h4 id="113-namespaceselector">1.1.3 namespaceSelector</h4>
-<p>通过 namespaceSelector 根据请求操作的 object 的 namespace 来筛选请求。</p>
+<p><strong>通过 <code>namespaceSelector</code> 根据请求操作的 object 的 namespace 来筛选请求</strong>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -391,10 +404,10 @@
 </div>
 </div><h4 id="114-matchpolicy">1.1.4 matchPolicy</h4>
 <p>一个资源可能属于多个 API Group，这在升级资源版本时很常见。例如，Deployment 支持 extensions/v1beta1，apps/v1beta1 等。</p>
-<p>matchPolicy 用于定义 rules 如何匹配请求，其值可以为：</p>
+<p><strong><code>matchPolicy</code></strong> 用于定义 rules 如何匹配请求，其值可以为：</p>
 <ul>
-<li>Exact - 表示请求需要完全匹配</li>
-<li>Equivalent（默认值） - 表示请求可以匹配不同 APIGroup 的相同资源</li>
+<li><strong>Exact</strong> - 表示请求需要完全匹配</li>
+<li><strong>Equivalent</strong>（默认值） - <strong>表示请求可以匹配不同 APIGroup 的相同资源</strong></li>
 </ul>
 <p>例如下面示例，通过 matchPolicy 也可以匹配 extensions/v1beta1 的 Deployment 了。</p>
 <div class="highlight"><div class="chroma">
@@ -439,7 +452,7 @@
     </div>
 <h3 id="12-与-webhook-通信方式">1.2 与 Webhook 通信方式</h3>
 <h4 id="121-url">1.2.1 URL</h4>
-<p>URL 为一个 webhook server 地址，以标准的 URL 格式。但是，不允许使用用户或者基本身份认证（例如 URL 中的 user:password@），也不允许 URL 中使用 # 和 ? 传参。</p>
+<p><strong>URL 为一个 webhook server 地址，以标准的 URL 格式</strong>。但是，不允许使用用户或者基本身份认证（例如 URL 中的 user:password@），也不允许 URL 中使用 # 和 ? 传参。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -463,7 +476,7 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><h4 id="122-service">1.2.2 Service</h4>
-<p>如果 Webhook Server 运行在集群中，可以指定 Service 来转发请求。其 port 默认为 443，path 默认为 &ldquo;/&quot;。</p>
+<p><strong>如果 Webhook Server 运行在集群中，可以指定 Service 来转发请求</strong>。其 port 默认为 443，path 默认为 &ldquo;/&quot;。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -497,13 +510,13 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><h3 id="13-side-effects">1.3 Side effects</h3>
-<p>有些情况下，Webhook Server 不仅仅是处理 AdmissionReview 对象，而要进行一些“带外”操作（指操作实际的资源），这也被称为 Side effect。</p>
-<p>sideEffects 字段用于指定 Webhook Server 能否处理 dryRun 的 请求（dryRun:true）。值可以为：</p>
+<p>有些情况下，Webhook Server 不仅仅是处理 AdmissionReview 对象，而要进行一些 <strong>“带外” 操作</strong>（指操作实际的资源），这也被称为 <strong><code>Side effect</code></strong>。</p>
+<p><strong><code>sideEffects</code></strong> 字段用于<strong>指定 Webhook Server 能否处理 dryRun 的 请求</strong>（dryRun:true）。值可以为：</p>
 <ul>
-<li>Unknown - 未知，对于 dryRun 请求要转发给 Webhook 的，直接视为请求失败。</li>
-<li>None - 表明 Webhook 没有 Side effect。</li>
-<li>Some - 表明 Webhook 有一些 side effect，对于 dryRun 请求要转发给 Webhook 的，将直接视为请求失败。</li>
-<li>NoneOnDryRun - 表明 Webhook 有一些 side effect，而 Webhook 能够处理 dryRun 请求。</li>
+<li><strong>Unknown</strong> - 未知，对于 dryRun 请求要转发给 Webhook 的，直接视为请求失败。</li>
+<li><strong>None</strong> - 表明 Webhook 没有 Side effect。</li>
+<li><strong>Some</strong> - 表明 Webhook 有一些 side effect，对于 dryRun 请求要转发给 Webhook 的，将直接视为请求失败。</li>
+<li><strong>NoneOnDryRun</strong> - 表明 Webhook 有一些 side effect，而 Webhook 能够处理 dryRun 请求。</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -527,11 +540,11 @@
 </div>
 </div><h3 id="14-reinvocation-policy">1.4 Reinvocation policy</h3>
 <p>对于 Mutating Admission Plugin，顺序调用不适用于所有的情况。可能 Webhook 修改了对象的结构，但是其他 Mutating Plugin 对于其新结构是拒绝的（但是其已经被调用过了，因此不再被调用）。</p>
-<p>而 1.15 后，如果 Mutating Webhook 更改对象，内置的 Mutating Admission Plugin 会重跑。</p>
-<p>reinvocationPolicy 字段可以控制 Webhook Server 在这种情况下，是否需要重跑。值可以为：</p>
+<p>而 1.15 后，<strong>如果 Mutating Webhook 更改对象，内置的 Mutating Admission Plugin 会重跑</strong>。</p>
+<p><strong><code>reinvocationPolicy</code> 字段可以控制 Webhook Server 在这种情况下，是否需要重跑</strong>。值可以为：</p>
 <ul>
-<li>Never - 一次中 Admission Control 不能多次调用 Webhook。</li>
-<li>IfNeeded - Webhook 调用后的对象又被其他 Admission Plugin 修改了，那么 Webhook 会再次重跑。</li>
+<li><strong>Never</strong> - 一次中 Admission Control 不能多次调用 Webhook。</li>
+<li><strong>IfNeeded</strong> - Webhook 调用后的对象又被其他 Admission Plugin 修改了，那么 Webhook 会再次重跑。</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -562,10 +575,10 @@
 </ul>
 <p>这也表明了，Mutating Webhook 必须是幂等的。</p>
 <h3 id="15-failure-policy">1.5 Failure policy</h3>
-<p>failurePolicy 字段定义了，当 APIServer 请求 Webhook 失败后，如何处理（包括超时错误）。</p>
+<p><strong><code>failurePolicy</code></strong> 字段定义了，<strong>当 APIServer 请求 Webhook 失败后，如何处理（包括超时错误</strong>）。</p>
 <ul>
-<li>Ignore - Webhook 返回的错误会被忽略，API 请求继续</li>
-<li>Fail（默认） - Webhook 返回错误，API 请求被拒绝</li>
+<li><strong>Ignore</strong> - Webhook 返回的错误会被忽略，API 请求继续</li>
+<li><strong>Fail</strong>（默认） - Webhook 返回错误，API 请求被拒绝</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -589,7 +602,7 @@
 </div>
 </div><h2 id="2-request-与-response">2 Request 与 Response</h2>
 <h3 id="21-request">2.1 Request</h3>
-<p>APIServer 发送 POST HTTP 请求，其设置了 HTTP Header 中 <code>Content-Type: application/json</code>，body 内容为 AdmissionReview 对象的 JSON 格式，设置了其中的 &ldquo;request&rdquo; 字段。</p>
+<p>APIServer 发送 POST HTTP 请求，其设置了 HTTP Header 中 <code>Content-Type: application/json</code>，<strong>body 内容为 AdmissionReview 对象的 JSON 格式，设置了其中的 &ldquo;request&rdquo; 字段</strong>。</p>
 <p>下面示例展示了对于 apps/v1 Deployment scale 子资源的调用请求，对应的 AdmissionReview 对象内容。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -724,7 +737,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><h3 id="22-response">2.2 Response</h3>
-<p>Webhook server 应该返回 200 HTTP code，并设置了 HTTP Header 中 <code>Content-Type: application/json</code>，body 内容为 AdmissionReview 对象的 JSON 格式，设置了其中的 &ldquo;response&rdquo; 字段。</p>
+<p>Webhook server 应该<strong>返回 200 HTTP code</strong>，并设置了 HTTP Header 中 <code>Content-Type: application/json</code>，<strong>body 内容为 AdmissionReview 对象的 JSON 格式，设置了其中的 &ldquo;response&rdquo; 字段</strong>。</p>
 <p>不同的操作可能有着不同的 response，不过至少其必须包含以下字段：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -749,10 +762,10 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>uid - 复制 request.uid</li>
-<li>allowed - 设置为 true 或者 false，表明允许或者禁止</li>
+<li><strong><code>uid</code></strong> - 复制 request.uid</li>
+<li><strong><code>allowed</code></strong> - 设置为 true 或者 false，表明允许或者禁止</li>
 </ul>
-<p>拒绝请求时，可以提供需要 APIServer 返回给 client 的 HTTP code 与 message。</p>
+<p>拒绝请求时，通过 <strong><code>status</code></strong> 字段可以<strong>提供需要 APIServer 返回给 client 的 HTTP code 与 message</strong>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -811,10 +824,10 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>patchType - 指定 patch 类型，目前仅仅支持 JSONPatch</li>
-<li>patch - patch 操作的 base64 编码，示例中为 &ldquo;[{&ldquo;op&rdquo;: &ldquo;add&rdquo;, &ldquo;path&rdquo;: &ldquo;/spec/replicas&rdquo;, &ldquo;value&rdquo;: 3}]&rdquo;</li>
+<li><strong><code>patchType</code></strong> - 指定 patch 类型，目前仅仅支持 JSONPatch</li>
+<li><strong><code>patch</code></strong> - patch 操作的 base64 编码，示例中为 &ldquo;[{&ldquo;op&rdquo;: &ldquo;add&rdquo;, &ldquo;path&rdquo;: &ldquo;/spec/replicas&rdquo;, &ldquo;value&rdquo;: 3}]&rdquo;</li>
 </ul>
-<p>1.19 后，也可以选择返回一个 WARN 信息。</p>
+<p>1.19 后，也可以选择返回一个 WARN 信息，通过 <strong><code>warnings</code></strong> 字段。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -853,11 +866,11 @@
 <p>需要三个阶段来进行配置：</p>
 <ol>
 <li>
-<p>启动 APIServer 时，通过 &ndash;admission-control-config-file 参数指定 Admission Control 配置文件。</p>
+<p>启动 APIServer 时，通过 <strong>&quot;&ndash;admission-control-config-file&rdquo;</strong> 参数<strong>指定 Admission Control 配置文件</strong>。</p>
 </li>
 <li>
-<p>在 Admission Control 配置文件中，指定 MutatingAdmissionWebhook  Controller 与 ValidatingAdmissionWebhook  Controller 读取的证书。</p>
-<p>在配置文件，通过 <code>kubeConfigFile</code> 字段指定对应的 kubeconfig 文件。</p>
+<p>在 Admission Control 配置文件中，指定 MutatingAdmissionWebhook Controller 与 ValidatingAdmissionWebhook  Controller 读取的证书。</p>
+<p>在配置文件，通过 <code>kubeConfigFile</code> 字段指定对应的 <strong><code>kubeconfig</code></strong> 文件。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -995,7 +1008,770 @@
             <div class="admonition-content">配置中仅仅配置了 client 证书与私钥，而在 ValidatingWebhookConfiguration/MutatingWebhookConfiguration 定义中指定了 CA Bundle，即 CA 证书。</div>
         </div>
     </div>
-<h2 id="参考">参考</h2>
+<h2 id="4-实现">4 实现</h2>
+<p>接下来我们来看 Webhook Server 的实现，幸运的是，其比 Custom APIServer 要简单的多。</p>
+<h3 id="41-http-server">4.1 HTTP Server</h3>
+<p>Webhook Server 本质上就是一个 HTTP Server，因此其 main 函数中，主要就是启动了一个 HTTP Server。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">(</span><span class="nx">cmd</span> <span class="o">*</span><span class="nx">cobra</span><span class="p">.</span><span class="nx">Command</span><span class="p">,</span> <span class="nx">args</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">config</span> <span class="o">:=</span> <span class="nx">Config</span><span class="p">{</span>
+		<span class="nx">CertFile</span><span class="p">:</span> <span class="nx">certFile</span><span class="p">,</span>
+		<span class="nx">KeyFile</span><span class="p">:</span>  <span class="nx">keyFile</span><span class="p">,</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 定义 HTTP handle
+</span><span class="c1"></span>	<span class="c1">// 下面每个 Handle 都是一个 Admission Webhook
+</span><span class="c1"></span>	<span class="c1">// ** 只要一个 HTTP Endpoint 能够处理 AdmissionReview 对象，那么就可以作为一个 Admission Webhook **
+</span><span class="c1"></span>	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/always-allow-delay-5s&#34;</span><span class="p">,</span> <span class="nx">serveAlwaysAllowDelayFiveSeconds</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/always-deny&#34;</span><span class="p">,</span> <span class="nx">serveAlwaysDeny</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/add-label&#34;</span><span class="p">,</span> <span class="nx">serveAddLabel</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/pods&#34;</span><span class="p">,</span> <span class="nx">servePods</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/pods/attach&#34;</span><span class="p">,</span> <span class="nx">serveAttachingPods</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/mutating-pods&#34;</span><span class="p">,</span> <span class="nx">serveMutatePods</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/mutating-pods-sidecar&#34;</span><span class="p">,</span> <span class="nx">serveMutatePodsSidecar</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/configmaps&#34;</span><span class="p">,</span> <span class="nx">serveConfigmaps</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/mutating-configmaps&#34;</span><span class="p">,</span> <span class="nx">serveMutateConfigmaps</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/custom-resource&#34;</span><span class="p">,</span> <span class="nx">serveCustomResource</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/mutating-custom-resource&#34;</span><span class="p">,</span> <span class="nx">serveMutateCustomResource</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/crd&#34;</span><span class="p">,</span> <span class="nx">serveCRD</span><span class="p">)</span>
+	<span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/readyz&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span> <span class="nx">w</span><span class="p">.</span><span class="nf">Write</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;ok&#34;</span><span class="p">))</span> <span class="p">})</span>
+
+  <span class="c1">// 创建被启动 APIServer
+</span><span class="c1"></span>	<span class="nx">server</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Server</span><span class="p">{</span>
+		<span class="nx">Addr</span><span class="p">:</span>      <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;:%d&#34;</span><span class="p">,</span> <span class="nx">port</span><span class="p">),</span>
+		<span class="nx">TLSConfig</span><span class="p">:</span> <span class="nf">configTLS</span><span class="p">(</span><span class="nx">config</span><span class="p">),</span>
+	<span class="p">}</span>
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">server</span><span class="p">.</span><span class="nf">ListenAndServeTLS</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上面的 HTTP Server 注册了许多的 HTTP API。因为<strong>每个 API 都可以处理 AdmissionReview 请求，所以就可以作为一个 Admission Webhook</strong>。当对应的 Webhook Configuration 定义部署后，就可以使用。</p>
+<h3 id="42-通用处理逻辑-serve">4.2 通用处理逻辑 serve</h3>
+<p>所有的 HTTP Endpoint HandleFunc 都是基于 <strong><code>serve</code></strong> 的调用，例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">serveAlwaysAllowDelayFiveSeconds</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nf">serve</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">r</span><span class="p">,</span> <span class="nf">newDelegateToV1AdmitHandler</span><span class="p">(</span><span class="nx">alwaysAllowDelayFiveSeconds</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>因为所有的 Webhook 有着最<strong>基本的编解码的逻辑</strong>，这一部分是相同的，而 server 就是处理这部分逻辑的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span><span class="lnt">93
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// serve 处理 HTTP 请求，从 body 中解析得到 AdmissionReview，然后调用 admit 回调处理，最后将结果回复
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">serve</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">,</span> <span class="nx">admit</span> <span class="nx">admitHandler</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// read http body
+</span><span class="c1"></span>	<span class="kd">var</span> <span class="nx">body</span> <span class="p">[]</span><span class="kt">byte</span>
+	<span class="k">if</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Body</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadAll</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">Body</span><span class="p">);</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">body</span> <span class="p">=</span> <span class="nx">data</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 检查 Header Content-Type，Webhook 只支持 &#34;application/json&#34;
+</span><span class="c1"></span>	<span class="nx">contentType</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Header</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;Content-Type&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">contentType</span> <span class="o">!=</span> <span class="s">&#34;application/json&#34;</span> <span class="p">{</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;contentType=%s, expect application/json&#34;</span><span class="p">,</span> <span class="nx">contentType</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Info</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;handling request: %s&#34;</span><span class="p">,</span> <span class="nx">body</span><span class="p">))</span>
+
+	<span class="c1">// 解析 body -&gt; runtime.Object
+</span><span class="c1"></span>	<span class="c1">// 因为 AdmissionReview 也是一个 Kubernetes 资源，所以直接使用 Kubernetes 进行解析
+</span><span class="c1"></span>	<span class="nx">deserializer</span> <span class="o">:=</span> <span class="nx">codecs</span><span class="p">.</span><span class="nf">UniversalDeserializer</span><span class="p">()</span>
+	<span class="nx">obj</span><span class="p">,</span> <span class="nx">gvk</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">deserializer</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">body</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">msg</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;Request could not be decoded: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+		<span class="nx">http</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">msg</span><span class="p">,</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusBadRequest</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 进一步得到 Admission Request
+</span><span class="c1"></span>	<span class="kd">var</span> <span class="nx">responseObj</span> <span class="nx">runtime</span><span class="p">.</span><span class="nx">Object</span>
+	<span class="k">switch</span> <span class="o">*</span><span class="nx">gvk</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nx">SchemeGroupVersion</span><span class="p">.</span><span class="nf">WithKind</span><span class="p">(</span><span class="s">&#34;AdmissionReview&#34;</span><span class="p">):</span>
+		<span class="c1">// v1beta1 版本 AdmissionReview 对象支持
+</span><span class="c1"></span>
+		<span class="nx">requestedAdmissionReview</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">obj</span><span class="p">.(</span><span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">)</span>
+		<span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+			<span class="nx">klog</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Expected v1beta1.AdmissionReview but got: %T&#34;</span><span class="p">,</span> <span class="nx">obj</span><span class="p">)</span>
+			<span class="k">return</span>
+		<span class="p">}</span>
+
+		<span class="c1">// 得到真正的 v1beta1.AdmissionReview 对象
+</span><span class="c1"></span>		<span class="nx">responseAdmissionReview</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">{}</span>
+		<span class="nx">responseAdmissionReview</span><span class="p">.</span><span class="nf">SetGroupVersionKind</span><span class="p">(</span><span class="o">*</span><span class="nx">gvk</span><span class="p">)</span>
+
+		<span class="c1">// 调用回调处理，返回值为 AdmissionReview.Response
+</span><span class="c1"></span>		<span class="nx">responseAdmissionReview</span><span class="p">.</span><span class="nx">Response</span> <span class="p">=</span> <span class="nx">admit</span><span class="p">.</span><span class="nf">v1beta1</span><span class="p">(</span><span class="o">*</span><span class="nx">requestedAdmissionReview</span><span class="p">)</span>
+
+		<span class="c1">// 设置好 Response
+</span><span class="c1"></span>		<span class="nx">responseAdmissionReview</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">UID</span> <span class="p">=</span> <span class="nx">requestedAdmissionReview</span><span class="p">.</span><span class="nx">Request</span><span class="p">.</span><span class="nx">UID</span>
+		<span class="nx">responseObj</span> <span class="p">=</span> <span class="nx">responseAdmissionReview</span>
+	<span class="k">case</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">SchemeGroupVersion</span><span class="p">.</span><span class="nf">WithKind</span><span class="p">(</span><span class="s">&#34;AdmissionReview&#34;</span><span class="p">):</span>
+		<span class="c1">// v1 版本 AdmissionReview 对象支持
+</span><span class="c1"></span>	
+		<span class="nx">requestedAdmissionReview</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">obj</span><span class="p">.(</span><span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">)</span>
+		<span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+			<span class="nx">klog</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Expected v1.AdmissionReview but got: %T&#34;</span><span class="p">,</span> <span class="nx">obj</span><span class="p">)</span>
+			<span class="k">return</span>
+		<span class="p">}</span>
+
+		<span class="c1">// 得到真正的 v1.AdmissionReview 对象
+</span><span class="c1"></span>		<span class="nx">responseAdmissionReview</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">{}</span>
+		<span class="nx">responseAdmissionReview</span><span class="p">.</span><span class="nf">SetGroupVersionKind</span><span class="p">(</span><span class="o">*</span><span class="nx">gvk</span><span class="p">)</span>
+
+		<span class="c1">// 调用回调处理，返回值为 AdmissionReview.Response
+</span><span class="c1"></span>		<span class="nx">responseAdmissionReview</span><span class="p">.</span><span class="nx">Response</span> <span class="p">=</span> <span class="nx">admit</span><span class="p">.</span><span class="nf">v1</span><span class="p">(</span><span class="o">*</span><span class="nx">requestedAdmissionReview</span><span class="p">)</span>
+
+		<span class="c1">// 设置好 Response
+</span><span class="c1"></span>		<span class="nx">responseAdmissionReview</span><span class="p">.</span><span class="nx">Response</span><span class="p">.</span><span class="nx">UID</span> <span class="p">=</span> <span class="nx">requestedAdmissionReview</span><span class="p">.</span><span class="nx">Request</span><span class="p">.</span><span class="nx">UID</span>
+		<span class="nx">responseObj</span> <span class="p">=</span> <span class="nx">responseAdmissionReview</span>
+	<span class="k">default</span><span class="p">:</span>
+		<span class="nx">msg</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;Unsupported group version kind: %v&#34;</span><span class="p">,</span> <span class="nx">gvk</span><span class="p">)</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+		<span class="nx">http</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">msg</span><span class="p">,</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusBadRequest</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 编码 http response
+</span><span class="c1"></span>	<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Info</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;sending response: %v&#34;</span><span class="p">,</span> <span class="nx">responseObj</span><span class="p">))</span>
+	<span class="nx">respBytes</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">responseObj</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="nx">http</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">(),</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusInternalServerError</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 回复
+</span><span class="c1"></span>	<span class="nx">w</span><span class="p">.</span><span class="nf">Header</span><span class="p">().</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;Content-Type&#34;</span><span class="p">,</span> <span class="s">&#34;application/json&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">respBytes</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>从中我们也可以总结出基本的 Webhook 处理逻辑：</p>
+<ol>
+<li>读取 HTTP 请求的 body。</li>
+<li>检查 HTTP 请求的 Content-Type 是否为 application/json。</li>
+<li>将 body 解析为 AdmissionReview 对象。</li>
+<li>业务处理，得到 AdmissionReview Response。</li>
+<li>将回复的 AdmissionReview 对象 JSON 编码。</li>
+<li>设置好 Content-Type:application/json 后回复。</li>
+</ol>
+<h3 id="43-业务处理逻辑-admithandler">4.3 业务处理逻辑 admitHandler</h3>
+<p>在 serve 中看到，抽象了 <strong><code>admitHandler</code></strong> 来进行业务逻辑的处理。其包含处理 v1beta1 与 v1 版本的 AdmissionReview 对象的回调。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// admitv1beta1Func handles a v1beta1 admission
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">admitv1beta1Func</span> <span class="kd">func</span><span class="p">(</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">)</span> <span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">AdmissionResponse</span>
+
+<span class="c1">// admitv1beta1Func handles a v1 admission
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">admitv1Func</span> <span class="kd">func</span><span class="p">(</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">)</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span>
+
+<span class="c1">// admitHandler 是 Webhook handler 的抽象，需要能够处理 v1beta1 v1 版本 AdmissionReview 对象
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">admitHandler</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">v1beta1</span> <span class="nx">admitv1beta1Func</span>
+	<span class="nx">v1</span>      <span class="nx">admitv1Func</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>为了让大部分的处理函数仅仅只需要支持 v1 版本的 AdmissionReview 对象，内置了 <code>newDelegateToV1AdmitHandler</code> 函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// newDelegateToV1AdmitHandler 返回能够自动支持 v1beta1 版本 AdmissionReview 的 Handler
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">newDelegateToV1AdmitHandler</span><span class="p">(</span><span class="nx">f</span> <span class="nx">admitv1Func</span><span class="p">)</span> <span class="nx">admitHandler</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">admitHandler</span><span class="p">{</span>
+		<span class="nx">v1beta1</span><span class="p">:</span> <span class="nf">delegateV1beta1AdmitToV1</span><span class="p">(</span><span class="nx">f</span><span class="p">),</span>
+		<span class="nx">v1</span><span class="p">:</span>      <span class="nx">f</span><span class="p">,</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">delegateV1beta1AdmitToV1</span><span class="p">(</span><span class="nx">f</span> <span class="nx">admitv1Func</span><span class="p">)</span> <span class="nx">admitv1beta1Func</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="kd">func</span><span class="p">(</span><span class="nx">review</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">)</span> <span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">AdmissionResponse</span> <span class="p">{</span>
+		<span class="nx">in</span> <span class="o">:=</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">{</span><span class="nx">Request</span><span class="p">:</span> <span class="nf">convertAdmissionRequestToV1</span><span class="p">(</span><span class="nx">review</span><span class="p">.</span><span class="nx">Request</span><span class="p">)}</span> <span class="c1">// 将 v1beta1 AdmissionReview Request 转换为 v1 版本
+</span><span class="c1"></span>		<span class="nx">out</span> <span class="o">:=</span> <span class="nf">f</span><span class="p">(</span><span class="nx">in</span><span class="p">)</span>
+		<span class="k">return</span> <span class="nf">convertAdmissionResponseToV1beta1</span><span class="p">(</span><span class="nx">out</span><span class="p">)</span> <span class="c1">// 将 v1 AdmissionReview Response 转换为 v1beta1 版本
+</span><span class="c1"></span>	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">convertAdmissionRequestToV1</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">AdmissionRequest</span><span class="p">)</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionRequest</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionRequest</span><span class="p">{</span>
+		<span class="nx">Kind</span><span class="p">:</span>               <span class="nx">r</span><span class="p">.</span><span class="nx">Kind</span><span class="p">,</span>
+		<span class="nx">Namespace</span><span class="p">:</span>          <span class="nx">r</span><span class="p">.</span><span class="nx">Namespace</span><span class="p">,</span>
+		<span class="nx">Name</span><span class="p">:</span>               <span class="nx">r</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span>
+		<span class="nx">Object</span><span class="p">:</span>             <span class="nx">r</span><span class="p">.</span><span class="nx">Object</span><span class="p">,</span>
+		<span class="nx">Resource</span><span class="p">:</span>           <span class="nx">r</span><span class="p">.</span><span class="nx">Resource</span><span class="p">,</span>
+		<span class="nx">Operation</span><span class="p">:</span>          <span class="nx">v1</span><span class="p">.</span><span class="nf">Operation</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">Operation</span><span class="p">),</span>
+		<span class="nx">UID</span><span class="p">:</span>                <span class="nx">r</span><span class="p">.</span><span class="nx">UID</span><span class="p">,</span>
+		<span class="nx">DryRun</span><span class="p">:</span>             <span class="nx">r</span><span class="p">.</span><span class="nx">DryRun</span><span class="p">,</span>
+		<span class="nx">OldObject</span><span class="p">:</span>          <span class="nx">r</span><span class="p">.</span><span class="nx">OldObject</span><span class="p">,</span>
+		<span class="nx">Options</span><span class="p">:</span>            <span class="nx">r</span><span class="p">.</span><span class="nx">Options</span><span class="p">,</span>
+		<span class="nx">RequestKind</span><span class="p">:</span>        <span class="nx">r</span><span class="p">.</span><span class="nx">RequestKind</span><span class="p">,</span>
+		<span class="nx">RequestResource</span><span class="p">:</span>    <span class="nx">r</span><span class="p">.</span><span class="nx">RequestResource</span><span class="p">,</span>
+		<span class="nx">RequestSubResource</span><span class="p">:</span> <span class="nx">r</span><span class="p">.</span><span class="nx">RequestSubResource</span><span class="p">,</span>
+		<span class="nx">SubResource</span><span class="p">:</span>        <span class="nx">r</span><span class="p">.</span><span class="nx">SubResource</span><span class="p">,</span>
+		<span class="nx">UserInfo</span><span class="p">:</span>           <span class="nx">r</span><span class="p">.</span><span class="nx">UserInfo</span><span class="p">,</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">convertAdmissionResponseToV1beta1</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span><span class="p">)</span> <span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">AdmissionResponse</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">pt</span> <span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">PatchType</span>
+	<span class="k">if</span> <span class="nx">r</span><span class="p">.</span><span class="nx">PatchType</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">t</span> <span class="o">:=</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nf">PatchType</span><span class="p">(</span><span class="o">*</span><span class="nx">r</span><span class="p">.</span><span class="nx">PatchType</span><span class="p">)</span>
+		<span class="nx">pt</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">t</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">AdmissionResponse</span><span class="p">{</span>
+		<span class="nx">UID</span><span class="p">:</span>              <span class="nx">r</span><span class="p">.</span><span class="nx">UID</span><span class="p">,</span>
+		<span class="nx">Allowed</span><span class="p">:</span>          <span class="nx">r</span><span class="p">.</span><span class="nx">Allowed</span><span class="p">,</span>
+		<span class="nx">AuditAnnotations</span><span class="p">:</span> <span class="nx">r</span><span class="p">.</span><span class="nx">AuditAnnotations</span><span class="p">,</span>
+		<span class="nx">Patch</span><span class="p">:</span>            <span class="nx">r</span><span class="p">.</span><span class="nx">Patch</span><span class="p">,</span>
+		<span class="nx">PatchType</span><span class="p">:</span>        <span class="nx">pt</span><span class="p">,</span>
+		<span class="nx">Result</span><span class="p">:</span>           <span class="nx">r</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span>
+		<span class="nx">Warnings</span><span class="p">:</span>         <span class="nx">r</span><span class="p">.</span><span class="nx">Warnings</span><span class="p">,</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过提供的 convert 相关函数，我们所有的 Webhook 业务逻辑仅仅只需要支持 v1 AdmissionReview 即可。</p>
+<h3 id="44-业务逻辑">4.4 业务逻辑</h3>
+<h4 id="441-validate">4.4.1 Validate</h4>
+<p>对请求进行 Validate，并允许请求。核心就是设置 <strong><code>Reponse.Allowed</code></strong> 字段：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// alwaysAllowDelayFiveSeconds 是一个 v1 AdmissionReview Handler，sleep 5s 后返回 allowed response
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">alwaysAllowDelayFiveSeconds</span><span class="p">(</span><span class="nx">ar</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">)</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span> <span class="p">{</span>
+	<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;always-allow-with-delay sleeping for 5 seconds&#34;</span><span class="p">)</span>
+	<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+	<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;calling always-allow&#34;</span><span class="p">)</span>
+	<span class="nx">reviewResponse</span> <span class="o">:=</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span><span class="p">{}</span>
+	<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Allowed</span> <span class="p">=</span> <span class="kc">true</span> <span class="c1">// 设置 Response.Allowed 为 true，表明请求允许
+</span><span class="c1"></span>	<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Result</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">metav1</span><span class="p">.</span><span class="nx">Status</span><span class="p">{</span><span class="nx">Message</span><span class="p">:</span> <span class="s">&#34;this webhook allows all requests&#34;</span><span class="p">}</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">reviewResponse</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>拒绝请求也是类似：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// alwaysDeny 拒绝所有请求
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">alwaysDeny</span><span class="p">(</span><span class="nx">ar</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">)</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span> <span class="p">{</span>
+	<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;calling always-deny&#34;</span><span class="p">)</span>
+	<span class="nx">reviewResponse</span> <span class="o">:=</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span><span class="p">{}</span>
+	<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Allowed</span> <span class="p">=</span> <span class="kc">false</span> <span class="c1">// 返回 allowed 为 false 表明拒绝请求
+</span><span class="c1"></span>	<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Result</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">metav1</span><span class="p">.</span><span class="nx">Status</span><span class="p">{</span><span class="nx">Message</span><span class="p">:</span> <span class="s">&#34;this webhook denies all requests&#34;</span><span class="p">}</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">reviewResponse</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>复杂一点，就需要通过编码器对 <strong><code>Request.Object.Raw</code></strong> 进行解析，得到一个具体的 Resource 对象。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// admitPods 检查 Pod 的 image
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">admitPods</span><span class="p">(</span><span class="nx">ar</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">)</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span> <span class="p">{</span>
+	<span class="c1">// 判断资源是否是 Pod
+</span><span class="c1"></span>	<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;admitting pods&#34;</span><span class="p">)</span>
+	<span class="nx">podResource</span> <span class="o">:=</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">GroupVersionResource</span><span class="p">{</span><span class="nx">Group</span><span class="p">:</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">Version</span><span class="p">:</span> <span class="s">&#34;v1&#34;</span><span class="p">,</span> <span class="nx">Resource</span><span class="p">:</span> <span class="s">&#34;pods&#34;</span><span class="p">}</span>
+	<span class="k">if</span> <span class="nx">ar</span><span class="p">.</span><span class="nx">Request</span><span class="p">.</span><span class="nx">Resource</span> <span class="o">!=</span> <span class="nx">podResource</span> <span class="p">{</span>
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;expect resource to be %s&#34;</span><span class="p">,</span> <span class="nx">podResource</span><span class="p">)</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span> <span class="nf">toV1AdmissionResponse</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 解码，解析为 Pod
+</span><span class="c1"></span>	<span class="nx">raw</span> <span class="o">:=</span> <span class="nx">ar</span><span class="p">.</span><span class="nx">Request</span><span class="p">.</span><span class="nx">Object</span><span class="p">.</span><span class="nx">Raw</span>
+	<span class="nx">pod</span> <span class="o">:=</span> <span class="nx">corev1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">{}</span>
+	<span class="nx">deserializer</span> <span class="o">:=</span> <span class="nx">codecs</span><span class="p">.</span><span class="nf">UniversalDeserializer</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">deserializer</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">raw</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">pod</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span> <span class="nf">toV1AdmissionResponse</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">reviewResponse</span> <span class="o">:=</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span><span class="p">{}</span>
+	<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Allowed</span> <span class="p">=</span> <span class="kc">true</span>
+
+	<span class="kd">var</span> <span class="nx">msg</span> <span class="kt">string</span>
+	<span class="k">if</span> <span class="nx">v</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">Labels</span><span class="p">[</span><span class="s">&#34;webhook-e2e-test&#34;</span><span class="p">];</span> <span class="nx">ok</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">v</span> <span class="o">==</span> <span class="s">&#34;webhook-disallow&#34;</span> <span class="p">{</span>
+			<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Allowed</span> <span class="p">=</span> <span class="kc">false</span>
+			<span class="nx">msg</span> <span class="p">=</span> <span class="nx">msg</span> <span class="o">+</span> <span class="s">&#34;the pod contains unwanted label; &#34;</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">v</span> <span class="o">==</span> <span class="s">&#34;wait-forever&#34;</span> <span class="p">{</span>
+			<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Allowed</span> <span class="p">=</span> <span class="kc">false</span>
+			<span class="nx">msg</span> <span class="p">=</span> <span class="nx">msg</span> <span class="o">+</span> <span class="s">&#34;the pod response should not be sent; &#34;</span>
+			<span class="o">&lt;-</span><span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span> <span class="c1">// Sleep forever - no one sends to this channel
+</span><span class="c1"></span>		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">container</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">Containers</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="s">&#34;webhook-disallow&#34;</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Allowed</span> <span class="p">=</span> <span class="kc">false</span>
+			<span class="nx">msg</span> <span class="p">=</span> <span class="nx">msg</span> <span class="o">+</span> <span class="s">&#34;the pod contains unwanted container name; &#34;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="p">!</span><span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Allowed</span> <span class="p">{</span>
+		<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Result</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">metav1</span><span class="p">.</span><span class="nx">Status</span><span class="p">{</span><span class="nx">Message</span><span class="p">:</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">TrimSpace</span><span class="p">(</span><span class="nx">msg</span><span class="p">)}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">reviewResponse</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对于 Subresource 的请求，就需要用到 <strong><code>Request.SubResource</code></strong>，以及明确 HTTP body 的内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// denySpecificAttachment 检查 Pod attch 参数
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">denySpecificAttachment</span><span class="p">(</span><span class="nx">ar</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">)</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span> <span class="p">{</span>
+	<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;handling attaching pods&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">ar</span><span class="p">.</span><span class="nx">Request</span><span class="p">.</span><span class="nx">Name</span> <span class="o">!=</span> <span class="s">&#34;to-be-attached-pod&#34;</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="o">&amp;</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span><span class="p">{</span><span class="nx">Allowed</span><span class="p">:</span> <span class="kc">true</span><span class="p">}</span>
+	<span class="p">}</span>
+	<span class="c1">// 检查 Resource 为 Pod
+</span><span class="c1"></span>	<span class="nx">podResource</span> <span class="o">:=</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">GroupVersionResource</span><span class="p">{</span><span class="nx">Group</span><span class="p">:</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">Version</span><span class="p">:</span> <span class="s">&#34;v1&#34;</span><span class="p">,</span> <span class="nx">Resource</span><span class="p">:</span> <span class="s">&#34;pods&#34;</span><span class="p">}</span>
+	<span class="k">if</span> <span class="nx">e</span><span class="p">,</span> <span class="nx">a</span> <span class="o">:=</span> <span class="nx">podResource</span><span class="p">,</span> <span class="nx">ar</span><span class="p">.</span><span class="nx">Request</span><span class="p">.</span><span class="nx">Resource</span><span class="p">;</span> <span class="nx">e</span> <span class="o">!=</span> <span class="nx">a</span> <span class="p">{</span>
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;expect resource to be %s, got %s&#34;</span><span class="p">,</span> <span class="nx">e</span><span class="p">,</span> <span class="nx">a</span><span class="p">)</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span> <span class="nf">toV1AdmissionResponse</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="c1">// 检查请求的 SubResource 为 attach
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">e</span><span class="p">,</span> <span class="nx">a</span> <span class="o">:=</span> <span class="s">&#34;attach&#34;</span><span class="p">,</span> <span class="nx">ar</span><span class="p">.</span><span class="nx">Request</span><span class="p">.</span><span class="nx">SubResource</span><span class="p">;</span> <span class="nx">e</span> <span class="o">!=</span> <span class="nx">a</span> <span class="p">{</span>
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;expect subresource to be %s, got %s&#34;</span><span class="p">,</span> <span class="nx">e</span><span class="p">,</span> <span class="nx">a</span><span class="p">)</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span> <span class="nf">toV1AdmissionResponse</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 解码，转变为 PodAttachOptions
+</span><span class="c1"></span>	<span class="nx">raw</span> <span class="o">:=</span> <span class="nx">ar</span><span class="p">.</span><span class="nx">Request</span><span class="p">.</span><span class="nx">Object</span><span class="p">.</span><span class="nx">Raw</span>
+	<span class="nx">podAttachOptions</span> <span class="o">:=</span> <span class="nx">corev1</span><span class="p">.</span><span class="nx">PodAttachOptions</span><span class="p">{}</span>
+	<span class="nx">deserializer</span> <span class="o">:=</span> <span class="nx">codecs</span><span class="p">.</span><span class="nf">UniversalDeserializer</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">deserializer</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">raw</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">podAttachOptions</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span> <span class="nf">toV1AdmissionResponse</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="c1">// validate
+</span><span class="c1"></span>	<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Info</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;podAttachOptions=%#v\n&#34;</span><span class="p">,</span> <span class="nx">podAttachOptions</span><span class="p">))</span>
+	<span class="k">if</span> <span class="p">!</span><span class="nx">podAttachOptions</span><span class="p">.</span><span class="nx">Stdin</span> <span class="o">||</span> <span class="nx">podAttachOptions</span><span class="p">.</span><span class="nx">Container</span> <span class="o">!=</span> <span class="s">&#34;container1&#34;</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="o">&amp;</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span><span class="p">{</span><span class="nx">Allowed</span><span class="p">:</span> <span class="kc">true</span><span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span><span class="p">{</span>
+		<span class="nx">Allowed</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+		<span class="nx">Result</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">metav1</span><span class="p">.</span><span class="nx">Status</span><span class="p">{</span>
+			<span class="nx">Message</span><span class="p">:</span> <span class="s">&#34;attaching to pod &#39;to-be-attached-pod&#39; is not allowed&#34;</span><span class="p">,</span>
+		<span class="p">},</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="442-mutate">4.4.2 Mutate</h4>
+<p>Mutate 可以在 Validate 基础上可以对对象进行修改，核心是设置好 <strong><code>Response.Patch</code></strong> 与 <strong><code>Response.PatchType</code></strong> 字段。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">const</span> <span class="p">(</span>
+	<span class="nx">podsInitContainerPatch</span> <span class="kt">string</span> <span class="p">=</span> <span class="s">`[
+</span><span class="s">		 {&#34;op&#34;:&#34;add&#34;,&#34;path&#34;:&#34;/spec/initContainers&#34;,&#34;value&#34;:[{&#34;image&#34;:&#34;webhook-added-image&#34;,&#34;name&#34;:&#34;webhook-added-init-container&#34;,&#34;resources&#34;:{}}]}
+</span><span class="s">	]`</span>
+<span class="p">)</span>
+
+<span class="c1">// mutatePods 对请求进行修改，添加一个 container
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">mutatePods</span><span class="p">(</span><span class="nx">ar</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">)</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span> <span class="p">{</span>
+	<span class="nx">shouldPatchPod</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">pod</span> <span class="o">*</span><span class="nx">corev1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">Name</span> <span class="o">!=</span> <span class="s">&#34;webhook-to-be-mutated&#34;</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">false</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="p">!</span><span class="nf">hasContainer</span><span class="p">(</span><span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">InitContainers</span><span class="p">,</span> <span class="s">&#34;webhook-added-init-container&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nf">applyPodPatch</span><span class="p">(</span><span class="nx">ar</span><span class="p">,</span> <span class="nx">shouldPatchPod</span><span class="p">,</span> <span class="nx">podsInitContainerPatch</span><span class="p">)</span>
+<span class="p">}</span>
+
+
+<span class="kd">func</span> <span class="nf">applyPodPatch</span><span class="p">(</span><span class="nx">ar</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionReview</span><span class="p">,</span> <span class="nx">shouldPatchPod</span> <span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">corev1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">)</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">patch</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span> <span class="p">{</span>
+	<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;mutating pods&#34;</span><span class="p">)</span>
+	<span class="nx">podResource</span> <span class="o">:=</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">GroupVersionResource</span><span class="p">{</span><span class="nx">Group</span><span class="p">:</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">Version</span><span class="p">:</span> <span class="s">&#34;v1&#34;</span><span class="p">,</span> <span class="nx">Resource</span><span class="p">:</span> <span class="s">&#34;pods&#34;</span><span class="p">}</span>
+	<span class="k">if</span> <span class="nx">ar</span><span class="p">.</span><span class="nx">Request</span><span class="p">.</span><span class="nx">Resource</span> <span class="o">!=</span> <span class="nx">podResource</span> <span class="p">{</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;expect resource to be %s&#34;</span><span class="p">,</span> <span class="nx">podResource</span><span class="p">)</span>
+		<span class="k">return</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+
+	<span class="nx">raw</span> <span class="o">:=</span> <span class="nx">ar</span><span class="p">.</span><span class="nx">Request</span><span class="p">.</span><span class="nx">Object</span><span class="p">.</span><span class="nx">Raw</span>
+	<span class="nx">pod</span> <span class="o">:=</span> <span class="nx">corev1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">{}</span>
+	<span class="nx">deserializer</span> <span class="o">:=</span> <span class="nx">codecs</span><span class="p">.</span><span class="nf">UniversalDeserializer</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">deserializer</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">raw</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">pod</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span> <span class="nf">toV1AdmissionResponse</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">reviewResponse</span> <span class="o">:=</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">AdmissionResponse</span><span class="p">{}</span>
+	<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Allowed</span> <span class="p">=</span> <span class="kc">true</span>
+	<span class="k">if</span> <span class="nf">shouldPatchPod</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">pod</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">Patch</span> <span class="p">=</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">patch</span><span class="p">)</span> <span class="c1">// 添加 Patch（json 对 []byte 会自动 base64）
+</span><span class="c1"></span>		<span class="nx">pt</span> <span class="o">:=</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">PatchTypeJSONPatch</span>
+		<span class="nx">reviewResponse</span><span class="p">.</span><span class="nx">PatchType</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">pt</span> <span class="c1">// 添加 PatchType
+</span><span class="c1"></span>	<span class="p">}</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">reviewResponse</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://book.douban.com/subject/33393681/" target="_blank" rel="noopener noreffer"><strong>《Programming Kubernetes》</strong></a></li>
 <li><a href="https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/" target="_blank" rel="noopener noreffer"><strong>Dynamic Admission Control</strong></a></li>
@@ -1004,8 +1780,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2021-09-21&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/dbafc6e8a4b5dc430bee16137cd15897e361eeff" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) dbafc6e8a4b5dc430bee16137cd15897e361eeff: post: Admission Webhook">
-                                    <i class="fas fa-hashtag fa-fw"></i>dbafc6e</a></span>
+                <span>更新于 2021-09-22&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/85d0f7e0ff31cf25d49150d3f9114b43ff098553" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 85d0f7e0ff31cf25d49150d3f9114b43ff098553: post:Admission Webhook">
+                                    <i class="fas fa-hashtag fa-fw"></i>85d0f7e</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
@@ -1040,5 +1816,5 @@
             </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
                 <i class="fas fa-comment fa-fw"></i>
             </a>
-        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":25},"comment":{},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
 </html>
