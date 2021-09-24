@@ -3,7 +3,14 @@
         <title>云计算 - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/</link>
         <description>云计算 - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 21 Sep 2021 06:58:07 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 22 Sep 2021 12:19:47 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 编程 - 8 - Custom Scheduler</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/8-extend-scheduler/</link>
+    <pubDate>Wed, 22 Sep 2021 12:19:47 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/8-extend-scheduler/</guid>
+    <description><![CDATA[kube-scheduler 负责集群资源的调度，原生的 Kubernetes Scheduler 可以满足大多数情况的需求。不过针对于不同业务的特殊的调度需求，Kubernetes 提供了多种扩展调度器的方式]]></description>
+</item><item>
     <title>K8s 编程 - 7 - Admission Webhook</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/7-admission-webhook/</link>
     <pubDate>Tue, 21 Sep 2021 06:58:07 &#43;0000</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/9-schedule-preemption-eviction/</guid>
     <description><![CDATA[1 概述 无论是基本的副本控制器，还是自定义资源，其控制的底层 Pod 的调度都是都通过 Scheduler 完成的。 2 Schedule 2.1 nodeSelector Pod 的 spec.nodeSelector 可以用于控制 Pod 能被调度到哪些节点上。其内]]></description>
-</item><item>
-    <title>K8s 学习 - 8 - API</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/8-api/</link>
-    <pubDate>Sat, 12 Jun 2021 07:32:36 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/8-api/</guid>
-    <description><![CDATA[1 概述 1.1 组织对象的方式 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用]]></description>
 </item></channel>
 </rss>
