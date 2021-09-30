@@ -3,9 +3,16 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 22 Sep 2021 12:19:47 &#43;0000</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 30 Sep 2021 07:25:32 &#43;0000</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>K8s 实践 - Network Across Cluster</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/across-kubernetes/</link>
+    <pubDate>Thu, 30 Sep 2021 07:25:32 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/across-kubernetes/</guid>
+    <description><![CDATA[Kubernetes 实践 主要记录一些自己的一些部署实践。 1 目标 最近在看 TiDB 的 Multi Kubernetes 集群部署方案，TiDB 本身是灵活扩容的分布式数据库，因此部署前需要确保 Multi Kubernetes 之间服]]></description>
+</item><item>
     <title>K8s 编程 - 8 - Custom Scheduler</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/8-extend-scheduler/</link>
     <pubDate>Wed, 22 Sep 2021 12:19:47 &#43;0000</pubDate>
@@ -68,12 +75,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/grafana-basic/</guid>
     <description><![CDATA[1 基本概念 1.1 数据源 Data Source Grafana 支持多种不同类型的时序数据库，称为<strong><ruby>数据源<rt>Data Source</rt></ruby></strong>。目前官方支持：Graphite、Influx]]></description>
-</item><item>
-    <title>Prom 学习 - PromQL</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/promql/</link>
-    <pubDate>Thu, 08 Jul 2021 14:31:22 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/promql/</guid>
-    <description><![CDATA[1 数据类型 首先，还是先理解 时间序列 这个概念： 1 2 3 4 5 6 7 ^ - │ . . . . . . . . . . . . . . . |.| . . . │ . . . . . . . . . . . . . . |.| . . .]]></description>
 </item></channel>
 </rss>

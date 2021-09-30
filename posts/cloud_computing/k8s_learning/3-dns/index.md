@@ -73,7 +73,7 @@ option natods:2 eth0
 ## 2 Service 中的 DNS
 Service DNS 相关已经在 [**Service**](http://kanshiori.cn/posts/cloud_computing/k8s_learning/service/) 一文中说明，这里仅仅简单提及一下。
 
-每个 Service 会自动对应一个 DNS 域名，命名方式为 `<service>.<namespace>.svc.cluster.local`。
+每个 Service 会自动对应一个 DNS 域名，命名方式为 `<service>.<namespace>.svc.<cluster_domain>`，cluster_domain 默认为 cluster.local。
 
 通过改变 namespace 可以访问不同 namespace 下的 Service
 

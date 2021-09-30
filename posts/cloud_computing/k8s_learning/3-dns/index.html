@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/3-dns\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1406 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1446 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/3-dns\/","datePublished": "2021-06-07T13:16:11+00:00","dateModified": "2021-09-21T18:37:46+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">K8s 学习 - 3 - DNS</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>Kubernetes 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-07">2021-06-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1406 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-07">2021-06-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1446 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -256,7 +256,7 @@ option natods:2 eth0
 </div>
 </div><h2 id="2-service-中的-dns">2 Service 中的 DNS</h2>
 <p>Service DNS 相关已经在 <a href="http://kanshiori.cn/posts/cloud_computing/k8s_learning/service/" target="_blank" rel="noopener noreffer"><strong>Service</strong></a> 一文中说明，这里仅仅简单提及一下。</p>
-<p>每个 Service 会自动对应一个 DNS 域名，命名方式为 <code>&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local</code>。</p>
+<p>每个 Service 会自动对应一个 DNS 域名，命名方式为 <code>&lt;service&gt;.&lt;namespace&gt;.svc.&lt;cluster_domain&gt;</code>，cluster_domain 默认为 cluster.local。</p>
 <p>通过改变 namespace 可以访问不同 namespace 下的 Service</p>
 <h2 id="3-node-本地-dns-缓存">3 Node 本地 DNS 缓存</h2>
 <p>集群中的 DNS 服务都是通过 &ldquo;kube-dns&rdquo; 的 Service 提供的，所有容器都可以通过其 ClusterIP 地址去进行 DNS 域名解析。</p>

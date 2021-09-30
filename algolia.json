@@ -122,7 +122,7 @@
     {
         "title": "K8s 学习 - 3 - DNS",
         "uri": "posts/cloud_computing/k8s_learning/3-dns",
-        "content": "1 Pod   DNS 1 1 Pod   DNS        Pod    CoreDNS           pod      DNS        POD IP DNS   nslookup 192 168 166 168 tidb cluster dev pod cluster local Server  10 96 0 10 Address 1  10 96 0 10 kube dns kube system svc cluster local Name  192 168 166 168 tidb cluster dev pod cluster local Address 1  192 168 166 168 my tidb cluster dev tidb 0 my tidb cluster dev tidb peer tidb cluster dev svc cluster local    Deployment   DaemonSet       Pod CoreDNS          Pod        svc      DNS     1 2     hostname   subdomain       Pod      hostname      Pod                 Pod             hostname            spec hostname           hostname    spec subdomain               spec  hostname  webapp 1 subdomain  mysubdomain Pod       Kubernetes      DNS        svc           Headless Service      DNS            DNS             DNS       Pod      StatefulSet             Headless Service        StatefulSet     Pod    kubectl po my tidb cluster dev pd 0  o yaml     spec  hostname  my tidb cluster dev pd 0      pod   hostname subdomain  my tidb cluster dev pd peer     StatefulSet      Headless Service name 1 3     DNS       Pod      spec dnsPolicy         DNS             DNS     Default    Node    DNS ClusterFirst         domain        DNS           Node          ClusterFirstWithHostNet     Pod    hostNetwork    DNS      host None     Kubernetes DNS          spec dnsConfig           spec dnsConfig           DNS       spec  dnsPolicy   None  dnsConfig  nameservers  8 8 8 8 searches  ns1 svc cluster domain example my dns search suffix options  name  ndots value   2  name  edns0 Pod           etc resolv conf         nameserver 8 8 8 8 search ns1 svc cluster domain example my dns search suffix option natods 2 eth0 2 Service    DNS Service DNS       Service                      Service         DNS            svc cluster local       namespace        namespace    Service 3 Node    DNS         DNS         kube dns    Service                ClusterIP       DNS            DNS       Kubernetes     Node    DNS       DNS         Node               CoreDNS          Node    DNS     Pod    DNS               Node    DNS              DaemonSet       Pod     k8s gcr io k8s dns node cache       DNS                   Kubernetes       NodeLocal DNSCache 4 CoreDNS   1 11      Kubernetes     DNS     CoreDNS       Go                   DNS      4 1    CoreDNS CoreDNS                 CoreDNS               DNS                               loadbalance       DNS        loop     DNS           cache           health    Endpoint        kubernetes    Kubernetes     zone    etcd    etcd     zone               file    RFC11035        zone    hosts      etc hosts            zone               auto               reload         Corefile        forward            DNS      prometheus    Prometheus              URL pprof    URL     debug pprof        log    DNS          errors                  CoreDNS   Pod     coredns ConfigMap     CoreDNS                 ConfigMap    CoreDNS        k configmaps coredns  n kube system  o yaml     kind  ConfigMap data  Corefile      53   errors health   lameduck 5s   ready kubernetes cluster local in addr arpa ip6 arpa   pods insecure fallthrough in addr arpa ip6 arpa ttl 30   prometheus  9153 forward    etc resolv conf   max_concurrent 1000   cache 30 loop reload loadbalance       Kubernetes",
+        "content": "1 Pod   DNS 1 1 Pod   DNS        Pod    CoreDNS           pod      DNS        POD IP DNS   nslookup 192 168 166 168 tidb cluster dev pod cluster local Server  10 96 0 10 Address 1  10 96 0 10 kube dns kube system svc cluster local Name  192 168 166 168 tidb cluster dev pod cluster local Address 1  192 168 166 168 my tidb cluster dev tidb 0 my tidb cluster dev tidb peer tidb cluster dev svc cluster local    Deployment   DaemonSet       Pod CoreDNS          Pod        svc      DNS     1 2     hostname   subdomain       Pod      hostname      Pod                 Pod             hostname            spec hostname           hostname    spec subdomain               spec  hostname  webapp 1 subdomain  mysubdomain Pod       Kubernetes      DNS        svc           Headless Service      DNS            DNS             DNS       Pod      StatefulSet             Headless Service        StatefulSet     Pod    kubectl po my tidb cluster dev pd 0  o yaml     spec  hostname  my tidb cluster dev pd 0      pod   hostname subdomain  my tidb cluster dev pd peer     StatefulSet      Headless Service name 1 3     DNS       Pod      spec dnsPolicy         DNS             DNS     Default    Node    DNS ClusterFirst         domain        DNS           Node          ClusterFirstWithHostNet     Pod    hostNetwork    DNS      host None     Kubernetes DNS          spec dnsConfig           spec dnsConfig           DNS       spec  dnsPolicy   None  dnsConfig  nameservers  8 8 8 8 searches  ns1 svc cluster domain example my dns search suffix options  name  ndots value   2  name  edns0 Pod           etc resolv conf         nameserver 8 8 8 8 search ns1 svc cluster domain example my dns search suffix option natods 2 eth0 2 Service    DNS Service DNS       Service                      Service         DNS            svc  cluster_domain     cluster local       namespace        namespace    Service 3 Node    DNS         DNS         kube dns    Service                ClusterIP       DNS            DNS       Kubernetes     Node    DNS       DNS         Node               CoreDNS          Node    DNS     Pod    DNS               Node    DNS              DaemonSet       Pod     k8s gcr io k8s dns node cache       DNS                   Kubernetes       NodeLocal DNSCache 4 CoreDNS   1 11      Kubernetes     DNS     CoreDNS       Go                   DNS      4 1    CoreDNS CoreDNS                 CoreDNS               DNS                               loadbalance       DNS        loop     DNS           cache           health    Endpoint        kubernetes    Kubernetes     zone    etcd    etcd     zone               file    RFC11035        zone    hosts      etc hosts            zone               auto               reload         Corefile        forward            DNS      prometheus    Prometheus              URL pprof    URL     debug pprof        log    DNS          errors                  CoreDNS   Pod     coredns ConfigMap     CoreDNS                 ConfigMap    CoreDNS        k configmaps coredns  n kube system  o yaml     kind  ConfigMap data  Corefile      53   errors health   lameduck 5s   ready kubernetes cluster local in addr arpa ip6 arpa   pods insecure fallthrough in addr arpa ip6 arpa ttl 30   prometheus  9153 forward    etc resolv conf   max_concurrent 1000   cache 30 loop reload loadbalance       Kubernetes",
         "objectID": "posts/cloud_computing/k8s_learning/3-dns",
         "date": "2021-06-07T13:16:11.000Z",
         "description": "",
@@ -246,138 +246,31 @@
         ]
     },
     {
-        "title": "CRD 实践",
-        "uri": "posts/cloud_computing/k8s_practice/CRD-实践",
-        "content": "CRD   Kubernetes               Kubernetes                     Pod            CRD              1 CRD          CRD               CRD manifest                       CRD                CR                           kubectl apply    CR    CRD      Kubernetes                       kubectl apply                    Kubernetes                      CRNetwork                               CR                     kubectl   Client       Controller             CR                             k8s_practice    k8s                        2             Kubernetes         API                                                    main                                  k8s_practice Controller              Informer     Event    CR Sync     Controller           Informer     APIServer     CR     Cache      CR Event    Event Handler  Event Handler Informer     Event                workQueue       Workers      Event                             main                Informer Controller    Controller            Controller                 CR                          HandleAdd                       CR       Controller         Sync              CR    example crnetwork 2    Controller            Controller                   example crnetwork 2    Controller            Controller                  3             Pod TODO",
-        "objectID": "posts/cloud_computing/k8s_practice/CRD-实践",
-        "date": "2020-10-30T07:57:36.000Z",
-        "description": "使用 CRD 自定义资源，通过 Kubernetes 编排",
+        "title": "K8s 实践 - Network Across Cluster",
+        "uri": "posts/cloud_computing/k8s_practice/across-kubernetes",
+        "content": "Kubernetes                     1         TiDB   Multi Kubernetes        TiDB                          Multi Kubernetes           Kubernetes   IP                     Domain                Multi Kubernetes                                             DNS              Domain                  DNS              Pod IP  2        Multi Kubernetes                          EKS      VPC    EKS      VPC Peering                   GKE   GKE                      Multi Kubernetes         Tunnel                 submariner io submariner                    Kubernetes     Pod               Kubernetes     Pod                        Kubernetes                     Kubernetes                     Kubernetes                   NodePort                                                             Cluster1       Node1    Node2    Cluster2         NodePort           3 DNS 3 1 DNS          Pod DNS    Service DNS       CoreDNS         Cluster        Cluster               Cluster1 Pod    Cluster1 CoreDNS Cluster1 Pod    DNS     Cluster1 CoreDNS  Cluster1 CoreDNS    Cluster2 CoreDNS Cluster1 CoreDNS       Domain   Cluster2         Cluster2 CoreDNS                            Cluster2 CoreDNS    Cluster1 CoreDNS Cluster2 CoreDNS           Domain      Cluster2 Pod IP   Cluster1 CoreDNS                         Cluster1 CoreDNS    Cluster1 Pod Cluster1 CoreDNS          Cluster1 Pod  Cluster1 Pod    Cluster2 Pod                                   CoreDNS        Cluster                                             3 2    CoreDNS                           Domain   Cluster2         CoreDNS               CoreDNS              Customizing DNS Service        CoreDNS    K8s      2   Service      Kubernetes    Domain    Pod   Service  Pod Domain   pod    svc     svc  Service Domain   svc     DNS      Domain                         Multi Kubernetes   Cluster Domain             CoreDNS     apiVersion  v1 kind  ConfigMap metadata  name  coredns namespace  kube system data  Corefile      53   default      53                                         CoreDNS     Kubernetes     Cluster Domain       Cluster      kubelet     cluster domain            Cluster Domain         Cluster              Cluster                 Multi Kubernetes Cluster Domain     cluster local                                 Pod        Cluster   Pod  apiVersion  v1 kind  ConfigMap metadata  name  coredns namespace  kube system data  Corefile      53   default      svc cluster local 53                                Multi Cluster     namespace        4 AWS      4 1    EKS          EKS             VPC CIDR          eksctl create cluster   name test cluster   with oidc   ssh access   managed   region us west 2   instance types m5 xlarge   nodes 3   eksctl create cluster   name test cluster 2   with oidc   ssh access   managed   region us west 2   instance types m5 xlarge   nodes 3   vpc cidr 10 0 0 0 16       EKS                eksctl cluster test cluster NAME VERSION STATUS CREATED VPC SUBNETS SECURITYGROUPS test cluster 1 20 ACTIVE 2021 09 30T11 53 19Z vpc 0409bd99d5e2b6f5b subnet 00d1a0abdaf60021b subnet 0a9fca73d25257d90 subnet 0aee90db41909f538 subnet 0c81d647b53fe567a subnet 0dcd3f3da03b5e767 subnet 0f80939acbdda6357 sg 00985dc11204cfeda   eksctl cluster test cluster 2 NAME VERSION STATUS CREATED VPC SUBNETS SECURITYGROUPS test cluster 2 1 20 ACTIVE 2021 09 30T12 19 39Z vpc 0e35ec388cb70e7fc subnet 012fa5481e326aafc subnet 0586d236d85ed6893 subnet 0d5695aa8970fea2d subnet 0d61b543c82d94d14 subnet 0d740e2366cf2778f subnet 0def1a48342d72d32 sg 0d914515ffd1173b5        Region     VPC    EKS       Region                         1 2             k1   k2           kubectl         kubeconfig      4 2      EKS   Pod   Host Network   Node         AWS VPC     Subnet                  VPC                    AWS     VPC Peering      VPC       Route Table                  VPC ACL        Subnet      ACL Security Group          Instance      Security Group          VPC Peering    VPC                   4 2 1    VPC Peering Create VPC Peering    VPC1    VPC2    aws ec2 create vpc peering connection     vpc id vpc 0409bd99d5e2b6f5b     peer vpc id vpc 0e35ec388cb70e7fc    VpcPeeringConnection      AccepterVpcInfo      OwnerId    385595570414    VpcId    vpc 0e35ec388cb70e7fc    Region    us west 2      ExpirationTime    2021 10 07T12 53 36 00 00    RequesterVpcInfo      CidrBlock    192 168 0 0 16    CidrBlockSet        CidrBlock    192 168 0 0 16        OwnerId    385595570414    PeeringOptions      AllowDnsResolutionFromRemoteVpc   false   AllowEgressFromLocalClassicLinkToRemoteVpc   false   AllowEgressFromLocalVpcToRemoteClassicLink   false     VpcId    vpc 0409bd99d5e2b6f5b    Region    us west 2      Status      Code    pending acceptance    Message    Pending Acceptance 385595570414      Tags        VpcPeeringConnectionId    pcx 094a1149b32ef0c05      Accept VPC Peering    VPC Peering       aws ec2 accept vpc peering connection     vpc peering connection id pcx 094a1149b32ef0c05    VpcPeeringConnection      AccepterVpcInfo      CidrBlock    10 0 0 0 16    CidrBlockSet        CidrBlock    10 0 0 0 16        OwnerId    3855955",
+        "objectID": "posts/cloud_computing/k8s_practice/across-kubernetes",
+        "date": "2021-09-30T07:25:32.000Z",
+        "description": "跨 Kubernetes 集群网络连通",
         "weight": 4,
         "draft": false,
         "author": "Shiori",
+        "lightgallery": true,
         "tags": [
             "k8s",
             "云计算"
         ],
         "categories": [
-            "k8s 实践"
+            "Kubernetes 实践"
         ]
     },
     {
-        "title": "DaemonSet 实践",
-        "uri": "posts/cloud_computing/k8s_practice/DaemonSet-实践",
-        "content": "DaemonSet       Node      Daemon Pod   Deployment       DaemonSet                DaemonSet    toleration   nodeAffinity              DaemonSet       nodeAffinity              toleration    Node   taint                        node 1 node 2         Affinity             DaemonSet                           kubectl rollout status              Deployment               Event          delete    create",
-        "objectID": "posts/cloud_computing/k8s_practice/DaemonSet-实践",
-        "date": "2020-10-30T07:26:30.000Z",
-        "description": "使用 DaemonSet 部署常驻容器",
-        "weight": 4,
-        "draft": false,
-        "author": "Shiori",
-        "tags": [
-            "k8s",
-            "云计算"
-        ],
-        "categories": [
-            "k8s 实践"
-        ]
-    },
-    {
-        "title": "Deployment 实践",
-        "uri": "posts/cloud_computing/k8s_practice/Deployment-实践",
-        "content": "1 ReplicaSet Deploment      ReplicaSet       ReplicaSet     ReplicaSet                         1 1    ReplicaSet    manifest             kubectl create                     ReplicaSet            Pod             1 2         3   Pod       Node 3            Node 3       node 3    NotReady                    Pod    Terminating        Pod                       3   Pod       Node 2            Node 3    kubelet                    Pod Pod       Terminating             1 3         kubectl scale                      Pod   Node 3              kubectl scale                Pod                     ReplicaSet            Scheduler                   Pod          Pod                       2 Deployment Deployment         ReplicaSet     Pod  2 1       manfiest             kubectl create    Deployment            Event         ReplicaSet          Deployment     ReplicaSet         2 2      Deployment         ReplicaSet           ReplicaSet   replica           2 3       1       Deployment   ReplicaSet                       Deployment            3          Deployment         image                 Deployment       ReplicaSet        Pod      ReplicaSet       0          Deployment   Event         ReplicaSet               ReplicaSet                 Pod                 3        2                   Deployment              kubectl set image   Deployment                         Event                  Replicaset                                                       Pod       2 4                      Deployment                     kubectl rollout    Deployment         kubectl rollout history      Deployment              record     kubectl                                          revision                       kubectl rollout undo                       to revision                                   history                       4",
-        "objectID": "posts/cloud_computing/k8s_practice/Deployment-实践",
-        "date": "2020-10-16T08:08:05.000Z",
-        "description": "使用 Deployment 进行部署",
-        "weight": 4,
-        "draft": false,
-        "author": "Shiori",
-        "tags": [
-            "k8s",
-            "云计算"
-        ],
-        "categories": [
-            "k8s 实践"
-        ]
-    },
-    {
-        "title": "Job CronJob 实践",
-        "uri": "posts/cloud_computing/k8s_practice/Job-CronJob-实践",
-        "content": "Job                    CronJob   Job               1 Job       Job           Batch           Job      img1 png                 Pod                            deadline   100    pod         restartPolicy                    deadline                 4             2 CronJob       CronJob             CronJob     Job             CronJob       CronJob       JobTemplate    CronJob       Job                   CronJob       Job               Job",
-        "objectID": "posts/cloud_computing/k8s_practice/Job-CronJob-实践",
-        "date": "2020-10-30T07:33:36.000Z",
-        "description": "使用 Job 或者 CronJob 部署一次性任务",
-        "weight": 4,
-        "draft": false,
-        "author": "Shiori",
-        "tags": [
-            "k8s",
-            "云计算"
-        ],
-        "categories": [
-            "k8s 实践"
-        ]
-    },
-    {
-        "title": "PV PVC 与 StorageClass",
-        "uri": "posts/cloud_computing/k8s_practice/PV-PVC-与-StorageClass",
-        "content": "1 PV   PVC       NFS   PV    Pod     PV Node 1    nfs         nfs         PV    nfs                     PVC         StorageClass                      pvc     Bound            pvc    pv      pv               PV        PV          Pod Deployment   Pod   Volume    PVC                 Pod        Node 2 Node 3   Node 2 Node 3          nfs mount                                Node 3                                nfs",
-        "objectID": "posts/cloud_computing/k8s_practice/PV-PVC-与-StorageClass",
-        "date": "2020-10-30T08:14:11.000Z",
-        "description": "使用 PV 与 PVC 为 Pod 提供存储",
-        "weight": 4,
-        "draft": false,
-        "author": "Shiori",
-        "tags": [
-            "k8s",
-            "云计算"
-        ],
-        "categories": [
-            "k8s 实践"
-        ]
-    },
-    {
-        "title": "RBAC 实践",
-        "uri": "posts/cloud_computing/k8s_practice/RBAC-实践",
-        "content": "Kubernetes      RBAC         Pod    APIServer             RBAC              Role           API          Subject                 ServiceAccount  RoleBinding    Role   Subject  1 Role   ServiceAccount          Role   RoleBinding      ServiceAccount    Pod      ServiceAccount                    namespace  mynamespace                   ServiceAccount  example sa               namespace       ServiceAccount default       APIServer          ServiceAccount           Secret                    Role                      rules      Role       mynamespace    pod    get watch list             RoleBinding         Role   ServiceAccount               Pod       ServiceAccount   Pod                             k8s   ServiceAccount     Serects         run secrets kubernetes io serviceaccount        client          ca crt   token",
-        "objectID": "posts/cloud_computing/k8s_practice/RBAC-实践",
-        "date": "2020-10-30T08:03:17.000Z",
-        "description": "使用 RBAC 进行访问控制与授权",
-        "weight": 4,
-        "draft": false,
-        "author": "Shiori",
-        "tags": [
-            "k8s",
-            "云计算"
-        ],
-        "categories": [
-            "k8s 实践"
-        ]
-    },
-    {
-        "title": "StatefulSet 实践",
-        "uri": "posts/cloud_computing/k8s_practice/StatefulSet-实践",
-        "content": "Deployment                                  Deployment                    Pod                    StatefulSet             Pod                                       Pod     1 HeadlessService StatefulSet     HeadlessService           HeadlessService         headless_service           Headless     Service       clusterIP   None     kubectl create    HeadlessService                  Endpoint      Endpoint     Node 1 Node 2   Pod         Endpoint    Service                          Headless Service            Pod   IP                 DNS           svc cluster local          Headless Service             2 StatfulSet 2 1 StaefulSet              StatefulSet          Headless Service                   StatefulSet                 StatefulSet   Deployment            serviceName           HeadlessService     StatefulSet        Deployment      Pod           StatefulSet          ReplicaSet        Deployment                  Pod        Pod                                              web 0  web 0      Ready      web 1       busybox         nslookup    HeadlessService                            web 0 Pod      StatefulSet            Pod    Pod                  web 0 nginx default svc cluster local                                               IP                Pod   IP 2 2 StatefulSet             StatefulSet    Template PVC                PVC     PodName        nfs   2   PV   2   Pod                       StatefulSet     PVC            Pod          PVC               StatefulSet   2   Pod        PVC            PVC              volume name   pod name     PVC   Pod                         Pod      Pod          Pod Name             Pod    PVC",
-        "objectID": "posts/cloud_computing/k8s_practice/StatefulSet-实践",
-        "date": "2020-10-30T01:32:39.000Z",
-        "description": "使用 StatefulSet 进行副本控制",
-        "weight": 4,
-        "draft": false,
-        "author": "Shiori",
-        "tags": [
-            "k8s",
-            "云计算"
-        ],
-        "categories": [
-            "k8s 实践"
-        ]
-    },
-    {
-        "title": "虚拟机 k8s 集群搭建",
-        "uri": "posts/cloud_computing/k8s_practice/虚拟机-k8s-集群搭建",
-        "content": "1               3           Master Node    Work Node                                         centos 7    2 GB                 copy            Node 1 Node 2 Node 3                              VirtualBox     Nat         Node     IP 10 0 2 10   10 0 2 12             ssh   DNAT                        NodeNatNetwork                       hostname       IP                                          VirtualBox   Nat         2    K8s       kubeadm      k8s   Node 1   Master             2 1    kubeadm kubelet kubectl    kubeadm kubelet kubectl               Installing kubeadm   2 2 kubeadm init     Master    Node 1      kubeadm init      Master             kubeadm     Kubernetes                         etc kubernetes                 static pod        apiserver controller manager etcd scheduler              kubeadm         bootstrap token                   token               kubeadm    swap     kubeadm       swap    swapoff  a             kubectl      8080               kubectl        kubeadm      etc kubernetes admin conf               admin conf        kube config                 2 3 kubeadm join  token            kubead init                kubeadm join   Node 1 Node 2                 root Node 2 kubeadm join 10 0 2 10 6443   token mahrou d3uodof21i3d6yxk   discovery token ca cert hash sha256 21dfe4ef6b3bbd89f803bf44ff6eda587874336d103d0e4a3b   v 5      kubelet        pod           kube proxy                     Node 1    nc ip         ping       Node 1 tcpdump         Node 3                   iptables   Node 2 Node 3 IP     kubectl                 2 4                         kubectl nodes            NotReady       kubectl describe node node 1                   Network Plugin       3                         Ready         Pod           Weave              kubectl apply  f  https   cloud weave works k8s net k8s version   kubectl version   base64   tr  d   n               Weave     BAAC                 Pod     DaemonSet                     DaemonSet              Node    Pod                 weave net     pod               4                                                 Rook                kubectl apply  f https   raw githubusercontent com rook rook master cluster exampleskubernetes ceph common yaml   kubectl apply  f https   raw githubusercontent com rook rook master cluster exampleskubernetes ceph operator yaml   kubectl apply  f https   raw githubusercontent com rook rook master cluster examples kubernetes ceph cluster yaml            rook       namespace         DaemonSet            Pod",
-        "objectID": "posts/cloud_computing/k8s_practice/虚拟机-k8s-集群搭建",
+        "title": "K8s 实践 - 集群搭建",
+        "uri": "posts/cloud_computing/k8s_practice/create-cluster",
+        "content": "Kubernetes                     1               3           Master Node    Work Node                                         centos 7    2 GB                 copy            Node 1 Node 2 Node 3                              VirtualBox     Nat         Node     IP 10 0 2 10   10 0 2 12             ssh   DNAT                        NodeNatNetwork                       hostname       IP                                          VirtualBox   Nat         2    K8s       kubeadm      k8s   Node 1   Master             2 1    kubeadm kubelet kubectl    kubeadm kubelet kubectl               Installing kubeadm   2 2 kubeadm init     Master    Node 1      kubeadm init      Master             kubeadm     Kubernetes                         etc kubernetes                 static pod        apiserver controller manager etcd scheduler              kubeadm         bootstrap token                   token               kubeadm    swap     kubeadm       swap    swapoff  a             kubectl      8080               kubectl        kubeadm      etc kubernetes admin conf               admin conf        kube config                 2 3 kubeadm join  token            kubead init                kubeadm join   Node 1 Node 2                 root Node 2 kubeadm join 10 0 2 10 6443   token mahrou d3uodof21i3d6yxk   discovery token ca cert hash sha256 21dfe4ef6b3bbd89f803bf44ff6eda587874336d103d0e4a3b   v 5      kubelet        pod           kube proxy                     Node 1    nc ip         ping       Node 1 tcpdump         Node 3                   iptables   Node 2 Node 3 IP     kubectl                 2 4                         kubectl nodes            NotReady       kubectl describe node node 1                   Network Plugin       3                         Ready         Pod           Weave              kubectl apply  f  https   cloud weave works k8s net k8s version   kubectl version   base64   tr  d   n               Weave     BAAC                 Pod     DaemonSet                     DaemonSet              Node    Pod                 weave net     pod               4                                                 Rook                kubectl apply  f https   raw githubusercontent com rook rook master cluster exampleskubernetes ceph common yaml   kubectl apply  f https   raw githubusercontent com rook rook master cluster exampleskubernetes ceph operator yaml   kubectl apply  f https   raw githubusercontent com rook rook master cluster examples kubernetes ceph cluster yaml            rook       namespace         DaemonSet            Pod",
+        "objectID": "posts/cloud_computing/k8s_practice/create-cluster",
         "date": "2020-10-15T12:10:35.000Z",
-        "description": "单机使用虚拟机搭建 k8s 集群",
+        "description": "使用虚拟机搭建 Kubernetes 集群",
         "weight": 4,
         "draft": false,
         "author": "Shiori",
@@ -386,7 +279,7 @@
             "云计算"
         ],
         "categories": [
-            "k8s 实践"
+            "Kubernetes 实践"
         ]
     },
     {
@@ -521,6 +414,25 @@
         ]
     },
     {
+        "title": "K8s 编程 - 8 - Custom Scheduler",
+        "uri": "posts/cloud_computing/k8s_programming/8-extend-scheduler",
+        "content": "kube scheduler               Kubernetes Scheduler                                Kubernetes                1 Scheduler     Scheduler Framework                         Plugin                                          Plugin                         Plugin       KubeSchedulerConfiguration        1 1 QueueSort        scheduling queue    Pod               QueueSort Plugin     QueueSort Plugin            Less Pod1  Pod2      1 2 PreFilter        Pod                    Pod               PreFilter Plugin      error             1 3 Filter             Pod   Node        Node            Filter Plugin        Filter Plugin   Node              Filter Plugin            Node       Filter  1 4 PostFilter       Filter                Pod        Node                          PostFilter Plugin   Node     Schedulable     PostFilter Plugin               PostFilter Plugin             Pod     Pod  1 5 PreScore                     Score Plugin                PreScore      error         1 6 Score             Node            Node      Score Plugin                              NormalizeScore     Scheduler                       1 7 NormalizeScore             Node       Node          NormalizeScore Plugin             Plugin                                  Plugin BlinkingLightScorer      Node      blinking lights       func ScoreNode _ v1 pod  n v1 Node   int  error    return getBlinkingLightCount n         NodeScoreMax    blinking lights                 BlinkingLightScorer            func NormalizeScores scores map string int    highest    0 _  score    range scores   highest   max highest  score    node  score    range scores   scores node    score NodeScoreMax highest          NormalizeScore Plugin    error        1 8 Reserve Reserve Plugin       Reserve   Unreserve     Reserve   Unreserve                           Node    Pod                   Pod     Node               Pod   Node           Pod      Node                           Pod                     Pod    reserved              Unreserve     Postbind           1 9 Permit Permit Plugin                          Node  Permit Plugin         approve      Permit Plugin approve    Pod             deny      Permit Plugin deny    POod                    Unreserve     wait with timeout       Permit Plugin    wait     Pod    waiting Pod list         Pod   approve     wait timeout         deny Pod  1 10 PreBind         Pod                PreBind Plugin      network volume          Node       PreBind Plugin    error Pod                  1 11 Bind         Pod     Node     Bind Plugin              Bind Plugin           Pod      Bind Plugin       Pod     Bind Plugin      1 12 PostBind Post bind Plugin                                    2 Scheduling Policy Scheduling Policy                     Predicates   Priorities             Extender          Scheduling Policy     yaml    json               kind     Policy    apiVersion     v1    predicates       name    NoVolumeZoneConflict      name    MaxEBSVolumeCount      name    MaxAzureDiskVolumeCount      name    NoDiskConflict      name    GeneralPredicates      name    PodToleratesNodeTaints      name    CheckVolumeBinding      name    MaxGCEPDVolumeCount      name    MatchInterPodAffinity        priorities       name    SelectorSpreadPriority    weight   1     name    InterPodAffinityPriority    weight   1     name    LeastRequestedPriority    weight   1     name    BalancedResourceAllocation    weight   1     name    NodePreferAvoidPodsPriority    weight   1     name    NodeAffinityPriority    weight   1     name    TaintTolerationPriority    weight   1      extenders        urlPrefix    http   127 0 0 1 10262 scheduler    filterVerb    filter    preemptVerb    preempt    weight   1   httpTimeout   30000000000   enableHttps   false       predicates    Predicate          priorities    Priority          extenders       Webhook                 URL     kube scheduler          kube scheduler   policy config file      Policy         kube scheduler   policy configmap     policy configmap namespace      ConfigMap    Policy    1 22    kube scheduler       scheduler name                      kube scheduler   port 10261   leader elect true   lock object namespace pingcap   lock object name my scheduler   scheduler name my scheduler   policy configmap my scheduler policy   policy configmap namespace pingcap                  my scheduler         Pod     spec schedulerName                  1 22   kube scheduler         scheduler name              Scheduler Policy                         Multiple Profiles          Scheduler Policy                                Scheduling Profiles        Schedule Policy          default scheduler        Scheduling Profiles              3 Scheduling Profiles                     Scheduling Profiles   kube scheduler             kube scheduler      kube scheduler   config    Scheduling Profiles        v1beta1    v1beta2     KubeSchedulerConfiguration               apiVersion  kubescheduler config k8s io v1beta2 kind  KubeSchedulerConfiguration clientConnection  kubeconfig   etc srv kubernetes kube scheduler kubeconfig 3 1    Plugin   KubeSchedulerConfi",
+        "objectID": "posts/cloud_computing/k8s_programming/8-extend-scheduler",
+        "date": "2021-09-22T12:19:47.000Z",
+        "description": "",
+        "weight": 4,
+        "draft": false,
+        "author": "Shiori",
+        "lightgallery": true,
+        "tags": [
+            "k8s",
+            "云计算"
+        ],
+        "categories": [
+            "Kubernetes 编程"
+        ]
+    },
+    {
         "title": "Prom 学习 - 基本概念",
         "uri": "posts/cloud_computing/prometheus-learning/basic",
         "content": "1      Prometheus                   time series                                                                   Sample       label   Metric name                                  prometheushttprequest_total                 Metric       Metric Name   Labels              Sample             1 1 Metric Metric                                        Notation  Metric name          Labels             nodecpuseconds_total cpu  0  mode  idle   2 01377426e 06 nodecpuseconds_total cpu  0  mode  iowait   1639 03 nodecpuseconds_total cpu  1  mode  idle   1 9973224e 06 nodecpuseconds_total cpu  1  mode  iowait   1535 02      Labels              Metric        Metric name   Labels                   _       label                     Prometheus                name_          name  nodecpuseconds_total   cpu  0  mode  idle   1 3 Sample Sample                               Sample                    Sample         metric   metric name        labelsets value         float64 timestamp           ms Prometheus            sample    sample                2 Metric       Prometheus     4   Metric     Counter Gauge Histogram Summary 2 1 Counter Counter                                        0                        0     Counter          xxx_total   TYPE nodecpuseconds_total counter nodecpuseconds_total cpu  0  mode  idle   2 01526517e 06 nodecpuseconds_total cpu  0  mode  iowait   1640 01 2 2 Gauge Gauge                                                              Gauge                HELP node_load1 1m load average  TYPE node_load1 gauge node_load1 1 6 HELP node_load15 15m load average  TYPE node_load15 gauge node_load15 1 01 2 3 Histogram Histogram                              bucket    histogram        bucket      le             sum         count                         HTTP     HELP prometheushttprequestdurationseconds Histogram latencies HTTP requests  TYPE prometheushttprequestdurationseconds histogram prometheushttprequestdurationseconds_bucket handler     le  0 1   1 prometheushttprequestdurationseconds_bucket handler     le  0 2   1 prometheushttprequestdurationseconds_bucket handler     le  0 4   1 prometheushttprequestdurationseconds_bucket handler     le  1   1 prometheushttprequestdurationseconds_bucket handler     le  3   1 prometheushttprequestdurationseconds_bucket handler     le  8   1 prometheushttprequestdurationseconds_bucket handler     le  20   1 prometheushttprequestdurationseconds_bucket handler     le  60   1 prometheushttprequestdurationseconds_bucket handler     le  120   1 prometheushttprequestdurationseconds_bucket handler     le   Inf   1 prometheushttprequestdurationseconds_sum handler      0 000184525 prometheushttprequestdurationseconds_count handler      1 bucket le  0 1             0 1s      1   le  0 2             0 2s      1       le   Inf              Inf      1   sum               0 000184525 count          1           bucket            2 4 Summary summary                                summary         bucket            quantile        sum         counter                     wal_fsync            HELP prometheustsdbwalfsyncduration_seconds Duration WAL fsync  TYPE prometheustsdbwalfsyncduration_seconds summary prometheustsdbwalfsyncduration_seconds quantile  0 5   0 012352463 prometheustsdbwalfsyncduration_seconds quantile  0 9   0 014458005 prometheustsdbwalfsyncduration_seconds quantile  0 99   0 017316173 prometheustsdbwalfsyncdurationsecondssum 2 888716127000002 prometheustsdbwalfsyncdurationsecondscount 216 bucket quantile  0 5    50    wal_fsync        0 012352463 quantile  0 9    90    wal_fsync        0 014458005 quantile  0 99    99    wal_fsync        0 017316173 sum    wal_fsync        2 888716127000002 count    wal_fsync    216           bucket            3        Prometheus                  IP Port     Intsance                    Job     prometheus yml              scrape_configs  job_name   prometheus  static_configs  targets    localhost 9090   job_name   node  static_configs  targets    localhost 9100   scrapeconfigs jobname               job        Prometheus   Node  scrapeconfigs staticconfigs targets            Instance  Prometheus                         job     instance     label             prometheushttprequests_total code  200   handler     ready   instance  localhost 9090   job  prometheus              label                   honor_label                          Instance Prometheus                  Instance              1      0 up instance  localhost 9090   job  prometheus   1 scrapedurationseconds      Instance         scrapedurationseconds instance  localhost 9090   job  prometheus   0 006962203 scrapesamplespostmetricrelabeling   Instance        relabel             scrapesamplespostmetricrelabeling instance  localhost 9090   job  prometheus   723 scrapesamplesscraped      Instance         scrapesamplesscraped instance  localhost 9090   job  prometheus   723         Blog       Prometheus",
@@ -574,24 +486,6 @@
         ],
         "categories": [
             "Prometheus 学习"
-        ]
-    },
-    {
-        "title": "[WIP] TiDB Operator 学习 - ControllerManager 概述",
-        "uri": "posts/cloud_computing/tidb-operator-learning/Controller-Manager-概述",
-        "content": "1    TiDB Operator    ControllerManager      TiDBCluster    CustomResource       ControllerManager      TiDB Operator   ControllerManager  TiDBCluster                                  Discovery     PD             Discovery          PD        PD  TiDB Cluster                             Discovery      TiKV                Store  TiDB  SQL        MySQL            SQL                  TiFlash              TiKV                       OLAP      TiCDC                 TiKV               TSO  Pump        TiDB   binlog     Drainer            ControllerManager      TiDBCluster           TiDB Cluster                         Controller Manager             TiDBCluster Sync    TiDBCluster Sync          Component Sync             TiDBCluster                  PD TiDB TiCluster          Controller                 Controller Manager       2      2 1 Kubernetes Controller         Controller Manager              Controller        Informer    TiDBCluster       Queue         ControlLoop                    Informer    Watch APIServer                  AddFunc UpdateFunc DeleteFunc     Informer          List                 UpdateFunc  AddFunc UpdateFunc DeleteFunc            Key    WorkQueue  ControlLoop         WorkQueue    Key    APIServer              Sync     3    4 Member Manager 4 1 Discovery Discovery                  PD      Discovery                 4 1 1      Discovery               Resource   Name   Used       Role     discovery        Secret        RoleBinding     discovery      Role   ServiceAccount ServiceAccount     discovery        Secret       ClusterIP Service     discovery      PD    Discovery Deployment     discovery        Pod 4 2 PD   Discovery Pod              PD                              Discovery 4 2 1      Resource   Name   Used       Headless Service     pd peer            Pod     ClusterIP Service     pd                    StatefulSet     pd      StatefulSet     Pod ConfigMap        pd       Pod           spec pd config     4 3 TiKV TiKV                 TiKV Pod          KV          PD 4 3 1      Resource   Name   Used       Headless Service    tikv peer           Pod     StatefulSet     tikv     StatefulSet     Pod  ConfigMap        pd       Pod           spec tikv config     4 4 TiDB TiDB       SQL                        TiKV Pump       4 3 1      Resource   Name   Used       Headless Service     tidb peer      NodePort Service    LoadBalance Service     tidb             StatefulSet     tidb      StatefulSet     Pod ConfigMap        tidb       Pod           spec tidb config     Secret         tidb server secret       TLS              spec tlsCluster     4 5 TiFlash      PD 4 5 1      Resource   Name   Used       Headless Service     tiflash peer   StatefulSet    tiflash      StatefulSet     Pod ConfigMap        tiflash       Pod           spec tiflash config     4 6 Pump        4 6 1      Resource   Name   Used       Headless Service     pump     StatefulSet     pump      StatefulSet     Pod ConfigMap        pump       Pod           spec pump config          Pump   Headless Service        bug       4 7 TiCDC       PD 4 7 1      Resource   Name   Used       Headless Service     ticdc   StatefulSet     ticdc      StatefulSet     Pod ConfigMap        ticdc       Pod           spec ticdc config     5",
-        "objectID": "posts/cloud_computing/tidb-operator-learning/Controller-Manager-概述",
-        "date": "2021-06-19T15:09:23.000Z",
-        "description": "",
-        "weight": 4,
-        "draft": false,
-        "author": "Shiori",
-        "tags": [
-            "tidb",
-            "operator"
-        ],
-        "categories": [
-            "TiDB Operator 学习"
         ]
     },
     {

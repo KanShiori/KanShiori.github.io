@@ -1,0 +1,21 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Kubernetes 实践 - 分类 - Shiori&#39;s Blog</title>
+        <link>https://KanShiori.github.io/categories/kubernetes-%E5%AE%9E%E8%B7%B5/</link>
+        <description>Kubernetes 实践 - 分类 - Shiori&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 30 Sep 2021 07:25:32 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AE%9E%E8%B7%B5/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 实践 - Network Across Cluster</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/across-kubernetes/</link>
+    <pubDate>Thu, 30 Sep 2021 07:25:32 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/across-kubernetes/</guid>
+    <description><![CDATA[Kubernetes 实践 主要记录一些自己的一些部署实践。 1 目标 最近在看 TiDB 的 Multi Kubernetes 集群部署方案，TiDB 本身是灵活扩容的分布式数据库，因此部署前需要确保 Multi Kubernetes 之间服]]></description>
+</item><item>
+    <title>K8s 实践 - 集群搭建</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/create-cluster/</link>
+    <pubDate>Thu, 15 Oct 2020 20:10:35 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/create-cluster/</guid>
+    <description><![CDATA[Kubernetes 实践 主要记录一些自己的一些部署实践。 1 虚拟机集群搭建 目标：创建 3 个虚拟机，用作一个 Master Node，两个 Work Node；当然，三个节点处于同一个网段]]></description>
+</item></channel>
+</rss>
