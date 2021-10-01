@@ -3,7 +3,14 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 30 Sep 2021 07:25:32 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 01 Oct 2021 12:08:32 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>AWS 学习 - 1 - 地理概念</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/1-introduction/</link>
+    <pubDate>Fri, 01 Oct 2021 12:08:32 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/1-introduction/</guid>
+    <description><![CDATA[1 Region 将所有的资源都放在一个 Data Center（简称 DC）不能保证可用性，如果该数据中心出现问题，那么意味所有的应用程序出现问题。 为此，AWS 在世]]></description>
+</item><item>
     <title>K8s 实践 - Network Across Cluster</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/across-kubernetes/</link>
     <pubDate>Thu, 30 Sep 2021 07:25:32 &#43;0000</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/1-basic/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 Controller 模式 1.1 Control Loop 所有]]></description>
-</item><item>
-    <title>Prom 学习 - Grafana 基础</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/grafana-basic/</link>
-    <pubDate>Sat, 17 Jul 2021 08:19:12 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/prometheus-learning/grafana-basic/</guid>
-    <description><![CDATA[1 基本概念 1.1 数据源 Data Source Grafana 支持多种不同类型的时序数据库，称为<strong><ruby>数据源<rt>Data Source</rt></ruby></strong>。目前官方支持：Graphite、Influx]]></description>
 </item></channel>
 </rss>

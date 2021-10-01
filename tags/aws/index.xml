@@ -3,12 +3,19 @@
         <title>aws - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/aws/</link>
         <description>aws - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 23 Jun 2021 14:13:47 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/aws/" rel="self" type="application/rss+xml" /><item>
-    <title>[WIP] AWS 学习 - VPC</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/vpc/</link>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 01 Oct 2021 12:08:32 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/aws/" rel="self" type="application/rss+xml" /><item>
+    <title>AWS 学习 - 1 - 地理概念</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/1-introduction/</link>
+    <pubDate>Fri, 01 Oct 2021 12:08:32 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/1-introduction/</guid>
+    <description><![CDATA[1 Region 将所有的资源都放在一个 Data Center（简称 DC）不能保证可用性，如果该数据中心出现问题，那么意味所有的应用程序出现问题。 为此，AWS 在世]]></description>
+</item><item>
+    <title>AWS 学习 - 3 - VPC</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-vpc/</link>
     <pubDate>Wed, 23 Jun 2021 14:13:47 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/vpc/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-vpc/</guid>
     <description><![CDATA[1 VPC 与 Subnet 首先，云上的网络是由 <strong><ruby>VPC<rt>Virtual Private Cloud</rt></ruby></strong> 为基础的，VPC 是针对 Region 而言的。 VPC 需要通过 CIDR 块来指定其的地址范围，相当于给局域网指定的网段。 然而，VPC 仅]]></description>
 </item></channel>
 </rss>
