@@ -60,6 +60,14 @@ Multi Kubernetes 之间物理网络的连通不同场景有着不同的方案。
 
 当然，我们 CoreDNS 能够包含所有 Cluster 的记录，那么可能可以加速解析的流程。目前不清楚可不可以这样配置，或者有没有这样的实现。
 
+{{< admonition note Note>}}
+注意，上述中直接访问跨 Kubernetes 访问 Service 是可能无法联通的，猜想两种情况：
+* Service IP 与 Pod 网络不是一个平面的，那么如果 Cluster1 Pod 发出的包无法被路由到 Cluster2 中（除非配置好路由规则，例如 AWS GCP 的 Route）。
+* Service IP 与 Pod 网络是一个平面的，Cluster1 Pod 发出的数据包能够路由到 Cluster2 中，由 Cluster2 中的 kube-proxy 根据 Service IP 成功转发了。
+
+所以，问题的关键还是在于数据包能否路由到 Cluster2 网络中。
+{{< /admonition >}}
+
 ### 3.2 配置 CoreDNS
 
 基于上面的流程，有两个关键的问题：
