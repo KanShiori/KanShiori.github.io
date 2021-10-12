@@ -330,7 +330,7 @@ coredns-86d9946576-79zvs   1/1     Running   0          87m   10.0.76.0     ip-1
 coredns-86d9946576-tqcbh   1/1     Running   0          87m   10.0.91.141   ip-10-0-77-8.us-west-2.compute.internal     <none>           <none>
 ```
 
-解析就是配置 CoreDNS1 与 CoreDNS2，通过对应的 ConfigMap 来配置 Corefile。配置后，CoreDNS 会自动重新加载配置。
+接着配置 CoreDNS1 与 CoreDNS2，通过对应的 ConfigMap 来配置 Corefile。配置后，CoreDNS 会自动重新加载配置。
 ```yaml
 $ k1 edit -n kube-system cm coredns
 apiVersion: v1
@@ -400,6 +400,142 @@ proxy-to-baidu.cluster-2.svc.cluster.local      canonical name = www.baidu.com
 www.baidu.com   canonical name = www.a.shifen.com
 www.a.shifen.com        canonical name = www.wshifen.com
 ```
+
+
+## 5 Kind 上的实践
+
+### 5.1 创建 Kubernetes 集群
+
+编写 Kind Cluster 配置文件。因为 Kind 支持配置 kubeadm 的配置，所以可以设置两个集群的 cluster domain。
+```yaml
+$ cat cluster-1.yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  podSubnet: 10.20.0.0/16
+  serviceSubnet: 10.40.0.0/16
+nodes:
+  - role: control-plane
+  - role: worker
+  - role: worker
+  - role: worker
+kubeadmConfigPatches:
+  - |
+    kind: ClusterConfiguration
+    networking:
+      dnsDomain: "cluster-1.com"
+
+$ cat cluster-2.yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  podSubnet: 10.30.0.0/16
+  serviceSubnet: 10.50.0.0/16
+nodes:
+  - role: control-plane
+  - role: worker
+  - role: worker
+  - role: worker
+kubeadmConfigPatches:
+  - |
+    kind: ClusterConfiguration
+    networking:
+      dnsDomain: "cluster-2.com"
+```
+
+创建两个集群 cluster-1 cluster-2。
+```bash
+$ kind create cluster --config cluster-1.yaml --name cluster-1
+$ kind create cluster --config cluster-2.yaml --name cluster-2
+```
+
+{{< admonition warning WARN>}}
+操作时，发现如果 network.podSubnet 设置为 10.0.0.0/16 之外的网段，Kind 的 CNI 无法部署成功。
+{{< /admonition >}}
+
+### 5.2 构建网络
+
+整个网络数据包的流转为：Pod A -> Node A -> Node B -> Pod B。其中 Pod -> Node 之间的网络是连通的，所以我们需要解决的关键问题就是 Node A -> Node B 的数据包转发。
+
+Kind 创建的多个集群都是在一个 [**Docker Bridge Network**](http://kanshiori.cn/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/#3-bridge-%E7%BD%91%E7%BB%9C)，因此 Node 之间的网络是天然联通的。
+
+
+因此，我们只需要在 Node 上添加路由项，使之能够正确转发发往对方集群的数据包。为了不对每个 Node 设置相对的路由项，我们考虑在 Bridge Network 上设置路由。
+```bash
+# 找到 kind 网络对应的 bridge 网卡
+$ docker network ls | grep kind | awk '{print $1}'
+9de62faa266a
+
+# 找到两个集群的 Node IP
+$ docker inspect cluster-1-control-plane -f '{{ .NetworkSettings.Networks.kind.IPAddress }}'
+172.19.0.6
+$ docker inspect cluster-2-control-plane -f '{{ .NetworkSettings.Networks.kind.IPAddress }}'
+172.19.0.5
+
+# 添加路由项
+$ ip route add 10.30.0.0/16 via 172.19.0.5 dev br-9de62faa266a
+$ ip route add 10.20.0.0/16 via 172.19.0.6 dev br-9de62faa266a
+```
+
+下图总结了目前构建的网络：
+{{< find_img "img2.png" >}}
+1. Pod A 发送数据包，走 default 路由，由 Bridge 网卡处理。
+2. 根据路由，将数据包转发给 Control Plane Node。
+3. Control Plane Node 转发给 Node A，后发送到 Pod A。
+
+### 5.3 Kubernetes DNS 配置
+
+DNS 配置与 AWS 中的 DNS 配置类似，不过因为设置了两个集群的 cluster domain，所以可以直接使用 cluster domain 配置 CoreDNS。
+
+先看两个集群的 CoreDNS Pod IP。
+```bash
+$ k1 get pods -n kube-system -o wide
+NAME                                              READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
+coredns-558bd4d5db-7kjdt                          1/1     Running   0          65m   10.20.0.3    cluster-1-control-plane   <none>           <none>
+coredns-558bd4d5db-lb46f                          1/1     Running   0          65m   10.20.0.2    cluster-1-control-plane   <none>           <none>
+
+$ k2 get pods -n kube-system -o wide
+NAME                                              READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
+coredns-558bd4d5db-b8c46                          1/1     Running   0          64m   10.30.0.4    cluster-2-control-plane   <none>           <none>
+coredns-558bd4d5db-w9p8g                          1/1     Running   0          64m   10.30.0.3    cluster-2-control-plane   <none>           <none>
+```
+
+接着配置 CoreDNS1 与 CoreDNS2，通过对应的 ConfigMap 来配置 Corefile。配置后，CoreDNS 会自动重新加载配置。
+```yaml
+$ k1 edit -n kube-system cm coredns
+apiVersion: v1
+kind: ConfigMap
+    # ...
+data:
+  Corefile: |
+    .:53 {
+        # default...
+    }
+    cluster-2.com:53 {
+       log
+       errors
+       cache 30
+       forward . 10.30.0.3 10.30.0.4  # -> 对方集群的 CoreDNS Pod IP
+    }    
+
+$ k2 edit -n kube-system cm coredns
+apiVersion: v1
+kind: ConfigMap
+    # ...
+data:
+  Corefile: |
+    .:53 {
+        # default...
+    }
+    cluster-1.com:53 {
+       log
+       errors
+       cache 30
+       forward . 10.20.0.3 10.20.0.2  # -> 对方集群的 CoreDNS Pod IP
+    }
+```
+
+
 
 ## 参考
 * [**Doc: Customizing DNS Service**](https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/)

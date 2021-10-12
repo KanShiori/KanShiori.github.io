@@ -10,7 +10,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_practice/across-kubernetes/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-09-30T07:25:32&#43;00:00" />
-<meta property="article:modified_time" content="2021-10-08T14:19:52&#43;08:00" />
+<meta property="article:modified_time" content="2021-10-12T11:48:19&#43;08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -27,8 +27,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_practice\/across-kubernetes\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3119 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_practice\/across-kubernetes\/","datePublished": "2021-09-30T07:25:32+00:00","dateModified": "2021-10-08T14:19:52+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3930 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_practice\/across-kubernetes\/","datePublished": "2021-09-30T07:25:32+00:00","dateModified": "2021-10-12T11:48:19+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">K8s 实践 - Network Across Cluster</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AE%9E%E8%B7%B5/"><i class="far fa-folder fa-fw"></i>Kubernetes 实践</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-09-30">2021-09-30</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3119 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-09-30">2021-09-30</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3930 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -147,6 +147,13 @@
         </li>
         <li><a href="#43-kubernetes-dns-配置">4.3 Kubernetes DNS 配置</a></li>
         <li><a href="#44-测试">4.4 测试</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-kind-上的实践">5 Kind 上的实践</a>
+      <ul>
+        <li><a href="#51-创建-kubernetes-集群">5.1 创建 Kubernetes 集群</a></li>
+        <li><a href="#52-构建网络">5.2 构建网络</a></li>
+        <li><a href="#53-kubernetes-dns-配置">5.3 Kubernetes DNS 配置</a></li>
       </ul>
     </li>
     <li><a href="#参考">参考</a></li>
@@ -681,7 +688,7 @@ coredns-86d9946576-79zvs   1/1     Running   <span class="m">0</span>          8
 coredns-86d9946576-tqcbh   1/1     Running   <span class="m">0</span>          87m   10.0.91.141   ip-10-0-77-8.us-west-2.compute.internal     &lt;none&gt;           &lt;none&gt;
 </code></pre></td></tr></table>
 </div>
-</div><p>解析就是配置 CoreDNS1 与 CoreDNS2，通过对应的 ConfigMap 来配置 Corefile。配置后，CoreDNS 会自动重新加载配置。</p>
+</div><p>接着配置 CoreDNS1 与 CoreDNS2，通过对应的 ConfigMap 来配置 Corefile。配置后，CoreDNS 会自动重新加载配置。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -813,6 +820,250 @@ www.baidu.com   canonical <span class="nv">name</span> <span class="o">=</span> 
 www.a.shifen.com        canonical <span class="nv">name</span> <span class="o">=</span> www.wshifen.com
 </code></pre></td></tr></table>
 </div>
+</div><h2 id="5-kind-上的实践">5 Kind 上的实践</h2>
+<h3 id="51-创建-kubernetes-集群">5.1 创建 Kubernetes 集群</h3>
+<p>编写 Kind Cluster 配置文件。因为 Kind 支持配置 kubeadm 的配置，所以可以设置两个集群的 cluster domain。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">$ cat cluster-1.yaml</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Cluster</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kind.x-k8s.io/v1alpha4</span><span class="w">
+</span><span class="w"></span><span class="nt">networking</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">podSubnet</span><span class="p">:</span><span class="w"> </span><span class="m">10.20.0.0</span><span class="l">/16</span><span class="w">
+</span><span class="w">  </span><span class="nt">serviceSubnet</span><span class="p">:</span><span class="w"> </span><span class="m">10.40.0.0</span><span class="l">/16</span><span class="w">
+</span><span class="w"></span><span class="nt">nodes</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">control-plane</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w"></span><span class="nt">kubeadmConfigPatches</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="p">|</span><span class="sd">
+</span><span class="sd">    kind: ClusterConfiguration
+</span><span class="sd">    networking:
+</span><span class="sd">      dnsDomain: &#34;cluster-1.com&#34;</span><span class="w">    
+</span><span class="w">
+</span><span class="w"></span><span class="l">$ cat cluster-2.yaml</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Cluster</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kind.x-k8s.io/v1alpha4</span><span class="w">
+</span><span class="w"></span><span class="nt">networking</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">podSubnet</span><span class="p">:</span><span class="w"> </span><span class="m">10.30.0.0</span><span class="l">/16</span><span class="w">
+</span><span class="w">  </span><span class="nt">serviceSubnet</span><span class="p">:</span><span class="w"> </span><span class="m">10.50.0.0</span><span class="l">/16</span><span class="w">
+</span><span class="w"></span><span class="nt">nodes</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">control-plane</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w"></span><span class="nt">kubeadmConfigPatches</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="p">|</span><span class="sd">
+</span><span class="sd">    kind: ClusterConfiguration
+</span><span class="sd">    networking:
+</span><span class="sd">      dnsDomain: &#34;cluster-2.com&#34;</span><span class="w">    
+</span></code></pre></td></tr></table>
+</div>
+</div><p>创建两个集群 cluster-1 cluster-2。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ kind create cluster --config cluster-1.yaml --name cluster-1
+$ kind create cluster --config cluster-2.yaml --name cluster-2
+</code></pre></td></tr></table>
+</div>
+</div><div class="details admonition warning open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-exclamation-triangle fa-fw"></i>WARN<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">操作时，发现如果 network.podSubnet 设置为 10.0.0.0/16 之外的网段，Kind 的 CNI 无法部署成功。</div>
+        </div>
+    </div>
+<h3 id="52-构建网络">5.2 构建网络</h3>
+<p>整个网络数据包的流转为：Pod A -&gt; Node A -&gt; Node B -&gt; Pod B。其中 Pod -&gt; Node 之间的网络是连通的，所以我们需要解决的关键问题就是 Node A -&gt; Node B 的数据包转发。</p>
+<p>Kind 创建的多个集群都是在一个 <a href="http://kanshiori.cn/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/#3-bridge-%E7%BD%91%E7%BB%9C" target="_blank" rel="noopener noreffer"><strong>Docker Bridge Network</strong></a>，因此 Node 之间的网络是天然联通的。</p>
+<p>因此，我们只需要在 Node 上添加路由项，使之能够正确转发发往对方集群的数据包。为了不对每个 Node 设置相对的路由项，我们考虑在 Bridge Network 上设置路由。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 找到 kind 网络对应的 bridge 网卡</span>
+$ docker network ls <span class="p">|</span> grep kind <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span>
+9de62faa266a
+
+<span class="c1"># 找到两个集群的 Node IP</span>
+$ docker inspect cluster-1-control-plane -f <span class="s1">&#39;{{ .NetworkSettings.Networks.kind.IPAddress }}&#39;</span>
+172.19.0.6
+$ docker inspect cluster-2-control-plane -f <span class="s1">&#39;{{ .NetworkSettings.Networks.kind.IPAddress }}&#39;</span>
+172.19.0.5
+
+<span class="c1"># 添加路由项</span>
+$ ip route add 10.30.0.0/16 via 172.19.0.5 dev br-9de62faa266a
+$ ip route add 10.20.0.0/16 via 172.19.0.6 dev br-9de62faa266a
+</code></pre></td></tr></table>
+</div>
+</div><p>下图总结了目前构建的网络：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/k8s_practice/across-kubernetes/img2.png"/>
+
+
+</p>
+<ol>
+<li>Pod A 发送数据包，走 default 路由，由 Bridge 网卡处理。</li>
+<li>根据路由，将数据包转发给 Control Plane Node。</li>
+<li>Control Plane Node 转发给 Node A，后发送到 Pod A。</li>
+</ol>
+<h3 id="53-kubernetes-dns-配置">5.3 Kubernetes DNS 配置</h3>
+<p>DNS 配置与 AWS 中的 DNS 配置类似，不过因为设置了两个集群的 cluster domain，所以可以直接使用 cluster domain 配置 CoreDNS。</p>
+<p>先看两个集群的 CoreDNS Pod IP。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">$ k1 get pods -n kube-system -o wide
+NAME                                              READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
+coredns-558bd4d5db-7kjdt                          1/1     Running   <span class="m">0</span>          65m   10.20.0.3    cluster-1-control-plane   &lt;none&gt;           &lt;none&gt;
+coredns-558bd4d5db-lb46f                          1/1     Running   <span class="m">0</span>          65m   10.20.0.2    cluster-1-control-plane   &lt;none&gt;           &lt;none&gt;
+
+$ k2 get pods -n kube-system -o wide
+NAME                                              READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
+coredns-558bd4d5db-b8c46                          1/1     Running   <span class="m">0</span>          64m   10.30.0.4    cluster-2-control-plane   &lt;none&gt;           &lt;none&gt;
+coredns-558bd4d5db-w9p8g                          1/1     Running   <span class="m">0</span>          64m   10.30.0.3    cluster-2-control-plane   &lt;none&gt;           &lt;none&gt;
+</code></pre></td></tr></table>
+</div>
+</div><p>接着配置 CoreDNS1 与 CoreDNS2，通过对应的 ConfigMap 来配置 Corefile。配置后，CoreDNS 会自动重新加载配置。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">$ k1 edit -n kube-system cm coredns</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span><span class="w">    </span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">    .:53 {
+</span><span class="sd">        # default...
+</span><span class="sd">    }
+</span><span class="sd">    cluster-2.com:53 {
+</span><span class="sd">       log
+</span><span class="sd">       errors
+</span><span class="sd">       cache 30
+</span><span class="sd">       forward . 10.30.0.3 10.30.0.4  # -&gt; 对方集群的 CoreDNS Pod IP
+</span><span class="sd">    }    </span><span class="w">    
+</span><span class="w">
+</span><span class="w"></span><span class="l">$ k2 edit -n kube-system cm coredns</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span><span class="w">    </span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">    .:53 {
+</span><span class="sd">        # default...
+</span><span class="sd">    }
+</span><span class="sd">    cluster-1.com:53 {
+</span><span class="sd">       log
+</span><span class="sd">       errors
+</span><span class="sd">       cache 30
+</span><span class="sd">       forward . 10.20.0.3 10.20.0.2  # -&gt; 对方集群的 CoreDNS Pod IP
+</span><span class="sd">    }</span><span class="w">    
+</span></code></pre></td></tr></table>
+</div>
 </div><h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/" target="_blank" rel="noopener noreffer"><strong>Doc: Customizing DNS Service</strong></a></li>
@@ -823,8 +1074,8 @@ www.a.shifen.com        canonical <span class="nv">name</span> <span class="o">=
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2021-10-08&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/517ef0c21fe0ba725c0cf95c7a9b5986f054a8b4" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 517ef0c21fe0ba725c0cf95c7a9b5986f054a8b4: add Note">
-                                    <i class="fas fa-hashtag fa-fw"></i>517ef0c</a></span>
+                <span>更新于 2021-10-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/b87240e3cb088b3bde08cd988cd7c1e064ee8026" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) b87240e3cb088b3bde08cd988cd7c1e064ee8026: post">
+                                    <i class="fas fa-hashtag fa-fw"></i>b87240e</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
