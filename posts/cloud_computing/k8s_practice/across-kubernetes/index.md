@@ -412,11 +412,10 @@ $ cat cluster-1.yaml
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
-  podSubnet: 10.20.0.0/16
+  podSubnet: 10.10.0.0/16
   serviceSubnet: 10.40.0.0/16
 nodes:
   - role: control-plane
-  - role: worker
   - role: worker
   - role: worker
 kubeadmConfigPatches:
@@ -429,11 +428,10 @@ $ cat cluster-2.yaml
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
-  podSubnet: 10.30.0.0/16
+  podSubnet: 10.20.0.0/16
   serviceSubnet: 10.50.0.0/16
 nodes:
   - role: control-plane
-  - role: worker
   - role: worker
   - role: worker
 kubeadmConfigPatches:
@@ -460,22 +458,30 @@ $ kind create cluster --config cluster-2.yaml --name cluster-2
 Kind 创建的多个集群都是在一个 [**Docker Bridge Network**](http://kanshiori.cn/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/#3-bridge-%E7%BD%91%E7%BB%9C)，因此 Node 之间的网络是天然联通的。
 
 
-因此，我们只需要在 Node 上添加路由项，使之能够正确转发发往对方集群的数据包。为了不对每个 Node 设置相对的路由项，我们考虑在 Bridge Network 上设置路由。
+因此，我们只需要在 Node 上添加路由项，使之能够正确转发发往对方集群的数据包。我们为所有 Node 添加指向另一个集群下的 Node 的路由，路由基于 Node 的 Pod CIDR。
 ```bash
-# 找到 kind 网络对应的 bridge 网卡
-$ docker network ls | grep kind | awk '{print $1}'
-9de62faa266a
+# 找到 每个 node 的 IP 与 PodCIDR
+$ kubectl --context kind-cluster-1 get node -ojsonpath='{range .items[*]} {.metadata.name}{"\t"} {.spec.podCIDR}{"\t"} {.status.addresses[0].address}{"\n"} {end}'
+cluster-1-control-plane         10.10.0.0/24    172.19.0.2
+cluster-1-worker       10.10.2.0/24    172.19.0.4
+cluster-1-worker2      10.10.1.0/24    172.19.0.3
+$ kubectl --context kind-cluster-2 get node -ojsonpath='{range .items[*]} {.metadata.name}{"\t"} {.spec.podCIDR}{"\t"} {.status.addresses[0].address}{"\n"} {end}'
+cluster-2-control-plane         10.20.0.0/24    172.19.0.7
+cluster-2-worker       10.20.2.0/24    172.19.0.5
+cluster-2-worker2      10.20.1.0/24    172.19.0.6
 
-# 找到两个集群的 Node IP
-$ docker inspect cluster-1-control-plane -f '{{ .NetworkSettings.Networks.kind.IPAddress }}'
-172.19.0.6
-$ docker inspect cluster-2-control-plane -f '{{ .NetworkSettings.Networks.kind.IPAddress }}'
-172.19.0.5
-
-# 添加路由项
-$ ip route add 10.30.0.0/16 via 172.19.0.5 dev br-9de62faa266a
-$ ip route add 10.20.0.0/16 via 172.19.0.6 dev br-9de62faa266a
+# 给节点添加路由项
+$ for node in cluster-1-control-plane cluster-1-worker cluster-1-worker2 ; do docker exec ${node} ip route add 10.20.0.0/24 via 172.19.0.7; done
+$ for node in cluster-1-control-plane cluster-1-worker cluster-1-worker2 ; do docker exec ${node} ip route add 10.20.2.0/24 via 172.19.0.5; done
+$ for node in cluster-1-control-plane cluster-1-worker cluster-1-worker2 ; do docker exec ${node} ip route add 10.20.1.0/24 via 172.19.0.6; done
+$ for node in cluster-2-control-plane cluster-2-worker cluster-2-worker2 ; do docker exec ${node} ip route add 10.10.0.0/24 via 172.19.0.2; done
+$ for node in cluster-2-control-plane cluster-2-worker cluster-2-worker2 ; do docker exec ${node} ip route add 10.10.2.0/24 via 172.19.0.4; done
+$ for node in cluster-2-control-plane cluster-2-worker cluster-2-worker2 ; do docker exec ${node} ip route add 10.10.1.0/24 via 172.19.0.3; done
 ```
+
+{{< admonition note Note>}}
+这里尝试过给宿主机上的 kind 的 Bridge 网卡添加路由来转发，而不用为每个 Node 设置路由。但是，这样设置好后发现 UDP ICMP 数据包是可以互通的，但是 TCP 连接无法成功。还不清楚原因。
+{{< /admonition >}}
 
 下图总结了目前构建的网络：
 {{< find_img "img2.png" >}}
@@ -489,20 +495,20 @@ DNS 配置与 AWS 中的 DNS 配置类似，不过因为设置了两个集群的
 
 先看两个集群的 CoreDNS Pod IP。
 ```bash
-$ k1 get pods -n kube-system -o wide
+$ kubectl --context kind-cluster-1 get pods -n kube-system -o wide
 NAME                                              READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
-coredns-558bd4d5db-7kjdt                          1/1     Running   0          65m   10.20.0.3    cluster-1-control-plane   <none>           <none>
-coredns-558bd4d5db-lb46f                          1/1     Running   0          65m   10.20.0.2    cluster-1-control-plane   <none>           <none>
+coredns-558bd4d5db-7kjdt                          1/1     Running   0          65m   10.10.0.3    cluster-1-control-plane   <none>           <none>
+coredns-558bd4d5db-lb46f                          1/1     Running   0          65m   10.10.0.2    cluster-1-control-plane   <none>           <none>
 
-$ k2 get pods -n kube-system -o wide
+$ kubectl --context kind-cluster-2 get pods -n kube-system -o wide
 NAME                                              READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
-coredns-558bd4d5db-b8c46                          1/1     Running   0          64m   10.30.0.4    cluster-2-control-plane   <none>           <none>
-coredns-558bd4d5db-w9p8g                          1/1     Running   0          64m   10.30.0.3    cluster-2-control-plane   <none>           <none>
+coredns-558bd4d5db-b8c46                          1/1     Running   0          64m   10.20.0.2    cluster-2-control-plane   <none>           <none>
+coredns-558bd4d5db-w9p8g                          1/1     Running   0          64m   10.20.0.3    cluster-2-control-plane   <none>           <none>
 ```
 
 接着配置 CoreDNS1 与 CoreDNS2，通过对应的 ConfigMap 来配置 Corefile。配置后，CoreDNS 会自动重新加载配置。
 ```yaml
-$ k1 edit -n kube-system cm coredns
+$ kubectl --context kind-cluster-1 edit -n kube-system cm coredns
 apiVersion: v1
 kind: ConfigMap
     # ...
@@ -512,13 +518,12 @@ data:
         # default...
     }
     cluster-2.com:53 {
-       log
-       errors
-       cache 30
-       forward . 10.30.0.3 10.30.0.4  # -> 对方集群的 CoreDNS Pod IP
-    }    
+      errors
+      cache 30
+      forward . 10.20.0.2 10.20.0.3 # -> 对方集群的 CoreDNS Pod IP
+    } 
 
-$ k2 edit -n kube-system cm coredns
+$ kubectl --context kind-cluster-2 edit -n kube-system cm coredns
 apiVersion: v1
 kind: ConfigMap
     # ...
@@ -528,10 +533,9 @@ data:
         # default...
     }
     cluster-1.com:53 {
-       log
        errors
        cache 30
-       forward . 10.20.0.3 10.20.0.2  # -> 对方集群的 CoreDNS Pod IP
+       forward . 10.10.0.2 10.10.0.3  # -> 对方集群的 CoreDNS Pod IP
     }
 ```
 
