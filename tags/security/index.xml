@@ -1,0 +1,14 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>security - 标签 - Shiori&#39;s Blog</title>
+        <link>https://KanShiori.github.io/tags/security/</link>
+        <description>security - 标签 - Shiori&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 23 Oct 2021 15:20:07 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/security/" rel="self" type="application/rss+xml" /><item>
+    <title>认证 Authentication</title>
+    <link>https://KanShiori.github.io/posts/security/authentication/</link>
+    <pubDate>Sat, 23 Oct 2021 15:20:07 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/security/authentication/</guid>
+    <description><![CDATA[文章内容来自于《凤凰架构》，推荐阅读。 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 用来解决系统对用户身份认证的问题，例如用户密码就是最简单的认]]></description>
+</item></channel>
+</rss>
