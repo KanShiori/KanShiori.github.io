@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>AWS 学习 - 4 - IAM - Shiori&#39;s Blog</title><meta name="Description" content="AWS IAM 相关概念"><meta property="og:title" content="AWS 学习 - 4 - IAM" />
+<meta property="og:description" content="AWS IAM 相关概念" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-iam/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-10-28T13:47:56&#43;00:00" />
+<meta property="article:modified_time" content="2021-10-28T21:22:33&#43;08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="AWS 学习 - 4 - IAM"/>
+<meta name="twitter:description" content="AWS IAM 相关概念"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-iam/" /><link rel="prev" href="https://KanShiori.github.io/posts/security/credentials/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "AWS 学习 - 4 - IAM",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/aws_learning\/4-iam\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  2836 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/aws_learning\/4-iam\/","datePublished": "2021-10-28T13:47:56+00:00","dateModified": "2021-10-28T21:22:33+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": "AWS IAM 相关概念"
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">AWS 学习 - 4 - IAM</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>AWS 学习</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-10-28">2021-10-28</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2836 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-与-aws-交互">1 与 AWS 交互</a></li>
+    <li><a href="#2-root-user--iam-user--user-group">2 Root User / IAM User / User Group</a>
+      <ul>
+        <li><a href="#21-root-user">2.1 Root User</a></li>
+        <li><a href="#22-iam-user">2.2 IAM User</a></li>
+        <li><a href="#23-user-group">2.3 User Group</a></li>
+        <li><a href="#24-service-control-policy">2.4 Service Control Policy</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-policy">3 Policy</a>
+      <ul>
+        <li><a href="#31-policy-的类型">3.1 Policy 的类型</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-role">4 Role</a>
+      <ul>
+        <li><a href="#41-trust-relationship">4.1 Trust Relationship</a></li>
+        <li><a href="#42-session-policy">4.2 Session Policy</a></li>
+        <li><a href="#43-assume-role">4.3 Assume Role</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-permission-boundary">5 Permission Boundary</a></li>
+    <li><a href="#5-policy-评估">5 Policy 评估</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>使用 AWS 时，不同的员工或者应用程序有着不同的 AWS 资源需求，通过 IAM 对其访问权限进行控制。</p>
+<p>IAM 本质上是为了完成两个功能：</p>
+<ul>
+<li>Authentication - 身份认证，操作资源前确认请求者是 “谁”；</li>
+<li>Authorization - 授权，操作者是否有权限操作资源；</li>
+</ul>
+<p>这个 “谁” 被称为 Entity，后面看到的 User、User Group、Role 都属于 Entity。</p>
+<h2 id="1-与-aws-交互">1 与 AWS 交互</h2>
+<p>有四种访问 AWS 服务的方式，所有的方式本质上都是通过请求 AWS API 来访问，不同方式发送时带有的凭证方式不同。</p>
+<ul>
+<li>Console - Username + Password 登陆网页</li>
+<li>CLI - Access Key + Secret Key（后续简称为 AK/SK）</li>
+<li>SDK - AK/SK</li>
+<li>AWS Service - Assume Role</li>
+</ul>
+<p>所有的 API 请求会发送到各个 Region 的 AWS API 终端节点，所有请求都会经过 IAM 的身份认证与授权检查，以及 CloudTrail 的记录。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/aws_learning/4-iam/img1.png"/>
+
+
+</p>
+<p>所有访问方式发送 API 时都会带有一个凭证，其内容包括：</p>
+<ul>
+<li>请求主体；</li>
+<li>签名 - 由 SK 作为私钥，对 请求主体 + 元信息 + 时间戳 等信息进行加密，得到签名；</li>
+</ul>
+<p>该凭证实现的作用：</p>
+<ul>
+<li>身份验证 - AWS 服务端会查找对应的 AK 进行解密，从而验证是否是对应的 SK 加密的；</li>
+<li>防止篡改 - AK 解密后得到摘要信息，通过对比摘要信息来检查请求主体是否被篡改；</li>
+<li>防止重放攻击 - 请求中会带有 时间戳 信息，通过时间戳信息来判断请求有效期（默认 5min），防止重放攻击；</li>
+</ul>
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw"></i>AK/SK 的作用<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">可以看到，AK 作用类似于了公钥，SK 作用类似于了私钥。</div>
+        </div>
+    </div>
+<p>当然，所有的凭证生成对于用户都是透明的，用户只需要配置好 AK/SK 即可访问 AWS 服务。</p>
+<h2 id="2-root-user--iam-user--user-group">2 Root User / IAM User / User Group</h2>
+<h3 id="21-root-user">2.1 Root User</h3>
+<p>创建 AWS Account 时，会自动创建一个 Root User，其权限不受控制。</p>
+<p>对 Root User，因为其权限太大，所以日常使用不要使用 Root User，同时推荐对其开启 MFA，登陆时要求两步验证。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Root User 权限收到控制的情况<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">有个例外，当使用 AWS Organization 限制时，某个 Account 的 Root User 会受到 Service Control Policy 限制。</div>
+        </div>
+    </div>
+<p>最开始创建 Account 时，先用 Root User 创建 Admin IAM User（作为顶级管理员），然后使用 Admin IAM User 去创建各个 IAM User。</p>
+<h3 id="22-iam-user">2.2 IAM User</h3>
+<p>IAM User 访问 AWS 服务收到 IAM 的限制，通过 IAM Policy 来限制其访问权限，以满足最小权限原则（只有用户至少需要的权限）。</p>
+<p>每个 IAM User 有着独立的 Username/Password 与 AK/SK。每个 IAM User 最多有两套 AK/SK，以方便轮换密钥：先停用当前使用的密钥，切换使用新的密钥，后删除旧的密钥。</p>
+<blockquote>
+<p>后面将 IAM User 直接简称为了 User。</p>
+</blockquote>
+<h3 id="23-user-group">2.3 User Group</h3>
+<p>为了更加轻松的管理 User 与他们拥有的权限，可以将 User 添加到 User Group 中。</p>
+<p>当将 IAM Policy 附加到某个 Group 中，该 Group 内的所有 User 都具有了相应的权限。</p>
+<h3 id="24-service-control-policy">2.4 Service Control Policy</h3>
+<p>使用 AWS Organization 管理多个 Account 时，Organization 可以通过 Service Control Policy 控制一个或一组 Account 的访问权限，Account 下所有 Entity 操作都会受到该 Policy（包括 Root User）控制</p>
+<p>Service Control Policy 就是 Policy，会作用于 IAM 进行 Policy 评估时（后续会看到）。</p>
+<h2 id="3-policy">3 Policy</h2>
+<p>Policy 定义了权限这个概念，通过将 Policy 附加到 User/Role，就可以限制其对 AWS 资源的访问权限。</p>
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">Policy 仅仅是静态的权限定义，能够限制 “谁” 是靠附加 Policy 实现的（除了 Resource-based Policy）。</div>
+        </div>
+    </div>
+<p>其格式类似于：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;Version&#34;</span><span class="p">:</span> <span class="s2">&#34;2012-10-17&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;Statement&#34;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;ec2:*&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Resource&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;iam:CreateServiceLinkedRole&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Resource&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Condition&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;StringEquals&#34;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&#34;iam:AWSServiceName&#34;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="s2">&#34;autoscaling.amazonaws.com&#34;</span><span class="p">,</span>
+                        <span class="s2">&#34;ec2scheduled.amazonaws.com&#34;</span><span class="p">,</span>
+                        <span class="s2">&#34;elasticloadbalancing.amazonaws.com&#34;</span><span class="p">,</span>
+                        <span class="s2">&#34;spot.amazonaws.com&#34;</span><span class="p">,</span>
+                        <span class="s2">&#34;spotfleet.amazonaws.com&#34;</span><span class="p">,</span>
+                        <span class="s2">&#34;transitgateway.amazonaws.com&#34;</span>
+                    <span class="p">]</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Statement - 各个语句数组，多个规则之间为 OR 逻辑；
+<ul>
+<li>Effect - 描述该语句是 Allow/Deny；</li>
+<li>Action/NotAction - 语句针对哪些 API 进行控制，支持通配符（例如 ec2:start*）；</li>
+<li>Resource/NotResource - 语句针对哪些资源进行控制，使用 ARN 地址；</li>
+<li>Condition - 语句生效的额外匹配条件，多个条件之前为 AND 逻辑；</li>
+<li>Principal - （仅用于 Resource-based Policy）语句作用于 User/Service；</li>
+</ul>
+</li>
+</ul>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">注意 Resource 与 Principal，Resource 指操作的目标，Principal 指谁进行操作。理论来说，Principal 可以由 Condition 来实现。</div>
+        </div>
+    </div>
+<h3 id="31-policy-的类型">3.1 Policy 的类型</h3>
+<p>根据 Policy 的管理方式，分为：</p>
+<ul>
+<li>AWS 托管 - 由 AWS 进行维护与更新，包含大多数常用的权限语句；</li>
+<li>客户托管 - 由客户自定义与维护，支持版本控制；</li>
+<li>内联 - （很少使用）针对于 User/Role 直接绑定的 Policy，不可复用；</li>
+</ul>
+<p>根据 Policy 应用主体，分为：</p>
+<ul>
+<li>
+<p>Identity-based Policy 基于身份的策略 - 定义 Policy，并附加到 User/Role 来实现对其权限的控制；</p>
+</li>
+<li>
+<p>Resource-based Policy 基于资源的策略 - 与特定资源绑定的 Policy，配置后限制 “谁” 能访问该资源;</p>
+<p>例如 S3 Bucket Policy 配置后限制哪些 Entity 可以访问这个存储桶，Lambda Policy 限制哪些 Entity 可以调用这个 Lambda。</p>
+</li>
+</ul>
+<h2 id="4-role">4 Role</h2>
+<p>User 有着长期使用的 Username/Password 与 AK/SK，并不适合临时提供给他人使用。而 Role 就是用于解决临时的授权操作，主要用于：</p>
+<ul>
+<li>AWS 服务 Assume Role 后，能够拥有访问 AWS 资源的权限；</li>
+<li>User（当前账户 User 或者其他账户 User）Assume Role 后，能够拥有访问 AWS 资源的权限；</li>
+</ul>
+<p>使用 Role 的基本过程为：</p>
+<ol>
+<li>创建 Role；</li>
+<li>将 Policy 附加到 Role 上；</li>
+<li>User/Service 进行 Assume Role 操作；</li>
+</ol>
+<p>Assume Role 后，会在一定时间后过期，也支持手动撤销（Revoke）所有已经分配（不影响后续使用）。</p>
+<p>创建一个 Role 并分配了 Policy 后，可以将 Role 授予某个 User 或者 Resource。这样 User/Resource 会丢弃已有的权限，仅拥有 Role 定义的资源访问权限了。</p>
+<h3 id="41-trust-relationship">4.1 Trust Relationship</h3>
+<p>可以看到，User/Service 需要执行 Assume Role 操作来作为一个 Role，而一个 Role 的 Trust Relationship 就是控制 “谁” 能够 Assume 这个 Role。</p>
+<p>Trust Relationship 本质就是一个 Policy，其控制的是 <code>sts:AssumeRole</code>/<code>sts:AssumeRoleWithWebIdentity</code> API，从而实现了对 Assume 的控制。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;Version&#34;</span><span class="p">:</span> <span class="s2">&#34;2012-10-17&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;Statement&#34;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;Principal&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;Service&#34;</span><span class="p">:</span> <span class="s2">&#34;ec2.amazonaws.com&#34;</span>
+      <span class="p">},</span>
+      <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;sts:AssumeRole&#34;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="42-session-policy">4.2 Session Policy</h3>
+<p>执行 Assume Role 行为时，可以传递一个 Session Policy，作为本次 Assume Role 期间额外添加的 Policy。通过 Session Policy 实现一次性的约束。</p>
+<h3 id="43-assume-role">4.3 Assume Role</h3>
+<p>Assume Role 本质上是调用 <code>sts:AssumeRole</code>/<code>sts:AssumeRoleWithWebIdentity</code> 相关 API，调用时会检查 Trust Relationship（实际上就是 IAM 检查 Policy）。</p>
+<p>Assume 成功后，User/Service 会得到一个 AK/SK + Token 等信息，同时带有着超时时间。这些信息作为一个临时凭证，提供访问 AWS 资源的权限。而该临时凭证由 AWS STS 来颁发。</p>
+<h2 id="5-permission-boundary">5 Permission Boundary</h2>
+<p>默认下，当 Admin User 修改 Entity 权限（Policy）时，是可能提供过大的权限。这样操作，仅仅拥有管理 IAM 的 User 通过创建权限很大的 User 可以做到任何操作。</p>
+<p>Permission Boundary 本质上就是为某个 Entity 指定一个全局的 Policy。当创建 User/Role 时，可以选择是否要带上 Permission Boundary（可选项）。</p>
+<p>强制要求使用 Permission Boundary：即使 Permission Boundary 是可选项，我们可以通过对拥有创建 User/Role 权限的 User 的 Policy 进行条件约束，要求其调用 <code>iam:CreateUser</code> 等 API 时，必须要求带上 Permission Boundary。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="p">[</span>   <span class="err">//</span> <span class="err">-&gt;</span> <span class="err">针对创建</span> <span class="err">User</span> <span class="err">等相关的</span> <span class="err">API</span>
+    <span class="s2">&#34;iam:CreateUser&#34;</span>
+    <span class="err">//</span> <span class="err">...</span>
+  <span class="p">]</span>
+  <span class="s2">&#34;Condition&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;StringEqua1s&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;iam:permissionsBoundary&#34;</span><span class="p">:</span> <span class="s2">&#34;arn:aws:iam::ACCOUNT_ID:policy/PolicyX&#34;</span><span class="err">，//</span> <span class="err">-&gt;</span> <span class="err">要求</span> <span class="err">Permission</span> <span class="err">Boundary</span> <span class="err">必须指定了某个</span> <span class="err">Policy</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="5-policy-评估">5 Policy 评估</h2>
+<p>总结一下前面提到的所有 IAM 会评估的 Policy：</p>
+<ul>
+<li><a href="#31-policy-%e7%9a%84%e7%b1%bb%e5%9e%8b" rel=""><strong>Identity-based Policy</strong></a></li>
+<li><a href="#31-policy-%e7%9a%84%e7%b1%bb%e5%9e%8b" rel=""><strong>Resource-based Policy</strong></a></li>
+<li><a href="#31-policy-%e7%9a%84%e7%b1%bb%e5%9e%8b" rel=""><strong>Session Policy</strong></a></li>
+<li><a href="#5-permission-boundary" rel=""><strong>Permission Boundary</strong></a></li>
+<li><a href="#24-service-control-policy" rel=""><strong>Service Control Policy</strong></a></li>
+</ul>
+<p>每个 IAM 检查 API 请求时，所有的设置了的 Policy 都会被评估，整体可以见下图：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/aws_learning/4-iam/img2.png"/>
+
+
+</p>
+<p>看着流程很复杂，但是可见总结一下其判断逻辑：</p>
+<ol>
+<li>显式拒绝 - 任何存在的 Policy，只要判断出 Deny，但是结果就是 Deny；</li>
+<li>基于资源策略显式允许 - 不存在显示拒绝情况下，如果 Resource-based Policy 是 Allow 拒绝，那么结果是 Deny；</li>
+<li>其他策略交集取允许 - 其他策略要所有策略都需要显式的 Allow；</li>
+<li>隐式拒绝 - 所有策略没有显式 Allow，那么结果为 Deny；</li>
+</ol>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">所有策略评估都是针对于使用了策略情况下，如果没有应用策略那么不会对结果有影响。</div>
+        </div>
+    </div>
+<p>以伪代码方式看：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">anyDeny</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">Deny</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="nx">ResourceBasedAllow</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">Allow</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="nx">AllAllow</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">allow</span>
+<span class="p">}</span>
+
+<span class="k">return</span> <span class="nx">Deny</span>
+</code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-10-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/ae860449d5cc4ef9f652961edbcaf8b5ac49ceb7" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) ae860449d5cc4ef9f652961edbcaf8b5ac49ceb7: post: iam">
+                                    <i class="fas fa-hashtag fa-fw"></i>ae86044</a></span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud_computing/aws_learning/4-iam/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-iam/" data-title="AWS 学习 - 4 - IAM"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-iam/" data-title="AWS 学习 - 4 - IAM"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-iam/" data-title="AWS 学习 - 4 - IAM"><i class="fab fa-evernote fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/aws/">aws</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/security/credentials/" class="prev" rel="prev" title="凭证 Credential"><i class="fas fa-angle-left fa-fw"></i>凭证 Credential</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

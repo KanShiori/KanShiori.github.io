@@ -30,11 +30,19 @@ Region 由一组 Available Zone（简称 AZ），AZ 表示一个或一组分离�
 可以看到，为了容灾，业务应该至少在一个 Region 下的两个 AZ 中部署。
 
 
-### 4 Edge Location
+## 4 Edge Location
 
 Edge Location 是分布在世界各地的边缘站点，用于支持一些加速用户访问的服务。
 
 例如，CloudFront 与 Route53 都可以部署在 Edge Location。
 {{< find_img "img2.png" >}}
+
+
+## 5 管理分区
+
+AWS 按照合规性要求将全球服务分为三个管理分区，每个分区之间是完全独立的。包括：
+* 海外分区 aws.amazon.com - 21 个 Region 组成，每个 Region 之间使用 AWS 自行维护的骨干网络相连；
+* 中国分区 amazonaws.cn - 北京和宁夏两个 Region 组成，但是没有骨干网络相连接；
+* govcloud
 
 
