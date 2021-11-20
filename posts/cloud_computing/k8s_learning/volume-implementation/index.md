@@ -1605,3 +1605,8 @@ func (rc *reconciler) unmountDetachDevices() {
 	}
 }
 ```
+
+## 参考
+
+* [**Blog：详解 Kubernetes Volume 的实现原理**](https://draveness.me/kubernetes-volume/)
+* [**Blog：kubelet volume manager 源码分析**](http://bingerambo.com/posts/2021/02/kubelet-volume-manager%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/)
