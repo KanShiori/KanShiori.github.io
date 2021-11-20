@@ -3,7 +3,14 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 28 Oct 2021 13:47:56 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>源码阅读 - Volume 实现</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</link>
+    <pubDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</guid>
+    <description><![CDATA[1 概述 以一个云存储作为 Volume 为例，其架构图如下： Deploy PVC - 用户 Deploy PVC 对象。 Provision Volume - PV Controller 基于 StorageClass 创建一个 Volume（无法绑定已有 PV 的情况下），并创建 PV 对象]]></description>
+</item><item>
     <title>AWS 学习 - 4 - IAM</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-iam/</link>
     <pubDate>Thu, 28 Oct 2021 13:47:56 &#43;0000</pubDate>
@@ -32,11 +39,11 @@
     <guid>https://KanShiori.github.io/posts/security/authentication/</guid>
     <description><![CDATA[文章内容来自于《凤凰架构》，推荐阅读。 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 用来解决系统对用户身份认证的问题，例如用户密码就是最简单的认]]></description>
 </item><item>
-    <title>AWS 学习 - 3 - VPC</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-vpc/</link>
+    <title>AWS 学习 - 3 - Network</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-network/</link>
     <pubDate>Fri, 01 Oct 2021 12:08:32 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-vpc/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-network/</guid>
     <description><![CDATA[1 VPC 与 Subnet 首先，云上的网络是由 <strong><ruby>VPC<rt>Virtual Private Cloud</rt></ruby></strong> 为基础的，VPC 是针对 Region 而言的。 VPC 需要通过 CIDR 块来指定其的地址范围，相当于给局域网指定的网段。 然而，VPC 仅]]></description>
 </item><item>
     <title>K8s 实践 - Network Across Cluster</title>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/6-custom-api-server/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 Custom APIServer 可以作为 CRD 的替]]></description>
-</item><item>
-    <title>K8s 编程 - 5 - 发布 Operator</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/5-shipping-controllers/</link>
-    <pubDate>Fri, 20 Aug 2021 14:53:38 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/5-shipping-controllers/</guid>
-    <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 打包 1.1 Helm Helm 已经成]]></description>
 </item></channel>
 </rss>

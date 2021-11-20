@@ -3,7 +3,14 @@
         <title>Kubernetes 学习 - 分类 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/</link>
         <description>Kubernetes 学习 - 分类 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 03 Jul 2021 05:47:25 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
+    <title>源码阅读 - Volume 实现</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</link>
+    <pubDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</guid>
+    <description><![CDATA[1 概述 以一个云存储作为 Volume 为例，其架构图如下： Deploy PVC - 用户 Deploy PVC 对象。 Provision Volume - PV Controller 基于 StorageClass 创建一个 Volume（无法绑定已有 PV 的情况下），并创建 PV 对象]]></description>
+</item><item>
     <title>K8s 学习 - 10 - API Server 认证</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/10-apiserver-auth/</link>
     <pubDate>Sat, 03 Jul 2021 05:47:25 &#43;0000</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/2-service/</guid>
     <description><![CDATA[1 概述 首先我们需要明确 Service 出现的背景：因为 Pod 设计上是无状态的，可以说没有固定的 IP，所以在其他组件访问某一个网络服务时，需要一个 “固定” 的地址]]></description>
-</item><item>
-    <title>K8s 学习 - 1 - Pod</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/1-pod/</link>
-    <pubDate>Sat, 05 Jun 2021 16:29:21 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/1-pod/</guid>
-    <description><![CDATA[1 Pod 的进程模型 Pod 是一组容器的集合，而为什么实现上需要多个容器？据传，因为开发 Borg 项目的工程师发现，部署的应用往往都是一个进程组，而不是一个进程]]></description>
 </item></channel>
 </rss>
