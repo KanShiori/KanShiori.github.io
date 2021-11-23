@@ -2,11 +2,12 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
+            <loc>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</loc><lastmod>2021-11-23T22:34:34&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
             <loc>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</loc><lastmod>2021-11-20T14:51:39&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
             <loc>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-iam/</loc><lastmod>2021-11-20T15:25:39&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://KanShiori.github.io/posts/security/credentials/</loc><lastmod>2021-10-25T14:01:32&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
-            <loc>https://KanShiori.github.io/posts/security/authorization/</loc><lastmod>2021-10-25T14:01:32&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
-            <loc>https://KanShiori.github.io/posts/security/authentication/</loc><lastmod>2021-10-24T17:00:59&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
+            <loc>https://KanShiori.github.io/posts/security/credentials/</loc><lastmod>2021-10-25T14:01:32&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
+            <loc>https://KanShiori.github.io/posts/security/authorization/</loc><lastmod>2021-10-25T14:01:32&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
+            <loc>https://KanShiori.github.io/posts/security/authentication/</loc><lastmod>2021-10-24T17:00:59&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
             <loc>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-network/</loc><lastmod>2021-11-20T06:49:23&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
             <loc>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/across-kubernetes/</loc><lastmod>2021-10-13T08:36:01&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/8-extend-scheduler/</loc><lastmod>2021-09-24T15:53:06&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
@@ -44,17 +45,17 @@
             <loc>https://KanShiori.github.io/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/</loc><lastmod>2020-11-06T20:40:51&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://KanShiori.github.io/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/</loc><lastmod>2020-10-31T17:47:42&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/create-cluster/</loc><lastmod>2021-09-30T14:33:48&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://KanShiori.github.io/categories/</loc><lastmod>2021-11-20T15:25:39&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://KanShiori.github.io/tags/k8s/</loc><lastmod>2021-11-20T14:51:39&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/</loc><lastmod>2021-11-20T14:51:39&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://KanShiori.github.io/posts/</loc><lastmod>2021-11-20T15:25:39&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://KanShiori.github.io/</loc><lastmod>2021-11-20T15:25:39&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://KanShiori.github.io/tags/</loc><lastmod>2021-11-20T15:25:39&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/</loc><lastmod>2021-11-20T14:51:39&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://KanShiori.github.io/categories/</loc><lastmod>2021-11-23T22:34:34&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://KanShiori.github.io/tags/k8s/</loc><lastmod>2021-11-23T22:34:34&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/</loc><lastmod>2021-11-23T22:34:34&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://KanShiori.github.io/posts/</loc><lastmod>2021-11-23T22:34:34&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://KanShiori.github.io/</loc><lastmod>2021-11-23T22:34:34&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://KanShiori.github.io/tags/</loc><lastmod>2021-11-23T22:34:34&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/</loc><lastmod>2021-11-23T22:34:34&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
             <loc>https://KanShiori.github.io/tags/aws/</loc><lastmod>2021-11-20T15:25:39&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
             <loc>https://KanShiori.github.io/categories/aws-%E5%AD%A6%E4%B9%A0/</loc><lastmod>2021-11-20T15:25:39&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://KanShiori.github.io/categories/security/</loc><lastmod>2021-10-25T14:01:32&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
-            <loc>https://KanShiori.github.io/tags/security/</loc><lastmod>2021-10-25T14:01:32&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
+            <loc>https://KanShiori.github.io/categories/security/</loc><lastmod>2021-10-25T14:01:32&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
+            <loc>https://KanShiori.github.io/tags/security/</loc><lastmod>2021-10-25T14:01:32&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
             <loc>https://KanShiori.github.io/tags/net/</loc><lastmod>2021-11-20T06:49:23&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
             <loc>https://KanShiori.github.io/categories/kubernetes-%E5%AE%9E%E8%B7%B5/</loc><lastmod>2021-10-13T08:36:01&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://KanShiori.github.io/categories/kubernetes-%E7%BC%96%E7%A8%8B/</loc><lastmod>2021-09-24T15:53:06&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>

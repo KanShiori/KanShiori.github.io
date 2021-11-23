@@ -3,7 +3,14 @@
         <title>Kubernetes 学习 - 分类 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/</link>
         <description>Kubernetes 学习 - 分类 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 20 Nov 2021 08:22:28 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 学习 - 11 - CSI</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</link>
+    <pubDate>Sat, 20 Nov 2021 08:22:28 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</guid>
+    <description><![CDATA[1 设计原理 在 源码阅读 - Volume 实现 中看到，所有的存储插件实现的都是操作 Volume 的方法： Provision Volume Attach Volume Mount Device Setup Volume CSI 整体体系的架构如下图 Sidecar 容器 是一组 Kubernetes 社区维护的标准]]></description>
+</item><item>
     <title>源码阅读 - Volume 实现</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</link>
     <pubDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/3-dns/</guid>
     <description><![CDATA[1 Pod 的 DNS 1.1 Pod 的 DNS 域名 对每个 Pod 来说，CoreDNS 会为其设置一个 &lt;pod_ip&gt;.&lt;namespace&gt;.pod.&lt;clust-domain&gt; 格式的 DNS 域名。 1 2 3 4 5 6 7 # 访问 POD IP DNS $ nslookup 192-168-166-168.tidb-cluster-dev.pod.cluster.local Server: 10.96.0.10 Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local Name: 192-168-166-168.tidb-cluster-dev.pod.cluster.local Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-peer.tidb-cluster-dev.svc.cluster.local 对于 Deployment]]></description>
-</item><item>
-    <title>K8s 学习 - 2 - Service</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/2-service/</link>
-    <pubDate>Sun, 06 Jun 2021 14:03:01 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/2-service/</guid>
-    <description><![CDATA[1 概述 首先我们需要明确 Service 出现的背景：因为 Pod 设计上是无状态的，可以说没有固定的 IP，所以在其他组件访问某一个网络服务时，需要一个 “固定” 的地址]]></description>
 </item></channel>
 </rss>
