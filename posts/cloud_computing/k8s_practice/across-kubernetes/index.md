@@ -401,10 +401,78 @@ www.baidu.com   canonical name = www.a.shifen.com
 www.a.shifen.com        canonical name = www.wshifen.com
 ```
 
+## 5 GCP 上的实践
 
-## 5 Kind 上的实践
+### 5.1 创建 VPC Network
 
-### 5.1 创建 Kubernetes 集群
+GCP 与 AWS 不同，其 VPC 是一个虚拟的全球的概念，其下的 Subnet 是天然的跨 Region 联通的。因此，物理网络我们不需要过多的配置使其联通。
+
+先创建一个自定义子网的 VPC：
+```bash
+$ gcloud compute networks create ${network_name} --subnet-mode=custom
+```
+
+在新创建的 VPC 网络下创建两个个 Subnet，注意各个 Subnet 的 IP 地址范围不能相互重叠。每个 Subnet 还包含了后续 Kubernetes 要使用的 Pod 与 Service 的 IP 地址范围。
+```bash
+$ gcloud compute networks subnets create ${subnet_1} \
+    --region=${region_1} \
+    --network=${network_name} \
+    --range=10.0.0.0/16 \
+    --secondary-range pods=10.10.0.0/16,services=10.100.0.0/16
+
+$ gcloud compute networks subnets create ${subnet_1} \
+  --region=${region_1} \
+  --network=${network_name} \
+  --range=10.2.0.0/16 \
+  --secondary-range pods=10.12.0.0/16,services=10.102.0.0/16
+```
+
+### 5.2 创建 GKE 集群
+
+创建两个 Region 级别的 GKE 集群：
+```bash
+$ gcloud beta container clusters create ${cluster_1} \
+    --region ${region_1} --num-nodes 1 \
+    --network ${network_name} --subnetwork ${subnet_1} \
+    --cluster-dns clouddns --cluster-dns-scope vpc \
+    --cluster-dns-domain ${cluster_domain_1}
+    --enable-ip-alias \
+    --cluster-secondary-range-name=pods --services-secondary-range-name=services
+
+$ gcloud beta container clusters create ${cluster_2} \
+    --region ${region_2} --num-nodes 1 \
+    --network ${network_name} --subnetwork ${subnet_2} \
+    --cluster-dns clouddns --cluster-dns-scope vpc \
+    --cluster-dns-domain ${cluster_domain_2}
+    --enable-ip-alias \
+    --cluster-secondary-range-name=pods --services-secondary-range-name=services
+```
+
+一些重要的参数：
+* `--network` 与 `--subnetwork` 指定了加入的 Subnet；
+* `-cluster-dns clouddns` 和 `--cluster-dns-scope vpc` 参数使用了 [**Cloud DNS 服务**](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns)，以实现跨 Kubernetes 的 DNS 解析；
+* `--cluster-dns-domain ${cluster_domain_1}`  定义了域名解析使用的 Cluster Domain，也就是我们需要为 Pod 配置的；
+* `--cluster-secondary-range-name=pods` `--services-secondary-range-name=services` 指定了 Pod 与 Service 使用的 IP 地址范围；
+
+### 5.3 配置 Firewall
+
+最后一步就是配置 GKE 集群节点应用的 Firewall。默认情况，创建 GKE 集群会创建默认本集群 Pod 访问的 Firewall（见文档 [**自动创建的防火墙规则**](https://cloud.google.com/kubernetes-engine/docs/concepts/firewall-rules)），因此集群见 Pod 相互访问是不允许的。
+
+先找到集群用于 Pod 见通信的 Firewall rules。
+```bash
+$ gcloud compute firewall-rules list --filter='name~gke-${cluster_1}-.*-all'
+NAME                           NETWORK     DIRECTION  PRIORITY  ALLOW                         DENY  DISABLED
+gke-${cluster_1}-b8b48366-all  ${network}  INGRESS    1000      tcp,udp,icmp,esp,ah,sctp            False
+```
+
+更新该防火墙规则，设置 source range 为所有集群的 Pod 网络的 IP 地址范围：
+```bash
+$ gcloud compute firewall-rules update gke-${cluster_1}-b8b48366-all --source-ranges 10.10.0.0/16,10.11.0.0/16
+```
+
+## 6 Kind 上的实践
+
+### 6.1 创建 Kubernetes 集群
 
 编写 Kind Cluster 配置文件。因为 Kind 支持配置 kubeadm 的配置，所以可以设置两个集群的 cluster domain。
 ```yaml
@@ -451,7 +519,7 @@ $ kind create cluster --config cluster-2.yaml --name cluster-2
 操作时，发现如果 network.podSubnet 设置为 10.0.0.0/16 之外的网段，Kind 的 CNI 无法部署成功。
 {{< /admonition >}}
 
-### 5.2 构建网络
+### 6.2 构建网络
 
 整个网络数据包的流转为：Pod A -> Node A -> Node B -> Pod B。其中 Pod -> Node 之间的网络是连通的，所以我们需要解决的关键问题就是 Node A -> Node B 的数据包转发。
 
@@ -489,7 +557,11 @@ $ for node in cluster-2-control-plane cluster-2-worker cluster-2-worker2 ; do do
 2. 根据路由，将数据包转发给 Control Plane Node。
 3. Control Plane Node 转发给 Node A，后发送到 Pod A。
 
-### 5.3 Kubernetes DNS 配置
+{{< admonition note Note>}}
+Kind 网络中，某个集群 Pod 访问其他集群时，数据包会被 Node 进行 SNAT。因此，在某些需要使用源 IP（例如证书 host 配置）时，需要注意。
+{{< /admonition >}}
+
+### 6.3 Kubernetes DNS 配置
 
 DNS 配置与 AWS 中的 DNS 配置类似，不过因为设置了两个集群的 cluster domain，所以可以直接使用 cluster domain 配置 CoreDNS。
 
