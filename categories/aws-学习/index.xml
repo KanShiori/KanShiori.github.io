@@ -3,20 +3,27 @@
         <title>AWS 学习 - 分类 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/categories/aws-%E5%AD%A6%E4%B9%A0/</link>
         <description>AWS 学习 - 分类 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 28 Oct 2021 13:47:56 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/aws-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
-    <title>AWS 学习 - 4 - IAM</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-iam/</link>
-    <pubDate>Thu, 28 Oct 2021 13:47:56 &#43;0000</pubDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 29 Nov 2021 13:15:05 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/aws-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
+    <title>AWS 学习 - 5 - VPC 与 Service 通信</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/5-vpc-and-aws/</link>
+    <pubDate>Mon, 29 Nov 2021 13:15:05 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-iam/</guid>
-    <description><![CDATA[使用 AWS 时，不同的员工或者应用程序有着不同的 AWS 资源需求，通过 IAM 对其访问权限进行控制。 IAM 本质上是为了完成两个功能： Authentication - 身份认证，操作资源前确认请]]></description>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/5-vpc-and-aws/</guid>
+    <description><![CDATA[1 VPC Peering VPC Peering 用于连接两个不同地址范围的 VPC，VPC 可以处于不同的 Region，甚至不同的 AWS 账户。 当 VPC Peering 连接两个 VPC 后，VPC 内部的资源（Ins]]></description>
 </item><item>
-    <title>AWS 学习 - 3 - Network</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-network/</link>
-    <pubDate>Fri, 01 Oct 2021 12:08:32 &#43;0000</pubDate>
+    <title>AWS 学习 - 4 - VPC 与 Internet 通信</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-vpc-and-internet/</link>
+    <pubDate>Mon, 29 Nov 2021 13:12:48 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-network/</guid>
-    <description><![CDATA[1 VPC 与 Subnet 首先，云上的网络是由 <strong><ruby>VPC<rt>Virtual Private Cloud</rt></ruby></strong> 为基础的，VPC 是针对 Region 而言的。 VPC 需要通过 CIDR 块来指定其的地址范围，相当于给局域网指定的网段。 然而，VPC 仅]]></description>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-vpc-and-internet/</guid>
+    <description><![CDATA[1 Internet Gateway Internet Gateway 用于将 VPC 的流量转发给外网，并将外网的主动访问转发给指定的 Instance。 使用 Internet Gateway 的必要操作： 创建 Internet Gateway 并关联到 VPC 上。 Instance 拥有公网 IP 地]]></description>
+</item><item>
+    <title>AWS 学习 - 3 - VPC 基本概念</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-vpc/</link>
+    <pubDate>Fri, 25 Jun 2021 14:13:47 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-vpc/</guid>
+    <description><![CDATA[1 VPC 与 Subnet 云上的网络是由 <strong><ruby>VPC<rt>Virtual Private Cloud</rt></ruby></strong> 与 Subnet 组成的： VPC 是针对 Region 级别，其由一个 CIDR Block 来指定 IP 地址范围。 Subnet 是 VPC 网段的子网，AZ 级别资源（无法跨 AZ 覆盖）。 EC2 Instance 启]]></description>
 </item><item>
     <title>AWS 学习 - 1 - 地理概念</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/1-introduction/</link>

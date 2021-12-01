@@ -3,9 +3,23 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 20 Nov 2021 08:22:28 &#43;0000</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 29 Nov 2021 13:15:05 &#43;0000</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>AWS 学习 - 5 - VPC 与 Service 通信</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/5-vpc-and-aws/</link>
+    <pubDate>Mon, 29 Nov 2021 13:15:05 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/5-vpc-and-aws/</guid>
+    <description><![CDATA[1 VPC Peering VPC Peering 用于连接两个不同地址范围的 VPC，VPC 可以处于不同的 Region，甚至不同的 AWS 账户。 当 VPC Peering 连接两个 VPC 后，VPC 内部的资源（Ins]]></description>
+</item><item>
+    <title>AWS 学习 - 4 - VPC 与 Internet 通信</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-vpc-and-internet/</link>
+    <pubDate>Mon, 29 Nov 2021 13:12:48 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-vpc-and-internet/</guid>
+    <description><![CDATA[1 Internet Gateway Internet Gateway 用于将 VPC 的流量转发给外网，并将外网的主动访问转发给指定的 Instance。 使用 Internet Gateway 的必要操作： 创建 Internet Gateway 并关联到 VPC 上。 Instance 拥有公网 IP 地]]></description>
+</item><item>
     <title>K8s 学习 - 11 - CSI</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</link>
     <pubDate>Sat, 20 Nov 2021 08:22:28 &#43;0000</pubDate>
@@ -19,13 +33,6 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</guid>
     <description><![CDATA[1 概述 以一个云存储作为 Volume 为例，其架构图如下： Deploy PVC - 用户 Deploy PVC 对象。 Provision Volume - PV Controller 基于 StorageClass 创建一个 Volume（无法绑定已有 PV 的情况下），并创建 PV 对象]]></description>
-</item><item>
-    <title>AWS 学习 - 4 - IAM</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-iam/</link>
-    <pubDate>Thu, 28 Oct 2021 13:47:56 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-iam/</guid>
-    <description><![CDATA[使用 AWS 时，不同的员工或者应用程序有着不同的 AWS 资源需求，通过 IAM 对其访问权限进行控制。 IAM 本质上是为了完成两个功能： Authentication - 身份认证，操作资源前确认请]]></description>
 </item><item>
     <title>凭证 Credential</title>
     <link>https://KanShiori.github.io/posts/security/credentials/</link>
@@ -47,13 +54,6 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/security/authentication/</guid>
     <description><![CDATA[文章内容来自于《凤凰架构》，推荐阅读。 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 用来解决系统对用户身份认证的问题，例如用户密码就是最简单的认]]></description>
-</item><item>
-    <title>AWS 学习 - 3 - Network</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-network/</link>
-    <pubDate>Fri, 01 Oct 2021 12:08:32 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/3-network/</guid>
-    <description><![CDATA[1 VPC 与 Subnet 首先，云上的网络是由 <strong><ruby>VPC<rt>Virtual Private Cloud</rt></ruby></strong> 为基础的，VPC 是针对 Region 而言的。 VPC 需要通过 CIDR 块来指定其的地址范围，相当于给局域网指定的网段。 然而，VPC 仅]]></description>
 </item><item>
     <title>K8s 实践 - Network Across Cluster</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/across-kubernetes/</link>
