@@ -3,7 +3,21 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 29 Nov 2021 13:15:05 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 04 Dec 2021 13:13:45 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>AWS 学习 - 7 - Elastic Load Balancing</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/7-elb/</link>
+    <pubDate>Sat, 04 Dec 2021 13:13:45 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/7-elb/</guid>
+    <description><![CDATA[1 LB 的基本模型 不同的 LB 在使用上是基本相同的，都依据以下的模型： Domain - LB 拥有着一个唯一的域名，Client 通过该域名来访问 LB。 LB 的域名是单点的]]></description>
+</item><item>
+    <title>AWS 学习 - 6 - IAM</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/6-iam/</link>
+    <pubDate>Wed, 01 Dec 2021 13:47:56 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/6-iam/</guid>
+    <description><![CDATA[使用 AWS 时，不同的员工或者应用程序有着不同的 AWS 资源需求，通过 IAM 对其访问权限进行控制。 IAM 本质上是为了完成两个功能： Authentication - 身份认证，操作资源前确认请]]></description>
+</item><item>
     <title>AWS 学习 - 5 - VPC 与 Service 通信</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/5-vpc-and-aws/</link>
     <pubDate>Mon, 29 Nov 2021 13:15:05 &#43;0000</pubDate>
@@ -59,19 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/across-kubernetes/</guid>
     <description><![CDATA[Kubernetes 实践 主要记录一些自己的一些部署实践。 1 目标 最近在看 TiDB 的 Multi Kubernetes 集群部署方案，TiDB 本身是灵活扩容的分布式数据库，因此部署前需要确保 Multi Kubernetes 之间服]]></description>
-</item><item>
-    <title>K8s 编程 - 8 - Custom Scheduler</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/8-extend-scheduler/</link>
-    <pubDate>Wed, 22 Sep 2021 12:19:47 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/8-extend-scheduler/</guid>
-    <description><![CDATA[kube-scheduler 负责集群资源的调度，原生的 Kubernetes Scheduler 可以满足大多数情况的需求。不过针对于不同业务的特殊的调度需求，Kubernetes 提供了多种扩展调度器的方式]]></description>
-</item><item>
-    <title>K8s 编程 - 7 - Admission Webhook</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/7-admission-webhook/</link>
-    <pubDate>Tue, 21 Sep 2021 06:58:07 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/7-admission-webhook/</guid>
-    <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 下面代码都来自于 a]]></description>
 </item></channel>
 </rss>
