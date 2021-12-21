@@ -20,7 +20,90 @@
 
 * Target - 处理请求的实例，最平常的就是一个 Instance。
 
-## 1 Application Load Balancer
+## 2 Domain
+
+LB 分为两种 Scheme：
+* Internet-facing - 面向公网的 LB，具有 Public IP，需要部署在 Publich Subnet
+* Internal - 内网 LB，仅仅具有 Private IP
+
+无论哪种 LB，创建后都会分配一个唯一的 Domain，用作访问 LB 的入口。该 Domain 会被解析为其服务的多个 Subnet 的 Public/Private IP。
+
+LB 的 Domain 格式为：
+```
+<LB-id>-<hash>.elb.<region>.amazonaws.com
+```
+
+## 3 Listener
+
+Listener 将 Domain 访问根据 Protocol + Port 分为多个路由项。也就是说，访问 Domain 的请求根据 Protocol + Port 由不同的 Listener 来处理。
+
+每个 Listener 需要指定：
+* Protocol - 匹配的协议
+  
+  对于 ALB，Protocol 支持 HTTP 与 HTTPs。对于 NLB，Protocol 支持 TCP、TCP_UDP、TLS 与 UDP。
+
+* Port - 匹配的 Port
+  
+* Default Action - 默认路由的 Target Group
+
+### 3.1 Rule
+
+对于 ALB，在 Listener 范围下还可以添加 Rule，进一步的根据信息添加路由项。例如，你可以创建一个 HTTP 80 端口的 Listener，然后创建不同的 HTTP Path 的路由项。
+{{< find_img "img1-1.png" >}}
+
+每条 Rule 支持如下的方式进行组合：
+* Host Header
+* HTTP Header - 请求的 Header
+* HTTP Request Method - 请求的 Method
+* Path - 请求的 Path
+* Query string
+* Source IP - 源 IP 地址
+
+Rule 按照编号从小到大进行匹配，当匹配到了之后就执行路由，不再匹配。Listener 创建时指定的规则为 Default Action，是最后一个 Rule。
+
+## 4 Target Group
+
+每个 Listener(Rule) 都需要绑定对应的 Target Group。Target Group 是一个抽象的概念，用于表明有哪些后端服务。
+
+Target Group 有四种类型：
+
+* Instance - EC2 Instance
+  
+  选择与 LB 同 Subnet 的 EC2 Instance
+
+* IP 地址 - 指定多个后端服务的 IPv4 地址
+  
+* Lambda 函数 - 指定触发的 Lambda 函数（仅 ALB 支持）
+  
+* ALB - 后端由 ALB 处理
+
+指定 Target Group 时，也需要指定请求后端服务的 Port。
+
+{{< admonition note Note>}}
+Listener 的 Port 用于判断是否处理请求，Target Group 的 Port 是访问 Target 指定的端口。 
+{{< /admonition >}}
+
+### 4.1 Health Check
+
+创建 Target Group 时，需要指定 Health Check 机制。LB 会周期性对所有 Target 进行健康检查。
+
+Health Check 的状态变化是平滑的：
+* Healthy -> Unhealthy: 连续 Health Check 失败次数达到阈值 "Healthy threshold"
+* Unhealthy -> Healthy: 连续 Health Check 成功次数达到阈值 "Healthy threshold"
+
+当某个 Target 变为 Unhealthy 时，LB 就不会将流量路由到该 Target，直到重新变为 Healthy。
+{{< find_img "img1-2.png" >}}
+
+Health Check 支持以下协议：
+* TCP - 对于 TCP 端口发起连接请求，连接成功就表明健康检查成功
+* HTTP - 发起一个 HTTP Path 的请求，检查其回复的 HTTP Code
+* HTTP - 发起一个 HTTPs Path 的请求，检查其回复的 HTTP Code
+
+{{< admonition note Note>}}
+对于 UDP NLB，也仅仅只能通过 TCP 来进行健康检查。
+{{< /admonition >}}
+
+## 5 Application Load Balancer
 
 ALB 是基于七层的代理，创建时需要指定其所在的 VPC，以及指定至少两个 AZ 的 Subnet。LB 会在每个 Subnet 创建一个 ENI，用于作为 LB 域名解析后的 IP 之一。
 {{< find_img "img2.png" >}}
@@ -31,7 +114,7 @@ ALB 是基于七层的代理，创建时需要指定其所在的 VPC，以及指
 
 因为 LB 使用 ENI 来实现，因此也可以为 LB 设置 Security Group，来控制出入 LB 的流量。
 
-### 1.1 LB 的状态
+### 5.1 LB 的状态
 
 LB 可能处于以下状态之一：
 * provisioning - 创建 LB 中
@@ -39,7 +122,7 @@ LB 可能处于以下状态之一：
 * active_impaired - LB 正在路由流量，但是没有扩展所需的资源
 * failed - LB 无法创建
 
-### 1.2 Access Log
+### 5.2 Access Log
 
 ELB 可以提供 Access Log，用于查看发送到 LB 的请求的详细信息。
 
@@ -62,11 +145,11 @@ arn:aws:elasticloadbalancing:us-east-2:123456789012:targetgroup/my-targets/73e2d
 0 2018-07-02T22:22:48.364000Z "forward" "-" "-" 10.0.0.1:80 200 "-" "-"
 ```
 
-### 1.3 Deletion Protection
+### 5.3 Deletion Protection
 
 为了防止 LB 意外被删除，可以开启 Deletion Protection 功能。开启后，需要先关闭 Deletion Protection 功能，然后才能删除 LB。
 
-### 1.4 Connection idle timeout
+### 5.4 Connection idle timeout
 
 对于 Client 的访问，LB 会维护两个连接：
 * Client 与 LB 之间的连接
@@ -76,7 +159,7 @@ arn:aws:elasticloadbalancing:us-east-2:123456789012:targetgroup/my-targets/73e2d
 
 对于 LB 与 Target 之间的连接，为了能够复用后端连接，推荐开启 HTTP keep alive。
 
-### 1.5 Desync mitigation mode
+### 5.5 Desync mitigation mode
 
 在 LB 这种模式下，HTTP 的访问是由 LB 异步发送给 Target 进行处理的。Desync mitigation mode 就是用于保护 Target 不受到 HTTP 异步的影响。
 
@@ -89,7 +172,7 @@ LB 会使用 [**http_desync_guardian**](https://github.com/aws/http-desync-guard
 | Ambiguous       | Allowed      | Allowed                | Blocked        |
 | Severe          | Allowed      | Blocked                | Blocked        |
 
-### 1.6 HEAD 处理
+### 5.6 HEAD 处理
 
 ALB 支持转发请求时添加 `X-Forwarded` 相关的 HTTP HEAD，用于提供给 Target 一些无法看到的信息。
 
@@ -105,7 +188,7 @@ ALB 支持转发请求时添加 `X-Forwarded` 相关的 HTTP HEAD，用于提供
 
 当请求包含无效格式（符合正则表达式 [-A-Za-z0-9]+） 的 HTTP HEAD 时，默认 ALB 转发请求时会将其删除，用户可以选择保留无效的 HTTP HEAD。
 
-### 1.7 Sticky Sessions
+### 5.7 Sticky Sessions
 
 默认下，ALB 会根据选择的负载均衡算法将请求路由到 Target 上。用户也可以选择使用 Sticky Sessions 功能，使得将 Session 绑定路由到某个 Target 上。也就是说，在 Session 期间，用户的所有请求都会发送到同一个 Target 来处理。
 
@@ -129,7 +212,7 @@ ALB 支持两种类型：
 
     后续 ALB 收到 Client 请求时，LB 会解密 `AWSALB` Cookie，根据信息将其路由到同一个 Target，并且会传递 Application Cookie。Target 可以根据 Application Cookie 从而知晓这是一个存在 Session。
 
-## 2 Network Load Balancer
+## 6 Network Load Balancer
 
 NLB 是基于四层的负载均衡，支持 TCP 与 UDP 协议。
 
@@ -146,14 +229,14 @@ NLB 是基于四层的负载均衡，支持 TCP 与 UDP 协议。
 
 因为 LB 使用 ENI 来实现，因此也可以为 LB 设置 Security Group，来控制出入 LB 的流量。
 
-### 2.1 LB 的状态
+### 6.1 LB 的状态
 
 LB 可能处于以下状态之一：
 * provisioning - 创建 LB 中
 * active - LB 已经就绪，并正常路由流量中
 * failed - LB 无法创建
 
-### 2.2 Access Log
+### 6.2 Access Log
 
 ELB 可以提供 TLS 请求的 Access Log，用于查看发送到 LB 的请求的详细信息。
 
@@ -180,15 +263,15 @@ my-network-loadbalancer-c6e77e28c25b2234.elb.us-east-2.amazonaws.com
 - - - 
 ```
 
-### 2.3 Deletion Protection
+### 6.3 Deletion Protection
 
 为了防止 LB 意外被删除，可以开启 Deletion Protection 功能。开启后，需要先关闭 Deletion Protection 功能，然后才能删除 LB。
 
-### 2.4 跨 AZ 负载均衡
+### 6.4 跨 AZ 负载均衡
 
 默认情况下，每个 Subnet 的 LB 节点仅仅为当前 AZ 的 Target 路由流量。开启 跨 AZ 负载均衡 功能后，每个 LB 节点会为所有启用的 AZ 的 Target 之间路由流量。
 
-## 3 Gateway Load Balancer
+## 7 Gateway Load Balancer
 
 Gateway Load Balancer 作为一个透明网络的网关设备（网络中的所有流量的单一入口与出口点），所有的流量会经过注册的第三方虚拟设备的处理（例如安全设备对流量的检查）。GWLB 基于第三层（网络层）工作，监听所有端口的 IP 数据包，将流量路由到注册的 Target。
 
@@ -226,18 +309,18 @@ GWLB 使用 GWLB Endpoint 来安全地跨 VPC 边界交换流量。进出 GWLB E
 | 10.0.0.0/16 | 本地            |
 | 0.0.0.0/0   | vpc-endpoint-id |
 
-### 2.1 LB 的状态
+### 7.1 LB 的状态
 
 LB 可能处于以下状态之一：
 * provisioning - 创建 LB 中
 * active - LB 已经就绪，并正常路由流量中
 * failed - LB 无法创建
 
-### 2.3 Deletion Protection
+### 7.2 Deletion Protection
 
 为了防止 LB 意外被删除，可以开启 Deletion Protection 功能。开启后，需要先关闭 Deletion Protection 功能，然后才能删除 LB。
 
-### 2.4 跨 AZ 负载均衡
+### 7.3 跨 AZ 负载均衡
 
 默认情况下，每个 Subnet 的 LB 节点仅仅为当前 AZ 的 Target 路由流量。开启 跨 AZ 负载均衡 功能后，每个 LB 节点会为所有启用的 AZ 的 Target 之间路由流量。
 

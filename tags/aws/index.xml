@@ -3,7 +3,14 @@
         <title>aws - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/aws/</link>
         <description>aws - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 04 Dec 2021 13:13:45 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/aws/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 06 Dec 2021 21:07:09 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/aws/" rel="self" type="application/rss+xml" /><item>
+    <title>AWS 学习 - 8 - S3</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/</link>
+    <pubDate>Mon, 06 Dec 2021 21:07:09 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/</guid>
+    <description><![CDATA[Storage Type 为了不同的存储场景，S3 提供了多种类型的存储类型。 存储类型 使用场景 S3 Standard 经常访问的数据 S3 Intelligent-Tiering 动态自动优化访问模式 S3 Standard-IA 不经常访问数据，会跨多个]]></description>
+</item><item>
     <title>AWS 学习 - 7 - Elastic Load Balancing</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/7-elb/</link>
     <pubDate>Sat, 04 Dec 2021 13:13:45 &#43;0000</pubDate>

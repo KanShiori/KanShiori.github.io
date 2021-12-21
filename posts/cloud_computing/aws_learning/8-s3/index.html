@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>AWS 学习 - 8 - S3 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="AWS 学习 - 8 - S3" />
+<meta property="og:description" content="Storage Type 为了不同的存储场景，S3 提供了多种类型的存储类型。 存储类型 使用场景 S3 Standard 经常访问的数据 S3 Intelligent-Tiering 动态自动优化访问模式 S3 Standard-IA 不经常访问数据，会跨多个" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-12-06T21:07:09+08:00" />
+<meta property="article:modified_time" content="2021-12-06T21:07:09+08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="AWS 学习 - 8 - S3"/>
+<meta name="twitter:description" content="Storage Type 为了不同的存储场景，S3 提供了多种类型的存储类型。 存储类型 使用场景 S3 Standard 经常访问的数据 S3 Intelligent-Tiering 动态自动优化访问模式 S3 Standard-IA 不经常访问数据，会跨多个"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/aws_learning/7-elb/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "AWS 学习 - 8 - S3",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/aws_learning\/8-s3\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  632 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/aws_learning\/8-s3\/","datePublished": "2021-12-06T21:07:09+08:00","dateModified": "2021-12-06T21:07:09+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">AWS 学习 - 8 - S3</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>AWS 学习</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-06">2021-12-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 632 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 2 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#storage-type">Storage Type</a></li>
+    <li><a href="#存储管理">存储管理</a>
+      <ul>
+        <li><a href="#s3-lifecycle">S3 Lifecycle</a>
+          <ul>
+            <li><a href="#transition">Transition</a></li>
+            <li><a href="#expiration">Expiration</a></li>
+          </ul>
+        </li>
+        <li><a href="#object-lock">Object Lock</a></li>
+        <li><a href="#replication">Replication</a></li>
+        <li><a href="#batch-operation">Batch Operation</a></li>
+      </ul>
+    </li>
+    <li><a href="#访问控制">访问控制</a>
+      <ul>
+        <li><a href="#iam">IAM</a></li>
+        <li><a href="#bucket-policy">Bucket Policy</a></li>
+        <li><a href="#acl">ACL</a></li>
+        <li><a href="#访问分析器">访问分析器</a></li>
+      </ul>
+    </li>
+    <li><a href="#数据处理">数据处理</a></li>
+    <li><a href="#监控">监控</a></li>
+    <li><a href="#工作原理">工作原理</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="storage-type">Storage Type</h2>
+<p>为了不同的存储场景，S3 提供了多种类型的存储类型。</p>
+<table>
+<thead>
+<tr>
+<th>存储类型</th>
+<th>使用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S3 Standard</td>
+<td>经常访问的数据</td>
+</tr>
+<tr>
+<td>S3 Intelligent-Tiering</td>
+<td>动态自动优化访问模式</td>
+</tr>
+<tr>
+<td>S3 Standard-IA</td>
+<td>不经常访问数据，会跨多个 AZ 存储冗余保存数据</td>
+</tr>
+<tr>
+<td>S3 One Zone-IA</td>
+<td>不经常访问数据，但没有多 AZ 数据备份</td>
+</tr>
+<tr>
+<td>S3 Glacier</td>
+<td>归档数据，解冻数据时间为 1-5 分钟</td>
+</tr>
+<tr>
+<td>S3 Deep Archive</td>
+<td>深度归档数据，解冻数据时间为 12 小时</td>
+</tr>
+</tbody>
+</table>
+<p>各个存储类型的定价见 <a href="https://aws.amazon.com/cn/s3/pricing/" target="_blank" rel="noopener noreffer"><strong>Amazon S3 定价</strong></a>。</p>
+<h2 id="存储管理">存储管理</h2>
+<h3 id="s3-lifecycle">S3 Lifecycle</h3>
+<p>S3 Lifecycle 定义一组规则，用于配置 Bucket 自动对特定对象的操作。操作包括：</p>
+<ul>
+<li>
+<p>Transition - 定义将对象转换为另一个 Storage Type 的时间。</p>
+<p>例如，可以选择在对象创建 30 天后将其转换为 S3 Standard-IA，创建 1 年后使用 S3 Glacier 存储。</p>
+</li>
+<li>
+<p>Expiration - 定义对象的过期时间，S3 将自动删除过期的对象。</p>
+</li>
+</ul>
+<p>S3 Lifecycle 可以通过多种方式配置。例如使用 CLI 配置 JSON 文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;Rules&#34;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&#34;Filter&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;Prefix&#34;</span><span class="p">:</span> <span class="s2">&#34;documents/&#34;</span>
+            <span class="p">},</span>
+            <span class="nt">&#34;Status&#34;</span><span class="p">:</span> <span class="s2">&#34;Enabled&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Transitions&#34;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="nt">&#34;Days&#34;</span><span class="p">:</span> <span class="mi">365</span><span class="p">,</span>
+                    <span class="nt">&#34;StorageClass&#34;</span><span class="p">:</span> <span class="s2">&#34;GLACIER&#34;</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="nt">&#34;Expiration&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;Days&#34;</span><span class="p">:</span> <span class="mi">3650</span>
+            <span class="p">},</span>
+            <span class="nt">&#34;ID&#34;</span><span class="p">:</span> <span class="s2">&#34;ExampleRule&#34;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Filter - 设置应用 Bucket 文件中的文件范围。支持通过 prefix 或者 tag 进行筛选。</li>
+<li>Status - 开启或关闭</li>
+<li>Transitions - Enabled/Disabled，定义 Transition 规则</li>
+<li>Expiration - 定义 Expiration 规则</li>
+</ul>
+<h4 id="transition">Transition</h4>
+<p>Transition 支持自动在不同 Storage Type 转换，以节省存储成本。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud_computing/aws_learning/8-s3/img1.png"/>
+
+
+</p>
+<h4 id="expiration">Expiration</h4>
+<p>当文件满足 Expiration 定义的时间后，S3 会将其自动删除。</p>
+<p>如果需要知晓一个文件的过期时间，你可以通过 HEAD/GET HTTP 访问文件，这样可以得到文件计划过期时间的 HEAD。</p>
+<h3 id="object-lock">Object Lock</h3>
+<p>通过 Object Lock 功能，可以防止对象在第一次写入后不再允许修改或者删除。</p>
+<p>Object Lock 支持两种方式锁定方式：</p>
+<ul>
+<li>Retention period - 指定对象在一段时间内锁定</li>
+<li>Legal hold - 对象永久保留（直到明确移除 Legal hold）</li>
+</ul>
+<p>Object Lock 只能在创建 Bucket 时候开启</p>
+<h3 id="replication">Replication</h3>
+<h3 id="batch-operation">Batch Operation</h3>
+<h2 id="访问控制">访问控制</h2>
+<h3 id="iam">IAM</h3>
+<h3 id="bucket-policy">Bucket Policy</h3>
+<h3 id="acl">ACL</h3>
+<h3 id="访问分析器">访问分析器</h3>
+<h2 id="数据处理">数据处理</h2>
+<h2 id="监控">监控</h2>
+<h2 id="工作原理">工作原理</h2>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-12-06</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud_computing/aws_learning/8-s3/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/" data-title="AWS 学习 - 8 - S3"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/" data-title="AWS 学习 - 8 - S3"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/" data-title="AWS 学习 - 8 - S3"><i class="fab fa-evernote fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/aws/">aws</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud_computing/aws_learning/7-elb/" class="prev" rel="prev" title="AWS 学习 - 7 - Elastic Load Balancing"><i class="fas fa-angle-left fa-fw"></i>AWS 学习 - 7 - Elastic Load Balancing</a>
+            <a href="/posts/cloud_computing/k8s_learning/12-hpa/" class="next" rel="next" title="K8s 学习 - 12 - Horizontal Pod Autoscaler">K8s 学习 - 12 - Horizontal Pod Autoscaler<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.85.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

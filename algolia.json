@@ -17,14 +17,13 @@
         "content": "1 Region             Data Center    DC                                         AWS                 DC        Region    us west us east eu west       Region                   Region                                                Regional    Zonal    Regional Service      Region     AZ       AWS     Service       2 Available Zone Region     Available Zone    AZ  AZ            DC    us west 1 us west 2       Region      AZ                  AZ             3 Region AZ DC                          Region      AZ    AZ               AZ         IDC                      Region      AZ      4 Edge Location Edge Location                                   CloudFront   Route53        Edge Location       5      AWS                                            aws amazon com   21   Region       Region      AWS                   amazonaws cn           Region                 govcloud",
         "objectID": "posts/cloud_computing/aws_learning/1-introduction",
         "date": "2021-06-23T14:13:47.000Z",
-        "description": "AWS 云计算中地理相关概念",
+        "description": "Region、AZ、DC",
         "weight": 4,
         "draft": false,
         "author": "Shiori",
         "lightgallery": true,
         "tags": [
-            "aws",
-            "net"
+            "aws"
         ],
         "categories": [
             "AWS 学习"
@@ -41,8 +40,7 @@
         "draft": false,
         "author": "Shiori",
         "tags": [
-            "aws",
-            "net"
+            "aws"
         ],
         "categories": [
             "AWS 学习"
@@ -60,8 +58,7 @@
         "author": "Shiori",
         "lightgallery": true,
         "tags": [
-            "aws",
-            "net"
+            "aws"
         ],
         "categories": [
             "AWS 学习"
@@ -79,8 +76,7 @@
         "author": "Shiori",
         "lightgallery": true,
         "tags": [
-            "aws",
-            "net"
+            "aws"
         ],
         "categories": [
             "AWS 学习"
@@ -96,6 +92,42 @@
         "weight": 4,
         "lightgallery": true,
         "author": "Shiori",
+        "tags": [
+            "aws"
+        ],
+        "categories": [
+            "AWS 学习"
+        ]
+    },
+    {
+        "title": "AWS 学习 - 7 - Elastic Load Balancing",
+        "uri": "posts/cloud_computing/aws_learning/7-elb",
+        "content": "1 LB           LB                           Domain   LB            Client          LB  LB                  IP    AZ    IP       LB    Region     AZ     LB                  AZ   LB         Listener   LB         Listener         Port           Listener Client      LB          Port      Target       Rule       ALB      Listener      Rule           HTTP Path HTTP Method          Target Group      Listener       Target Group             Target  Target                    Instance  2 Domain LB      Scheme  Internet facing         LB    Public IP       Publich Subnet Internal      LB      Private IP      LB              Domain      LB       Domain             Subnet   Public Private IP  LB   Domain        elb  amazonaws com 3 Listener Listener   Domain      Protocol   Port                 Domain       Protocol   Port      Listener         Listener       Protocol            ALB Protocol    HTTP   HTTPs    NLB Protocol    TCP TCP_UDP TLS   UDP  Port       Port Default Action         Target Group 3 1 Rule    ALB   Listener          Rule                          HTTP 80     Listener         HTTP Path               Rule              Host Header HTTP Header       Header HTTP Request Method       Method Path       Path Query string Source IP     IP    Rule                                Listener           Default Action       Rule  4 Target Group    Listener Rule           Target Group Target Group                       Target Group        Instance   EC2 Instance     LB   Subnet   EC2 Instance IP                IPv4    Lambda            Lambda      ALB     ALB       ALB       Target Group                Port       Listener   Port            Target Group   Port     Target             4 1 Health Check    Target Group        Health Check    LB         Target         Health Check            Healthy    Unhealthy     Health Check           Healthy threshold  Unhealthy    Healthy     Health Check           Healthy threshold      Target    Unhealthy   LB            Target        Healthy       Health Check         TCP      TCP                        HTTP        HTTP Path            HTTP Code HTTP        HTTPs Path            HTTP Code         UDP NLB         TCP               5 Application Load Balancer ALB                      VPC          AZ   Subnet LB      Subnet      ENI      LB        IP                  nslookup    LB             Subnet   ENI   IP             LB    ENI            LB    Security Group       LB      5 1 LB     LB             provisioning      LB   active   LB               active_impaired   LB                    failed   LB      5 2 Access Log ELB      Access Log         LB           Access Log              AWS                    S3 bucket                        S3        ELB     5min      LB   Access Log              AWSLogs  elasticloadbalancing     elasticloadbalancing__ log gz                      IP                   Access Log Entry                      http 2018 07 02T22 23 00 186641Z app my loadbalancer 50dc6c495c0c9188 192 168 131 39 2817 10 0 0 1 80 0 000 0 001 0 000 200 200 34 366  GET http   www example com 80  HTTP 1 1   curl 7 46 0      arn aws elasticloadbalancing us east 2 123456789012 targetgroup my targets 73e2d6bc24d8a067  Root 1 58337262 36d228ad5d99923122bbe354          0 2018 07 02T22 22 48 364000Z  forward          10 0 0 1 80 200         5 3 Deletion Protection      LB            Deletion Protection              Deletion Protection           LB  5 4 Connection idle timeout    Client     LB          Client   LB       LB   Target                                      idle timeout   LB            idle timeout   60s     LB   Target                       HTTP keep alive  5 5 Desync mitigation mode   LB       HTTP       LB       Target       Desync mitigation mode        Target     HTTP        LB     httpdesyncguardian                  desync mitigation mode                Classifications   Monitor mode   Defensive mode       Strictest mode                                                                                  Compliant   Allowed   Allowed   Allowed     Acceptable   Allowed   Allowed   Blocked     Ambiguous   Allowed   Allowed   Blocked     Severe   Allowed   Blocked   Blocked   5 6 HEAD    ALB           X Forwarded     HTTP HEAD       Target            X Forwarded For      Client   IP       LB     Target         Target               IP    ALB       Target      HTTP HEAD    X Forwarded For      Target      IP                           X Forwarded For      Client       X Forwarded Proto      Client   ALB       X Forwarded Port      Client    ALB                           A Za z0 9      HTTP HEAD      ALB                        HTTP HEAD  5 7 Sticky Sessions     ALB                    Target             Sticky Sessions        Session         Target          Session                    Target               Sticky Sessions         Cookie       ALB                 Cookie   ALB       Client                Target             AWSALB      Cookie Cookie    7            ALB    Client        Client    AWSALB Cookie                      Target     Target         unhealthy           Target      Cookie             C",
+        "objectID": "posts/cloud_computing/aws_learning/7-elb",
+        "date": "2021-12-04T13:13:45.000Z",
+        "description": "ELB ALB NLB",
+        "weight": 4,
+        "draft": false,
+        "author": "Shiori",
+        "lightgallery": true,
+        "tags": [
+            "aws"
+        ],
+        "categories": [
+            "AWS 学习"
+        ]
+    },
+    {
+        "title": "AWS 学习 - 8 - S3",
+        "uri": "posts/cloud_computing/aws_learning/8-s3",
+        "content": "Storage Type           S3                                                                                                           S3 Standard               S3 Intelligent Tiering                  S3 Standard IA                AZ              S3 One Zone IA                AZ          S3 Glacier                1 5        S3 Deep Archive                  12                 Amazon S3          S3 Lifecycle S3 Lifecycle             Bucket                  Transition               Storage Type                   30         S3 Standard IA    1      S3 Glacier     Expiration             S3             S3 Lifecycle                 CLI    JSON        Rules        Filter      Prefix    documents       Status    Enabled    Transitions        Days   365   StorageClass    GLACIER        Expiration      Days   3650     ID    ExampleRule        Filter        Bucket               prefix    tag       Status         Transitions   Enabled Disabled    Transition    Expiration      Expiration    Transition Transition         Storage Type                  Expiration       Expiration        S3                                HEAD GET HTTP                      HEAD  Object Lock    Object Lock                             Object Lock             Retention period                Legal hold                 Legal hold  Object Lock       Bucket      Replication Batch Operation      IAM Bucket Policy ACL",
+        "objectID": "posts/cloud_computing/aws_learning/8-s3",
+        "date": "2021-12-06T13:07:09.000Z",
+        "description": "",
+        "weight": 4,
+        "draft": false,
+        "author": "Shiori",
+        "lightgallery": true,
         "tags": [
             "aws"
         ],
@@ -182,6 +214,25 @@
         "objectID": "posts/cloud_computing/k8s_learning/11-csi",
         "date": "2021-11-20T08:22:28.000Z",
         "description": "CSI 概念与实现",
+        "weight": 4,
+        "draft": false,
+        "author": "Shiori",
+        "lightgallery": true,
+        "tags": [
+            "k8s",
+            "云计算"
+        ],
+        "categories": [
+            "Kubernetes 学习"
+        ]
+    },
+    {
+        "title": "K8s 学习 - 12 - Horizontal Pod Autoscaler",
+        "uri": "posts/cloud_computing/k8s_learning/12-hpa",
+        "content": "HPA            Metric Server                            Pod          Pod                HPA Controller            scale                1                                 Pod       desiredReplicas   ceil currentReplicas    currentMetricValue   metricValue   currentReplicas      Pod       currentMetricValue       Metrics   metricValue        Metric   currentMetricValue   metricValue                          Value   desiredMetricValue      currentMetricValue        AverageValue   targetAverageValue      currentMetricValue     Pod Metric      Utilization   targetAverageUtilization             currentMetricValue     Pod   Metric         Metric             metric      HPA      metric      desiredReplicas                             metric      desiredReplicas              1 1       desiredReplicas   currentReplicas       1        tolerance     HPA Controller             tolerance     0 1 10       desiredReplicas   currentReplicas        10    10                  1 2          desiredReplicas        Pod               Pod              Pod          Pod       DeletionTimeStamp    nil  Pod   metric value      Pod      Ready         CPU              desiredMetricValue           Pod          currentReplicas     desiredReplicas     targetAverageValue   targetAverageUtilization                         Scaleup        Pod   MetricValue     0         desiredReplicas     Scaledown        Pod   MetricValue     100        desiredReplicas 1 3      HPA                       Pod               kube controller manager         horizontal pod autoscaler downscale stabilization                       5min                                      HPA                2 Spec HorizontalPodAutoscaler          spec  scaleTargetRef  apiVersion  apps v1 kind  Deployment name  test minReplicas  1 maxReplicas  10 metrics  type  Resource resource  name  cpu target  type  Utilization averageUtilization  50 behavior  scaleUp  stabilizationWindowSeconds  0 selectPolicy  policies scaleDown minReplicas                 maxReplicas                 scaleTargetRef      HPA          Deployment StatefulSet ReplicaSet metrics                   Kubernetes              metric    behavior              2 1        HPA                                scale             scale            HPA            Deployment   StatefulSet       scale subresource   CRD          spec scaleTargetRef             spec  scaleTargetRef  apiVersion  apps v1 kind  Deployment name  test 2 2 Metric    HPA      Kubernetes           Metric              HPA       Kubernetes APIServer         Metric        Metric        Kubernetes APIServer                  Custom APIServer Aggregate APIServer   HPA         Metric              Resource      CPU Mem          metrics k8s io    Kubernetes       metrics server           Custom          Kubernetes             custom metrics k8s io               Adapter     Custom APIServer                          External        Kubernetes                          external metrics k8s io           Adapter    Custom APIServer          Custom             Metric       spec metrics     spec  metrics  type  Resource resource  name  cpu target  type  Utilization averageUtilization  50    type                             Resource   Resource          Pod   CPU Mem        CPU     target     type  Utilization     CPU            Mem     target     type  AverageValue     Mem         type  Resource resource  name  cpu target  type  Utilization averageUtilization  60 ContainerResource   Resource          Pod     Container   CPU Mem        CPU     target     type  Utilization     CPU            Mem     target     type  AverageValue     Mem         type  ContainerResource containerResource  name  cpu container  application      Pod    application    target  type  Utilization averageUtilization  60 Pods   Custom          Pod       metrics server    Pod              target     type  AverageValue  type  Pods pods  metric  name  packets per second target  type  AverageValue averageValue  1k Object   Custom       Kubernetes             metrics server     Ingress   QPS         target     type  AverageValue   type Value  type  Object object  metric  name  requests per second describedObject  apiVersion  networking k8s io kind  Ingress name  main route target  type  Value value  2k External   External      Kubernetes         2 3 Behavior spec behavior        HPA Controller           behavior  scaleDown  stabilizationWindowSeconds  300 policies  type  Percent value  100 periodSeconds  15 scaleUp  stabilizationWindowSeconds  0 policies  type  Percent value  100 periodSeconds  15 type  Pods value  4 periodSeconds  15 selectPolicy  Max    scaleDown   scaleUp                               2 3 1      policies                                                             behavior  scaleDown  stabilizationWindowSeconds  300 policies  type  Percent value  100 periodSeconds  15 scaleUp  stabilizationWindowSeconds  0 policies  type  Percent value  100 periodSeconds  15 type  Pods value  4 periodSeconds  15 selectPolicy  Max type           periodSeconds              value                  type      Pods                 Percent ",
+        "objectID": "posts/cloud_computing/k8s_learning/12-hpa",
+        "date": "2021-12-20T11:16:27.000Z",
+        "description": "HPA 算法定义",
         "weight": 4,
         "draft": false,
         "author": "Shiori",
