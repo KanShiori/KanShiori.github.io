@@ -20,13 +20,6 @@
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/</guid>
     <description><![CDATA[HPA 的核心原理就是就是从 Metric Server 采集指标数据，然后根据缩扩容算法进行计算，得到目标的 Pod 副本数量。当目标 Pod 副本数量与当前副本数量不同时，HPA Controller 调用]]></description>
 </item><item>
-    <title>AWS 学习 - 8 - S3</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/</link>
-    <pubDate>Mon, 06 Dec 2021 21:07:09 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/</guid>
-    <description><![CDATA[Storage Type 为了不同的存储场景，S3 提供了多种类型的存储类型。 存储类型 使用场景 S3 Standard 经常访问的数据 S3 Intelligent-Tiering 动态自动优化访问模式 S3 Standard-IA 不经常访问数据，会跨多个]]></description>
-</item><item>
     <title>AWS 学习 - 7 - Elastic Load Balancing</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/7-elb/</link>
     <pubDate>Sat, 04 Dec 2021 13:13:45 &#43;0000</pubDate>
@@ -75,5 +68,12 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/security/credentials/</guid>
     <description><![CDATA[在授权过程中，基本每种授权模式目的就是为了得到一个令牌，令牌就是 <strong><ruby>凭证<rt>Credential</rt></ruby></strong>。目前主流有两种令牌实现方式：Cookie]]></description>
+</item><item>
+    <title>授权 Authorization</title>
+    <link>https://KanShiori.github.io/posts/security/authorization/</link>
+    <pubDate>Sun, 24 Oct 2021 09:05:39 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/security/authorization/</guid>
+    <description><![CDATA[认证解决了对用户身份认证的问题，授用于解决用户有着哪些权限的问题。涉及两个独立的问题： 确保授权的过程可靠 - 常用 OAuth2 和 SAML 2.0 确保授权的结果可控 - 常]]></description>
 </item></channel>
 </rss>
