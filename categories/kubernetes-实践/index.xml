@@ -3,7 +3,14 @@
         <title>Kubernetes 实践 - 分类 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/categories/kubernetes-%E5%AE%9E%E8%B7%B5/</link>
         <description>Kubernetes 实践 - 分类 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 30 Sep 2021 07:25:32 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AE%9E%E8%B7%B5/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AE%9E%E8%B7%B5/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 实践 - 使用 External DNS</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/</link>
+    <pubDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/</guid>
+    <description><![CDATA[1 概述 ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责]]></description>
+</item><item>
     <title>K8s 实践 - Network Across Cluster</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/across-kubernetes/</link>
     <pubDate>Thu, 30 Sep 2021 07:25:32 &#43;0000</pubDate>

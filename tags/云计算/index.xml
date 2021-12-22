@@ -3,7 +3,14 @@
         <title>云计算 - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/</link>
         <description>云计算 - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 20 Dec 2021 19:16:27 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 实践 - 使用 External DNS</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/</link>
+    <pubDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/</guid>
+    <description><![CDATA[1 概述 ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责]]></description>
+</item><item>
     <title>K8s 学习 - 12 - Horizontal Pod Autoscaler</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/</link>
     <pubDate>Mon, 20 Dec 2021 19:16:27 &#43;0800</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/4-generate-code/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 最简单的方式是调用]]></description>
-</item><item>
-    <title>K8s 编程 - 3 - Custom Resource</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/3-custom-resource/</link>
-    <pubDate>Tue, 17 Aug 2021 14:55:49 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/3-custom-resource/</guid>
-    <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 自定义资源定义 从]]></description>
 </item></channel>
 </rss>

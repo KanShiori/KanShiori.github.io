@@ -3,7 +3,14 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 20 Dec 2021 19:16:27 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 实践 - 使用 External DNS</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/</link>
+    <pubDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/</guid>
+    <description><![CDATA[1 概述 ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责]]></description>
+</item><item>
     <title>K8s 学习 - 12 - Horizontal Pod Autoscaler</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/</link>
     <pubDate>Mon, 20 Dec 2021 19:16:27 &#43;0800</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/security/credentials/</guid>
     <description><![CDATA[在授权过程中，基本每种授权模式目的就是为了得到一个令牌，令牌就是 <strong><ruby>凭证<rt>Credential</rt></ruby></strong>。目前主流有两种令牌实现方式：Cookie]]></description>
-</item><item>
-    <title>授权 Authorization</title>
-    <link>https://KanShiori.github.io/posts/security/authorization/</link>
-    <pubDate>Sun, 24 Oct 2021 09:05:39 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/security/authorization/</guid>
-    <description><![CDATA[认证解决了对用户身份认证的问题，授用于解决用户有着哪些权限的问题。涉及两个独立的问题： 确保授权的过程可靠 - 常用 OAuth2 和 SAML 2.0 确保授权的结果可控 - 常]]></description>
 </item></channel>
 </rss>
