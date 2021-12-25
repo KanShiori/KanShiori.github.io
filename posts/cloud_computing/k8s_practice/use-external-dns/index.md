@@ -3,7 +3,7 @@
 
 ## 1 概述
 
-ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。
+[**ExternalDNS**](https://github.com/kubernetes-sigs/external-dns) 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。
 
 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责将 Kubernetes 集群的 DNS 记录写入到外部的 DNS Nameserver。
 
@@ -76,8 +76,11 @@ $ aws iam create-policy --policy-name external-dns --policy-document file://exte
 ```
 eksctl create iamserviceaccount --cluster=test-cluster --name=external-dns --namespace=external-dns-admin --attach-policy-arn=arn:aws:iam::385595570414:policy/external-dns --approve --override-existing-serviceaccounts
 ```
-
-其中，`--cluster` 指定了 EKS 集群，`--name` 与 `--namepsace` 指定创建的 ServiceAccount 的 name 与 ns，`--attach-policy-arn` 指定了要绑定的 IAM Policy。
+* `--cluster` 与 `--region` 指定了 EKS 集群
+* `--name` 与 `--namepsace` 指定创建的 ServiceAccount 的 name 与 ns
+* `--attach-policy-arn` 指定了要绑定的 IAM Policy
+* `--override-existing-serviceaccounts` 表明允许覆盖已经存在的 ServiceAccount
+* `--approve` 表明应用修改
 
 {{< admonition note Note>}}
 也可以通过 aws cli 来创建 ServiceAccount，具体见官方文档：[**Creating an IAM role and policy for your service account**](https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html)。
@@ -172,7 +175,11 @@ spec:
 
 需要注意的是，因为 ExternalDNS 的 Pod 需要使用前面创建的 ServiceAccount，因此需要部署在相同的 ns，ClusterRoleBinding 也是如此。
 
-在 Pod 的启动参数中，`--source` 指定了为哪些资源（Service/Ingress）提供服务，`--domain-filter` 指定了其作用于哪个 Route53 HostZone，`--provider` 指明了 DNS 提供商。
+看下 ExternalDNS 的启动参数：
+* `--source` 指定了从哪些资源查找需要同步的 Endpoint
+* `--domain-filter` 限制处理的目标 DNS Zone
+* `--provider` 指明了 DNS 提供商
+* `--policy` 指明与 DNS Provider 的数据同步方式，默认 sync，可选 upsert-only, create-only
 
 ### 2.5 部署 Service
 
@@ -254,3 +261,4 @@ $ curl nginx.external-dns-test.my-org.com.
 
 * [**Github：external-dns**](https://github.com/kubernetes-sigs/external-dns)
 * [**Doc：Setting up ExternalDNS for Services on AWS**](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md)
+* [**Blog：通过 ExternalDNS 集成外部 DNS 服务**](https://blog.gmem.cc/integrate-with-external-dns-provider)

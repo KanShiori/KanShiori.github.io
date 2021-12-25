@@ -10,7 +10,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-22T22:03:24+08:00" />
-<meta property="article:modified_time" content="2021-12-22T23:08:46+08:00" />
+<meta property="article:modified_time" content="2021-12-25T23:21:33+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -18,7 +18,7 @@
 <meta name="twitter:title" content="K8s 实践 - 使用 External DNS"/>
 <meta name="twitter:description" content="1 概述 ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/" /><link rel="next" href="https://KanShiori.github.io/posts/net/dns/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -27,8 +27,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_practice\/use-external-dns\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1408 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_practice\/use-external-dns\/","datePublished": "2021-12-22T22:03:24+08:00","dateModified": "2021-12-22T23:08:46+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1372 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_practice\/use-external-dns\/","datePublished": "2021-12-22T22:03:24+08:00","dateModified": "2021-12-25T23:21:33+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">K8s 实践 - 使用 External DNS</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AE%9E%E8%B7%B5/"><i class="far fa-folder fa-fw"></i>Kubernetes 实践</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-22">2021-12-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1408 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-22">2021-12-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1372 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -142,7 +142,7 @@
   </ul>
 </nav></div>
             </div><div class="content" id="content"><h2 id="1-概述">1 概述</h2>
-<p>ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。</p>
+<p><a href="https://github.com/kubernetes-sigs/external-dns" target="_blank" rel="noopener noreffer"><strong>ExternalDNS</strong></a> 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。</p>
 <p>ExternalDNS 本身并不是一个 DNS Nameserver，而是负责将 Kubernetes 集群的 DNS 记录写入到外部的 DNS Nameserver。</p>
 <h2 id="2-为-aws-route53-设置-external-dns">2 为 AWS Route53 设置 External DNS</h2>
 <h3 id="21-启动-eks-集群">2.1 启动 EKS 集群</h3>
@@ -262,7 +262,13 @@
 <pre class="chroma"><code class="language-fallback" data-lang="fallback">eksctl create iamserviceaccount --cluster=test-cluster --name=external-dns --namespace=external-dns-admin --attach-policy-arn=arn:aws:iam::385595570414:policy/external-dns --approve --override-existing-serviceaccounts
 </code></pre></td></tr></table>
 </div>
-</div><p>其中，<code>--cluster</code> 指定了 EKS 集群，<code>--name</code> 与 <code>--namepsace</code> 指定创建的 ServiceAccount 的 name 与 ns，<code>--attach-policy-arn</code> 指定了要绑定的 IAM Policy。</p>
+</div><ul>
+<li><code>--cluster</code> 与 <code>--region</code> 指定了 EKS 集群</li>
+<li><code>--name</code> 与 <code>--namepsace</code> 指定创建的 ServiceAccount 的 name 与 ns</li>
+<li><code>--attach-policy-arn</code> 指定了要绑定的 IAM Policy</li>
+<li><code>--override-existing-serviceaccounts</code> 表明允许覆盖已经存在的 ServiceAccount</li>
+<li><code>--approve</code> 表明应用修改</li>
+</ul>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
@@ -432,7 +438,13 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><p>需要注意的是，因为 ExternalDNS 的 Pod 需要使用前面创建的 ServiceAccount，因此需要部署在相同的 ns，ClusterRoleBinding 也是如此。</p>
-<p>在 Pod 的启动参数中，<code>--source</code> 指定了为哪些资源（Service/Ingress）提供服务，<code>--domain-filter</code> 指定了其作用于哪个 Route53 HostZone，<code>--provider</code> 指明了 DNS 提供商。</p>
+<p>看下 ExternalDNS 的启动参数：</p>
+<ul>
+<li><code>--source</code> 指定了从哪些资源查找需要同步的 Endpoint</li>
+<li><code>--domain-filter</code> 限制处理的目标 DNS Zone</li>
+<li><code>--provider</code> 指明了 DNS 提供商</li>
+<li><code>--policy</code> 指明与 DNS Provider 的数据同步方式，默认 sync，可选 upsert-only, create-only</li>
+</ul>
 <h3 id="25-部署-service">2.5 部署 Service</h3>
 <p>以 LB Service 为例，来验证 ExternalDNS 的工作。</p>
 <p>先创建需要使用的 Service，其定义如下：</p>
@@ -580,13 +592,14 @@
 <ul>
 <li><a href="https://github.com/kubernetes-sigs/external-dns" target="_blank" rel="noopener noreffer"><strong>Github：external-dns</strong></a></li>
 <li><a href="https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md" target="_blank" rel="noopener noreffer"><strong>Doc：Setting up ExternalDNS for Services on AWS</strong></a></li>
+<li><a href="https://blog.gmem.cc/integrate-with-external-dns-provider" target="_blank" rel="noopener noreffer"><strong>Blog：通过 ExternalDNS 集成外部 DNS 服务</strong></a></li>
 </ul>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2021-12-22&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/a5f69124ca1ae2d71e0183a7f4d416b43bffb926" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) a5f69124ca1ae2d71e0183a7f4d416b43bffb926: post: external dns">
-                                    <i class="fas fa-hashtag fa-fw"></i>a5f6912</a></span>
+                <span>更新于 2021-12-25&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/08b925728c131e01100bd490ca9e7063dac0d19f" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 08b925728c131e01100bd490ca9e7063dac0d19f: post: dns">
+                                    <i class="fas fa-hashtag fa-fw"></i>08b9257</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
@@ -607,7 +620,8 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud_computing/k8s_learning/12-hpa/" class="prev" rel="prev" title="K8s 学习 - 12 - Horizontal Pod Autoscaler"><i class="fas fa-angle-left fa-fw"></i>K8s 学习 - 12 - Horizontal Pod Autoscaler</a></div>
+    <div class="post-nav"><a href="/posts/cloud_computing/k8s_learning/12-hpa/" class="prev" rel="prev" title="K8s 学习 - 12 - Horizontal Pod Autoscaler"><i class="fas fa-angle-left fa-fw"></i>K8s 学习 - 12 - Horizontal Pod Autoscaler</a>
+            <a href="/posts/net/dns/" class="next" rel="next" title="DNS 域名解析系统">DNS 域名解析系统<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">
