@@ -324,6 +324,10 @@ LB 可能处于以下状态之一：
 
 默认情况下，每个 Subnet 的 LB 节点仅仅为当前 AZ 的 Target 路由流量。开启 跨 AZ 负载均衡 功能后，每个 LB 节点会为所有启用的 AZ 的 Target 之间路由流量。
 
+## 8 限制
+
+如果请求与回复都是在同一个 LB 代理的 Node，LB 是不会处理该请求的，这是由于虚拟网卡的 hairpin 模式引起。
+
 ## 参考
 
 * [**Application Load Balancer**](https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/application/introduction.html)

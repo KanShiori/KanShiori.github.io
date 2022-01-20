@@ -18,7 +18,7 @@
 <meta name="twitter:title" content="AWS 学习 - 7 - Elastic Load Balancing"/>
 <meta name="twitter:description" content="ELB ALB NLB"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/aws_learning/7-elb/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/aws_learning/6-iam/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/aws_learning/7-elb/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/aws_learning/6-iam/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -27,7 +27,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/aws_learning\/7-elb\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  4123 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  4175 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/aws_learning\/7-elb\/","datePublished": "2021-12-04T13:13:45+00:00","dateModified": "2021-12-06T21:32:26+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">AWS 学习 - 7 - Elastic Load Balancing</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>AWS 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-04">2021-12-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 4123 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-04">2021-12-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 4175 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 9 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -165,6 +165,7 @@
         <li><a href="#73-跨-az-负载均衡">7.3 跨 AZ 负载均衡</a></li>
       </ul>
     </li>
+    <li><a href="#8-限制">8 限制</a></li>
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
@@ -632,6 +633,8 @@ my-network-loadbalancer-c6e77e28c25b2234.elb.us-east-2.amazonaws.com
 <p>为了防止 LB 意外被删除，可以开启 Deletion Protection 功能。开启后，需要先关闭 Deletion Protection 功能，然后才能删除 LB。</p>
 <h3 id="73-跨-az-负载均衡">7.3 跨 AZ 负载均衡</h3>
 <p>默认情况下，每个 Subnet 的 LB 节点仅仅为当前 AZ 的 Target 路由流量。开启 跨 AZ 负载均衡 功能后，每个 LB 节点会为所有启用的 AZ 的 Target 之间路由流量。</p>
+<h2 id="8-限制">8 限制</h2>
+<p>如果请求与回复都是在同一个 LB 代理的 Node，LB 是不会处理该请求的，这是由于虚拟网卡的 hairpin 模式引起。</p>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/application/introduction.html" target="_blank" rel="noopener noreffer"><strong>Application Load Balancer</strong></a></li>
@@ -665,12 +668,12 @@ my-network-loadbalancer-c6e77e28c25b2234.elb.us-east-2.amazonaws.com
     </div>
 
     <div class="post-nav"><a href="/posts/cloud_computing/aws_learning/6-iam/" class="prev" rel="prev" title="AWS 学习 - 6 - IAM"><i class="fas fa-angle-left fa-fw"></i>AWS 学习 - 6 - IAM</a>
-            <a href="/posts/cloud_computing/k8s_learning/12-hpa/" class="next" rel="next" title="K8s 学习 - 12 - Horizontal Pod Autoscaler">K8s 学习 - 12 - Horizontal Pod Autoscaler<i class="fas fa-angle-right fa-fw"></i></a></div>
+            <a href="/posts/cloud_computing/aws_learning/8-s3/" class="next" rel="next" title="AWS 学习 - 8 - S3">AWS 学习 - 8 - S3<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">
         <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.85.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
 

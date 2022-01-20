@@ -3,9 +3,16 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 23 Dec 2021 20:55:43 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Kubernetes 资源更新机制与 CLI 实现</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/</link>
+    <pubDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/</guid>
+    <description><![CDATA[1 Update 机制 Update 机制指的是通过 HTTP Put 方法上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
+</item><item>
     <title>DNS 域名解析系统</title>
     <link>https://KanShiori.github.io/posts/net/dns/</link>
     <pubDate>Thu, 23 Dec 2021 20:55:43 &#43;0800</pubDate>
@@ -26,6 +33,13 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/</guid>
     <description><![CDATA[HPA 的核心原理就是就是从 Metric Server 采集指标数据，然后根据缩扩容算法进行计算，得到目标的 Pod 副本数量。当目标 Pod 副本数量与当前副本数量不同时，HPA Controller 调用]]></description>
+</item><item>
+    <title>AWS 学习 - 8 - S3</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/</link>
+    <pubDate>Mon, 06 Dec 2021 21:07:09 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/</guid>
+    <description><![CDATA[1 Storage Type 为了不同的存储场景，S3 提供了多种类型的存储类型。 存储类型 使用场景 S3 Standard 经常访问的数据 S3 Intelligent-Tiering 动态自动优化访问模式 S3 Standard-IA 不经常访问数据，会跨多]]></description>
 </item><item>
     <title>AWS 学习 - 7 - Elastic Load Balancing</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/7-elb/</link>
@@ -61,19 +75,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</guid>
     <description><![CDATA[1 设计原理 在 源码阅读 - Volume 实现 中看到，所有的存储插件实现的都是操作 Volume 的方法： Provision Volume Attach Volume Mount Device Setup Volume CSI 整体体系的架构如下图 Sidecar 容器 是一组 Kubernetes 社区维护的标准]]></description>
-</item><item>
-    <title>源码阅读 - Volume 实现</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</link>
-    <pubDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</guid>
-    <description><![CDATA[1 概述 以一个云存储作为 Volume 为例，其架构图如下： Deploy PVC - 用户 Deploy PVC 对象。 Provision Volume - PV Controller 基于 StorageClass 创建一个 Volume（无法绑定已有 PV 的情况下），并创建 PV 对象]]></description>
-</item><item>
-    <title>凭证 Credential</title>
-    <link>https://KanShiori.github.io/posts/security/credentials/</link>
-    <pubDate>Mon, 25 Oct 2021 13:16:57 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/security/credentials/</guid>
-    <description><![CDATA[在授权过程中，基本每种授权模式目的就是为了得到一个令牌，令牌就是 <strong><ruby>凭证<rt>Credential</rt></ruby></strong>。目前主流有两种令牌实现方式：Cookie]]></description>
 </item></channel>
 </rss>
