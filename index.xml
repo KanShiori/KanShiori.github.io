@@ -11,7 +11,7 @@
     <pubDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/</guid>
-    <description><![CDATA[1 Update 机制 Update 机制指的是通过 HTTP Put 方法上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
+    <description><![CDATA[1 Update 机制 Update 机制 指的是通过 HTTP Put 方法 上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
 </item><item>
     <title>DNS 域名解析系统</title>
     <link>https://KanShiori.github.io/posts/net/dns/</link>
@@ -69,7 +69,7 @@
     <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-vpc-and-internet/</guid>
     <description><![CDATA[1 Internet Gateway Internet Gateway 用于将 VPC 的流量转发给外网，并将外网的主动访问转发给指定的 Instance。 使用 Internet Gateway 的必要操作： 创建 Internet Gateway 并关联到 VPC 上。 Instance 拥有公网 IP 地]]></description>
 </item><item>
-    <title>K8s 学习 - 11 - CSI</title>
+    <title>K8s 学习 - 11 - CSI 概念与实现</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</link>
     <pubDate>Sat, 20 Nov 2021 08:22:28 &#43;0000</pubDate>
     <author>作者</author>

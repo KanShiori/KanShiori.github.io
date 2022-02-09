@@ -9,7 +9,7 @@
     <pubDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/</guid>
-    <description><![CDATA[1 Update 机制 Update 机制指的是通过 HTTP Put 方法上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
+    <description><![CDATA[1 Update 机制 Update 机制 指的是通过 HTTP Put 方法 上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
 </item><item>
     <title>K8s 学习 - 12 - Horizontal Pod Autoscaler</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/</link>
@@ -18,7 +18,7 @@
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/</guid>
     <description><![CDATA[HPA 的核心原理就是就是从 Metric Server 采集指标数据，然后根据缩扩容算法进行计算，得到目标的 Pod 副本数量。当目标 Pod 副本数量与当前副本数量不同时，HPA Controller 调用]]></description>
 </item><item>
-    <title>K8s 学习 - 11 - CSI</title>
+    <title>K8s 学习 - 11 - CSI 概念与实现</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</link>
     <pubDate>Sat, 20 Nov 2021 08:22:28 &#43;0000</pubDate>
     <author>作者</author>

@@ -10,7 +10,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-01-13T11:22:02+08:00" />
-<meta property="article:modified_time" content="2022-01-20T22:40:55+08:00" />
+<meta property="article:modified_time" content="2022-02-09T17:58:40+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -27,8 +27,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/update-resource-mechanism\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2383 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/update-resource-mechanism\/","datePublished": "2022-01-13T11:22:02+08:00","dateModified": "2022-01-20T22:40:55+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2356 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud_computing\/k8s_learning\/update-resource-mechanism\/","datePublished": "2022-01-13T11:22:02+08:00","dateModified": "2022-02-09T17:58:40+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Kubernetes 资源更新机制与 CLI 实现</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>Kubernetes 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-01-13">2022-01-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2383 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-01-13">2022-01-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2356 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -154,23 +154,34 @@
         <li><a href="#33-kubectl-edit">3.3 kubectl edit</a></li>
       </ul>
     </li>
+    <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
             </div><div class="content" id="content"><h2 id="1-update-机制">1 Update 机制</h2>
-<p>Update 机制指的是通过 HTTP Put 方法上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查是否发生冲突。</p>
-<p><code>metadata.resourceVersion</code> 可以代表资源的版本号，本质上是由 etcd 提供 modified index。在对象写入 etcd 后，resourceVersion 都会发生变化。</p>
-<p><a href="https://kubernetes.io/zh/docs/reference/using-api/api-concepts/#resource-versions" target="_blank" rel="noopener noreffer"><strong>官方文档</strong></a>中指出，resourceVersion 仅仅只能用来比较是否相等，而没有大小之分，也就是说，不能按照 resourceVersion 的大小来判断对象的新旧。</p>
-<p>写入对象到 etcd 时，会比较对象的 resourceVersion 是否与当前存储的对象 resourceVersion 相等，如果不相等就表明此次更新发生冲突。</p>
+<p><strong><code>Update 机制</code></strong> 指的是通过 <important>HTTP Put 方法</important> 上传<strong>完整的资源对象</strong>，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查是否发生冲突。</p>
+<p><code>metadata.resourceVersion</code> 可以代表资源的<strong>版本号</strong>，本质上是由 etcd 提供 modified index。在对象写入 etcd 后，resourceVersion 都会发生变化。</p>
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw"></i>resourceVersion 无法比较大小<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p><a href="https://kubernetes.io/zh/docs/reference/using-api/api-concepts/#resource-versions" target="_blank" rel="noopener noreffer"><strong>官方文档</strong></a>中指出，resourceVersion 仅仅只能用来比较是否相等，而没有大小之分。</p>
+<p>也就是说，不能按照 resourceVersion 的大小来判断对象的新旧。</p>
+</div>
+        </div>
+    </div>
+<p>写入对象到 etcd 时，<strong>会比较对象的 resourceVersion 是否与当前存储的对象 resourceVersion 相等</strong>，如果不相等就表明此次更新发生冲突。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
-            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+            <i class="icon fas fa-pencil-alt fa-fw"></i>代码中的 Update()<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
             <div class="admonition-content">Controller 中使用的 Update() 接口更新资源，都是 Update 机制，返回冲突错误也就是遇到了 resourceVersion 不相等的情况。</div>
         </div>
     </div>
 <h2 id="2-patch-机制">2 Patch 机制</h2>
-<p>Patch 机制指的是通过 HTTP Patch 方法上传增量的对象字段（除了 Server Side Apply 是上传完整对象），Kubernetes 会直接接受请求，将 patch 打到对象上，同时更新 resourceVersion。也就是说，Patch 机制（除了 Server Side Apply）默认没有冲突机制。</p>
+<p><strong><code>Patch 机制</code></strong> 指的是通过 <important>HTTP Patch 方法</important> 上传<strong>增量的对象字段</strong>（除了 Server Side Apply 是上传完整对象）。</p>
+<p>Kubernetes 会直接接受 Patch 请求，将 patch 打到对象上，同时更新 resourceVersion。也就是说，<important>Patch 机制默认没有冲突机制</important>（除了 Server Side Apply）。</p>
 <p>目前有着 4 种 Patch 的方式，各种方式通过 HTTP Content-Type Header 来区分：</p>
 <ul>
 <li>JSON Patch</li>
@@ -204,7 +215,19 @@
 </div><p>但是在多个同时修改一个对象的情况下，因为没有冲突机制，所以会导致不可预期的结果。例如当该请求发出后，该对象已经修改了数组，那么该 0 编号的元素很可能变化了，从而该请求导致了非期望的修改。</p>
 <h3 id="22-merge-patch">2.2 Merge Patch</h3>
 <p><a href="http://mirrors.nju.edu.cn/rfc/inline-errata/rfc7386.html" target="_blank" rel="noopener noreffer"><strong>Merge Patch</strong></a> (也称为 JSON Merge Patch）是一种标准的 Patch 协议（RFC 7386），使用 &ldquo;Content-Type: application/merge-patch+json&rdquo; 标识。</p>
-<p>Merge Patch 直接上传需要修改的字段，用值为 null 表示删除一个字段。这也表明，Merge Patch 不允许单独修改数组中的某个元素，需要提供整个数组来进行修改，并且无法表示 null 值。</p>
+<p>Merge Patch 直接上传需要修改的字段，上传的字段都是增加或更新。如果需要删除某个字段，将上传值设为 null，表示删除。</p>
+<div class="details admonition warning open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-exclamation-triangle fa-fw"></i>缺陷<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><ol>
+<li>不允许单独修改数组中的某个元素，需要提供整个数组来进行修改</li>
+<li>无法表示 null 值。</li>
+</ol>
+</div>
+        </div>
+    </div>
 <p>例如，下面请求表明直接覆盖当前对象的 container，而不能单独修改数组。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -250,7 +273,7 @@
 </div>
 </div><p>可见，Merge Patch 不适合对列表深层的字段做更新。</p>
 <h3 id="23-strategic-merge-patch">2.3 Strategic Merge Patch</h3>
-<p>Strategic Merge Patch 是 Kubernetes 设计的一种 Patch 方式，通过与字段数据结构的一些注释，指明数组中元素的 key，以解决 Merge Patch 的一些问题。</p>
+<p><strong><code>Strategic Merge Patch</code></strong> 是 Kubernetes 设计的一种 Patch 方式，通过与字段数据结构的一些注释，指明数组中元素的 key，以解决 Merge Patch 的一些问题。</p>
 <p>例如，下面是 Pod 的 Container 字段的源码，其中 <code>patchMergeKey=name</code> 表明使用 container.name 字段为元素的 key。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -302,12 +325,12 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>但是，使用 Strategic Merge Patch 方式需要 Kubernetes 知晓其数据结构的注释，因此只能应有与 Kubernetes 原生的资源对象。对于 Custom Resource 是无法使用的。</p>
+</div><p>可以看到，使用 Strategic Merge Patch 方式需要 Kubernetes 知晓其数据结构的注释，<strong>因此只能应用于 Kubernetes 原生的资源对象。对于 Custom Resource 是无法使用的</strong>。</p>
 <h3 id="24-server-side-apply">2.4 Server Side Apply</h3>
-<p>Kubernetes 1.16 之后，默认开启了 Server Side Apply 特性，在前面三种 Apply 方式的基础上，提供了冲突的机制。</p>
+<p>Kubernetes 1.16 之后，默认开启了 <a href="https://kubernetes.io/zh/docs/reference/using-api/server-side-apply/" target="_blank" rel="noopener noreffer"><strong>Server Side Apply</strong></a> 特性，在前面三种 Apply 方式的基础上，为 Patch 机制提供了冲突检查的能力。</p>
 <h4 id="241-字段管理">2.4.1 字段管理</h4>
-<p>Server Side Apply 将对象的每个字段都认为由一个 Manager 来管理。</p>
-<p>使用 Server Side Apply 想要更新对象的某个字段时，如果该字段是由其他 Manager 管理时，就会触发 Conlict。也就表明，该字段的所有权是属于其他 Manager 的。</p>
+<p>Server Side Apply 将对象的每个字段都认为由一个 <a href="https://kubernetes.io/zh/docs/reference/using-api/server-side-apply/#managers" target="_blank" rel="noopener noreffer"><strong>Manager</strong></a> 来管理。</p>
+<p>使用 Server Side Apply 想要更新对象的某个字段时，如果该字段是由其他 Manager 管理时，就会触发 <a href="https://kubernetes.io/zh/docs/reference/using-api/server-side-apply/#conflicts" target="_blank" rel="noopener noreffer"><strong>Conlict</strong></a>。这表明，<strong>该字段的所有权是属于其他 Manager 的</strong>。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
@@ -360,50 +383,63 @@
 </span><span class="w">        </span><span class="nt">f:labels</span><span class="p">:</span><span class="w">
 </span><span class="w">          </span><span class="nt">f:test-label</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
 </span><span class="w">      </span><span class="nt">f:data</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="l">f🔑 {}</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:\key</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
 </span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
 </span><span class="w">  </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">some value</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>例如上述字段表明，目前 <code>data.key</code> 和 <code>metadata.labels.test-label</code> 是由 kubectl 管理的，更新字段的操作是 Apply。</p>
-<p>如果多个 Manager 将同一个字段设为相同的值，那么他们共享此字段的所有权，称为 Shared Manager。后续任何 Manager 尝试改变字段值时都会触发 Conflict。</p>
+<p>如果多个 Manager 将同一个字段设为相同的值，那么他们共享此字段的所有权，称为 <strong><code>Shared Manager</code></strong>。<strong>后续任何 Manager 尝试改变字段值时都会触发 Conflict</strong>。</p>
 <p>managedFields 字段的格式说明见 <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#fieldsv1-v1-meta" target="_blank" rel="noopener noreffer"><strong>API 文档</strong></a>。</p>
-<p>在任何对象更新的操作时，可以通过 fieldManager 查询操作标识 Manager（对于 Apply 操作是必须指定的）。</p>
+<p>发送任何更新对象的 HTTP 请求时，可以通过 <code>fieldManager</code> query 标识 Manager（对于 Apply 操作是必须指定的）。</p>
 <h4 id="242-merge-策略">2.4.2 Merge 策略</h4>
-<p>Server Side Apply 的请求与 Strategic Merge Patch 和 Merge Patch 类似。对于原生资源，Server Side Apply 使用 Strategic Merge Patch 的方式；对于非原生资源，使用 Merge Patch 的方式。</p>
+<p>Server Side Apply 直接使用 Strategic Merge Patch 和 Merge Patch 方式来更新对象。上传完整的请求资源对象后，APISever 读取当前保存的对象进行 diff，之后通过 Strategic Merge Patch 或者 Merge Patch 执行 Patch 操作。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">Server Side Apply 与 <code>kubectl apply</code> 类似，只不过 diff 行为发生在 APISever。</div>
+        </div>
+    </div>
 <h4 id="243-conflict-处理">2.4.3 Conflict 处理</h4>
 <p>当字段的更新触发 Conflict 时，有三种处理方式：</p>
 <ul>
-<li>强制更新，转移所有权：使用 force 查询参数，再发送一次请求，这表明需要强制更新资源，并将更新的字段的 Manager 变更为当前。</li>
-<li>放弃修改：在请求中去除字段，表明不更改其字段。</li>
-<li>成为 Shared Manager：请求中字段设为当前值，不更改字段，但是会成为 Shared Manager。</li>
+<li><strong>强制更新，转移所有权</strong>：使用 <strong><code>force query</code></strong> 参数，再发送一次请求。<strong>这会强制更新资源，并将更新的字段的 Manager 变更为当前请求的 Manager</strong>。</li>
+<li><strong>放弃修改</strong>：在请求中去除字段，表明不更改其字段。</li>
+<li><strong>成为 Shared Manager</strong>：请求中字段设为当前值，不更改字段，但是会成为 Shared Manager。</li>
 </ul>
 <h2 id="3-cli-实现">3 CLI 实现</h2>
 <h3 id="31-kubectl-apply">3.1 kubectl apply</h3>
 <h4 id="311-client-side-apply">3.1.1 client side apply</h4>
-<p><code>kubectl apply</code> 默认执行的是 client side apply，是基于对象的 last-applied-configuration annotation 进行前后对比。</p>
+<p><code>kubectl apply</code> 默认执行的是 client side apply，是基于对象的 <code>last-applied-configuration</code> annotation 进行 diff。</p>
 <p>总的来说 <code>kubectl apply</code> 分为三种情况：</p>
 <ul>
-<li>apply 的对象当前不存在 - 执行 POST HTTP 创建对象，并设置 last-applied-configuration annotation。</li>
-<li>apply 的对象存在，对象为 Kubernetes 原生对象 - 执行 PATCH HTTP，Patch 类型为 strategic merge patch。</li>
-<li>apply 的对象存在，对象不是 Kubernetes 原生对象 - 执行 PATCH HTTP，Patch 类型为 merge patch。</li>
+<li><strong>apply 的对象当前不存在</strong> - 执行 POST HTTP 创建对象，并设置 last-applied-configuration annotation。</li>
+<li><strong>apply 的对象存在，对象为 Kubernetes 原生对象</strong> - 执行 PATCH HTTP，Patch 类型为 strategic merge patch。</li>
+<li><strong>apply 的对象存在，对象不是 Kubernetes 原生对象</strong> - 执行 PATCH HTTP，Patch 类型为 merge patch。</li>
 </ul>
 <p>对象不存在，<code>kubectl apply</code> 等价于 <code>kubectl create</code> 命令，仅仅多设置了 last-applied-configuration annotation，为后续更新做准备。</p>
-<p>对象存在，<code>kubectl apply</code> 等价与 <code>kubectl patch</code> 命令，区别在于 <code>kubectl apply</code> 输入是一个完整的对象，命令通过 last-applied-configuration annotation 得到上一次的对象配置，然后进行 diff 生成 Patch 请求。</p>
+<p>对象存在，<code>kubectl apply</code> 等价与 <code>kubectl patch</code> 命令，区别在于 <code>kubectl apply</code> 输入是一个完整的对象，命令通过 <code>last-applied-configuration</code> annotation 得到上一次的对象配置，然后进行 diff 生成 Patch 请求。</p>
 <h4 id="312-server-side-apply">3.1.2 server side apply</h4>
 <p><code>kubectl apply</code> 加上 <code>--server-side</code> 参数时使用的就是 server side apply。使用 <code>--force-conflicts</code> 参数可以强制更新，使用 <code>--field-manager</code> 参数可以指定 Manager 名字（默认为 kubectl）。</p>
 <p>server side apply 的过程是完全交给 APIServer 处理，kubectl 不需要读取 annotation 进行 diff，直接通过 PATCH HTTP 提交完整的对象即可，由 APISever 来进行 diff 操作，并修改资源。</p>
 <h3 id="32-kubectl-patch">3.2 kubectl patch</h3>
-<p><code>kubectl patch</code> 发送的是 Patch 请求，只需要上传增量的数据（等于说是由用户做 Diff 操作），默认使用 Strategic Merge Patch 类型。可以使用 <code>--type</code> 来指定 Patch 类型。</p>
+<p><code>kubectl patch</code> 发送的是 Patch 请求，只需要上传增量的数据（等于说是由用户做 Diff 操作），默认使用 <a href="#23-strategic-merge-patch" rel=""><strong>Strategic Merge Patch</strong></a> 类型。可以使用 <code>--type</code> 来指定 Patch 类型。</p>
 <h3 id="33-kubectl-edit">3.3 kubectl edit</h3>
 <p><code>kubectl edit</code> 比 <code>kubectl apply</code> 更加简单，因为不需要通过 annotation 读取变化，而是直接 diff 编辑前后的对象来生成 Patch 请求。</p>
 <p>当然，Patch 类型也是基于对象是否是 Kubernetes 原生的决定的。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://kubernetes.io/zh/docs/reference/using-api/server-side-apply/" target="_blank" rel="noopener noreffer"><strong>官方文档：服务器端应用（Server-Side Apply）</strong></a></li>
+<li><a href="https://developer.aliyun.com/article/763212" target="_blank" rel="noopener noreffer"><strong>Blog：K8s 资源更新机制</strong></a></li>
+</ul>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-01-20&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/812812c9da07fdf4c3fe6c47a503843ecb4115d5" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 812812c9da07fdf4c3fe6c47a503843ecb4115d5: post: update resource mechanism">
-                                    <i class="fas fa-hashtag fa-fw"></i>812812c</a></span>
+                <span>更新于 2022-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/70ce3a7283623d19b4c61c3eefdbb9d7d7fc770d" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 70ce3a7283623d19b4c61c3eefdbb9d7d7fc770d: update md">
+                                    <i class="fas fa-hashtag fa-fw"></i>70ce3a7</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
