@@ -3,9 +3,16 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>K8s 学习 - 11 - CNI 概念与实现</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/13-cni/</link>
+    <pubDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/13-cni/</guid>
+    <description><![CDATA[1 CNI 基本概念 CNI 全称 Container Network Interface，是 Kubernetes 中的网络接口。Kubectl 会依据 CNI 标准的 API 来调用不同的网络插件接口。 CNI 插件实际上是一个主机上]]></description>
+</item><item>
     <title>Kubernetes 资源更新机制与 CLI 实现</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/</link>
     <pubDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</pubDate>
@@ -68,12 +75,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-vpc-and-internet/</guid>
     <description><![CDATA[1 Internet Gateway Internet Gateway 用于将 VPC 的流量转发给外网，并将外网的主动访问转发给指定的 Instance。 使用 Internet Gateway 的必要操作： 创建 Internet Gateway 并关联到 VPC 上。 Instance 拥有公网 IP 地]]></description>
-</item><item>
-    <title>K8s 学习 - 11 - CSI 概念与实现</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</link>
-    <pubDate>Sat, 20 Nov 2021 08:22:28 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</guid>
-    <description><![CDATA[1 设计原理 在 源码阅读 - Volume 实现 中看到，所有的存储插件实现的都是操作 Volume 的方法： Provision Volume Attach Volume Mount Device Setup Volume CSI 整体体系的架构如下图 Sidecar 容器 是一组 Kubernetes 社区维护的标准]]></description>
 </item></channel>
 </rss>

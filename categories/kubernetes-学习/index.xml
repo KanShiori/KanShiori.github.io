@@ -3,7 +3,14 @@
         <title>Kubernetes 学习 - 分类 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/</link>
         <description>Kubernetes 学习 - 分类 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 学习 - 11 - CNI 概念与实现</title>
+    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/13-cni/</link>
+    <pubDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/13-cni/</guid>
+    <description><![CDATA[1 CNI 基本概念 CNI 全称 Container Network Interface，是 Kubernetes 中的网络接口。Kubectl 会依据 CNI 标准的 API 来调用不同的网络插件接口。 CNI 插件实际上是一个主机上]]></description>
+</item><item>
     <title>Kubernetes 资源更新机制与 CLI 实现</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/</link>
     <pubDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/6-statefulset/</guid>
     <description><![CDATA[1 概述 Pod 在设计的理念上是无状态的，Pod 可以在任意时刻被销毁，可以在任意时刻被在别的节点创建相同的副本。 Deployment 与 RelicSets 就是基于这个理念设计的，它们仅]]></description>
-</item><item>
-    <title>K8s 学习 - 5 - RBAC 授权机制</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/5-rbac/</link>
-    <pubDate>Tue, 08 Jun 2021 12:05:39 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/5-rbac/</guid>
-    <description><![CDATA[1 概念 在 API 访问控制 中提到，Kubernetes 支持的授权机制有多种，其中 RBAC 是最常用的授权方式。RBAC 基于角色访问控制，全称 Role-Base Access Contro]]></description>
 </item></channel>
 </rss>
