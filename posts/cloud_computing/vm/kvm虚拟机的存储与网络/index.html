@@ -18,7 +18,7 @@
 <meta name="twitter:title" content="KVM 虚拟机的存储与网络总结"/>
 <meta name="twitter:description" content="总结 KVM 虚拟机使用存储与网络的方式"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E5%90%AF%E5%81%9C%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/" /><link rel="next" href="https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E5%90%AF%E5%81%9C%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/" /><link rel="next" href="https://KanShiori.github.io/posts/language/golang/language/memory-manager/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -240,19 +240,19 @@
 <p>在客户机中查看是否存在 virtio 相关内核模块，以确定系统是否支持 virtio：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>root@kvm-guest ~<span class="o">]</span><span class="c1"># lsmod | grep virtio</span>
-virtio_net             <span class="m">28024</span>  <span class="m">0</span> 
-virtio_pci             <span class="m">22913</span>  <span class="m">0</span> 
-virtio_ring            <span class="m">21524</span>  <span class="m">2</span> virtio_net,virtio_pci
-virtio                 <span class="m">15008</span>  <span class="m">2</span> virtio_net,virtio_pci
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>root@kvm-guest ~<span class="o">]</span><span class="c1"># lsmod | grep virtio</span>
+</span></span><span class="line"><span class="cl">virtio_net             <span class="m">28024</span>  <span class="m">0</span> 
+</span></span><span class="line"><span class="cl">virtio_pci             <span class="m">22913</span>  <span class="m">0</span> 
+</span></span><span class="line"><span class="cl">virtio_ring            <span class="m">21524</span>  <span class="m">2</span> virtio_net,virtio_pci
+</span></span><span class="line"><span class="cl">virtio                 <span class="m">15008</span>  <span class="m">2</span> virtio_net,virtio_pci
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>其中，virtio、virtio_ring、virtio_pci 等驱动提供对 virtio API 支持，任何 virtio 前端驱动都必须使用。</p>
 <h3 id="13-vhost">1.3 vhost</h3>
@@ -261,17 +261,17 @@ virtio                 <span class="m">15008</span>  <span class="m">2</span> vi
 <p>目前，网络支持有 vhost-net，块设备支持有 vhost-blk，它们都依赖于基础的内核模块 vhost。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">$ lsmod <span class="p">|</span> grep  vhost
-vhost_net              <span class="m">28672</span>  <span class="m">1</span>
-vhost                  <span class="m">53248</span>  <span class="m">1</span> vhost_net
-vhost_iotlb            <span class="m">16384</span>  <span class="m">1</span> vhost
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ lsmod <span class="p">|</span> grep  vhost
+</span></span><span class="line"><span class="cl">vhost_net              <span class="m">28672</span>  <span class="m">1</span>
+</span></span><span class="line"><span class="cl">vhost                  <span class="m">53248</span>  <span class="m">1</span> vhost_net
+</span></span><span class="line"><span class="cl">vhost_iotlb            <span class="m">16384</span>  <span class="m">1</span> vhost
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="14-总结">1.4 总结</h3>
 <p>首先，需要明白 virtio 为什么比纯模拟的方式快？</p>
@@ -292,7 +292,7 @@ vhost_iotlb            <span class="m">16384</span>  <span class="m">1</span> vh
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -301,14 +301,14 @@ vhost_iotlb            <span class="m">16384</span>  <span class="m">1</span> vh
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">$ modprobe vfio_pci
-$ lsmod <span class="p">|</span> grep vfio
-vfio_pci               <span class="m">53248</span>  <span class="m">0</span>
-vfio_virqfd            <span class="m">16384</span>  <span class="m">1</span> vfio_pci
-vfio_iommu_type1       <span class="m">32768</span>  <span class="m">0</span>
-vfio                   <span class="m">36864</span>  <span class="m">2</span> vfio_iommu_type1,vfio_pci
-irqbypass              <span class="m">16384</span>  <span class="m">8</span> vfio_pci,kvm
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ modprobe vfio_pci
+</span></span><span class="line"><span class="cl">$ lsmod <span class="p">|</span> grep vfio
+</span></span><span class="line"><span class="cl">vfio_pci               <span class="m">53248</span>  <span class="m">0</span>
+</span></span><span class="line"><span class="cl">vfio_virqfd            <span class="m">16384</span>  <span class="m">1</span> vfio_pci
+</span></span><span class="line"><span class="cl">vfio_iommu_type1       <span class="m">32768</span>  <span class="m">0</span>
+</span></span><span class="line"><span class="cl">vfio                   <span class="m">36864</span>  <span class="m">2</span> vfio_iommu_type1,vfio_pci
+</span></span><span class="line"><span class="cl">irqbypass              <span class="m">16384</span>  <span class="m">8</span> vfio_pci,kvm
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="22-sr-iov">2.2 SR-IOV</h3>
 <p>VT-d 技术只能讲一个物理设备分配给一个客户机使用，为了让多个虚拟机共享同一个物理设备，PCI_SIG 组织发布了
@@ -351,7 +351,7 @@ irqbypass              <span class="m">16384</span>  <span class="m">8</span> vf
 <p>在 Linux 中，可以查看 PCI 信息的“Capabilities”项目，以确定设备是否具备 SR-IOV 功能：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -373,45 +373,45 @@ irqbypass              <span class="m">16384</span>  <span class="m">8</span> vf
 </span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">$ lspci -s 82:00.0 -v
-82:00.0 Ethernet controller: Intel Corporation I350 Gigabit Network Connection <span class="o">(</span>rev 01<span class="o">)</span>
-        Flags: bus master, fast devsel, latency 0, IRQ 38, NUMA node <span class="m">1</span>
-        Memory at d0100000 <span class="o">(</span>32-bit, non-prefetchable<span class="o">)</span> <span class="o">[</span><span class="nv">size</span><span class="o">=</span>1M<span class="o">]</span>
-        I/O ports at c020 <span class="o">[</span><span class="nv">size</span><span class="o">=</span>32<span class="o">]</span>
-        Memory at d0204000 <span class="o">(</span>32-bit, non-prefetchable<span class="o">)</span> <span class="o">[</span><span class="nv">size</span><span class="o">=</span>16K<span class="o">]</span>
-        Expansion ROM at d0400000 <span class="o">[</span>disabled<span class="o">]</span> <span class="o">[</span><span class="nv">size</span><span class="o">=</span>1M<span class="o">]</span>
-        Capabilities: <span class="o">[</span>40<span class="o">]</span> Power Management version <span class="m">3</span>
-        Capabilities: <span class="o">[</span>50<span class="o">]</span> MSI: Enable- <span class="nv">Count</span><span class="o">=</span>1/1 Maskable+ 64bit+
-        Capabilities: <span class="o">[</span>70<span class="o">]</span> MSI-X: Enable+ <span class="nv">Count</span><span class="o">=</span><span class="m">10</span> Masked-
-        Capabilities: <span class="o">[</span>a0<span class="o">]</span> Express Endpoint, MSI <span class="m">00</span>
-        Capabilities: <span class="o">[</span>100<span class="o">]</span> Advanced Error Reporting
-        Capabilities: <span class="o">[</span>140<span class="o">]</span> Device Serial Number a4-dc-be-ff-ff-17-8d-52
-        Capabilities: <span class="o">[</span>150<span class="o">]</span> Alternative Routing-ID Interpretation <span class="o">(</span>ARI<span class="o">)</span>
-        Capabilities: <span class="o">[</span>160<span class="o">]</span> Single Root I/O Virtualization <span class="o">(</span>SR-IOV<span class="o">)</span>
-        Capabilities: <span class="o">[</span>1a0<span class="o">]</span> Transaction Processing Hints
-        Capabilities: <span class="o">[</span>1c0<span class="o">]</span> Latency Tolerance Reporting
-        Capabilities: <span class="o">[</span>1d0<span class="o">]</span> Access Control Services
-        Kernel driver in use: igb
-        Kernel modules: igb
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ lspci -s 82:00.0 -v
+</span></span><span class="line"><span class="cl">82:00.0 Ethernet controller: Intel Corporation I350 Gigabit Network Connection <span class="o">(</span>rev 01<span class="o">)</span>
+</span></span><span class="line"><span class="cl">        Flags: bus master, fast devsel, latency 0, IRQ 38, NUMA node <span class="m">1</span>
+</span></span><span class="line"><span class="cl">        Memory at d0100000 <span class="o">(</span>32-bit, non-prefetchable<span class="o">)</span> <span class="o">[</span><span class="nv">size</span><span class="o">=</span>1M<span class="o">]</span>
+</span></span><span class="line"><span class="cl">        I/O ports at c020 <span class="o">[</span><span class="nv">size</span><span class="o">=</span>32<span class="o">]</span>
+</span></span><span class="line"><span class="cl">        Memory at d0204000 <span class="o">(</span>32-bit, non-prefetchable<span class="o">)</span> <span class="o">[</span><span class="nv">size</span><span class="o">=</span>16K<span class="o">]</span>
+</span></span><span class="line"><span class="cl">        Expansion ROM at d0400000 <span class="o">[</span>disabled<span class="o">]</span> <span class="o">[</span><span class="nv">size</span><span class="o">=</span>1M<span class="o">]</span>
+</span></span><span class="line"><span class="cl">        Capabilities: <span class="o">[</span>40<span class="o">]</span> Power Management version <span class="m">3</span>
+</span></span><span class="line"><span class="cl">        Capabilities: <span class="o">[</span>50<span class="o">]</span> MSI: Enable- <span class="nv">Count</span><span class="o">=</span>1/1 Maskable+ 64bit+
+</span></span><span class="line"><span class="cl">        Capabilities: <span class="o">[</span>70<span class="o">]</span> MSI-X: Enable+ <span class="nv">Count</span><span class="o">=</span><span class="m">10</span> Masked-
+</span></span><span class="line"><span class="cl">        Capabilities: <span class="o">[</span>a0<span class="o">]</span> Express Endpoint, MSI <span class="m">00</span>
+</span></span><span class="line"><span class="cl">        Capabilities: <span class="o">[</span>100<span class="o">]</span> Advanced Error Reporting
+</span></span><span class="line"><span class="cl">        Capabilities: <span class="o">[</span>140<span class="o">]</span> Device Serial Number a4-dc-be-ff-ff-17-8d-52
+</span></span><span class="line"><span class="cl">        Capabilities: <span class="o">[</span>150<span class="o">]</span> Alternative Routing-ID Interpretation <span class="o">(</span>ARI<span class="o">)</span>
+</span></span><span class="line"><span class="cl">        Capabilities: <span class="o">[</span>160<span class="o">]</span> Single Root I/O Virtualization <span class="o">(</span>SR-IOV<span class="o">)</span>
+</span></span><span class="line"><span class="cl">        Capabilities: <span class="o">[</span>1a0<span class="o">]</span> Transaction Processing Hints
+</span></span><span class="line"><span class="cl">        Capabilities: <span class="o">[</span>1c0<span class="o">]</span> Latency Tolerance Reporting
+</span></span><span class="line"><span class="cl">        Capabilities: <span class="o">[</span>1d0<span class="o">]</span> Access Control Services
+</span></span><span class="line"><span class="cl">        Kernel driver in use: igb
+</span></span><span class="line"><span class="cl">        Kernel modules: igb
+</span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
-<li><em>&ldquo;Capabilities: [160] Single Root I/O Virtualization (SR-IOV)&quot;</em> 表示网卡支持 SR-IOV 功能
+<li><em>&ldquo;Capabilities: [160] Single Root I/O Virtualization (SR-IOV)&rdquo;</em> 表示网卡支持 SR-IOV 功能
 具体使用方式见网络模式中的示例。</li>
 </ul>
 <h2 id="3-存储模式">3 存储模式</h2>
 <p>下面的磁盘测试都是以 4k 随机读写测试，命令如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">fio -thread -name<span class="o">=</span><span class="si">${</span><span class="nv">DISK</span><span class="si">}</span> -filename<span class="o">=</span><span class="si">${</span><span class="nv">DISK</span><span class="si">}</span> <span class="se">\
-</span><span class="se"></span>        -ioengine<span class="o">=</span>libaio -direct<span class="o">=</span><span class="m">1</span> -bs<span class="o">=</span>4k -rw<span class="o">=</span>randrw -iodepth<span class="o">=</span><span class="m">32</span> <span class="se">\
-</span><span class="se"></span>        -size<span class="o">=</span>8G  -rw<span class="o">=</span>readrw
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fio -thread -name<span class="o">=</span><span class="si">${</span><span class="nv">DISK</span><span class="si">}</span> -filename<span class="o">=</span><span class="si">${</span><span class="nv">DISK</span><span class="si">}</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        -ioengine<span class="o">=</span>libaio -direct<span class="o">=</span><span class="m">1</span> -bs<span class="o">=</span>4k -rw<span class="o">=</span>randrw -iodepth<span class="o">=</span><span class="m">32</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        -size<span class="o">=</span>8G  -rw<span class="o">=</span>readrw
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>说明，测试仅仅适用于简单对比各个模式之间性能差异，而不是标准的基准测试，不能作为靠谱数据。</p>
 <h3 id="31-纯模拟">3.1 纯模拟</h3>
@@ -419,7 +419,7 @@ irqbypass              <span class="m">16384</span>  <span class="m">8</span> vf
 <p>创建一个 qcow2 文件，并将其以 sata 驱动方式提供给虚拟机：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -429,20 +429,20 @@ irqbypass              <span class="m">16384</span>  <span class="m">8</span> vf
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">…
-&lt;disk <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;file&#39;</span> <span class="nv">device</span><span class="o">=</span><span class="s1">&#39;disk&#39;</span>&gt;
-      &lt;driver <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;qemu&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;qcow2&#39;</span>/&gt;
-      &lt;<span class="nb">source</span> <span class="nv">file</span><span class="o">=</span><span class="s1">&#39;/root/disk1.qcow2&#39;</span>/&gt;
-      &lt;target <span class="nv">dev</span><span class="o">=</span><span class="s1">&#39;sda&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;sata&#39;</span>/&gt;
-      &lt;address <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;drive&#39;</span> <span class="nv">controller</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">target</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">unit</span><span class="o">=</span><span class="s1">&#39;0&#39;</span>/&gt;
-&lt;/disk&gt;
-…
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">…
+</span></span><span class="line"><span class="cl">&lt;disk <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;file&#39;</span> <span class="nv">device</span><span class="o">=</span><span class="s1">&#39;disk&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">      &lt;driver <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;qemu&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;qcow2&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;<span class="nb">source</span> <span class="nv">file</span><span class="o">=</span><span class="s1">&#39;/root/disk1.qcow2&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;target <span class="nv">dev</span><span class="o">=</span><span class="s1">&#39;sda&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;sata&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;address <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;drive&#39;</span> <span class="nv">controller</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">target</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">unit</span><span class="o">=</span><span class="s1">&#39;0&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">&lt;/disk&gt;
+</span></span><span class="line"><span class="cl">…
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>在虚拟机中，可以看到对应的磁盘与对应的驱动：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -452,15 +452,15 @@ irqbypass              <span class="m">16384</span>  <span class="m">8</span> vf
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lsblk</span>
-NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-sda      8:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
-vda    253:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
-└─vda1 253:1    <span class="m">0</span>  500G  <span class="m">0</span> part /
-<span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lspci</span>
-…
-00:09.0 SATA controller: Intel Corporation 82801IR/IO/IH <span class="o">(</span>ICH9R/DO/DH<span class="o">)</span> <span class="m">6</span> port SATA Controller <span class="o">[</span>AHCI mode<span class="o">]</span> <span class="o">(</span>rev 02<span class="o">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lsblk</span>
+</span></span><span class="line"><span class="cl">NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+</span></span><span class="line"><span class="cl">sda      8:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
+</span></span><span class="line"><span class="cl">vda    253:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
+</span></span><span class="line"><span class="cl">└─vda1 253:1    <span class="m">0</span>  500G  <span class="m">0</span> part /
+</span></span><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lspci</span>
+</span></span><span class="line"><span class="cl">…
+</span></span><span class="line"><span class="cl">00:09.0 SATA controller: Intel Corporation 82801IR/IO/IH <span class="o">(</span>ICH9R/DO/DH<span class="o">)</span> <span class="m">6</span> port SATA Controller <span class="o">[</span>AHCI mode<span class="o">]</span> <span class="o">(</span>rev 02<span class="o">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>压测结果：</p>
 <ul>
@@ -471,19 +471,19 @@ vda    253:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
 <p><strong><code>virtio-blk</code></strong> 实现了 virtio 标准，在虚拟机中使用 virtio 驱动，加速存储的访问。当然，需要客户机中系统支持 virtio-blk 内核模块。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lsmod | grep blk</span>
-virtio_blk             <span class="m">18323</span>  <span class="m">2</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lsmod | grep blk</span>
+</span></span><span class="line"><span class="cl">virtio_blk             <span class="m">18323</span>  <span class="m">2</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>目前，virtio-blk 可用于宿主机文件、裸设备、LVM 设备，挂载到虚拟机后命名为 vdx。</p>
 <p>将 &lt;disk&gt;.&lt;target&gt; 中的 bus 改为 virtio，就是使用 virtio-blk 方式。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -493,20 +493,20 @@ virtio_blk             <span class="m">18323</span>  <span class="m">2</span>
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">…
-&lt;disk <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;file&#39;</span> <span class="nv">device</span><span class="o">=</span><span class="s1">&#39;disk&#39;</span>&gt;
-      &lt;driver <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;qemu&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;qcow2&#39;</span>/&gt;
-      &lt;<span class="nb">source</span> <span class="nv">file</span><span class="o">=</span><span class="s1">&#39;/root/disk1.qcow2&#39;</span>/&gt;
-      &lt;target <span class="nv">dev</span><span class="o">=</span><span class="s1">&#39;sda&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;virtio&#39;</span>/&gt;
-      &lt;address <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;pci&#39;</span> <span class="nv">domain</span><span class="o">=</span><span class="s1">&#39;0x0000&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0x00&#39;</span> <span class="nv">slot</span><span class="o">=</span><span class="s1">&#39;0x0a&#39;</span> <span class="k">function</span><span class="o">=</span><span class="s1">&#39;0x0&#39;</span>/&gt;
-&lt;/disk&gt;
-…
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">…
+</span></span><span class="line"><span class="cl">&lt;disk <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;file&#39;</span> <span class="nv">device</span><span class="o">=</span><span class="s1">&#39;disk&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">      &lt;driver <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;qemu&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;qcow2&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;<span class="nb">source</span> <span class="nv">file</span><span class="o">=</span><span class="s1">&#39;/root/disk1.qcow2&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;target <span class="nv">dev</span><span class="o">=</span><span class="s1">&#39;sda&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;virtio&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;address <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;pci&#39;</span> <span class="nv">domain</span><span class="o">=</span><span class="s1">&#39;0x0000&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0x00&#39;</span> <span class="nv">slot</span><span class="o">=</span><span class="s1">&#39;0x0a&#39;</span> <span class="k">function</span><span class="o">=</span><span class="s1">&#39;0x0&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">&lt;/disk&gt;
+</span></span><span class="line"><span class="cl">…
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>不过使用 virtio 驱动，设置的 dev 名称会失效，自动使用 vdx 这种命名方式。在虚拟机中看到对应的磁盘以及驱动：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -516,15 +516,15 @@ virtio_blk             <span class="m">18323</span>  <span class="m">2</span>
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lsblk</span>
-NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-vda    253:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
-└─vda1 253:1    <span class="m">0</span>  500G  <span class="m">0</span> part /
-vdb    253:16   <span class="m">0</span>  500G  <span class="m">0</span> disk
-<span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lspci</span>
-…
-00:0a.0 SCSI storage controller: Red Hat, Inc. Virtio block device
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lsblk</span>
+</span></span><span class="line"><span class="cl">NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+</span></span><span class="line"><span class="cl">vda    253:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
+</span></span><span class="line"><span class="cl">└─vda1 253:1    <span class="m">0</span>  500G  <span class="m">0</span> part /
+</span></span><span class="line"><span class="cl">vdb    253:16   <span class="m">0</span>  500G  <span class="m">0</span> disk
+</span></span><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lspci</span>
+</span></span><span class="line"><span class="cl">…
+</span></span><span class="line"><span class="cl">00:0a.0 SCSI storage controller: Red Hat, Inc. Virtio block device
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>压测结果，可以看到，比纯模拟要快很多：</p>
 <ul>
@@ -543,7 +543,7 @@ vdb    253:16   <span class="m">0</span>  500G  <span class="m">0</span> disk
 <p>将磁盘的驱动设置为 scsi，同时将 scsi 驱动设置为使用 <strong>virtio-scsi</strong>（默认使用的驱动是 lsi）：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -554,16 +554,16 @@ vdb    253:16   <span class="m">0</span>  500G  <span class="m">0</span> disk
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">…
-    &lt;disk <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;file&#39;</span> <span class="nv">device</span><span class="o">=</span><span class="s1">&#39;disk&#39;</span>&gt;
-      &lt;driver <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;qemu&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;qcow2&#39;</span>/&gt;
-      &lt;<span class="nb">source</span> <span class="nv">file</span><span class="o">=</span><span class="s1">&#39;/root/disk1.qcow2&#39;</span>/&gt;
-      &lt;target <span class="nv">dev</span><span class="o">=</span><span class="s1">&#39;sdc&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;scsi&#39;</span>/&gt;
-      &lt;address <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;drive&#39;</span> <span class="nv">controller</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">target</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">unit</span><span class="o">=</span><span class="s1">&#39;2&#39;</span>/&gt;
-    &lt;/disk&gt;
-    &lt;controller <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;scsi&#39;</span> <span class="nv">index</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">model</span><span class="o">=</span><span class="s1">&#39;virtio-scsi&#39;</span>/&gt;
-…
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">…
+</span></span><span class="line"><span class="cl">    &lt;disk <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;file&#39;</span> <span class="nv">device</span><span class="o">=</span><span class="s1">&#39;disk&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">      &lt;driver <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;qemu&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;qcow2&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;<span class="nb">source</span> <span class="nv">file</span><span class="o">=</span><span class="s1">&#39;/root/disk1.qcow2&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;target <span class="nv">dev</span><span class="o">=</span><span class="s1">&#39;sdc&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;scsi&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;address <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;drive&#39;</span> <span class="nv">controller</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">target</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">unit</span><span class="o">=</span><span class="s1">&#39;2&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">    &lt;/disk&gt;
+</span></span><span class="line"><span class="cl">    &lt;controller <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;scsi&#39;</span> <span class="nv">index</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">model</span><span class="o">=</span><span class="s1">&#39;virtio-scsi&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">…
+</span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>可以看到，&lt;address&gt; 中设置相关设备地址时，可以看到不是设置 pci 槽地址，而是设置设备对应 SCSI 映射地址，因此通过增加 &ldquo;target&rdquo; 属性就可以添加多个硬盘，不需要占用多个 PCI 槽；</li>
@@ -571,7 +571,7 @@ vdb    253:16   <span class="m">0</span>  500G  <span class="m">0</span> disk
 <p>虚拟机中看到对应的块设备 &ldquo;sda&rdquo;，以及驱动 &ldquo;Virtio SCSI&rdquo;：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -581,15 +581,15 @@ vdb    253:16   <span class="m">0</span>  500G  <span class="m">0</span> disk
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lsblk</span>
-NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-sda      8:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
-vda    253:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
-└─vda1 253:1    <span class="m">0</span>  500G  <span class="m">0</span> part /
-<span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lspci</span>
-…
-00:08.0 SCSI storage controller: Red Hat, Inc. Virtio SCSI
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lsblk</span>
+</span></span><span class="line"><span class="cl">NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+</span></span><span class="line"><span class="cl">sda      8:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
+</span></span><span class="line"><span class="cl">vda    253:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
+</span></span><span class="line"><span class="cl">└─vda1 253:1    <span class="m">0</span>  500G  <span class="m">0</span> part /
+</span></span><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lspci</span>
+</span></span><span class="line"><span class="cl">…
+</span></span><span class="line"><span class="cl">00:08.0 SCSI storage controller: Red Hat, Inc. Virtio SCSI
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>压测结果：</p>
 <ul>
@@ -600,7 +600,7 @@ vda    253:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
 <p>通过设置 <strong>device=&ldquo;lun&rdquo;</strong> 使用：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -611,24 +611,24 @@ vda    253:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">...
-    &lt;disk <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;block&#39;</span> <span class="nv">device</span><span class="o">=</span><span class="s1">&#39;lun&#39;</span>&gt;
-      &lt;driver <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;qemu&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;raw&#39;</span>/&gt;
-      &lt;<span class="nb">source</span> <span class="nv">dev</span><span class="o">=</span><span class="s1">&#39;/dev/sda&#39;</span>/&gt;
-      &lt;target <span class="nv">dev</span><span class="o">=</span><span class="s1">&#39;sdc&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;scsi&#39;</span>/&gt;
-      &lt;address <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;drive&#39;</span> <span class="nv">controller</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">target</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">unit</span><span class="o">=</span><span class="s1">&#39;2&#39;</span>/&gt;
-    &lt;/disk&gt;
-    &lt;controller <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;scsi&#39;</span> <span class="nv">index</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">model</span><span class="o">=</span><span class="s1">&#39;virtio-scsi&#39;</span> /&gt;
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">    &lt;disk <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;block&#39;</span> <span class="nv">device</span><span class="o">=</span><span class="s1">&#39;lun&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">      &lt;driver <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;qemu&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;raw&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;<span class="nb">source</span> <span class="nv">dev</span><span class="o">=</span><span class="s1">&#39;/dev/sda&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;target <span class="nv">dev</span><span class="o">=</span><span class="s1">&#39;sdc&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;scsi&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;address <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;drive&#39;</span> <span class="nv">controller</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">target</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">unit</span><span class="o">=</span><span class="s1">&#39;2&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">    &lt;/disk&gt;
+</span></span><span class="line"><span class="cl">    &lt;controller <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;scsi&#39;</span> <span class="nv">index</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">model</span><span class="o">=</span><span class="s1">&#39;virtio-scsi&#39;</span> /&gt;
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>使用 lun 方式，并指定使用宿主机块设备 sda</li>
 </ul>
-<p>虚拟机中看到对应块设备 &ldquo;sda&rdquo;，以及驱动 &quot;&rdquo; ：</p>
+<p>虚拟机中看到对应块设备 &ldquo;sda&rdquo;，以及驱动 &quot;&quot; ：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -638,15 +638,15 @@ vda    253:0    <span class="m">0</span>  500G  <span class="m">0</span> disk
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lsblk</span>
-NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-sda      8:0    <span class="m">0</span> 465.8G  <span class="m">0</span> disk
-vda    253:0    <span class="m">0</span>   500G  <span class="m">0</span> disk
-└─vda1 253:1    <span class="m">0</span>   500G  <span class="m">0</span> part /
-<span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lspci</span>
-…
-00:08.0 SCSI storage controller: Red Hat, Inc. Virtio SCSI
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lsblk</span>
+</span></span><span class="line"><span class="cl">NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+</span></span><span class="line"><span class="cl">sda      8:0    <span class="m">0</span> 465.8G  <span class="m">0</span> disk
+</span></span><span class="line"><span class="cl">vda    253:0    <span class="m">0</span>   500G  <span class="m">0</span> disk
+</span></span><span class="line"><span class="cl">└─vda1 253:1    <span class="m">0</span>   500G  <span class="m">0</span> part /
+</span></span><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># lspci</span>
+</span></span><span class="line"><span class="cl">…
+</span></span><span class="line"><span class="cl">00:08.0 SCSI storage controller: Red Hat, Inc. Virtio SCSI
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="details admonition warning open">
         <div class="details-summary admonition-title">
@@ -665,7 +665,7 @@ vda    253:0    <span class="m">0</span>   500G  <span class="m">0</span> disk
 <p>在设备 xml 配置文件中添加 <strong>&lt;hostdev&gt;</strong> 项，指定对应的设备 PCI 地址，来直接分配设备（也可以使用 <strong>&lt;interface type=&lsquo;hostdev&rsquo;/&gt;</strong>，这是一种 libvirt 提供的较新的配置方式，但是不兼容所有设备）。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -674,21 +674,21 @@ vda    253:0    <span class="m">0</span>   500G  <span class="m">0</span> disk
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">…
-    &lt;hostdev <span class="nv">mode</span><span class="o">=</span><span class="s1">&#39;subsystem&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;pci&#39;</span> <span class="nv">managed</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span>&gt;
-        &lt;source&gt;
-            &lt;address <span class="nv">domain</span><span class="o">=</span><span class="s1">&#39;0x0000&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0x08&#39;</span> <span class="nv">slot</span><span class="o">=</span><span class="s1">&#39;0x00&#39;</span> <span class="k">function</span><span class="o">=</span><span class="s1">&#39;0x0&#39;</span>/&gt;
-        &lt;/source&gt;
-    &lt;/hostdev&gt;
-…
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">…
+</span></span><span class="line"><span class="cl">    &lt;hostdev <span class="nv">mode</span><span class="o">=</span><span class="s1">&#39;subsystem&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;pci&#39;</span> <span class="nv">managed</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">        &lt;source&gt;
+</span></span><span class="line"><span class="cl">            &lt;address <span class="nv">domain</span><span class="o">=</span><span class="s1">&#39;0x0000&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0x08&#39;</span> <span class="nv">slot</span><span class="o">=</span><span class="s1">&#39;0x00&#39;</span> <span class="k">function</span><span class="o">=</span><span class="s1">&#39;0x0&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">        &lt;/source&gt;
+</span></span><span class="line"><span class="cl">    &lt;/hostdev&gt;
+</span></span><span class="line"><span class="cl">…
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="342-scsi-设备">3.4.2 SCSI 设备</h4>
 <p>对于 SCSI 磁盘，通过 PCI 无法单独分配某个磁盘，而 libvirt 中提供了 <strong>type=&lsquo;scsi&rsquo;</strong> 类型的直接分配。但是与 PCI 不同的是，scsi 无法设置 &lsquo;managed&rsquo; 参数，也就是说宿主机上还是能够看见该 scsi 设备，如果想不可见，需要自己 unbind。</p>
 <p>添加 scsi 类型的 <strong>&lt;hostdev&gt;</strong> 项，其中 &lt;source&gt;.&lt;address&gt; 中指定宿主机对应磁盘的 scsi 地址。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -700,17 +700,17 @@ vda    253:0    <span class="m">0</span>   500G  <span class="m">0</span> disk
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">...
-    &lt;hostdev <span class="nv">mode</span><span class="o">=</span><span class="s1">&#39;subsystem&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;scsi&#39;</span> <span class="nv">managed</span><span class="o">=</span><span class="s1">&#39;no&#39;</span> <span class="nv">sgio</span><span class="o">=</span><span class="s1">&#39;filtered&#39;</span> <span class="nv">rawio</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span>&gt;
-        &lt;source&gt;
-            &lt;adapter <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;scsi_host0&#39;</span>/&gt;
-            &lt;address <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;2&#39;</span> <span class="nv">target</span><span class="o">=</span><span class="s1">&#39;1&#39;</span> <span class="nv">unit</span><span class="o">=</span><span class="s1">&#39;0&#39;</span>/&gt;
-        &lt;/source&gt;
-            &lt;address <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;drive&#39;</span> <span class="nv">controller</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">target</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">unit</span><span class="o">=</span><span class="s1">&#39;2&#39;</span>/&gt;
-    &lt;/hostdev&gt;
-    &lt;controller <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;scsi&#39;</span> <span class="nv">index</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">model</span><span class="o">=</span><span class="s1">&#39;virtio-scsi&#39;</span>/&gt;
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">    &lt;hostdev <span class="nv">mode</span><span class="o">=</span><span class="s1">&#39;subsystem&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;scsi&#39;</span> <span class="nv">managed</span><span class="o">=</span><span class="s1">&#39;no&#39;</span> <span class="nv">sgio</span><span class="o">=</span><span class="s1">&#39;filtered&#39;</span> <span class="nv">rawio</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">        &lt;source&gt;
+</span></span><span class="line"><span class="cl">            &lt;adapter <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;scsi_host0&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">            &lt;address <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;2&#39;</span> <span class="nv">target</span><span class="o">=</span><span class="s1">&#39;1&#39;</span> <span class="nv">unit</span><span class="o">=</span><span class="s1">&#39;0&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">        &lt;/source&gt;
+</span></span><span class="line"><span class="cl">            &lt;address <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;drive&#39;</span> <span class="nv">controller</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">target</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">unit</span><span class="o">=</span><span class="s1">&#39;2&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">    &lt;/hostdev&gt;
+</span></span><span class="line"><span class="cl">    &lt;controller <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;scsi&#39;</span> <span class="nv">index</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">model</span><span class="o">=</span><span class="s1">&#39;virtio-scsi&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -746,22 +746,22 @@ vda    253:0    <span class="m">0</span>   500G  <span class="m">0</span> disk
 <p>libvirt 会存在一个名为 <strong>default</strong> 的 network，其就是一个 NAT 网络。通过 <code>virsh net-list</code> 查看：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">$ virsh net-list
- Name      State    Autostart   Persistent
---------------------------------------------
- default   active   yes         yes
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ virsh net-list
+</span></span><span class="line"><span class="cl"> Name      State    Autostart   Persistent
+</span></span><span class="line"><span class="cl">--------------------------------------------
+</span></span><span class="line"><span class="cl"> default   active   yes         yes
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>其默认会被 active，也就是说宿主机环境在 libvirtd 启动后就会构建好，你可以看到对应的 bridge 网卡。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -770,19 +770,19 @@ vda    253:0    <span class="m">0</span>   500G  <span class="m">0</span> disk
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">$ ip a
-...
-3: virbr0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu <span class="m">1500</span> qdisc noqueue state DOWN group default qlen <span class="m">1000</span>
-    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
-    inet 172.27.0.1/16 brd 172.27.255.255 scope global galaxybr0
-       valid_lft forever preferred_lft forever
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ip a
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">3: virbr0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu <span class="m">1500</span> qdisc noqueue state DOWN group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    inet 172.27.0.1/16 brd 172.27.255.255 scope global galaxybr0
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>默认下，default 网络的内网为 192.168.122.1/24，我通过修改其配置文件 <code>/etc/libvirt/qemu/networks/default.xml</code> 修改了内网范围：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -797,25 +797,25 @@ vda    253:0    <span class="m">0</span>   500G  <span class="m">0</span> disk
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">$ cat  /etc/libvirt/qemu/networks/default.xml
-&lt;network&gt;
-  &lt;name&gt;default&lt;/name&gt;
-  &lt;uuid&gt;341adece-b07a-4eb0-92f2-d92f59ed266f&lt;/uuid&gt;
-  &lt;forward <span class="nv">mode</span><span class="o">=</span><span class="s1">&#39;nat&#39;</span>/&gt;
-  &lt;bridge <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;virbr0&#39;</span> <span class="nv">stp</span><span class="o">=</span><span class="s1">&#39;on&#39;</span> <span class="nv">delay</span><span class="o">=</span><span class="s1">&#39;0&#39;</span>/&gt;
-  &lt;mac <span class="nv">address</span><span class="o">=</span><span class="s1">&#39;52:54:00:12:34:56&#39;</span>/&gt;
-  &lt;ip <span class="nv">address</span><span class="o">=</span><span class="s1">&#39;172.27.0.1&#39;</span> <span class="nv">netmask</span><span class="o">=</span><span class="s1">&#39;255.255.0.0&#39;</span>&gt;
-    &lt;dhcp&gt;
-      &lt;range <span class="nv">start</span><span class="o">=</span><span class="s1">&#39;172.27.0.2&#39;</span> <span class="nv">end</span><span class="o">=</span><span class="s1">&#39;172.27.255.254&#39;</span>/&gt;
-    &lt;/dhcp&gt;
-  &lt;/ip&gt;
-&lt;/network&gt;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ cat  /etc/libvirt/qemu/networks/default.xml
+</span></span><span class="line"><span class="cl">&lt;network&gt;
+</span></span><span class="line"><span class="cl">  &lt;name&gt;default&lt;/name&gt;
+</span></span><span class="line"><span class="cl">  &lt;uuid&gt;341adece-b07a-4eb0-92f2-d92f59ed266f&lt;/uuid&gt;
+</span></span><span class="line"><span class="cl">  &lt;forward <span class="nv">mode</span><span class="o">=</span><span class="s1">&#39;nat&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">  &lt;bridge <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;virbr0&#39;</span> <span class="nv">stp</span><span class="o">=</span><span class="s1">&#39;on&#39;</span> <span class="nv">delay</span><span class="o">=</span><span class="s1">&#39;0&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">  &lt;mac <span class="nv">address</span><span class="o">=</span><span class="s1">&#39;52:54:00:12:34:56&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">  &lt;ip <span class="nv">address</span><span class="o">=</span><span class="s1">&#39;172.27.0.1&#39;</span> <span class="nv">netmask</span><span class="o">=</span><span class="s1">&#39;255.255.0.0&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">    &lt;dhcp&gt;
+</span></span><span class="line"><span class="cl">      &lt;range <span class="nv">start</span><span class="o">=</span><span class="s1">&#39;172.27.0.2&#39;</span> <span class="nv">end</span><span class="o">=</span><span class="s1">&#39;172.27.255.254&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">    &lt;/dhcp&gt;
+</span></span><span class="line"><span class="cl">  &lt;/ip&gt;
+</span></span><span class="line"><span class="cl">&lt;/network&gt;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>libvirtd 会为启动的 nat 网络启动一个 <strong>dnsmasq</strong> 进程，用于提供 DNS 与 DHCP 功能，其对应配置就是对应网络的配置</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -832,22 +832,22 @@ vda    253:0    <span class="m">0</span>   500G  <span class="m">0</span> disk
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">$ ps x <span class="p">|</span> grep dns
-<span class="m">2185</span> ?        S      0:00 /usr/sbin/dnsmasq --conf-file<span class="o">=</span>/var/lib/libvirt/dnsmasq/default.conf --leasefile-ro --dhcp-script<span class="o">=</span>/usr/libexec/libvirt_leaseshelper
-
-$ cat /var/lib/libvirt/dnsmasq/default.conf
-strict-order
-pid-file<span class="o">=</span>/var/run/libvirt/network/default.pid
-except-interface<span class="o">=</span>lo
-bind-dynamic
-<span class="nv">interface</span><span class="o">=</span>virbr0
-dhcp-range<span class="o">=</span>172.27.0.2,172.27.255.254,255.255.0.0
-dhcp-no-override
-dhcp-authoritative
-dhcp-lease-max<span class="o">=</span><span class="m">65533</span>
-dhcp-hostsfile<span class="o">=</span>/var/lib/libvirt/dnsmasq/default.hostsfile
-addn-hosts<span class="o">=</span>/var/lib/libvirt/dnsmasq/default.addnhosts
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ps x <span class="p">|</span> grep dns
+</span></span><span class="line"><span class="cl"><span class="m">2185</span> ?        S      0:00 /usr/sbin/dnsmasq --conf-file<span class="o">=</span>/var/lib/libvirt/dnsmasq/default.conf --leasefile-ro --dhcp-script<span class="o">=</span>/usr/libexec/libvirt_leaseshelper
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ cat /var/lib/libvirt/dnsmasq/default.conf
+</span></span><span class="line"><span class="cl">strict-order
+</span></span><span class="line"><span class="cl">pid-file<span class="o">=</span>/var/run/libvirt/network/default.pid
+</span></span><span class="line"><span class="cl">except-interface<span class="o">=</span>lo
+</span></span><span class="line"><span class="cl">bind-dynamic
+</span></span><span class="line"><span class="cl"><span class="nv">interface</span><span class="o">=</span>virbr0
+</span></span><span class="line"><span class="cl">dhcp-range<span class="o">=</span>172.27.0.2,172.27.255.254,255.255.0.0
+</span></span><span class="line"><span class="cl">dhcp-no-override
+</span></span><span class="line"><span class="cl">dhcp-authoritative
+</span></span><span class="line"><span class="cl">dhcp-lease-max<span class="o">=</span><span class="m">65533</span>
+</span></span><span class="line"><span class="cl">dhcp-hostsfile<span class="o">=</span>/var/lib/libvirt/dnsmasq/default.hostsfile
+</span></span><span class="line"><span class="cl">addn-hosts<span class="o">=</span>/var/lib/libvirt/dnsmasq/default.addnhosts
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -862,7 +862,7 @@ addn-hosts<span class="o">=</span>/var/lib/libvirt/dnsmasq/default.addnhosts
 在 xml 配置文件中设置 <strong>&lt;interface type=&lsquo;network&rsquo;&gt;</strong> 项，并设置 <strong>&lt;source network=&lsquo;default&rsquo;/&gt;</strong> 使用 default network。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -873,21 +873,21 @@ addn-hosts<span class="o">=</span>/var/lib/libvirt/dnsmasq/default.addnhosts
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">&lt;inferface <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;network&#39;</span>&gt;
-      &lt;mac <span class="nv">address</span><span class="o">=</span><span class="s1">&#39;50:54:00:87:bc:c3&#39;</span>/&gt;
-      &lt;<span class="nb">source</span> <span class="nv">network</span><span class="o">=</span><span class="s1">&#39;default&#39;</span>/&gt;
-      &lt;model <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;virtio&#39;</span>/&gt;
-      &lt;driver <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;vhost&#39;</span> <span class="nv">txmode</span><span class="o">=</span><span class="s1">&#39;iothread&#39;</span> <span class="nv">ioeventfd</span><span class="o">=</span><span class="s1">&#39;on&#39;</span> <span class="nv">event_idx</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">queues</span><span class="o">=</span><span class="s1">&#39;16&#39;</span>&gt;
-        &lt;host <span class="nv">csum</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">gso</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso4</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso6</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ecn</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ufo</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">mrg_rxbuf</span><span class="o">=</span><span class="s1">&#39;off&#39;</span>/&gt;
-        &lt;guest <span class="nv">csum</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso4</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso6</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ecn</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ufo</span><span class="o">=</span><span class="s1">&#39;off&#39;</span>/&gt;
-      &lt;/driver&gt;
-    &lt;/interface&gt;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">&lt;inferface <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;network&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">      &lt;mac <span class="nv">address</span><span class="o">=</span><span class="s1">&#39;50:54:00:87:bc:c3&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;<span class="nb">source</span> <span class="nv">network</span><span class="o">=</span><span class="s1">&#39;default&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;model <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;virtio&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;driver <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;vhost&#39;</span> <span class="nv">txmode</span><span class="o">=</span><span class="s1">&#39;iothread&#39;</span> <span class="nv">ioeventfd</span><span class="o">=</span><span class="s1">&#39;on&#39;</span> <span class="nv">event_idx</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">queues</span><span class="o">=</span><span class="s1">&#39;16&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">        &lt;host <span class="nv">csum</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">gso</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso4</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso6</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ecn</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ufo</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">mrg_rxbuf</span><span class="o">=</span><span class="s1">&#39;off&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">        &lt;guest <span class="nv">csum</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso4</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso6</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ecn</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ufo</span><span class="o">=</span><span class="s1">&#39;off&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;/driver&gt;
+</span></span><span class="line"><span class="cl">    &lt;/interface&gt;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>启动虚拟机后，可以看到虚拟机内部存在对应的网卡，通过 <code>dhclient -v eth0</code> 命令申请一个 IP，广播的 dhcp request 会被宿主机 dnsmasp 进程响应，并返回 dhcp offer。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -909,27 +909,27 @@ addn-hosts<span class="o">=</span>/var/lib/libvirt/dnsmasq/default.addnhosts
 </span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># ip a</span>
-...
-2: eth0: &lt;BROADCAST,MULTICAST&gt; mtu <span class="m">1500</span> qdisc noop state DOWN group default qlen <span class="m">1000</span>
-    link/ether 50:54:00:87:bc:c3 brd ff:ff:ff:ff:ff:ff
-
-<span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># dhclient -v  eth0</span>
-...
-Listening on LPF/eth0/50:54:00:87:bc:c3
-Sending on   LPF/eth0/50:54:00:87:bc:c3
-Sending on   Socket/fallback
-DHCPDISCOVER on eth0 to 255.255.255.255 port <span class="m">67</span> interval <span class="m">4</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x57740476<span class="o">)</span>
-DHCPREQUEST on eth0 to 255.255.255.255 port <span class="m">67</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x57740476<span class="o">)</span>
-DHCPOFFER from 172.27.0.1
-DHCPACK from 172.27.0.1 <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x57740476<span class="o">)</span>
-bound to 172.27.163.138 -- renewal in <span class="m">1653</span> seconds.
-
-<span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># ping www.baidu.com</span>
-PING www.a.shifen.com <span class="o">(</span>14.215.177.38<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
-<span class="m">64</span> bytes from 14.215.177.38 <span class="o">(</span>14.215.177.38<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">48</span> <span class="nv">time</span><span class="o">=</span>7.93 ms
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># ip a</span>
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">2: eth0: &lt;BROADCAST,MULTICAST&gt; mtu <span class="m">1500</span> qdisc noop state DOWN group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 50:54:00:87:bc:c3 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># dhclient -v  eth0</span>
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">Listening on LPF/eth0/50:54:00:87:bc:c3
+</span></span><span class="line"><span class="cl">Sending on   LPF/eth0/50:54:00:87:bc:c3
+</span></span><span class="line"><span class="cl">Sending on   Socket/fallback
+</span></span><span class="line"><span class="cl">DHCPDISCOVER on eth0 to 255.255.255.255 port <span class="m">67</span> interval <span class="m">4</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x57740476<span class="o">)</span>
+</span></span><span class="line"><span class="cl">DHCPREQUEST on eth0 to 255.255.255.255 port <span class="m">67</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x57740476<span class="o">)</span>
+</span></span><span class="line"><span class="cl">DHCPOFFER from 172.27.0.1
+</span></span><span class="line"><span class="cl">DHCPACK from 172.27.0.1 <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x57740476<span class="o">)</span>
+</span></span><span class="line"><span class="cl">bound to 172.27.163.138 -- renewal in <span class="m">1653</span> seconds.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># ping www.baidu.com</span>
+</span></span><span class="line"><span class="cl">PING www.a.shifen.com <span class="o">(</span>14.215.177.38<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 14.215.177.38 <span class="o">(</span>14.215.177.38<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">48</span> <span class="nv">time</span><span class="o">=</span>7.93 ms
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="412-routed-mode">4.1.2 Routed Mode</h4>
 <p>TODO</p>
@@ -942,7 +942,7 @@ PING www.a.shifen.com <span class="o">(</span>14.215.177.38<span class="o">)</sp
 <p>在 libvirt 中，当 interface type 为 <strong>direct</strong> 时，表明设备是直接附加到物理网卡上，而就会使用 macvtap 构建网络。通过 <strong>&lt;source dev=xx mode=xx&gt;</strong> 指定附加的物理网卡，以及 macvtap 的模式。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -956,24 +956,24 @@ PING www.a.shifen.com <span class="o">(</span>14.215.177.38<span class="o">)</sp
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">...
-    &lt;interface <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;direct&#39;</span>&gt;
-      &lt;mac <span class="nv">address</span><span class="o">=</span><span class="s1">&#39;50:54:00:87:bc:c3&#39;</span>/&gt;
-      &lt;<span class="nb">source</span> <span class="nv">dev</span><span class="o">=</span><span class="s1">&#39;eth3&#39;</span> <span class="nv">mode</span><span class="o">=</span><span class="s1">&#39;bridge&#39;</span>/&gt;
-      &lt;model <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;virtio&#39;</span>/&gt;
-      &lt;driver <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;vhost&#39;</span> <span class="nv">txmode</span><span class="o">=</span><span class="s1">&#39;iothread&#39;</span> <span class="nv">ioeventfd</span><span class="o">=</span><span class="s1">&#39;on&#39;</span> <span class="nv">event_idx</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">queues</span><span class="o">=</span><span class="s1">&#39;16&#39;</span>&gt;
-        &lt;host <span class="nv">csum</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">gso</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso4</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso6</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ecn</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ufo</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">mrg_rxbuf</span><span class="o">=</span><span class="s1">&#39;off&#39;</span>/&gt;
-        &lt;guest <span class="nv">csum</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso4</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso6</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ecn</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ufo</span><span class="o">=</span><span class="s1">&#39;off&#39;</span>/&gt;
-      &lt;/driver&gt;
-      &lt;address <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;pci&#39;</span> <span class="nv">domain</span><span class="o">=</span><span class="s1">&#39;0x0000&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0x00&#39;</span> <span class="nv">slot</span><span class="o">=</span><span class="s1">&#39;0x03&#39;</span> <span class="k">function</span><span class="o">=</span><span class="s1">&#39;0x0&#39;</span>/&gt;
-    &lt;/interface&gt;
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">    &lt;interface <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;direct&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">      &lt;mac <span class="nv">address</span><span class="o">=</span><span class="s1">&#39;50:54:00:87:bc:c3&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;<span class="nb">source</span> <span class="nv">dev</span><span class="o">=</span><span class="s1">&#39;eth3&#39;</span> <span class="nv">mode</span><span class="o">=</span><span class="s1">&#39;bridge&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;model <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;virtio&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;driver <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;vhost&#39;</span> <span class="nv">txmode</span><span class="o">=</span><span class="s1">&#39;iothread&#39;</span> <span class="nv">ioeventfd</span><span class="o">=</span><span class="s1">&#39;on&#39;</span> <span class="nv">event_idx</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">queues</span><span class="o">=</span><span class="s1">&#39;16&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">        &lt;host <span class="nv">csum</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">gso</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso4</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso6</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ecn</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ufo</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">mrg_rxbuf</span><span class="o">=</span><span class="s1">&#39;off&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">        &lt;guest <span class="nv">csum</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso4</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">tso6</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ecn</span><span class="o">=</span><span class="s1">&#39;off&#39;</span> <span class="nv">ufo</span><span class="o">=</span><span class="s1">&#39;off&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">      &lt;/driver&gt;
+</span></span><span class="line"><span class="cl">      &lt;address <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;pci&#39;</span> <span class="nv">domain</span><span class="o">=</span><span class="s1">&#39;0x0000&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0x00&#39;</span> <span class="nv">slot</span><span class="o">=</span><span class="s1">&#39;0x03&#39;</span> <span class="k">function</span><span class="o">=</span><span class="s1">&#39;0x0&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">    &lt;/interface&gt;
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>启动虚拟机后，在宿主机上可以看到对应的 macvtap 设备被创建，其 mac 地址也与配置中的一致。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -983,20 +983,20 @@ PING www.a.shifen.com <span class="o">(</span>14.215.177.38<span class="o">)</sp
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">$ ip a
-...
-5: eth3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="m">1500</span> qdisc mq state UP group default qlen <span class="m">1000</span>
-    link/ether a4:dc:be:0a:7d:37 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.1.107/24 brd 192.168.1.255 scope global eth3
-       valid_lft forever preferred_lft forever
-10: macvtap0@eth3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="m">1500</span> qdisc pfifo_fast state UP group default qlen <span class="m">500</span>
-    link/ether 50:54:00:87:bc:c3 brd ff:ff:ff:ff:ff:ff
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ip a
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">5: eth3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="m">1500</span> qdisc mq state UP group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether a4:dc:be:0a:7d:37 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    inet 192.168.1.107/24 brd 192.168.1.255 scope global eth3
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">10: macvtap0@eth3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="m">1500</span> qdisc pfifo_fast state UP group default qlen <span class="m">500</span>
+</span></span><span class="line"><span class="cl">    link/ether 50:54:00:87:bc:c3 brd ff:ff:ff:ff:ff:ff
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>在虚拟机内部，可以看到对应的虚拟网卡，通过 dhcp 上层路由器获取 IP，可以发现，其网关就是宿主机的网关，其网段与宿主机一致。因此，使用 macvtap 相当于让虚拟机与宿主机处于同一个二层。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1016,25 +1016,25 @@ PING www.a.shifen.com <span class="o">(</span>14.215.177.38<span class="o">)</sp
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># dhclient -v eth0</span>
-...
-Listening on LPF/eth0/50:54:00:87:bc:c3
-Sending on   LPF/eth0/50:54:00:87:bc:c3
-Sending on   Socket/fallback
-DHCPREQUEST on eth0 to 255.255.255.255 port <span class="m">67</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x4e586341<span class="o">)</span>
-DHCPNAK from 192.168.1.1 <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x4e586341<span class="o">)</span>
-DHCPDISCOVER on eth0 to 255.255.255.255 port <span class="m">67</span> interval <span class="m">8</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x1d605c78<span class="o">)</span>
-DHCPREQUEST on eth0 to 255.255.255.255 port <span class="m">67</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x1d605c78<span class="o">)</span>
-DHCPOFFER from 192.168.1.1
-DHCPACK from 192.168.1.1 <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x1d605c78<span class="o">)</span>
-bound to 192.168.1.105 -- renewal in <span class="m">3423</span> seconds.
-
-<span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># ip a</span>
-2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="m">1500</span> qdisc mq state UP group default qlen <span class="m">1000</span>
-    link/ether 52:54:00:87:bc:c1 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.1.105/24 brd 192.168.1.255 scope global dynamic eth0
-       valid_lft 7023sec preferred_lft 7023sec
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># dhclient -v eth0</span>
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">Listening on LPF/eth0/50:54:00:87:bc:c3
+</span></span><span class="line"><span class="cl">Sending on   LPF/eth0/50:54:00:87:bc:c3
+</span></span><span class="line"><span class="cl">Sending on   Socket/fallback
+</span></span><span class="line"><span class="cl">DHCPREQUEST on eth0 to 255.255.255.255 port <span class="m">67</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x4e586341<span class="o">)</span>
+</span></span><span class="line"><span class="cl">DHCPNAK from 192.168.1.1 <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x4e586341<span class="o">)</span>
+</span></span><span class="line"><span class="cl">DHCPDISCOVER on eth0 to 255.255.255.255 port <span class="m">67</span> interval <span class="m">8</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x1d605c78<span class="o">)</span>
+</span></span><span class="line"><span class="cl">DHCPREQUEST on eth0 to 255.255.255.255 port <span class="m">67</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x1d605c78<span class="o">)</span>
+</span></span><span class="line"><span class="cl">DHCPOFFER from 192.168.1.1
+</span></span><span class="line"><span class="cl">DHCPACK from 192.168.1.1 <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0x1d605c78<span class="o">)</span>
+</span></span><span class="line"><span class="cl">bound to 192.168.1.105 -- renewal in <span class="m">3423</span> seconds.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># ip a</span>
+</span></span><span class="line"><span class="cl">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="m">1500</span> qdisc mq state UP group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 52:54:00:87:bc:c1 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    inet 192.168.1.105/24 brd 192.168.1.255 scope global dynamic eth0
+</span></span><span class="line"><span class="cl">       valid_lft 7023sec preferred_lft 7023sec
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="43-设备直接分配">4.3 设备直接分配</h3>
 <p>前面的各种网络模式，最后还是靠着全虚拟化或者半虚拟化将数据包传递给虚拟机，而如果你有着多个可用的网卡，那么可以考虑使用设备直接分配，这是性能最高的方式。</p>
@@ -1042,7 +1042,7 @@ bound to 192.168.1.105 -- renewal in <span class="m">3423</span> seconds.
 <p>在设备 xml 配置文件中添加 <strong>&lt;hostdev&gt;</strong> 项，指定对应的设备 PCI 地址，来直接分配设备（也可以使用 <strong>&lt;interface type=&lsquo;hostdev&rsquo;/&gt;</strong>，这是一种 libvirt 提供的较新的配置方式，但是不兼容所有设备）。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -1051,14 +1051,14 @@ bound to 192.168.1.105 -- renewal in <span class="m">3423</span> seconds.
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">…
-    &lt;hostdev <span class="nv">mode</span><span class="o">=</span><span class="s1">&#39;subsystem&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;pci&#39;</span> <span class="nv">managed</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span>&gt;
-        &lt;source&gt;
-            &lt;address <span class="nv">domain</span><span class="o">=</span><span class="s1">&#39;0x0000&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0x01&#39;</span> <span class="nv">slot</span><span class="o">=</span><span class="s1">&#39;0x00&#39;</span> <span class="k">function</span><span class="o">=</span><span class="s1">&#39;0x0&#39;</span>/&gt;
-        &lt;/source&gt;
-    &lt;/hostdev&gt;
-…
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">…
+</span></span><span class="line"><span class="cl">    &lt;hostdev <span class="nv">mode</span><span class="o">=</span><span class="s1">&#39;subsystem&#39;</span> <span class="nv">type</span><span class="o">=</span><span class="s1">&#39;pci&#39;</span> <span class="nv">managed</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span>&gt;
+</span></span><span class="line"><span class="cl">        &lt;source&gt;
+</span></span><span class="line"><span class="cl">            &lt;address <span class="nv">domain</span><span class="o">=</span><span class="s1">&#39;0x0000&#39;</span> <span class="nv">bus</span><span class="o">=</span><span class="s1">&#39;0x01&#39;</span> <span class="nv">slot</span><span class="o">=</span><span class="s1">&#39;0x00&#39;</span> <span class="k">function</span><span class="o">=</span><span class="s1">&#39;0x0&#39;</span>/&gt;
+</span></span><span class="line"><span class="cl">        &lt;/source&gt;
+</span></span><span class="line"><span class="cl">    &lt;/hostdev&gt;
+</span></span><span class="line"><span class="cl">…
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>启动虚拟机后，在宿主机上就无法看到对应的网卡了，因为对应的驱动被 libvirt 解绑了。
 关闭虚拟机后，libvirt 又会重新将网卡绑定驱动，在宿主机上有可见了。</p>
@@ -1099,11 +1099,11 @@ bound to 192.168.1.105 -- renewal in <span class="m">3423</span> seconds.
     </div>
 
     <div class="post-nav"><a href="/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E5%90%AF%E5%81%9C%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/" class="prev" rel="prev" title="容器启停原理总结"><i class="fas fa-angle-left fa-fw"></i>容器启停原理总结</a>
-            <a href="/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/" class="next" rel="next" title="Go 内存管理总结">Go 内存管理总结<i class="fas fa-angle-right fa-fw"></i></a></div>
+            <a href="/posts/language/golang/language/memory-manager/" class="next" rel="next" title="Go 内存管理总结">Go 内存管理总结<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.85.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.95.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
                 </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

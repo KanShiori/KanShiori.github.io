@@ -3,10 +3,17 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 17 Mar 2022 21:29:22 &#43;0800</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
-    <title>K8s 学习 - 11 - CNI 概念与实现</title>
+    <title>Go 泛型</title>
+    <link>https://KanShiori.github.io/posts/language/golang/language/generics/</link>
+    <pubDate>Thu, 17 Mar 2022 21:29:22 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/language/golang/language/generics/</guid>
+    <description><![CDATA[1 背景概念 这一部分内容 Copy 于文档，可以直接看文档 Properties of types and values。 1.1 Underlying types 每一种类型都有着对应的 underlying types（潜在类型），基础类型的 underlying type 就是]]></description>
+</item><item>
+    <title>K8s 学习 - 13 - CNI 概念与实现</title>
     <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/13-cni/</link>
     <pubDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</pubDate>
     <author>作者</author>
@@ -68,12 +75,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/5-vpc-and-aws/</guid>
     <description><![CDATA[1 VPC Peering VPC Peering 用于连接两个不同地址范围的 VPC，VPC 可以处于不同的 Region，甚至不同的 AWS 账户。 当 VPC Peering 连接两个 VPC 后，VPC 内部的资源（Ins]]></description>
-</item><item>
-    <title>AWS 学习 - 4 - VPC 与 Internet 通信</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-vpc-and-internet/</link>
-    <pubDate>Mon, 29 Nov 2021 13:12:48 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/4-vpc-and-internet/</guid>
-    <description><![CDATA[1 Internet Gateway Internet Gateway 用于将 VPC 的流量转发给外网，并将外网的主动访问转发给指定的 Instance。 使用 Internet Gateway 的必要操作： 创建 Internet Gateway 并关联到 VPC 上。 Instance 拥有公网 IP 地]]></description>
 </item></channel>
 </rss>

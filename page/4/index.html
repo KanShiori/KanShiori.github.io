@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
     <head>
-	<meta name="generator" content="Hugo 0.85.0" />
+	<meta name="generator" content="Hugo 0.95.0" />
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
@@ -114,6 +114,11 @@
         alt="/images/avatar.png"
         title="/images/avatar.png" /></a></div><h2 class="home-subtitle">// 超能力使用者</h2><div class="links"><a href="https://github.com/KanShiori" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="mailto:kanshiori@163.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/cloud_computing/k8s_programming/8-extend-scheduler/">K8s 编程 - 8 - Custom Scheduler</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2021-09-22">2021-09-22</time></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw"></i>Kubernetes 编程</a></span></div><div class="content">kube-scheduler 负责集群资源的调度，原生的 Kubernetes Scheduler 可以满足大多数情况的需求。不过针对于不同业务的特殊的调度需求，Kubernetes 提供了多种扩展调度器的方式</div><div class="post-footer">
+        <a href="/posts/cloud_computing/k8s_programming/8-extend-scheduler/">阅读全文</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/cloud_computing/k8s_programming/7-admission-webhook/">K8s 编程 - 7 - Admission Webhook</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2021-09-21">2021-09-21</time></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw"></i>Kubernetes 编程</a></span></div><div class="content">Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 下面代码都来自于 a</div><div class="post-footer">
         <a href="/posts/cloud_computing/k8s_programming/7-admission-webhook/">阅读全文</a><div class="post-tags">
@@ -137,11 +142,6 @@
         <a href="/posts/cloud_computing/k8s_programming/3-custom-resource/">K8s 编程 - 3 - Custom Resource</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2021-08-17">2021-08-17</time></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw"></i>Kubernetes 编程</a></span></div><div class="content">Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 自定义资源定义 从</div><div class="post-footer">
         <a href="/posts/cloud_computing/k8s_programming/3-custom-resource/">阅读全文</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/cloud_computing/k8s_programming/2-client-go/">K8s 编程 - 2 - 编程基础</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2021-08-10">2021-08-10</time></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw"></i>Kubernetes 编程</a></span></div><div class="content">Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 核心代码库 1.1 k8s.io/client-go 编</div><div class="post-footer">
-        <a href="/posts/cloud_computing/k8s_programming/2-client-go/">阅读全文</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
@@ -175,7 +175,7 @@
                     </span>
                 </li></ul></div></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.85.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.95.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
                 </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

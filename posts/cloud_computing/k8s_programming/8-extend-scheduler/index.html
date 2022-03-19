@@ -206,20 +206,20 @@
 <p>例如，支持 Plugin <code>BlinkingLightScorer</code> 根据每个 Node 有多少个 blinking lights 进行排名。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">ScoreNode</span><span class="p">(</span><span class="nx">_</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">pod</span><span class="p">,</span> <span class="nx">n</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Node</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nf">getBlinkingLightCount</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">ScoreNode</span><span class="p">(</span><span class="nx">_</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">pod</span><span class="p">,</span> <span class="nx">n</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Node</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nf">getBlinkingLightCount</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>但是，与 NodeScoreMax 相比，blinking lights 数量也可能很少。为解决这个问题，BlinkingLightScorer 也注册了这个扩展点。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -230,16 +230,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">NormalizeScores</span><span class="p">(</span><span class="nx">scores</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">highest</span> <span class="o">:=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">score</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">scores</span> <span class="p">{</span>
-        <span class="nx">highest</span> <span class="p">=</span> <span class="nf">max</span><span class="p">(</span><span class="nx">highest</span><span class="p">,</span> <span class="nx">score</span><span class="p">)</span>
-    <span class="p">}</span>
-    <span class="k">for</span> <span class="nx">node</span><span class="p">,</span> <span class="nx">score</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">scores</span> <span class="p">{</span>
-        <span class="nx">scores</span><span class="p">[</span><span class="nx">node</span><span class="p">]</span> <span class="p">=</span> <span class="nx">score</span><span class="o">*</span><span class="nx">NodeScoreMax</span><span class="o">/</span><span class="nx">highest</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NormalizeScores</span><span class="p">(</span><span class="nx">scores</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">highest</span> <span class="o">:=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">score</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">scores</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">highest</span> <span class="p">=</span> <span class="nf">max</span><span class="p">(</span><span class="nx">highest</span><span class="p">,</span> <span class="nx">score</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">node</span><span class="p">,</span> <span class="nx">score</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">scores</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">scores</span><span class="p">[</span><span class="nx">node</span><span class="p">]</span> <span class="p">=</span> <span class="nx">score</span><span class="o">*</span><span class="nx">NodeScoreMax</span><span class="o">/</span><span class="nx">highest</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>如果任何 NormalizeScore Plugin 返回 error，调度将终止。</p>
 <h3 id="18-reserve">1.8 Reserve</h3>
@@ -278,7 +278,7 @@
 <p>Scheduling Policy 可以为 yaml 或者 json 格式，一个示例如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -314,41 +314,41 @@
 </span><span class="lnt">34
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
-  <span class="nt">&#34;kind&#34;</span> <span class="p">:</span> <span class="s2">&#34;Policy&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;apiVersion&#34;</span> <span class="p">:</span> <span class="s2">&#34;v1&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;predicates&#34;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;NoVolumeZoneConflict&#34;</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;MaxEBSVolumeCount&#34;</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;MaxAzureDiskVolumeCount&#34;</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;NoDiskConflict&#34;</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;GeneralPredicates&#34;</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;PodToleratesNodeTaints&#34;</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;CheckVolumeBinding&#34;</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;MaxGCEPDVolumeCount&#34;</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;MatchInterPodAffinity&#34;</span><span class="p">},</span>
-  <span class="p">],</span>
-  <span class="nt">&#34;priorities&#34;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;SelectorSpreadPriority&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;InterPodAffinityPriority&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;LeastRequestedPriority&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;BalancedResourceAllocation&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;NodePreferAvoidPodsPriority&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;NodeAffinityPriority&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;TaintTolerationPriority&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
-  <span class="p">],</span>
-  <span class="nt">&#34;extenders&#34;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="nt">&#34;urlPrefix&#34;</span><span class="p">:</span> <span class="s2">&#34;http://127.0.0.1:10262/scheduler&#34;</span><span class="p">,</span>
-      <span class="nt">&#34;filterVerb&#34;</span><span class="p">:</span> <span class="s2">&#34;filter&#34;</span><span class="p">,</span>
-      <span class="nt">&#34;preemptVerb&#34;</span><span class="p">:</span> <span class="s2">&#34;preempt&#34;</span><span class="p">,</span>
-      <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="nt">&#34;httpTimeout&#34;</span><span class="p">:</span> <span class="mi">30000000000</span><span class="p">,</span>
-      <span class="nt">&#34;enableHttps&#34;</span><span class="p">:</span> <span class="kc">false</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;kind&#34;</span> <span class="p">:</span> <span class="s2">&#34;Policy&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;apiVersion&#34;</span> <span class="p">:</span> <span class="s2">&#34;v1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;predicates&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;NoVolumeZoneConflict&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;MaxEBSVolumeCount&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;MaxAzureDiskVolumeCount&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;NoDiskConflict&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;GeneralPredicates&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;PodToleratesNodeTaints&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;CheckVolumeBinding&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;MaxGCEPDVolumeCount&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;MatchInterPodAffinity&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;priorities&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;SelectorSpreadPriority&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;InterPodAffinityPriority&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;LeastRequestedPriority&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;BalancedResourceAllocation&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;NodePreferAvoidPodsPriority&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;NodeAffinityPriority&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;TaintTolerationPriority&#34;</span><span class="p">,</span> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;extenders&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;urlPrefix&#34;</span><span class="p">:</span> <span class="s2">&#34;http://127.0.0.1:10262/scheduler&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;filterVerb&#34;</span><span class="p">:</span> <span class="s2">&#34;filter&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;preemptVerb&#34;</span><span class="p">:</span> <span class="s2">&#34;preempt&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;httpTimeout&#34;</span><span class="p">:</span> <span class="mi">30000000000</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;enableHttps&#34;</span><span class="p">:</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li><code>predicates</code> 定制 Predicate 阶段使用的插件；</li>
@@ -358,7 +358,7 @@
 <p>运行 kube-scheduler 时，我们可以通过 <code>kube-scheduler --policy-config-file &lt;filename&gt;</code> 指定一个 Policy 文件，或者通过 <code>kube-scheduler --policy-configmap &lt;ConfigMap&gt; ----policy-configmap-namespace &lt;Namespace&gt;</code> 指定一个 ConfigMap 获取 Policy。加上 1.22 之前 kube-scheduler 支持的 <code>--scheduler-name</code> 参数，很简单的定义出一个新的调度器。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -368,15 +368,15 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">$ kube-scheduler
-    --port<span class="o">=</span><span class="m">10261</span>
-    --leader-elect<span class="o">=</span><span class="nb">true</span>
-    --lock-object-namespace<span class="o">=</span>pingcap
-    --lock-object-name<span class="o">=</span>my-scheduler
-    --scheduler-name<span class="o">=</span>my-scheduler
-    --policy-configmap<span class="o">=</span>my-scheduler-policy
-    --policy-configmap-namespace<span class="o">=</span>pingcap
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kube-scheduler
+</span></span><span class="line"><span class="cl">    --port<span class="o">=</span><span class="m">10261</span>
+</span></span><span class="line"><span class="cl">    --leader-elect<span class="o">=</span><span class="nb">true</span>
+</span></span><span class="line"><span class="cl">    --lock-object-namespace<span class="o">=</span>pingcap
+</span></span><span class="line"><span class="cl">    --lock-object-name<span class="o">=</span>my-scheduler
+</span></span><span class="line"><span class="cl">    --scheduler-name<span class="o">=</span>my-scheduler
+</span></span><span class="line"><span class="cl">    --policy-configmap<span class="o">=</span>my-scheduler-policy
+</span></span><span class="line"><span class="cl">    --policy-configmap-namespace<span class="o">=</span>pingcap
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>使用上述命令，我们运行了一个名为 my-scheduler 的调度器，通过 Pod 定义的 <code>spec.schedulerName</code> 可以指定使用该调度器。</p>
 <div class="details admonition warning open">
@@ -396,17 +396,17 @@
 <p>最简单的配置如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kubescheduler.config.k8s.io/v1beta2</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">KubeSchedulerConfiguration</span><span class="w">
-</span><span class="w"></span><span class="nt">clientConnection</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">kubeconfig</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/srv/kubernetes/kube-scheduler/kubeconfig</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kubescheduler.config.k8s.io/v1beta2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">KubeSchedulerConfiguration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">clientConnection</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">kubeconfig</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/srv/kubernetes/kube-scheduler/kubeconfig</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="31-配置-plugin">3.1 配置 Plugin</h3>
 <p>在 KubeSchedulerConfiguration 定义中的 profiles 字段对 kube-scheduler 的插件进行配置。配置方式按照 Scheduler 扩展点 中所属的扩展点。</p>
@@ -414,7 +414,7 @@
 <p>例如下面示例中，关闭了 Score 扩展点的 NodeResourcesLeastAllocated Plugin，打开 Score 扩展点的 MyCustomPluginA Plugin 与 MyCustomPluginB Plugin。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -428,19 +428,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kubescheduler.config.k8s.io/v1beta2</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">KubeSchedulerConfiguration</span><span class="w">
-</span><span class="w"></span><span class="nt">profiles</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="nt">plugins</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">score</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">disabled</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">NodeResourcesLeastAllocated</span><span class="w">
-</span><span class="w">        </span><span class="nt">enabled</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MyCustomPluginA</span><span class="w">
-</span><span class="w">          </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MyCustomPluginB</span><span class="w">
-</span><span class="w">          </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kubescheduler.config.k8s.io/v1beta2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">KubeSchedulerConfiguration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">profiles</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">plugins</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">score</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">disabled</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">NodeResourcesLeastAllocated</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">enabled</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MyCustomPluginA</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MyCustomPluginB</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>profiles[].plugins.score - 表明配置 score 扩展点的插件。
@@ -463,7 +463,7 @@
 <p>如下配置中，将运行两个 Scheduler：default-scheduler 运行所有默认 Plugin，no-scoring-scheduler 关闭了所有的 Score Plugin。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -477,19 +477,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kubescheduler.config.k8s.io/v1beta2</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">KubeSchedulerConfiguration</span><span class="w">
-</span><span class="w"></span><span class="nt">profiles</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="nt">schedulerName</span><span class="p">:</span><span class="w"> </span><span class="l">default-scheduler</span><span class="w">
-</span><span class="w">  </span>- <span class="nt">schedulerName</span><span class="p">:</span><span class="w"> </span><span class="kc">no</span>-<span class="l">scoring-scheduler</span><span class="w">
-</span><span class="w">    </span><span class="nt">plugins</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">preScore</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">disabled</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;*&#39;</span><span class="w">
-</span><span class="w">      </span><span class="nt">score</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">disabled</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;*&#39;</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kubescheduler.config.k8s.io/v1beta2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">KubeSchedulerConfiguration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">profiles</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">schedulerName</span><span class="p">:</span><span class="w"> </span><span class="l">default-scheduler</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">schedulerName</span><span class="p">:</span><span class="w"> </span><span class="kc">no</span>-<span class="l">scoring-scheduler</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">plugins</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">preScore</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">disabled</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;*&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">score</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">disabled</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;*&#39;</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>多个调度器运行时，通过 Pod 定义中的 <code>.spec.schedulerName</code> 字段来指定期望的调度器。</p>
 <p>默认下，一个 Profile 的 scheduler name 为 &ldquo;default-scheduler&rdquo;，也就是 Kubernetes 中默认的调度器名字（Pod 没有指定 <code>.spec.schedulerName</code> 字段时，自动将其设置为 &ldquo;default-scheduler&rdquo;）。</p>
@@ -497,7 +497,7 @@
 <p>上面都是基于内置的 Plugin 进行配置，Scheduling Profile 也完全能够实现 Scheduling Policy 的 Webhook 扩展功能。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -514,22 +514,22 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kubescheduler.config.k8s.io/v1beta1</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">KubeSchedulerConfiguration</span><span class="w">
-</span><span class="w"></span><span class="nt">leaderElection</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">leaderElect</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="w">  </span><span class="nt">resourceNamespace</span><span class="p">:</span><span class="w"> </span><span class="l">namespace</span><span class="w">
-</span><span class="w">  </span><span class="nt">resourceName</span><span class="p">:</span><span class="w"> </span><span class="l">my-scheduler</span><span class="w">
-</span><span class="w"></span><span class="nt">profiles</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="nt">schedulerName</span><span class="p">:</span><span class="w"> </span><span class="l">my-scheduler</span><span class="w">
-</span><span class="w"></span><span class="nt">extenders</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="nt">urlPrefix</span><span class="p">:</span><span class="w"> </span><span class="l">http://127.0.0.1:10262/scheduler</span><span class="w">
-</span><span class="w">    </span><span class="nt">filterVerb</span><span class="p">:</span><span class="w"> </span><span class="l">filter</span><span class="w">
-</span><span class="w">    </span><span class="nt">preemptVerb</span><span class="p">:</span><span class="w"> </span><span class="l">preempt</span><span class="w">
-</span><span class="w">    </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
-</span><span class="w">    </span><span class="nt">enableHTTPS</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
-</span><span class="w">    </span><span class="nt">httpTimeout</span><span class="p">:</span><span class="w"> </span><span class="l">30s</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kubescheduler.config.k8s.io/v1beta1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">KubeSchedulerConfiguration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">leaderElection</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">leaderElect</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">resourceNamespace</span><span class="p">:</span><span class="w"> </span><span class="l">namespace</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">resourceName</span><span class="p">:</span><span class="w"> </span><span class="l">my-scheduler</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">profiles</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">schedulerName</span><span class="p">:</span><span class="w"> </span><span class="l">my-scheduler</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">extenders</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">urlPrefix</span><span class="p">:</span><span class="w"> </span><span class="l">http://127.0.0.1:10262/scheduler</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">filterVerb</span><span class="p">:</span><span class="w"> </span><span class="l">filter</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">preemptVerb</span><span class="p">:</span><span class="w"> </span><span class="l">preempt</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">enableHTTPS</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">httpTimeout</span><span class="p">:</span><span class="w"> </span><span class="l">30s</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li><code>extenders</code> 字段用于定制扩展的 Webhook，调度器会在对应的阶段调用对应的 URL。这对于所有的 profiles 都是生效的。</li>
@@ -537,11 +537,11 @@
 <p>按照示例中的定义，我们定义一个新调度器只需要一个配置：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">$ kube-scheduler --config &lt;config-file&gt;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kube-scheduler --config &lt;config-file&gt;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="4-方案">4 方案</h2>
 <h3 id="41-如何配置-scheduler">4.1 如何配置 Scheduler</h3>
@@ -612,7 +612,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.85.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.95.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
                 </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

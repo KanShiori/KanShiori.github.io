@@ -171,26 +171,26 @@
 <p>Expires 的值为一个 Deadline，表示：当服务器回复时带有该 Header，意味着服务器承诺该资源在 Deadline 之间不会发生变动，客户端可以直接缓存并使用该回复。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="n">Expires</span><span class="o">:</span> <span class="l">Web, 8 Apr 2020 07:28:00 GMT</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+</span></span><span class="line"><span class="cl"><span class="n">Expires</span><span class="o">:</span> <span class="l">Web, 8 Apr 2020 07:28:00 GMT</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Expires 是最初的 HTTP 缓存机制，其设计非常简单，但是无法处理缓存提前失效等问题。</p>
 <h4 id="122-cache-control">1.2.2 Cache-Control</h4>
 <p>Cache-Control 语义比 Expires 更加丰富，两者同时存在时，规定必须以 Cache-Control 为准。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="n">Cache-Control</span><span class="o">:</span> <span class="l">max-age=60</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+</span></span><span class="line"><span class="cl"><span class="n">Cache-Control</span><span class="o">:</span> <span class="l">max-age=60</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Cache-Control 在客户端请求 Header 或者服务端回复 Header 中都可以存在，其值可以为一系列参数：</p>
 <ul>
@@ -244,64 +244,64 @@
 <p>服务器收到该请求后，发现资源没有修改过，那么返回 304/Not Modified 回复，无须包含资源内容，表示让客户端使用缓存资源。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">304</span> <span class="ne">Not Modified</span>
-<span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
-<span class="n">Last-Modified</span><span class="o">:</span> <span class="l">Wed, 8 Apr 2020 15:31:30 GMT</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">304</span> <span class="ne">Not Modified</span>
+</span></span><span class="line"><span class="cl"><span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
+</span></span><span class="line"><span class="cl"><span class="n">Last-Modified</span><span class="o">:</span> <span class="l">Wed, 8 Apr 2020 15:31:30 GMT</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>服务器收到该请求后，发现资源变动后，那么返回 200/OK 回复，并且包含完整的资源内容。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
-<span class="n">Last-Modified</span><span class="o">:</span> <span class="l">Wed, 8 Apr 2020 15:31:30 GMT</span>
-
-<span class="g">Content
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+</span></span><span class="line"><span class="cl"><span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
+</span></span><span class="line"><span class="cl"><span class="n">Last-Modified</span><span class="o">:</span> <span class="l">Wed, 8 Apr 2020 15:31:30 GMT</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="g">Content
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="132-etag-和-if-none-match">1.3.2 ETag 和 If-None-Match</h4>
 <p>Etag 是服务器回复的 Header，告诉客户端该资源的唯一标识。当客户端再次请求该资源时，会通过 If-None-Match 把收到的唯一标识发送回服务端。</p>
 <p>服务器收到该请求后，发现资源的唯一标识与请求中的一致，那么返回 304/Not Modified 回复，无须包含资源内容，表示让客户端使用缓存资源。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">304</span> <span class="ne">Not Modified</span>
-<span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
-<span class="n">ETag</span><span class="o">:</span> <span class="l">&#34;28c3f612-ceb0-4ddc-ae35-791ca840c5fa&#34;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">304</span> <span class="ne">Not Modified</span>
+</span></span><span class="line"><span class="cl"><span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
+</span></span><span class="line"><span class="cl"><span class="n">ETag</span><span class="o">:</span> <span class="l">&#34;28c3f612-ceb0-4ddc-ae35-791ca840c5fa&#34;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>服务器收到该请求后，发现资源唯一标识有变动，就返回 200/OK 与完成资源内容。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
-<span class="n">ETag</span><span class="o">:</span> <span class="l">&#34;28c3f612-ceb0-4ddc-ae35-791ca840c5fa&#34;</span>
-
-<span class="g">Content
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+</span></span><span class="line"><span class="cl"><span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
+</span></span><span class="line"><span class="cl"><span class="n">ETag</span><span class="o">:</span> <span class="l">&#34;28c3f612-ceb0-4ddc-ae35-791ca840c5fa&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="g">Content
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>可以看到，ETag 通过判断资源唯一表示来判断资源是否变动过，其一致性比 Last-Modified 更高（可能资源修改过但是内容每发生变化，这样 Last-Modified 其实是失效的）。 但是，因为每次需要计算资源的唯一标识，因此其性能也是最差的。</p>
 <h3 id="14-多版本资源缓存">1.4 多版本资源缓存</h3>
@@ -309,13 +309,13 @@
 <p>对于一个 URL 能够获取多个资源的场景，缓存也需要明确的表示根据什么内容来缓存资源，使用 Vary Header。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="n">Vary</span><span class="o">:</span> <span class="l">Accept, User-Agent</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+</span></span><span class="line"><span class="cl"><span class="n">Vary</span><span class="o">:</span> <span class="l">Accept, User-Agent</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>以上回复就是告知客户端，根据 Accept 与 User-Agent 来缓存资源，不同 Accept 和 User-Agent 的组合缓存不同的资源。</p>
 <h2 id="2-cdn">2 CDN</h2>
@@ -400,7 +400,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.85.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.95.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
                 </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

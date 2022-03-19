@@ -149,7 +149,7 @@
 <p>对每个 Pod 来说，CoreDNS 会为其设置一个 <code>&lt;pod_ip&gt;.&lt;namespace&gt;.pod.&lt;clust-domain&gt;</code> 格式的 DNS 域名。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -158,14 +158,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 访问 POD IP DNS</span>
-$ nslookup 192-168-166-168.tidb-cluster-dev.pod.cluster.local
-Server:    10.96.0.10
-Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
-
-Name:      192-168-166-168.tidb-cluster-dev.pod.cluster.local
-Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-peer.tidb-cluster-dev.svc.cluster.local
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># 访问 POD IP DNS</span>
+</span></span><span class="line"><span class="cl">$ nslookup 192-168-166-168.tidb-cluster-dev.pod.cluster.local
+</span></span><span class="line"><span class="cl">Server:    10.96.0.10
+</span></span><span class="line"><span class="cl">Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Name:      192-168-166-168.tidb-cluster-dev.pod.cluster.local
+</span></span><span class="line"><span class="cl">Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-peer.tidb-cluster-dev.svc.cluster.local
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>对于 Deployment 或 DaemonSet 类型创建的 Pod，CoreDNS 会为其管理的每个 Pod 设置一个 <code>&lt;pod_ip&gt;.&lt;depolyment/daemonset_name&gt;.svc.&lt;cluster_domain&gt;</code> 格式的 DNS 域名。</p>
 <h3 id="12-自定义-hostname-和-subdomain">1.2 自定义 hostname 和 subdomain</h3>
@@ -173,33 +173,33 @@ Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-p
 <p>可以通过 <code>spec.hostname</code> 字段定义容器环境的 hostname，通过 <code>spec.subdomain</code> 字段定义容器环境的子域名。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">webapp-1</span><span class="w">
-</span><span class="w">  </span><span class="nt">subdomain</span><span class="p">:</span><span class="w"> </span><span class="l">mysubdomain</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">webapp-1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">subdomain</span><span class="p">:</span><span class="w"> </span><span class="l">mysubdomain</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Pod 创建成功后，Kubernetes 为其设置 DNS 域名为 <code>&lt;hostname&gt;.&lt;subdomain&gt;.&lt;namespace&gt;.svc.&lt;cluster_domain&gt;</code>。这时通过部署一个 Headless Service 就可以在 DNS 服务器中自动创建对应 DNS 记录。这样就可以通过该 DNS 域名来访问 Pod。</p>
 <p>实际上，StatefulSet 就是通过这种方式来使用 Headless Service 的。查看一个 StatefulSet 管理的 Pod：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">$ kubectl get po my-tidb-cluster-dev-pd-0 -o yaml</span><span class="w">
-</span><span class="w"></span><span class="c"># ...</span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">my-tidb-cluster-dev-pd-0</span><span class="w"> </span><span class="c"># 固定 pod 的 hostname</span><span class="w">
-</span><span class="w">  </span><span class="nt">subdomain</span><span class="p">:</span><span class="w"> </span><span class="l">my-tidb-cluster-dev-pd-peer </span><span class="w"> </span><span class="c"># 在 StatefulSet 中定义的 Headless Service name</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="l">$ kubectl get po my-tidb-cluster-dev-pd-0 -o yaml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># ...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">my-tidb-cluster-dev-pd-0</span><span class="w"> </span><span class="c"># 固定 pod 的 hostname</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">subdomain</span><span class="p">:</span><span class="w"> </span><span class="l">my-tidb-cluster-dev-pd-peer </span><span class="w"> </span><span class="c"># 在 StatefulSet 中定义的 Headless Service name</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="13-自定义-dns-配置">1.3 自定义 DNS 配置</h3>
 <p>通过 Pod 定义中的 <code>spec.dnsPolicy</code> 可以定义使用的 DNS 策略。</p>
@@ -213,7 +213,7 @@ Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-p
 <p>通过 <code>spec.dnsConfig</code> 字段进行更加细节的 DNS 相关配置。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -227,32 +227,32 @@ Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-p
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">dnsPolicy</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;None&#34;</span><span class="w">
-</span><span class="w">  </span><span class="nt">dnsConfig</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">nameservers</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="m">8.8.8.8</span><span class="w">
-</span><span class="w">    </span><span class="nt">searches</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="l">ns1.svc.cluster-domain.example</span><span class="w">
-</span><span class="w">      </span>- <span class="l">my.dns.search.suffix</span><span class="w">
-</span><span class="w">    </span><span class="nt">options</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ndots</span><span class="w">
-</span><span class="w">        </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2&#34;</span><span class="w">
-</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">edns0</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">dnsPolicy</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;None&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">dnsConfig</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">nameservers</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="m">8.8.8.8</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">searches</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">ns1.svc.cluster-domain.example</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">my.dns.search.suffix</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">options</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ndots</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">edns0</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Pod 创建后，容器内的 <em>/etc/resolv.conf</em> 文件会被设置：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">nameserver 8.8.8.8
-search ns1.svc.cluster-domain.example my.dns.search.suffix
-option natods:2 eth0
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">nameserver 8.8.8.8
+</span></span><span class="line"><span class="cl">search ns1.svc.cluster-domain.example my.dns.search.suffix
+</span></span><span class="line"><span class="cl">option natods:2 eth0
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="2-service-中的-dns">2 Service 中的 DNS</h2>
 <p>Service DNS 相关已经在 <a href="http://kanshiori.cn/posts/cloud_computing/k8s_learning/service/" target="_blank" rel="noopener noreffer"><strong>Service</strong></a> 一文中说明，这里仅仅简单提及一下。</p>
@@ -301,7 +301,7 @@ option natods:2 eth0
 <p>默认下，CoreDNS 的 Pod 会使用 <em>coredns</em> ConfigMap 提供对 CoreDNS 的配置。因此，你可以通过配置此 ConfigMap 进行 CoreDNS 的配置。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -328,32 +328,32 @@ option natods:2 eth0
 </span><span class="lnt">25
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">$ k get configmaps  coredns -n kube-system -o yaml
-<span class="c1"># ...</span>
-kind: ConfigMap
-data:
-  Corefile: <span class="p">|</span>
-    .:53 <span class="o">{</span>
-        errors
-        health <span class="o">{</span>
-           lameduck 5s
-        <span class="o">}</span>
-        ready
-        kubernetes cluster.local in-addr.arpa ip6.arpa <span class="o">{</span>
-           pods insecure
-           fallthrough in-addr.arpa ip6.arpa
-           ttl <span class="m">30</span>
-        <span class="o">}</span>
-        prometheus :9153
-        forward . /etc/resolv.conf <span class="o">{</span>
-           max_concurrent <span class="m">1000</span>
-        <span class="o">}</span>
-        cache <span class="m">30</span>
-        loop
-        reload
-        loadbalance
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ k get configmaps  coredns -n kube-system -o yaml
+</span></span><span class="line"><span class="cl"><span class="c1"># ...</span>
+</span></span><span class="line"><span class="cl">kind: ConfigMap
+</span></span><span class="line"><span class="cl">data:
+</span></span><span class="line"><span class="cl">  Corefile: <span class="p">|</span>
+</span></span><span class="line"><span class="cl">    .:53 <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        errors
+</span></span><span class="line"><span class="cl">        health <span class="o">{</span>
+</span></span><span class="line"><span class="cl">           lameduck 5s
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        ready
+</span></span><span class="line"><span class="cl">        kubernetes cluster.local in-addr.arpa ip6.arpa <span class="o">{</span>
+</span></span><span class="line"><span class="cl">           pods insecure
+</span></span><span class="line"><span class="cl">           fallthrough in-addr.arpa ip6.arpa
+</span></span><span class="line"><span class="cl">           ttl <span class="m">30</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        prometheus :9153
+</span></span><span class="line"><span class="cl">        forward . /etc/resolv.conf <span class="o">{</span>
+</span></span><span class="line"><span class="cl">           max_concurrent <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        cache <span class="m">30</span>
+</span></span><span class="line"><span class="cl">        loop
+</span></span><span class="line"><span class="cl">        reload
+</span></span><span class="line"><span class="cl">        loadbalance
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="参考">参考</h2>
 <ul>
@@ -390,7 +390,7 @@ data:
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.85.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.95.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
                 </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

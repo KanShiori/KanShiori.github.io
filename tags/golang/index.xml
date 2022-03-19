@@ -3,33 +3,40 @@
         <title>Golang - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/golang/</link>
         <description>Golang - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 18 Feb 2021 17:54:17 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/golang/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 17 Mar 2022 21:29:22 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/golang/" rel="self" type="application/rss+xml" /><item>
+    <title>Go 泛型</title>
+    <link>https://KanShiori.github.io/posts/language/golang/language/generics/</link>
+    <pubDate>Thu, 17 Mar 2022 21:29:22 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/language/golang/language/generics/</guid>
+    <description><![CDATA[1 背景概念 这一部分内容 Copy 于文档，可以直接看文档 Properties of types and values。 1.1 Underlying types 每一种类型都有着对应的 underlying types（潜在类型），基础类型的 underlying type 就是]]></description>
+</item><item>
     <title>[WIP] Go 调试方法总结</title>
-    <link>https://KanShiori.github.io/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/</link>
+    <link>https://KanShiori.github.io/posts/language/golang/language/debug-method/</link>
     <pubDate>Thu, 18 Feb 2021 17:54:17 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/language/golang/go-%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/</guid>
+    <guid>https://KanShiori.github.io/posts/language/golang/language/debug-method/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 调试方法的一个总结，基本内容来源于网络的学习]]></description>
 </item><item>
     <title>Go 并发调度总结</title>
-    <link>https://KanShiori.github.io/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/</link>
+    <link>https://KanShiori.github.io/posts/language/golang/language/goroutine/</link>
     <pubDate>Sat, 23 Jan 2021 17:45:55 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/language/golang/go-%E5%B9%B6%E5%8F%91%E8%B0%83%E5%BA%A6%E6%80%BB%E7%BB%93/</guid>
+    <guid>https://KanShiori.github.io/posts/language/golang/language/goroutine/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 并发调度实现的一个总结，基本内容来源于网络的]]></description>
 </item><item>
     <title>Go 垃圾收集总结</title>
-    <link>https://KanShiori.github.io/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/</link>
+    <link>https://KanShiori.github.io/posts/language/golang/language/garbage-collection/</link>
     <pubDate>Thu, 14 Jan 2021 20:40:47 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/</guid>
+    <guid>https://KanShiori.github.io/posts/language/golang/language/garbage-collection/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 垃圾收集的一个总结，基本内容来源于网络的学习]]></description>
 </item><item>
     <title>Go 内存管理总结</title>
-    <link>https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/</link>
+    <link>https://KanShiori.github.io/posts/language/golang/language/memory-manager/</link>
     <pubDate>Tue, 05 Jan 2021 18:28:41 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/</guid>
+    <guid>https://KanShiori.github.io/posts/language/golang/language/memory-manager/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于]]></description>
 </item></channel>
 </rss>

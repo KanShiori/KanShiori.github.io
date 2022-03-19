@@ -183,7 +183,7 @@
 <p>CR 由 <strong><code>CustomResourceDefinition</code></strong>（简称 CRD）来定义，其本身就是一种 Kubernetes 资源，用于描述可以在当前集群使用的 CR。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -204,26 +204,26 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiextensions.k8s.io/v1beta1 </span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CustomResourceDefinition </span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
-</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ats.cnat.programming-kubernetes.info </span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
-</span><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l">cnat.programming-kubernetes.info </span><span class="w">
-</span><span class="w">  </span><span class="nt">names</span><span class="p">:</span><span class="w"> 
-</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">At </span><span class="w">
-</span><span class="w">    </span><span class="nt">listKind</span><span class="p">:</span><span class="w"> </span><span class="l">AtList </span><span class="w">
-</span><span class="w">    </span><span class="nt">plural</span><span class="p">:</span><span class="w"> </span><span class="l">ats </span><span class="w">
-</span><span class="w">    </span><span class="nt">singular</span><span class="p">:</span><span class="w"> </span><span class="l">at </span><span class="w">
-</span><span class="w">  </span><span class="nt">scope</span><span class="p">:</span><span class="w"> </span><span class="l">Namespaced </span><span class="w">
-</span><span class="w">  </span><span class="nt">subresources</span><span class="p">:</span><span class="w"> 
-</span><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span>{}<span class="w"> 
-</span><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l">v1alpha1 </span><span class="w">
-</span><span class="w">  </span><span class="nt">versions</span><span class="p">:</span><span class="w"> 
-</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">v1alpha1 </span><span class="w">
-</span><span class="w">    </span><span class="nt">served</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> 
-</span><span class="w">    </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiextensions.k8s.io/v1beta1 </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CustomResourceDefinition </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ats.cnat.programming-kubernetes.info </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l">cnat.programming-kubernetes.info </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">names</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">At </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">listKind</span><span class="p">:</span><span class="w"> </span><span class="l">AtList </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">plural</span><span class="p">:</span><span class="w"> </span><span class="l">ats </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">singular</span><span class="p">:</span><span class="w"> </span><span class="l">at </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">scope</span><span class="p">:</span><span class="w"> </span><span class="l">Namespaced </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">subresources</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span>{}<span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l">v1alpha1 </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">versions</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">v1alpha1 </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">served</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>关于 CR 与 CRD 更多的信息见 <a href="../../../cloud_computing/k8s_learning/crd/" rel=""><strong>K8s 学习 - CRD</strong></a>。</p>
 <h2 id="2-服务发现信息">2 服务发现信息</h2>
@@ -231,17 +231,17 @@
 <p>通过如下命令卡其 kubectl 执行日志，我们可以了解具体的细节：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl get tidbcluster -v<span class="o">=</span><span class="m">7</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ kubectl get tidbcluster -v<span class="o">=</span><span class="m">7</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><ol>
 <li>kubectl 通过请求 APIServer 的 /apis 查询所有的 API Group。
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -266,36 +266,36 @@
 </span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">$</span> <span class="err">curl</span> <span class="err">-H</span> <span class="s2">&#34;Authorization: Bearer $TOKEN&#34;</span> <span class="err">--insecure</span>  <span class="err">$APISERVER/apis</span>
-<span class="p">{</span>
-<span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;APIGroupList&#34;</span><span class="p">,</span>
-<span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;v1&#34;</span><span class="p">,</span>
-<span class="nt">&#34;groups&#34;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;apiregistration.k8s.io&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;versions&#34;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-        <span class="nt">&#34;groupVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;apiregistration.k8s.io/v1&#34;</span><span class="p">,</span>
-        <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;v1&#34;</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-        <span class="nt">&#34;groupVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;apiregistration.k8s.io/v1beta1&#34;</span><span class="p">,</span>
-        <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;v1beta1&#34;</span>
-        <span class="p">}</span>
-    <span class="p">],</span>
-    <span class="nt">&#34;preferredVersion&#34;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&#34;groupVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;apiregistration.k8s.io/v1&#34;</span><span class="p">,</span>
-        <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;v1&#34;</span>
-    <span class="p">}</span>
-    <span class="p">},</span>
-<span class="err">//</span> <span class="err">...</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="err">$</span> <span class="err">curl</span> <span class="err">-H</span> <span class="s2">&#34;Authorization: Bearer $TOKEN&#34;</span> <span class="err">--insecure</span>  <span class="err">$APISERVER/apis</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;APIGroupList&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;v1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&#34;groups&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;apiregistration.k8s.io&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;versions&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;groupVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;apiregistration.k8s.io/v1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;v1&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;groupVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;apiregistration.k8s.io/v1beta1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;v1beta1&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;preferredVersion&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;groupVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;apiregistration.k8s.io/v1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;v1&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div></li>
 <li>对于所有的 API Group，请求一次 /apis/group/version 查询该 GroupVersion 下支持的所有 Resource。找到符合命名对应的 Resource。
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -324,34 +324,34 @@
 </span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">$</span> <span class="err">curl</span> <span class="err">--insecure</span>  <span class="err">-H</span> <span class="s2">&#34;Authorization: Bearer $TOKEN&#34;</span> <span class="err">$APISERVER/apis/pingcap.com/v</span><span class="mi">1</span><span class="err">alpha</span><span class="mi">1</span>
-<span class="p">{</span>
-<span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;APIResourceList&#34;</span><span class="p">,</span>
-<span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;v1&#34;</span><span class="p">,</span>
-<span class="nt">&#34;groupVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;pingcap.com/v1alpha1&#34;</span><span class="p">,</span>
-<span class="nt">&#34;resources&#34;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;tidbclusters&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;singularName&#34;</span><span class="p">:</span> <span class="s2">&#34;tidbcluster&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;namespaced&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-    <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;TidbCluster&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;verbs&#34;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&#34;delete&#34;</span><span class="p">,</span>
-        <span class="s2">&#34;deletecollection&#34;</span><span class="p">,</span>
-        <span class="s2">&#34;get&#34;</span><span class="p">,</span>
-        <span class="s2">&#34;list&#34;</span><span class="p">,</span>
-        <span class="s2">&#34;patch&#34;</span><span class="p">,</span>
-        <span class="s2">&#34;create&#34;</span><span class="p">,</span>
-        <span class="s2">&#34;update&#34;</span><span class="p">,</span>
-        <span class="s2">&#34;watch&#34;</span>
-    <span class="p">],</span>
-    <span class="nt">&#34;shortNames&#34;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&#34;tc&#34;</span>
-    <span class="p">],</span>
-    <span class="nt">&#34;storageVersionHash&#34;</span><span class="p">:</span> <span class="s2">&#34;2dlERqlmc8s=&#34;</span>
-    <span class="p">},</span>
-    <span class="err">//</span> <span class="err">...</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="err">$</span> <span class="err">curl</span> <span class="err">--insecure</span>  <span class="err">-H</span> <span class="s2">&#34;Authorization: Bearer $TOKEN&#34;</span> <span class="err">$APISERVER/apis/pingcap.com/v</span><span class="mi">1</span><span class="err">alpha</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;APIResourceList&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;v1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&#34;groupVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;pingcap.com/v1alpha1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&#34;resources&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;tidbclusters&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;singularName&#34;</span><span class="p">:</span> <span class="s2">&#34;tidbcluster&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;namespaced&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;TidbCluster&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;verbs&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;delete&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;deletecollection&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;get&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;list&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;patch&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;create&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;update&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;watch&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;shortNames&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;tc&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;storageVersionHash&#34;</span><span class="p">:</span> <span class="s2">&#34;2dlERqlmc8s=&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ...
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div></li>
 <li>kubectl 将获取到的信息转换为三元组：
@@ -394,7 +394,7 @@
 <p><code>kubectl api-resource</code> 命令可以列出所有短名字：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -405,21 +405,21 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl api-resource
-NAME               SHORTNAMES   APIVERSION NAMESPACED   KIND
-bindings                        v1         <span class="nb">true</span>         Binding
-componentstatuses  cs           v1         <span class="nb">false</span>        ComponentStatus
-configmaps         cm           v1         <span class="nb">true</span>         ConfigMap
-endpoints          ep           v1         <span class="nb">true</span>         Endpoints
-events             ev           v1         <span class="nb">true</span>         Event
-limitranges        limits       v1         <span class="nb">true</span>         LimitRange
-namespaces         ns           v1         <span class="nb">false</span>        Namespace
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ kubectl api-resource
+</span></span><span class="line"><span class="cl">NAME               SHORTNAMES   APIVERSION NAMESPACED   KIND
+</span></span><span class="line"><span class="cl">bindings                        v1         <span class="nb">true</span>         Binding
+</span></span><span class="line"><span class="cl">componentstatuses  cs           v1         <span class="nb">false</span>        ComponentStatus
+</span></span><span class="line"><span class="cl">configmaps         cm           v1         <span class="nb">true</span>         ConfigMap
+</span></span><span class="line"><span class="cl">endpoints          ep           v1         <span class="nb">true</span>         Endpoints
+</span></span><span class="line"><span class="cl">events             ev           v1         <span class="nb">true</span>         Event
+</span></span><span class="line"><span class="cl">limitranges        limits       v1         <span class="nb">true</span>         LimitRange
+</span></span><span class="line"><span class="cl">namespaces         ns           v1         <span class="nb">false</span>        Namespace
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>CRD 中也可以指定 <strong><code>categories</code></strong> 字段，加入一个类别。这样 <code>kubectl get &lt;category&gt;</code> 就可以列出一个类别下的所有资源了。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -429,15 +429,15 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiextensions.k8s.io/v1beta1 </span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CustomResourceDefinition </span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
-</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ats.cnat.programming-kubernetes.info </span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
-</span><span class="w">  </span><span class="c"># ... </span><span class="w">
-</span><span class="w">  </span><span class="nt">categories</span><span class="p">:</span><span class="w"> 
-</span><span class="w">  </span>- <span class="l">all</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiextensions.k8s.io/v1beta1 </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CustomResourceDefinition </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ats.cnat.programming-kubernetes.info </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># ... </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">categories</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="l">all</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="323-打印列">3.2.3 打印列</h4>
 <h4 id="324-subresource">3.2.4 SubResource</h4>
@@ -453,7 +453,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <p>也就是说，RBAC + status SubResource 实现了 spec 与 status 字段的权限隔离。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -462,14 +462,14 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">rbac.authorization.k8s.io/v1 </span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Role </span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="c">#... </span><span class="w">
-</span><span class="w"></span><span class="nt">rules</span><span class="p">:</span><span class="w"> 
-</span><span class="w"></span>- <span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;&#34;</span><span class="p">]</span><span class="w"> 
-</span><span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;ats/status&#34;</span><span class="p">]</span><span class="w"> 
-</span><span class="w">  </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;update&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;patch&#34;</span><span class="p">]</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">rbac.authorization.k8s.io/v1 </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Role </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="c">#... </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">rules</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;&#34;</span><span class="p">]</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;ats/status&#34;</span><span class="p">]</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;update&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;patch&#34;</span><span class="p">]</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>当你开启 status Resource 时，你需要注意的一些变化：</p>
 <ul>
@@ -480,19 +480,19 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <p>你可以通过如下方式为 CRD 开启 status SubResource：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiextensions.k8s.io/v1beta1 </span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CustomResourceDefinition </span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">subresources</span><span class="p">:</span><span class="w"> 
-</span><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span>{}<span class="w"> 
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiextensions.k8s.io/v1beta1 </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CustomResourceDefinition </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">subresources</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span>{}<span class="w"> 
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><div class="details admonition warning open">
         <div class="details-summary admonition-title">
@@ -503,7 +503,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <p>对此，你可能需要升级 CRD 的版本。例如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -517,19 +517,19 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiextensions.k8s.io/v1beta1 </span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CustomResourceDefinition </span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
-</span><span class="w">  </span><span class="c"># ... </span><span class="w">
-</span><span class="w">  </span><span class="nt">versions</span><span class="p">:</span><span class="w"> 
-</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">v1alpha1 </span><span class="w">
-</span><span class="w">    </span><span class="nt">served</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> 
-</span><span class="w">    </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> 
-</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">v1beta1 </span><span class="w">
-</span><span class="w">    </span><span class="nt">served</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> 
-</span><span class="w">    </span><span class="nt">subresources</span><span class="p">:</span><span class="w"> 
-</span><span class="w">      </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiextensions.k8s.io/v1beta1 </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CustomResourceDefinition </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># ... </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">versions</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">v1alpha1 </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">served</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">v1beta1 </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">served</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">subresources</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div></div>
         </div>
@@ -539,7 +539,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <p><code>kubectl scale</code> 就是通过 /scale 子资源来实现的。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -553,25 +553,25 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">$ kubectl scale --replicas=3 your-custom-resource -v=7 </span><span class="w">
-</span><span class="w"></span><span class="l">I0429 21:17:53.138353   66743 round_trippers.go:383] PUT https://host/apis/group/v1/your-custom-resource/scale </span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiextensions.k8s.io/v1beta1 </span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CustomResourceDefinition </span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
-</span><span class="w">  </span><span class="nt">subresources</span><span class="p">:</span><span class="w"> 
-</span><span class="w">    </span><span class="nt">scale</span><span class="p">:</span><span class="w"> 
-</span><span class="w">      </span><span class="nt">specReplicasPath</span><span class="p">:</span><span class="w"> </span><span class="l">.spec.replicas </span><span class="w">
-</span><span class="w">      </span><span class="nt">statusReplicasPath</span><span class="p">:</span><span class="w"> </span><span class="l">.status.replicas </span><span class="w">
-</span><span class="w">      </span><span class="nt">labelSelectorPath</span><span class="p">:</span><span class="w"> </span><span class="l">.status.labelSelector </span><span class="w">
-</span><span class="w">  </span><span class="l">...</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="l">$ kubectl scale --replicas=3 your-custom-resource -v=7 </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="l">I0429 21:17:53.138353   66743 round_trippers.go:383] PUT https://host/apis/group/v1/your-custom-resource/scale </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiextensions.k8s.io/v1beta1 </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CustomResourceDefinition </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">subresources</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">scale</span><span class="p">:</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">specReplicasPath</span><span class="p">:</span><span class="w"> </span><span class="l">.spec.replicas </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">statusReplicasPath</span><span class="p">:</span><span class="w"> </span><span class="l">.status.replicas </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">labelSelectorPath</span><span class="p">:</span><span class="w"> </span><span class="l">.status.labelSelector </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="l">...</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>当然，/scale 只能修改 replica 的值，而其具体的操作还是需要自定义 Controller 实现的。</p>
 <p>/scale HTTP Endpoint 读取或写入的对象 Kind 为 Scale，属于 autoscaling/v1 APIGroup。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -614,48 +614,48 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="lnt">41
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Scale represents a scaling request for a resource.
-</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Scale</span> <span class="kd">struct</span> <span class="p">{</span>
-	<span class="nx">metav1</span><span class="p">.</span><span class="nx">TypeMeta</span> <span class="s">`json:&#34;,inline&#34;`</span>
-	<span class="c1">// Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.
-</span><span class="c1"></span>	<span class="c1">// +optional
-</span><span class="c1"></span>	<span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span> <span class="s">`json:&#34;metadata,omitempty&#34; protobuf:&#34;bytes,1,opt,name=metadata&#34;`</span>
-
-	<span class="c1">// defines the behavior of the scale. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status.
-</span><span class="c1"></span>	<span class="c1">// +optional
-</span><span class="c1"></span>	<span class="nx">Spec</span> <span class="nx">ScaleSpec</span> <span class="s">`json:&#34;spec,omitempty&#34; protobuf:&#34;bytes,2,opt,name=spec&#34;`</span>
-
-	<span class="c1">// current status of the scale. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status. Read-only.
-</span><span class="c1"></span>	<span class="c1">// +optional
-</span><span class="c1"></span>	<span class="nx">Status</span> <span class="nx">ScaleStatus</span> <span class="s">`json:&#34;status,omitempty&#34; protobuf:&#34;bytes,3,opt,name=status&#34;`</span>
-<span class="p">}</span>
-
-<span class="c1">// ScaleSpec describes the attributes of a scale subresource
-</span><span class="c1"></span><span class="kd">type</span> <span class="nx">ScaleSpec</span> <span class="kd">struct</span> <span class="p">{</span>
-	<span class="c1">// desired number of instances for the scaled object.
-</span><span class="c1"></span>	<span class="c1">// +optional
-</span><span class="c1"></span>	<span class="nx">Replicas</span> <span class="kt">int32</span> <span class="s">`json:&#34;replicas,omitempty&#34; protobuf:&#34;varint,1,opt,name=replicas&#34;`</span>
-<span class="p">}</span>
-
-<span class="c1">// ScaleStatus represents the current status of a scale subresource.
-</span><span class="c1"></span><span class="kd">type</span> <span class="nx">ScaleStatus</span> <span class="kd">struct</span> <span class="p">{</span>
-	<span class="c1">// actual number of observed instances of the scaled object.
-</span><span class="c1"></span>	<span class="nx">Replicas</span> <span class="kt">int32</span> <span class="s">`json:&#34;replicas&#34; protobuf:&#34;varint,1,opt,name=replicas&#34;`</span>
-
-	<span class="c1">// label query over pods that should match the replicas count. More info: http://kubernetes.io/docs/user-guide/labels#label-selectors
-</span><span class="c1"></span>	<span class="c1">// +optional
-</span><span class="c1"></span>	<span class="nx">Selector</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span> <span class="s">`json:&#34;selector,omitempty&#34; protobuf:&#34;bytes,2,rep,name=selector&#34;`</span>
-
-	<span class="c1">// label selector for pods that should match the replicas count. This is a serializated
-</span><span class="c1"></span>	<span class="c1">// version of both map-based and more expressive set-based selectors. This is done to
-</span><span class="c1"></span>	<span class="c1">// avoid introspection in the clients. The string will be in the same format as the
-</span><span class="c1"></span>	<span class="c1">// query-param syntax. If the target type only supports map-based selectors, both this
-</span><span class="c1"></span>	<span class="c1">// field and map-based selector field are populated.
-</span><span class="c1"></span>	<span class="c1">// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
-</span><span class="c1"></span>	<span class="c1">// +optional
-</span><span class="c1"></span>	<span class="nx">TargetSelector</span> <span class="kt">string</span> <span class="s">`json:&#34;targetSelector,omitempty&#34; protobuf:&#34;bytes,3,opt,name=targetSelector&#34;`</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Scale represents a scaling request for a resource.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">Scale</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">metav1</span><span class="p">.</span><span class="nx">TypeMeta</span> <span class="s">`json:&#34;,inline&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// +optional
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span> <span class="s">`json:&#34;metadata,omitempty&#34; protobuf:&#34;bytes,1,opt,name=metadata&#34;`</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// defines the behavior of the scale. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// +optional
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Spec</span> <span class="nx">ScaleSpec</span> <span class="s">`json:&#34;spec,omitempty&#34; protobuf:&#34;bytes,2,opt,name=spec&#34;`</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// current status of the scale. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status. Read-only.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// +optional
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Status</span> <span class="nx">ScaleStatus</span> <span class="s">`json:&#34;status,omitempty&#34; protobuf:&#34;bytes,3,opt,name=status&#34;`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ScaleSpec describes the attributes of a scale subresource
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">ScaleSpec</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// desired number of instances for the scaled object.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// +optional
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Replicas</span> <span class="kt">int32</span> <span class="s">`json:&#34;replicas,omitempty&#34; protobuf:&#34;varint,1,opt,name=replicas&#34;`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ScaleStatus represents the current status of a scale subresource.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">ScaleStatus</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// actual number of observed instances of the scaled object.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Replicas</span> <span class="kt">int32</span> <span class="s">`json:&#34;replicas&#34; protobuf:&#34;varint,1,opt,name=replicas&#34;`</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// label query over pods that should match the replicas count. More info: http://kubernetes.io/docs/user-guide/labels#label-selectors
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// +optional
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Selector</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span> <span class="s">`json:&#34;selector,omitempty&#34; protobuf:&#34;bytes,2,rep,name=selector&#34;`</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// label selector for pods that should match the replicas count. This is a serializated
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// version of both map-based and more expressive set-based selectors. This is done to
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// avoid introspection in the clients. The string will be in the same format as the
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// query-param syntax. If the target type only supports map-based selectors, both this
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// field and map-based selector field are populated.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// +optional
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">TargetSelector</span> <span class="kt">string</span> <span class="s">`json:&#34;targetSelector,omitempty&#34; protobuf:&#34;bytes,3,opt,name=targetSelector&#34;`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>同样，/scale 子资源的更新也是乐观并发语义。</p>
 <h2 id="4-代码中使用-cr">4 代码中使用 CR</h2>
@@ -670,7 +670,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <p>dynamic client 不使用 Scheme 与 RESTMapper，需要手动进行 GVR 的注册。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -682,17 +682,17 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">gvr</span> <span class="o">:=</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionResource</span><span class="p">{</span> 
-  <span class="nx">Group</span><span class="p">:</span> <span class="s">&#34;apps&#34;</span><span class="p">,</span> 
-  <span class="nx">Version</span><span class="p">:</span> <span class="s">&#34;v1&#34;</span><span class="p">,</span> 
-  <span class="nx">Resource</span><span class="p">:</span> <span class="s">&#34;deployments&#34;</span><span class="p">,</span> 
-<span class="p">}</span>
-
-<span class="nx">client</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">NewForConfig</span><span class="p">(</span><span class="nx">cfg</span><span class="p">)</span>
-
-<span class="nx">client</span><span class="p">.</span><span class="nf">Resource</span><span class="p">(</span><span class="nx">gvr</span><span class="p">).</span>
-  <span class="nf">Namespace</span><span class="p">(</span><span class="nx">namespace</span><span class="p">).</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;foo&#34;</span><span class="p">,</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">GetOptions</span><span class="p">{})</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">gvr</span> <span class="o">:=</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupVersionResource</span><span class="p">{</span> 
+</span></span><span class="line"><span class="cl">  <span class="nx">Group</span><span class="p">:</span> <span class="s">&#34;apps&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">  <span class="nx">Version</span><span class="p">:</span> <span class="s">&#34;v1&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">  <span class="nx">Resource</span><span class="p">:</span> <span class="s">&#34;deployments&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">client</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">NewForConfig</span><span class="p">(</span><span class="nx">cfg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">client</span><span class="p">.</span><span class="nf">Resource</span><span class="p">(</span><span class="nx">gvr</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">Namespace</span><span class="p">(</span><span class="nx">namespace</span><span class="p">).</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;foo&#34;</span><span class="p">,</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">GetOptions</span><span class="p">{})</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>其输入与输出都是 <strong><code>*unstructured.Unstructured</code></strong> 对象，数据结构与 json.Unmarshal 反序列化后输出一样：</p>
 <ul>
@@ -703,11 +703,11 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <p><code>UnstructuredContent()</code> 提供了访问 unstructed 对象内部数据的功能：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">name</span><span class="p">,</span> <span class="nx">found</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">unstructured</span><span class="p">.</span><span class="nf">NestedString</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Object</span><span class="p">,</span> <span class="s">&#34;metadata&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">name</span><span class="p">,</span> <span class="nx">found</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">unstructured</span><span class="p">.</span><span class="nf">NestedString</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Object</span><span class="p">,</span> <span class="s">&#34;metadata&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>可以看到，<strong>dynamic client 提供了一种抽象访问资源的方法，因此主要在通用类型的控制器中使用</strong>。例如垃圾回收控制器，可以删除任何资源进行操作，所以需要 dynamic client。</p>
 <h3 id="42-强类型-client">4.2 强类型 client</h3>
@@ -718,7 +718,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <p>例如 Deployment 对象放在 <em>&ldquo;k8s.io/kubernetes/apps/v1/types.go&rdquo;</em> 文件里：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -727,21 +727,21 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Deployment</span> <span class="kd">struct</span> <span class="p">{</span> 
-    <span class="nx">metav1</span><span class="p">.</span><span class="nx">TypeMeta</span> <span class="s">`json:&#34;,inline&#34;`</span> 
-    <span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span> <span class="s">`json:&#34;metadata,omitempty&#34;`</span> 
- 
-    <span class="nx">Spec</span> <span class="nx">DeploymentSpec</span> <span class="s">`json:&#34;spec,omitempty&#34;`</span> 
-    <span class="nx">Status</span> <span class="nx">DeploymentStatus</span> <span class="s">`json:&#34;status,omitempty&#34;`</span> 
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Deployment</span> <span class="kd">struct</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">metav1</span><span class="p">.</span><span class="nx">TypeMeta</span> <span class="s">`json:&#34;,inline&#34;`</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">metav1</span><span class="p">.</span><span class="nx">ObjectMeta</span> <span class="s">`json:&#34;metadata,omitempty&#34;`</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="nx">Spec</span> <span class="nx">DeploymentSpec</span> <span class="s">`json:&#34;spec,omitempty&#34;`</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">Status</span> <span class="nx">DeploymentStatus</span> <span class="s">`json:&#34;status,omitempty&#34;`</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="422-包结构">4.2.2 包结构</h4>
 <p>除了 types.go 文件，还需要了解一些其他文件。</p>
 <p><em>&ldquo;doc.go&rdquo;</em> 文件描述 API 的功能，并包含了一系列全局的代码生成标签：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -749,18 +749,18 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Package v1alpha1 contains the cnat v1alpha1 API group
-</span><span class="c1">//
-</span><span class="c1"></span> 
-<span class="c1">// +k8s:deepcopy-gen=package
-</span><span class="c1">// +groupName=cnat.programming-kubernetes.info
-</span><span class="c1"></span><span class="kn">package</span> <span class="nx">v1alpha1</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Package v1alpha1 contains the cnat v1alpha1 API group
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> 
+</span></span><span class="line"><span class="cl"><span class="c1">// +k8s:deepcopy-gen=package
+</span></span></span><span class="line"><span class="cl"><span class="c1">// +groupName=cnat.programming-kubernetes.info
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">v1alpha1</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>&ldquo;<em>register.go</em>&rdquo; 文件包含一些用于把 CRD 注册到 Scheme 中的辅助函数：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -802,47 +802,47 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="lnt">40
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">version</span> 
- 
-<span class="kn">import</span> <span class="p">(</span> 
-    <span class="nx">metav1</span> <span class="s">&#34;k8s.io/apimachinery/pkg/apis/meta/v1&#34;</span> 
-    <span class="s">&#34;k8s.io/apimachinery/pkg/runtime&#34;</span> 
-    <span class="s">&#34;k8s.io/apimachinery/pkg/runtime/schema&#34;</span> 
- 
-    <span class="nx">group</span> <span class="s">&#34;repo/pkg/apis/group&#34;</span> 
-<span class="p">)</span> 
- 
-<span class="c1">// SchemeGroupVersion is group version used to register these objects var SchemeGroupVersion = schema.GroupVersion{ 
-</span><span class="c1"></span>    <span class="nx">Group</span><span class="p">:</span> <span class="nx">group</span><span class="p">.</span><span class="nx">GroupName</span><span class="p">,</span> 
-    <span class="nx">Version</span><span class="p">:</span> <span class="s">&#34;version&#34;</span><span class="p">,</span> 
-<span class="p">}</span> 
- 
-<span class="c1">// Kind takes an unqualified kind and returns back a Group qualified GroupKind 
-</span><span class="c1"></span><span class="kd">func</span> <span class="nf">Kind</span><span class="p">(</span><span class="nx">kind</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupKind</span> <span class="p">{</span> 
-    <span class="k">return</span> <span class="nx">SchemeGroupVersion</span><span class="p">.</span><span class="nf">WithKind</span><span class="p">(</span><span class="nx">kind</span><span class="p">).</span><span class="nf">GroupKind</span><span class="p">()</span> 
-<span class="p">}</span> 
- 
-<span class="c1">// Resource takes an unqualified resource and returns a Group 
-</span><span class="c1">// qualified GroupResource 
-</span><span class="c1"></span><span class="kd">func</span> <span class="nf">Resource</span><span class="p">(</span><span class="nx">resource</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupResource</span> <span class="p">{</span> 
-    <span class="k">return</span> <span class="nx">SchemeGroupVersion</span><span class="p">.</span><span class="nf">WithResource</span><span class="p">(</span><span class="nx">resource</span><span class="p">).</span><span class="nf">GroupResource</span><span class="p">()</span> 
-<span class="p">}</span> 
- 
-<span class="kd">var</span> <span class="p">(</span> 
-    <span class="nx">SchemeBuilder</span> <span class="p">=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">NewSchemeBuilder</span><span class="p">(</span><span class="nx">addKnownTypes</span><span class="p">)</span> 
-    <span class="nx">AddToScheme</span>   <span class="p">=</span> <span class="nx">SchemeBuilder</span><span class="p">.</span><span class="nx">AddToScheme</span> 
-<span class="p">)</span> 
- 
-<span class="c1">// Adds the list of known types to Scheme. 
-</span><span class="c1"></span><span class="kd">func</span> <span class="nf">addKnownTypes</span><span class="p">(</span><span class="nx">scheme</span> <span class="o">*</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">Scheme</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span> 
-    <span class="nx">scheme</span><span class="p">.</span><span class="nf">AddKnownTypes</span><span class="p">(</span><span class="nx">SchemeGroupVersion</span><span class="p">,</span> 
-        <span class="o">&amp;</span><span class="nx">SomeKind</span><span class="p">{},</span> 
-        <span class="o">&amp;</span><span class="nx">SomeKindList</span><span class="p">{},</span> 
-    <span class="p">)</span> 
-    <span class="nx">metav1</span><span class="p">.</span><span class="nf">AddToGroupVersion</span><span class="p">(</span><span class="nx">scheme</span><span class="p">,</span> <span class="nx">SchemeGroupVersion</span><span class="p">)</span> 
-    <span class="k">return</span> <span class="kc">nil</span> 
-<span class="p">}</span> 
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">version</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">metav1</span> <span class="s">&#34;k8s.io/apimachinery/pkg/apis/meta/v1&#34;</span> 
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;k8s.io/apimachinery/pkg/runtime&#34;</span> 
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;k8s.io/apimachinery/pkg/runtime/schema&#34;</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="nx">group</span> <span class="s">&#34;repo/pkg/apis/group&#34;</span> 
+</span></span><span class="line"><span class="cl"><span class="p">)</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="c1">// SchemeGroupVersion is group version used to register these objects var SchemeGroupVersion = schema.GroupVersion{ 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">Group</span><span class="p">:</span> <span class="nx">group</span><span class="p">.</span><span class="nx">GroupName</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">Version</span><span class="p">:</span> <span class="s">&#34;version&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="c1">// Kind takes an unqualified kind and returns back a Group qualified GroupKind 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">Kind</span><span class="p">(</span><span class="nx">kind</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupKind</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">SchemeGroupVersion</span><span class="p">.</span><span class="nf">WithKind</span><span class="p">(</span><span class="nx">kind</span><span class="p">).</span><span class="nf">GroupKind</span><span class="p">()</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="c1">// Resource takes an unqualified resource and returns a Group 
+</span></span></span><span class="line"><span class="cl"><span class="c1">// qualified GroupResource 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">Resource</span><span class="p">(</span><span class="nx">resource</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">GroupResource</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">SchemeGroupVersion</span><span class="p">.</span><span class="nf">WithResource</span><span class="p">(</span><span class="nx">resource</span><span class="p">).</span><span class="nf">GroupResource</span><span class="p">()</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="p">(</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">SchemeBuilder</span> <span class="p">=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">NewSchemeBuilder</span><span class="p">(</span><span class="nx">addKnownTypes</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">AddToScheme</span>   <span class="p">=</span> <span class="nx">SchemeBuilder</span><span class="p">.</span><span class="nx">AddToScheme</span> 
+</span></span><span class="line"><span class="cl"><span class="p">)</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="c1">// Adds the list of known types to Scheme. 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">addKnownTypes</span><span class="p">(</span><span class="nx">scheme</span> <span class="o">*</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">Scheme</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">scheme</span><span class="p">.</span><span class="nf">AddKnownTypes</span><span class="p">(</span><span class="nx">SchemeGroupVersion</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">        <span class="o">&amp;</span><span class="nx">SomeKind</span><span class="p">{},</span> 
+</span></span><span class="line"><span class="cl">        <span class="o">&amp;</span><span class="nx">SomeKindList</span><span class="p">{},</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">)</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">metav1</span><span class="p">.</span><span class="nf">AddToGroupVersion</span><span class="p">(</span><span class="nx">scheme</span><span class="p">,</span> <span class="nx">SchemeGroupVersion</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">nil</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span> 
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><em>&ldquo;zz_generated.deepcopy.go&rdquo;</em> 为自定义资源对应的类定义了 DeepCopy() 方法，包括其所有的子结构体（例如 spec
 与 status）。</p>
@@ -851,7 +851,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <p>它使用 APIServer 提供的发现信息，将不同的 Kind 映射到不同的 HTTP API Path 上。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -878,32 +878,32 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="lnt">25
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="p">(</span> 
-    <span class="s">&#34;flag&#34;</span> 
- 
-    <span class="nx">corev1</span> <span class="s">&#34;k8s.io/api/core/v1&#34;</span> 
-    <span class="nx">metav1</span> <span class="s">&#34;k8s.io/apimachinery/pkg/apis/meta/v1&#34;</span> 
-    <span class="s">&#34;k8s.io/client-go/kubernetes/scheme&#34;</span> 
-    <span class="s">&#34;k8s.io/client-go/tools/clientcmd&#34;</span> 
- 
-    <span class="nx">runtimeclient</span> <span class="s">&#34;sigs.k8s.io/controller-runtime/pkg/client&#34;</span> 
-<span class="p">)</span> 
-
-<span class="c1">// 读取 config
-</span><span class="c1"></span><span class="nx">kubeconfig</span> <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="s">&#34;kubeconfig&#34;</span><span class="p">,</span> <span class="s">&#34;~/.kube/config&#34;</span><span class="p">,</span> <span class="s">&#34;kubeconfig file 
-</span><span class="s">path&#34;</span><span class="p">)</span> 
-<span class="nx">flag</span><span class="p">.</span><span class="nf">Parse</span><span class="p">()</span> 
-<span class="nx">config</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientcmd</span><span class="p">.</span><span class="nf">BuildConfigFromFlags</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">kubeconfig</span><span class="p">)</span> 
-
-<span class="c1">// 创建 client
-</span><span class="c1"></span><span class="nx">cl</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">runtimeclient</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">config</span><span class="p">,</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span> 
-    <span class="nx">Scheme</span><span class="p">:</span> <span class="nx">scheme</span><span class="p">.</span><span class="nx">Scheme</span><span class="p">,</span> 
-<span class="p">})</span>
-
-<span class="c1">// 查找 Pods
-</span><span class="c1"></span><span class="nx">podList</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">corev1</span><span class="p">.</span><span class="nx">PodList</span><span class="p">{}</span> 
-<span class="nx">err</span> <span class="o">:=</span> <span class="nx">cl</span><span class="p">.</span><span class="nf">List</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">client</span><span class="p">.</span><span class="nf">InNamespace</span><span class="p">(</span><span class="s">&#34;default&#34;</span><span class="p">),</span> <span class="nx">podList</span><span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span> 
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;flag&#34;</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="nx">corev1</span> <span class="s">&#34;k8s.io/api/core/v1&#34;</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">metav1</span> <span class="s">&#34;k8s.io/apimachinery/pkg/apis/meta/v1&#34;</span> 
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;k8s.io/client-go/kubernetes/scheme&#34;</span> 
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;k8s.io/client-go/tools/clientcmd&#34;</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="nx">runtimeclient</span> <span class="s">&#34;sigs.k8s.io/controller-runtime/pkg/client&#34;</span> 
+</span></span><span class="line"><span class="cl"><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 读取 config
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">kubeconfig</span> <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="s">&#34;kubeconfig&#34;</span><span class="p">,</span> <span class="s">&#34;~/.kube/config&#34;</span><span class="p">,</span> <span class="s">&#34;kubeconfig file 
+</span></span></span><span class="line"><span class="cl"><span class="s">path&#34;</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl"><span class="nx">flag</span><span class="p">.</span><span class="nf">Parse</span><span class="p">()</span> 
+</span></span><span class="line"><span class="cl"><span class="nx">config</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientcmd</span><span class="p">.</span><span class="nf">BuildConfigFromFlags</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">kubeconfig</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 创建 client
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">cl</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">runtimeclient</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">config</span><span class="p">,</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">Scheme</span><span class="p">:</span> <span class="nx">scheme</span><span class="p">.</span><span class="nx">Scheme</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 查找 Pods
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">podList</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">corev1</span><span class="p">.</span><span class="nx">PodList</span><span class="p">{}</span> 
+</span></span><span class="line"><span class="cl"><span class="nx">err</span> <span class="o">:=</span> <span class="nx">cl</span><span class="p">.</span><span class="nf">List</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">client</span><span class="p">.</span><span class="nf">InNamespace</span><span class="p">(</span><span class="s">&#34;default&#34;</span><span class="p">),</span> <span class="nx">podList</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>可以看到，List() 方法可以作用于任意指定 Scheme 中注册过的，将结果解析到传递的类型中。</li>
@@ -911,7 +911,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <p>对于 CR，通过自定义的 Scheme 创建 client 即可：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -941,35 +941,35 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="lnt">28
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="p">(</span> 
-    <span class="s">&#34;flag&#34;</span> 
- 
-    <span class="nx">corev1</span> <span class="s">&#34;k8s.io/api/core/v1&#34;</span> 
-    <span class="nx">metav1</span> <span class="s">&#34;k8s.io/apimachinery/pkg/apis/meta/v1&#34;</span> 
-    <span class="s">&#34;k8s.io/client-go/kubernetes/scheme&#34;</span> 
-    <span class="s">&#34;k8s.io/client-go/tools/clientcmd&#34;</span> 
- 
-    <span class="nx">runtimeclient</span> <span class="s">&#34;sigs.k8s.io/controller-runtime/pkg/client&#34;</span>
-    <span class="nx">cnatv1alpha1</span> <span class="s">&#34;github.com/.../cnat/cnat-kubebuilder/pkg/apis/cnat/v1alpha1&#34;</span> 
-<span class="p">)</span> 
- 
-<span class="nx">kubeconfig</span> <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="s">&#34;kubeconfig&#34;</span><span class="p">,</span> <span class="s">&#34;~/.kube/config&#34;</span><span class="p">,</span> <span class="s">&#34;kubeconfig file&#34;</span><span class="p">)</span> 
-<span class="nx">flag</span><span class="p">.</span><span class="nf">Parse</span><span class="p">()</span> 
-<span class="nx">config</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientcmd</span><span class="p">.</span><span class="nf">BuildConfigFromFlags</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">kubeconfig</span><span class="p">)</span> 
-
-<span class="c1">// 注册 CR Scheme
-</span><span class="c1"></span><span class="nx">crScheme</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">NewScheme</span><span class="p">()</span> 
-<span class="nx">cnatv1alpha1</span><span class="p">.</span><span class="nf">AddToScheme</span><span class="p">(</span><span class="nx">crScheme</span><span class="p">)</span> 
-
-<span class="c1">// 创建 client
-</span><span class="c1"></span><span class="nx">cl</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">runtimeclient</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">config</span><span class="p">,</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span> 
-    <span class="nx">Scheme</span><span class="p">:</span> <span class="nx">crScheme</span><span class="p">,</span> 
-<span class="p">})</span>
-
-<span class="c1">// 操作 CR
-</span><span class="c1"></span><span class="nx">list</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">cnatv1alpha1</span><span class="p">.</span><span class="nx">AtList</span><span class="p">{}</span> 
-<span class="nx">err</span> <span class="o">:=</span> <span class="nx">cl</span><span class="p">.</span><span class="nf">List</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">client</span><span class="p">.</span><span class="nf">InNamespace</span><span class="p">(</span><span class="s">&#34;default&#34;</span><span class="p">),</span> <span class="nx">list</span><span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span> 
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;flag&#34;</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="nx">corev1</span> <span class="s">&#34;k8s.io/api/core/v1&#34;</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">metav1</span> <span class="s">&#34;k8s.io/apimachinery/pkg/apis/meta/v1&#34;</span> 
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;k8s.io/client-go/kubernetes/scheme&#34;</span> 
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;k8s.io/client-go/tools/clientcmd&#34;</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="nx">runtimeclient</span> <span class="s">&#34;sigs.k8s.io/controller-runtime/pkg/client&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">cnatv1alpha1</span> <span class="s">&#34;github.com/.../cnat/cnat-kubebuilder/pkg/apis/cnat/v1alpha1&#34;</span> 
+</span></span><span class="line"><span class="cl"><span class="p">)</span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="nx">kubeconfig</span> <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="s">&#34;kubeconfig&#34;</span><span class="p">,</span> <span class="s">&#34;~/.kube/config&#34;</span><span class="p">,</span> <span class="s">&#34;kubeconfig file&#34;</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl"><span class="nx">flag</span><span class="p">.</span><span class="nf">Parse</span><span class="p">()</span> 
+</span></span><span class="line"><span class="cl"><span class="nx">config</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientcmd</span><span class="p">.</span><span class="nf">BuildConfigFromFlags</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">kubeconfig</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 注册 CR Scheme
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">crScheme</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">NewScheme</span><span class="p">()</span> 
+</span></span><span class="line"><span class="cl"><span class="nx">cnatv1alpha1</span><span class="p">.</span><span class="nf">AddToScheme</span><span class="p">(</span><span class="nx">crScheme</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 创建 client
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">cl</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">runtimeclient</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">config</span><span class="p">,</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">Scheme</span><span class="p">:</span> <span class="nx">crScheme</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 操作 CR
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">list</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">cnatv1alpha1</span><span class="p">.</span><span class="nx">AtList</span><span class="p">{}</span> 
+</span></span><span class="line"><span class="cl"><span class="nx">err</span> <span class="o">:=</span> <span class="nx">cl</span><span class="p">.</span><span class="nf">List</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">client</span><span class="p">.</span><span class="nf">InNamespace</span><span class="p">(</span><span class="s">&#34;default&#34;</span><span class="p">),</span> <span class="nx">list</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="参考">参考</h2>
 <ul>
@@ -1006,7 +1006,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.85.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.95.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
                 </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
