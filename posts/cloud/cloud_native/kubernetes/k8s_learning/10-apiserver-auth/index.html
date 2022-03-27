@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>K8s 学习 - 10 - API Server 认证 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="K8s 学习 - 10 - API Server 认证" />
+<meta property="og:description" content="1 概述 Kubernetes 中所有的资源访问与操作都是通过 API Server 执行的，因此 API Server 有着一套安全机制。 APIServer 的权限检查从大体上分为三个阶段： Authentication ：身份认证，用于验证请求者的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/10-apiserver-auth/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-07-03T05:47:25+00:00" />
+<meta property="article:modified_time" content="2022-03-24T21:07:12+08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="K8s 学习 - 10 - API Server 认证"/>
+<meta name="twitter:description" content="1 概述 Kubernetes 中所有的资源访问与操作都是通过 API Server 执行的，因此 API Server 有着一套安全机制。 APIServer 的权限检查从大体上分为三个阶段： Authentication ：身份认证，用于验证请求者的"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/10-apiserver-auth/" /><link rel="prev" href="https://KanShiori.github.io/posts/language/golang/library/ginkgo/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/basic/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "K8s 学习 - 10 - API Server 认证",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/10-apiserver-auth\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  5574 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/10-apiserver-auth\/","datePublished": "2021-07-03T05:47:25+00:00","dateModified": "2022-03-24T21:07:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">K8s 学习 - 10 - API Server 认证</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>Kubernetes 学习</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-07-03">2021-07-03</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 5574 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 12 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-概述">1 概述</a></li>
+    <li><a href="#2-subject">2 Subject</a>
+      <ul>
+        <li><a href="#21-useraccount">2.1 UserAccount</a>
+          <ul>
+            <li><a href="#211-创建-useraccount">2.1.1 创建 UserAccount</a></li>
+          </ul>
+        </li>
+        <li><a href="#22-serviceaccount">2.2 ServiceAccount</a>
+          <ul>
+            <li><a href="#221-service-account-atuh">2.2.1 Service Account Atuh</a></li>
+            <li><a href="#222-serviceaccount-与-secret-对象">2.2.2 ServiceAccount 与 Secret 对象</a></li>
+            <li><a href="#223-使用-serviceaccount">2.2.3 使用 ServiceAccount</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#3-authentication">3 Authentication</a>
+      <ul>
+        <li><a href="#31-x509-客户证书认证">3.1 X509 客户证书认证</a></li>
+        <li><a href="#32-http-bearer-token-认证">3.2 HTTP Bearer Token 认证</a></li>
+        <li><a href="#33-openid-connect-token-第三方认证">3.3 OpenID Connect Token 第三方认证</a></li>
+        <li><a href="#34-webhook-token-认证">3.4 Webhook Token 认证</a></li>
+        <li><a href="#35-authenticating-proxy">3.5 Authenticating Proxy</a></li>
+        <li><a href="#36-anonymous-requests">3.6 Anonymous Requests</a></li>
+        <li><a href="#37-user-impersonation">3.7 User Impersonation</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-authorization">4 Authorization</a>
+      <ul>
+        <li><a href="#41-abac-授权模式">4.1 ABAC 授权模式</a>
+          <ul>
+            <li><a href="#411-授权策略文件">4.1.1 授权策略文件</a></li>
+            <li><a href="#412-授权算法">4.1.2 授权算法</a></li>
+            <li><a href="#413-示例">4.1.3 示例</a></li>
+            <li><a href="#414-对-service-account-进行授权">4.1.4 对 Service Account 进行授权</a></li>
+          </ul>
+        </li>
+        <li><a href="#42-rbac-授权模式">4.2 RBAC 授权模式</a></li>
+        <li><a href="#43-webhook-授权模式">4.3 Webhook 授权模式</a>
+          <ul>
+            <li><a href="#431-请求">4.3.1 请求</a></li>
+            <li><a href="#432-回复">4.3.2 回复</a></li>
+          </ul>
+        </li>
+        <li><a href="#44-node-授权模式">4.4 Node 授权模式</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-admission-control">5 Admission Control</a>
+      <ul>
+        <li><a href="#51-动态准入控制">5.1 动态准入控制</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-概述">1 概述</h2>
+<p>Kubernetes 中所有的资源访问与操作都是通过 API Server 执行的，因此 API Server 有着一套安全机制。</p>
+<p>APIServer 的权限检查从大体上分为三个阶段：</p>
+<ul>
+<li><strong>Authentication</strong> ：身份认证，用于验证请求者的身份是否合法。</li>
+<li><strong>Authorization</strong> ：权限认证，验证请求者是否包含对应资源的控制权限。</li>
+<li><strong>Admission Control</strong> ：可扩展的通用检查。</li>
+</ul>
+<h2 id="2-subject">2 Subject</h2>
+<p>客户端访问 API Server 通常包含三种途径：kubectl、client 库、REST <strong>API。而这些此类请求的对象通常为：UserAccount</strong> 和 <strong>ServiceAccount</strong>。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">UserAccount 与 ServiceAccount 仅仅是身份，而需要通过授权才能访问 APIServer。</div>
+        </div>
+    </div>
+<h3 id="21-useraccount">2.1 UserAccount</h3>
+<p><strong><code>UserAccount</code></strong> 是独立于 Kubernetes 之外的用户账号，包括</p>
+<ul>
+<li>负责分发私钥的管理员</li>
+<li>类似 Keystone 或者 Google Account 这类的数据库</li>
+<li>包含用户名密码的文件</li>
+</ul>
+<p>Kubernetes 不会存储用户的信息，而是通过其 CA 证书来进行身份限制。证书中的 Subject Common Name 会被作用用户名，例如 &ldquo;CN=bob&rdquo;。</p>
+<h4 id="211-创建-useraccount">2.1.1 创建 UserAccount</h4>
+<p>下面尝试新建一个 User，让其能够访问 Kubernetes:</p>
+<ol>
+<li>
+<p>使用 Kubernetes 的根证书签发 UserAccount 使用证书：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ openssl genrsa -out shiori.key <span class="m">2048</span>
+</span></span><span class="line"><span class="cl">$ openssl req -new -key shiori.key -out shiori.csr -subj <span class="s2">&#34;/CN=shiori&#34;</span>
+</span></span><span class="line"><span class="cl">$ openssl x509 -req -in shiori.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out shiori.crt -days <span class="m">3650</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>在 Kubernetes 中创建一个新的用户，传入对应的证书与私钥</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ kubectl config set-credentials shiori --client-certificate<span class="o">=</span>./shiori.crt --client-key<span class="o">=</span>./shiori.key --embed-certs<span class="o">=</span><span class="nb">true</span>
+</span></span><span class="line"><span class="cl">User <span class="s2">&#34;shiori&#34;</span> set.
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建一个 context，指定其用户。这样我们接下来来使用的就是新用户来访问 APIServer 了。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ kubectl config set-context shiori@kubernetes --cluster<span class="o">=</span>kubernetes --user<span class="o">=</span>shiori
+</span></span><span class="line"><span class="cl">$ kubectl config use-context shiori@kubernetes
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h3 id="22-serviceaccount">2.2 ServiceAccount</h3>
+<p><strong><code>ServiceAccount</code></strong> 是 Kubernetes 管理的账号，<strong>提供给 Pod 里的进程使用，为 Pod 里的进程提供身份证明</strong>。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">一定要明确 ServiceAccount 对为了 Pod 中进程而设计的</div>
+        </div>
+    </div></p>
+<p>一个 ServiceAccount 的基本定义如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ServiceAccount</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">local-storage-admin</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">kube-system</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">automountServiceAccountToken</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>spec.automountServiceAccountToken</code> 表明不进行自动创建对应 Secret 对象</li>
+</ul>
+<h4 id="221-service-account-atuh">2.2.1 Service Account Atuh</h4>
+<p>在 Pod 中访问 Kubernetes APIServer 时，会使用 Kubernetes 内置的 HTTP Token 认证方式 Service Account Auth。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">使用 <a href="#32-http-bearer-token-%e8%ae%a4%e8%af%81" rel=""><strong>HTTP Bearer Token</strong></a> 的方式</div>
+        </div>
+    </div></p>
+<ul>
+<li>
+<p>对于 APIServer 的认证，<strong>Pod 内进程使用下发的根证书，来验证 APIServer 的证书是否合法</strong>。</p>
+<p>根证书数据挂载到 Pod 内 <code>/run/secrets/kubernetes.io/serviceaccount/ca.crt</code>，可以看到其和 APIServer 启动使用的根证书内容是一致的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ cat /etc/kubernetes/pki/ca.crt
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ kubectl <span class="nb">exec</span> -it <span class="si">${</span><span class="nv">POD</span><span class="si">}</span> -c <span class="si">${</span><span class="nv">CONTAINER</span><span class="si">}</span> -- cat /run/secrets/kubernetes.io/serviceaccount/ca.crt
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>对于 Pod 内进程的认证，<strong>通过 HTTP Header 中的 Token 字符串数据，来验证 Pod 内进程</strong>。</p>
+<p>Token 为Kubernetes Controller 进程用 APIServer 的私钥（<em>&ndash;service-account-private-key-file</em> 指定）生成的一个 JWT Secret。</p>
+<p>数据会挂载到 Pod 内 <code>/run/secrets/kubernetes.io/serviceaccount/token</code> 文件。</p>
+</li>
+</ul>
+<p>可以看到，使用 ServiceAccount 时涉及到的 Pod 内的三个文件：</p>
+<ul>
+<li><code>/run/secrets/kubernetes.io/serviceaccount/ca.crt</code></li>
+<li><code>/run/secrets/kubernetes.io/serviceaccount/token</code></li>
+<li><code>/run/secrets/kubernetes.io/serviceaccount/namespace</code>（Client 使用该 namespace 作为调用 API 的参数）</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ kubectl <span class="nb">exec</span> -it <span class="si">${</span><span class="nv">POD</span><span class="si">}</span> -c <span class="si">${</span><span class="nv">CONTAINER</span><span class="si">}</span> -- ls /run/secrets/kubernetes.io/serviceaccount
+</span></span><span class="line"><span class="cl">ca.crt     namespace  token
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="222-serviceaccount-与-secret-对象">2.2.2 ServiceAccount 与 Secret 对象</h4>
+<p>上述的文件都是 Kubernetes Secret 对象传递的，当创建一个 ServiceAccount 时，<strong>自动会创建对应的 Secret 对象</strong>。而 Secret 对象就包含这三个数据。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ kubectl get secrets
+</span></span><span class="line"><span class="cl">NAME                                             TYPE                                  DATA   AGE
+</span></span><span class="line"><span class="cl">default-token-4l585                              kubernetes.io/service-account-token   <span class="m">3</span>      16d
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ kubectl get secrets default-token-4l585  -o yaml
+</span></span><span class="line"><span class="cl">apiVersion: v1
+</span></span><span class="line"><span class="cl">data:
+</span></span><span class="line"><span class="cl">  ca.crt: ...
+</span></span><span class="line"><span class="cl">  namespace: ...
+</span></span><span class="line"><span class="cl">  token: ...
+</span></span><span class="line"><span class="cl">kind: Secret
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">  annotations:
+</span></span><span class="line"><span class="cl">    kubernetes.io/service-account.name: default
+</span></span><span class="line"><span class="cl">    kubernetes.io/service-account.uid: a4d19cee-45e3-41ac-af66-ca8b070fa5d9
+</span></span><span class="line"><span class="cl">  creationTimestamp: <span class="s2">&#34;2021-06-16T09:25:37Z&#34;</span>
+</span></span><span class="line"><span class="cl">  name: default-token-4l585
+</span></span><span class="line"><span class="cl">  namespace: tidb-cluster-dev
+</span></span><span class="line"><span class="cl">  resourceVersion: <span class="s2">&#34;3996078&#34;</span>
+</span></span><span class="line"><span class="cl">  uid: a068d2ad-79b9-4b3c-be8c-c6e245c1865f
+</span></span><span class="line"><span class="cl">type: kubernetes.io/service-account-token
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到，对应的 Secret 对象名为 <code>&lt;service_account&gt;-token-&lt;random&gt;</code>，type 为 <code>kubernetes.io/service-account-token</code>。Secret 中也通过两个 annotations 来表明其所属的 ServiceAccount。</p>
+<h4 id="223-使用-serviceaccount">2.2.3 使用 ServiceAccount</h4>
+<p>Pod 定义中通过 <code>spec.serviceAccountName</code> 可以指定使用的 ServiceAccount（默认 default）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="l">myserviceaccount</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>接着，对应的文件就会被挂载到 Pod 内，那么我们使用 Client 库或者 HTTP 访问等方式，就可以访问 APIServer 了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ <span class="nv">TOKEN</span><span class="o">=</span><span class="k">$(</span>cat token<span class="k">)</span> <span class="o">&amp;&amp;</span> curl <span class="s2">&#34;https://kubernetes.default/api/v1/namespaces/mycluster/pods/&#34;</span>  --cacert ./ca.crt  -H <span class="s2">&#34;Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;kind&#34;</span>: <span class="s2">&#34;PodList&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;apiVersion&#34;</span>: <span class="s2">&#34;v1&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;metadata&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;resourceVersion&#34;</span>: <span class="s2">&#34;1589287&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;items&#34;</span>: <span class="o">[</span>
+</span></span><span class="line"><span class="cl"> // …
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="3-authentication">3 Authentication</h2>
+<p>APIServer 安全的第一步检查是 Authentication，用于验证请求的身份。</p>
+<p>目前包含以下身份验证方式：</p>
+<ul>
+<li><strong>X509 客户证书认证</strong>：基于 Kubernetes 根证书签名的双向认证方式</li>
+<li><strong>HTTP Bearer Token 认证</strong>：通过 Bearer Token 识别合法用户</li>
+<li><strong>OpenID Connect Token 第三方认证</strong>：通过第三方 OIDC 协议进行认证</li>
+<li><strong>Webhook Token 认证</strong>：通过外部 Webhook 服务进行认证</li>
+<li><strong>Authenticating Proxy 认证</strong>：通过认证代理程序进行认证</li>
+</ul>
+<p>当开启了多个身份认证模块时，只需要任一模块认证通过。APISever 不会保证身份认证模块的运行顺序。</p>
+<h3 id="31-x509-客户证书认证">3.1 X509 客户证书认证</h3>
+<p>通过 APIServer 启动参数 <em>&quot;&ndash;client-ca-file=SOMEFILE&quot;</em>，可以启动客户端证书验证方式。<strong>其参数指定了用于验证客户端证书的根证书文件</strong>。</p>
+<p>证书验证通过后，客户端证书中 <strong>Subject Common Name 会被用作请求的用户名</strong>，用于后续的授权检查。</p>
+<h3 id="32-http-bearer-token-认证">3.2 HTTP Bearer Token 认证</h3>
+<p>通过 APIServer 启动参数 <em>&quot;&ndash;token-auth-file=SOMEFILE&quot;</em>，指定其<strong>使用的静态 Token 文件</strong>。文件为 CSV 文本格式，每行字段为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># token,user,uid[,groupnames]</span>
+</span></span><span class="line"><span class="cl">31ada4df-abedx-a11z-123z-124sgtszxvr3,join,2,<span class="s2">&#34;group1,group2&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>token - Token 字符串</li>
+<li>user - 用户名</li>
+<li>uid - 用户 ID</li>
+<li>groupnames - 用户组</li>
+</ul>
+<p>通过 HTTP 访问 APIServer 时，其 HTTP Header 中 Token 字段来表明客户身份。APIServer 通过读取该 Token 来保存的 Token 中进行验证，就可以检查其身份，并知晓对应的用户了。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>ServiceAccount<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">ServiceAccount 就是使用 Bearer Token 方式认证，只是其 Token 是由 Kubernetes 动态生成的。</div>
+        </div>
+    </div></p>
+<h3 id="33-openid-connect-token-第三方认证">3.3 OpenID Connect Token 第三方认证</h3>
+<p>Kubernetes 也支持使用 <strong><code>OpenID Conntect 协议（简称 OIDC）</code></strong> 进行身份验证，不过没有使用 OIDC 的权限管理。</p>
+<p><strong>用户通过 OIDC Sever 得到一个合法的 ID Token，请求时传递给 APIServer。APIServer 通过验证该 Token 是否合法来验证用户的身份。</strong>
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/10-apiserver-auth/img2.png"/>
+
+
+</p>
+<p>要使用 OIDC Token 认证方式，APIServer 需要配置一些参数，见 <a href="https://kubernetes.io/zh/docs/reference/access-authn-authz/authentication/#configuring-the-api-server" target="_blank" rel="noopener noreffer"><strong>配置 API 服务器</strong></a></p>
+<h3 id="34-webhook-token-认证">3.4 Webhook Token 认证</h3>
+<p>Kubernetes 也支持通过外部 Webhook 认证服务器，配置 HTTP Bearer Token 来实现自定义的用户身份认证功能。</p>
+<p>其工作步骤如下：</p>
+<ol>
+<li>开启并配置 API Server 的 Webhook Token Authentication 功能。</li>
+<li><strong>APIServer 接受到一个需要认证的请求后，从 HTTP Header 中取出 Token 信息，然后将包含该 Token 的 TokenReview 资源以 HTTP POST 方法发送到远程 Webhook 服务进行认证。</strong></li>
+<li>APIServer 根据 Webhook 返回的结果判断是否认证成功。</li>
+</ol>
+<p>远端 Webhook 服务回复也需要是一个 <strong><code>TokenReview</code></strong> 资源对象，并且 apiVersion 要与 APIServer 发送的 apiVersion 一致。</p>
+<p>要使用 Webhook Token 认证方式，APIServer 需要以下启动参数：</p>
+<ul>
+<li><em>&quot;&ndash;authentication-token-webhook-config-file&quot;</em>: 指向一个配置文件，文件描述了如何访问远程的 Webhook 服务</li>
+<li><em>&quot;&ndash;authentication-token-webhook-cache-ttl&quot;</em>: 缓存 Webhook 服务返回的结果的时间，默认为 2min</li>
+<li><em>&quot;-authentication-token-webhook-version&quot;</em>: 发送给 Webhook 服务的 TokenReview 资源 API 版本号，&ldquo;v1beta1&rdquo; 或 &ldquo;v1&rdquo;</li>
+</ul>
+<p>配置文件使用 kubeconfig 文件格式：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Config</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">clusters</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">name-of-remote-authn-service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">certificate-authority</span><span class="p">:</span><span class="w"> </span><span class="l">/path/to/ca.pem        </span><span class="w"> </span><span class="c"># 用来验证远程服务的 CA</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l">https://authn.example.com/authenticate</span><span class="w"> </span><span class="c"># 要查询的远程服务 URL。必须使用 &#39;https&#39;。</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">users</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">name-of-api-server</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">client-certificate</span><span class="p">:</span><span class="w"> </span><span class="l">/path/to/cert.pem</span><span class="w"> </span><span class="c"># Webhook 插件要使用的证书</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">client-key</span><span class="p">:</span><span class="w"> </span><span class="l">/path/to/key.pem         </span><span class="w"> </span><span class="c"># 与证书匹配的密钥</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># kubeconfig Context</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">current-context</span><span class="p">:</span><span class="w"> </span><span class="l">webhook</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">contexts</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">context</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l">name-of-remote-authn-service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l">name-of-api-sever</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">webhook</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>clusters</code>: 设置 Webhook 远程服务</li>
+<li><code>users</code>: APIServer 使用的 Webhook 配置</li>
+</ul>
+<p>APIServer 是收到请求，提取出 Token 后，将发送如下 TokenReview 资源对象并发送。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;authentication.k8s.io/v1beta1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;TokenReview&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;status&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;authenticated&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;user&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;username&#34;</span><span class="p">:</span> <span class="s2">&#34;janedoe@example.com&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;uid&#34;</span><span class="p">:</span> <span class="s2">&#34;42&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;groups&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;developers&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;qa&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">],</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;extra&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;extrafield1&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;extravalue1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;extravalue2&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">]</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>回复中通过 <code>status.authenticated</code> 字段来表明是否授权成功：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;authentication.k8s.io/v1beta1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;TokenReview&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;status&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;authenticated&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;user&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;username&#34;</span><span class="p">:</span> <span class="s2">&#34;janedoe@example.com&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;uid&#34;</span><span class="p">:</span> <span class="s2">&#34;42&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;groups&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;developers&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;qa&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">],</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;extra&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;extrafield1&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;extravalue1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;extravalue2&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">]</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;authentication.k8s.io/v1beta1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;TokenReview&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;status&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;authenticated&#34;</span><span class="p">:</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="35-authenticating-proxy">3.5 Authenticating Proxy</h3>
+<p>APIServer 可以配置为从 HTTP Header（例如 X-Remote-User）来进行用户身份验证。由 Authenticating Proxy 程序设置 HTTP Header 相关的值。</p>
+<p>首先，Authenticating Proxy 需要向 APIServer 配置对应的客户端 CA 证书，保证 Proxy 能与 APIServer 进行 HTTPS 连接。</p>
+<p>通过以下 APIServer 启动参数配置：</p>
+<ul>
+<li><em>&ndash;requestheader-client-ca-file</em>: Authenticating Proxy 客户端 CA 证书文件路径</li>
+<li><em>&ndash;requestheader-allowed-names</em>: （可选）设置允许的 Common Name 列表</li>
+<li><em>&ndash;requestheader-username-headers</em>: 设置用户名的 Header，通常为 &ldquo;X-Remote-User&rdquo;</li>
+<li><em>&ndash;requestheader-group-headers</em>： 设置用户组的 Header，通常为 &ldquo;X-Remote-Group&rdquo;</li>
+<li><em>&ndash;requestheader-extra-headers-prefix</em>: Header 字段前缀用于确定用户一些其他信息，通常为 &ldquo;X-Remote-Extra-&rdquo;</li>
+</ul>
+<p>HTTPS 连接建立后，APIServer 才会校验 HTTP Header 中设置的用户名。一个请求类似于：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="nf">GET</span> <span class="nn">/</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">X-Remote-User</span><span class="o">:</span> <span class="l">fido</span>
+</span></span><span class="line"><span class="cl"><span class="n">X-Remote-Group</span><span class="o">:</span> <span class="l">dogs</span>
+</span></span><span class="line"><span class="cl"><span class="n">X-Remote-Group</span><span class="o">:</span> <span class="l">dachshunds</span>
+</span></span><span class="line"><span class="cl"><span class="n">X-Remote-Extra-Acme.com%2Fproject</span><span class="o">:</span> <span class="l">some-project</span>
+</span></span><span class="line"><span class="cl"><span class="n">X-Remote-Extra-Scopes</span><span class="o">:</span> <span class="l">openid</span>
+</span></span><span class="line"><span class="cl"><span class="n">X-Remote-Extra-Scopes</span><span class="o">:</span> <span class="l">profile</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="36-anonymous-requests">3.6 Anonymous Requests</h3>
+<p><strong>请求中没有被任何已配置的身份认证方法拒绝，那么会被视为</strong> <strong><code>Anonymous Requests</code></strong>。这类请求会被视为用户 <code>system:anonymous</code> 和 对应的用户组 <code>system:unauthenticated</code>。</p>
+<p>1.6 版本后，如果所使用的鉴权模式不是 AlwaysAllow，则匿名访问默认是被启用的。对于匿名请求，ABAC 和 RBAC 要求必须给出显式的权限判定。</p>
+<h3 id="37-user-impersonation">3.7 User Impersonation</h3>
+<p>一个用户可以通过 <strong><code>Impersonation Header</code></strong> 来以另一个用户身份执行操作。</p>
+<ol>
+<li>用户发起 API 请求，提供自身的认证，同时提供要伪装的头部字段信息。</li>
+<li>APIServer 对用户进行身份认证。</li>
+<li>APIServer 确认用户有着伪装的权限。</li>
+<li>请求的用户信息被替换为伪装的用户信息。</li>
+<li>针对伪装的用户进行验证与授权管理。</li>
+</ol>
+<p>可以通过一下 HTTP Header 来进行伪装：</p>
+<ul>
+<li><strong>Impersonate-User</strong>：要伪装成的用户名</li>
+<li><strong>Impersonate-Group</strong>：要伪装成的用户组名。可以多次指定以设置多个用户组</li>
+<li><strong>Impersonate-Extra-&lt;附加名称&gt;</strong>：一个动态的头部字段，用来设置与用户相关的附加字段</li>
+</ul>
+<p>要伪装为某个用户或用户组时，需要有着  “impersonate” 权限，利用 RBAC 设置对应的 Role 如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">rbac.authorization.k8s.io/v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ClusterRole</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">impersonator</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">rules</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;&#34;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;users&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;groups&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;serviceaccounts&#34;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;impersonate&#34;</span><span class="p">]</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>使用 kubectl 时，可以通过 <em>&ndash;as</em> 参数设置 Impersonate-User，通过 <em>&ndash;as-group</em> 参数设置 Impersonate-Group。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ kubectl drain mynode --as<span class="o">=</span>superman --as-group<span class="o">=</span>system:masters
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="4-authorization">4 Authorization</h2>
+<p>经过了身份认证后，APIServer 就会进行授权检查的流程，即通过授权策略（Authorization Policy）决定是否有权限进行调用。</p>
+<p>APIServer 目前有以下授权策略：</p>
+<ul>
+<li>AlwaysDeny: 拒绝所有请求，仅用于测试</li>
+<li><strong>AlwaysAllow</strong>: 允许所有请求</li>
+<li><strong>ABAC</strong>：基于属性的访问控制</li>
+<li><strong>RBAC</strong>：基于角色的访问控制</li>
+<li><strong>Webhook</strong>：通过调用外部的 REST 服务对用户授权</li>
+<li><strong>Node</strong>：对 kubelet 进行的授权的特权模式</li>
+</ul>
+<p>通过 APIServer 启动参数 <em>&quot;&ndash;authorization-mode&quot;</em> 配置多种授权策略。默认使用 Node 与 RBAC 策略。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">--authorization-mode<span class="o">=</span>Node,RBAC
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>当系统配置了多个授权模式时，Kubernetes 将按顺序使用每个模式。 <strong>如果任何鉴权模块批准或拒绝请求，则立即返回该决定</strong>，并且不会与其他授权模式协商。 如果所有模块对请求没有意见，则拒绝该请求。</p>
+<p>当请求被拒绝时，会返回 HTTP Code 403。</p>
+<h3 id="41-abac-授权模式">4.1 ABAC 授权模式</h3>
+<p><strong><code>ABAC（Attribute-Based Access Control）</code></strong> 是基于属性的访问控制。</p>
+<h4 id="411-授权策略文件">4.1.1 授权策略文件</h4>
+<p>集群管理员通过启动参数 <em>&quot;&ndash;authorization-policy-file=SOME_FILENAME&quot;</em> 指定授权策略文件的路径。</p>
+<p>授权策略文件每一行都是一个 Map 类型 JSON 对象，称为 <strong>“策略对象”</strong>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;abac.authorization.kubernetes.io/v1beta1&#34;</span><span class="p">,</span> <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;Policy&#34;</span><span class="p">,</span> <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;user&#34;</span><span class="p">:</span> <span class="s2">&#34;alice&#34;</span><span class="p">,</span> <span class="nt">&#34;namespace&#34;</span><span class="p">:</span> <span class="s2">&#34;somenamespace&#34;</span><span class="p">,</span> <span class="nt">&#34;resource&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">,</span> <span class="nt">&#34;apiGroup&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">}}</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;abac.authorization.kubernetes.io/v1beta1&#34;</span><span class="p">,</span> <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;Policy&#34;</span><span class="p">,</span> <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;group&#34;</span><span class="p">:</span><span class="s2">&#34;system:authenticated&#34;</span><span class="p">,</span>  <span class="nt">&#34;nonResourcePath&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">,</span> <span class="nt">&#34;readonly&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">}}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>apiVersion：有效值为 &ldquo;abac.authorization.kubernetes.io/v1beta1&rdquo;</li>
+<li>kind: 有效值为 &ldquo;Policy&rdquo;</li>
+<li>spec.user: 用户名，来自于 <em>&ndash;token-auth-file</em> 文件中记录的 user</li>
+<li>spec.group: 设置为 &ldquo;system:authenticated&rdquo; 时，表示匹配所有已认证请求；设置为 &ldquo;system:unauthenticated&rdquo; 时，表示匹配所有未认证去哪个区</li>
+<li>spec.readonly: 表明仅用于 get list watch 操作</li>
+<li>匹配资源
+<ul>
+<li>spec.apiGroup: 表示匹配哪些 API Group</li>
+<li>spec.namespace: 表示允许访问哪个 namespace 下的资源</li>
+<li>spec.resource: 表明要匹配的 API 资源对象</li>
+</ul>
+</li>
+<li>匹配非资源
+<ul>
+<li>spec.nonResourcePath: 如果匹配非资源，表明要匹配的请求路径</li>
+</ul>
+</li>
+</ul>
+<h4 id="412-授权算法">4.1.2 授权算法</h4>
+<ol>
+<li>APIServer 收到请求后，识别出请求的策略对象属性。</li>
+<li>根据在策略文件中定义的策略，逐条进行匹配，以判断是否允许授权。</li>
+<li>如果至少一条成功，那么就通过授权。</li>
+</ol>
+<h4 id="413-示例">4.1.3 示例</h4>
+<p>Alice 可以对所有资源做任何事情：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;abac.authorization.kubernetes.io/v1beta1&#34;</span><span class="p">,</span> <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;Policy&#34;</span><span class="p">,</span> <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;user&#34;</span><span class="p">:</span> <span class="s2">&#34;alice&#34;</span><span class="p">,</span> <span class="nt">&#34;namespace&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">,</span> <span class="nt">&#34;resource&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">,</span> <span class="nt">&#34;apiGroup&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">}}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Kubelet 可以读写事件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;abac.authorization.kubernetes.io/v1beta1&#34;</span><span class="p">,</span> <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;Policy&#34;</span><span class="p">,</span> <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;user&#34;</span><span class="p">:</span> <span class="s2">&#34;kubelet&#34;</span><span class="p">,</span> <span class="nt">&#34;namespace&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">,</span> <span class="nt">&#34;resource&#34;</span><span class="p">:</span> <span class="s2">&#34;events&#34;</span><span class="p">}}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>任何人都可以对所有非资源路径进行只读请求：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;abac.authorization.kubernetes.io/v1beta1&#34;</span><span class="p">,</span> <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;Policy&#34;</span><span class="p">,</span> <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;group&#34;</span><span class="p">:</span> <span class="s2">&#34;system:authenticated&#34;</span><span class="p">,</span> <span class="nt">&#34;readonly&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nt">&#34;nonResourcePath&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">}}</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;abac.authorization.kubernetes.io/v1beta1&#34;</span><span class="p">,</span> <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;Policy&#34;</span><span class="p">,</span> <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;group&#34;</span><span class="p">:</span> <span class="s2">&#34;system:unauthenticated&#34;</span><span class="p">,</span> <span class="nt">&#34;readonly&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nt">&#34;nonResourcePath&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">}}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="414-对-service-account-进行授权">4.1.4 对 Service Account 进行授权</h4>
+<p><strong>ServiceAccount 会自动生成一个 ABAC 用户名</strong>，命名规则如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">system:serviceaccount:&lt;namespace&gt;:&lt;serviceaccountname&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>因此，可以通过 ABAC 对某个 ServiceAccount 进行访问控制。例如希望 kube-system namespace 中的 &ldquo;default&rdquo; 有全部权限，修改策略文件:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span><span class="s2">&#34;abac.authorization.kubernetes.io/v1beta1&#34;</span><span class="p">,</span><span class="nt">&#34;kind&#34;</span><span class="p">:</span><span class="s2">&#34;Policy&#34;</span><span class="p">,</span><span class="nt">&#34;spec&#34;</span><span class="p">:{</span><span class="nt">&#34;user&#34;</span><span class="p">:</span><span class="s2">&#34;system:serviceaccount:kube-system:default&#34;</span><span class="p">,</span><span class="nt">&#34;namespace&#34;</span><span class="p">:</span><span class="s2">&#34;*&#34;</span><span class="p">,</span><span class="nt">&#34;resource&#34;</span><span class="p">:</span><span class="s2">&#34;*&#34;</span><span class="p">,</span><span class="nt">&#34;apiGroup&#34;</span><span class="p">:</span><span class="s2">&#34;*&#34;</span><span class="p">}}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>当然，需要重启 APIServer 来重新加载策略文件。</p>
+<h3 id="42-rbac-授权模式">4.2 RBAC 授权模式</h3>
+<p>见 <a href="http://kanshiori.cn/posts/cloud_computing/k8s_learning/rbac/" target="_blank" rel="noopener noreffer"><strong>K8s 学习 - RBAC 授权机制</strong></a></p>
+<h3 id="43-webhook-授权模式">4.3 Webhook 授权模式</h3>
+<p>Webhook 模式使用参数 <em>&ndash;authorization-webhook-config-file=SOME_FILE</em> 来开启，文件为 kubeconfig 文件格式。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># Kubernetes API 版本</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># API 对象种类</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Config</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># clusters 代表远程服务。</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">clusters</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">name-of-remote-authz-service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 对远程服务进行身份认证的 CA。</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">certificate-authority</span><span class="p">:</span><span class="w"> </span><span class="l">/path/to/ca.pem</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 远程服务的查询 URL。必须使用 &#39;https&#39;。</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l">https://authz.example.com/authorize</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">users</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">name-of-api-server</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">client-certificate</span><span class="p">:</span><span class="w"> </span><span class="l">/path/to/cert.pem</span><span class="w"> </span><span class="c"># webhook plugin 使用 cert</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">client-key</span><span class="p">:</span><span class="w"> </span><span class="l">/path/to/key.pem         </span><span class="w"> </span><span class="c"># cert 所对应的 key</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">current-context</span><span class="p">:</span><span class="w"> </span><span class="l">webhook</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">contexts</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">context</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l">name-of-remote-authz-service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l">name-of-api-server</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">webhook</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>user</code> 设置了 API Server 的配置</li>
+<li><code>cluster</code> 设置了远端 Webhook 服务器的配置</li>
+</ul>
+<h4 id="431-请求">4.3.1 请求</h4>
+<p>授权时，APIServer 会生成一个 <strong><code>SubjectAccessReview</code></strong> 对象，通过 JSON 格式以 HTTP POST 发送给 Webhook 服务器。</p>
+<p>SubjectAccessReview 对象中包含了用户访问资源请求动作的描述，以及访问的资源信息。</p>
+<p>对于资源的访问请求如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization.k8s.io/v1beta1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;SubjectAccessReview&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;resourceAttributes&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;namespace&#34;</span><span class="p">:</span> <span class="s2">&#34;kittensandponies&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;verb&#34;</span><span class="p">:</span> <span class="s2">&#34;get&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;group&#34;</span><span class="p">:</span> <span class="s2">&#34;unicorn.example.org&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;resource&#34;</span><span class="p">:</span> <span class="s2">&#34;pods&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;user&#34;</span><span class="p">:</span> <span class="s2">&#34;jane&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;group&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;group1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;group2&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>spec.resourceAttributes</code> 表明访问的资源的，以及访问的操作</li>
+<li><code>spec.user</code> 请求的用户</li>
+<li><code>spec.group</code> 请求的用户组</li>
+</ul>
+<p>对于非资源的访问请求如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization.k8s.io/v1beta1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;SubjectAccessReview&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;nonResourceAttributes&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;/debug&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;verb&#34;</span><span class="p">:</span> <span class="s2">&#34;get&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;user&#34;</span><span class="p">:</span> <span class="s2">&#34;jane&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;group&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;group1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;group2&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>spec.nonResourceAttributes</code> 对 API 的访问与操作</li>
+</ul>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">因为 apiVersion 使用 &ldquo;authorization.k8s.io/v1beta1&rdquo;，因此 APIServer 需要开启该 API Group（<em>&ndash;runtime-config=authorization.k8s.io/v1beta1=true</em>）。</div>
+        </div>
+    </div>
+<h4 id="432-回复">4.3.2 回复</h4>
+<p>Webhook 服务器返回的也是一个 SubjectAccessReview 对象，但是需要设置其中的 status 字段。</p>
+<ul>
+<li>
+<p>允许访问（allowed=true）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization.k8s.io/v1beta1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;SubjectAccessReview&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;status&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;allowed&#34;</span><span class="p">:</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>不允许访问（allowed=false），但是如果有其他授权者，继续可以对请求进行授权</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization.k8s.io/v1beta1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;SubjectAccessReview&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;status&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;allowed&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;reason&#34;</span><span class="p">:</span> <span class="s2">&#34;user does not have read access to the namespace&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>不允许访问（allowed=false），同时立刻拒绝其他授权者（denied=true）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization.k8s.io/v1beta1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;SubjectAccessReview&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;status&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;allowed&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;denied&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;reason&#34;</span><span class="p">:</span> <span class="s2">&#34;user does not have read access to the namespace&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="44-node-授权模式">4.4 Node 授权模式</h3>
+<p>Node 授权模式仅仅针对 Subject 为 Node，专门对 kubelet 发起的 API 请求进行授权的管理模式。</p>
+<h2 id="5-admission-control">5 Admission Control</h2>
+<p>经过身份认证与授权后，请求最后还要通过 <strong><code>Admission Control（准入控制）</code></strong> 的控制链。</p>
+<p>Admission Control 有一个准入控制器的插件列表，发送给 APIServer <strong>任何请求都需要经过列表中每个准入控制器的检查</strong>。任一一个控制器检查不通过，那么 APIServer 就会拒绝次调用。</p>
+<p><strong>准入控制器还能够修改请求参数</strong>，来实现一些自动化任务。</p>
+<p>通过 APIServer 启动参数，可以配置哪些准入控制器启用，哪些准入控制器关闭：</p>
+<ul>
+<li>
+<p><em>&quot;&ndash;enable-admission-plugins&quot;</em> 参数配置开启的准入控制器：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">kube-apiserver --enable-admission-plugins<span class="o">=</span>NamespaceLifecycle,LimitRanger ...
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><em>&quot;&ndash;disable-admission-plugins&quot;</em> 用以配置关闭的准入控制器，以此可以关闭默认开启的准入控制器：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">kube-apiserver --disable-admission-plugins<span class="o">=</span>PodNodeSelector,AlwaysDeny ...
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<p>目前，Kubernetes 内置的准入控制器有 30 多个，见：<a href="https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#what-does-each-admission-controller-do" target="_blank" rel="noopener noreffer">What does each admission controller do?</a></p>
+<h3 id="51-动态准入控制">5.1 动态准入控制</h3>
+<p>除了内置的准入控制器，可以通过 Webhook 方式对接外部的 Admission Webhook 服务。</p>
+<p>可以将其分为两类：</p>
+<ul>
+<li>Mutating Admission Webhook: 针对请求参数进行修改</li>
+<li>Validating Admission Webhook：针对请求进程检查</li>
+</ul>
+<p>具体部署方式见：<a href="https://kubernetes.io/zh/docs/reference/access-authn-authz/extensible-admission-controllers/" target="_blank" rel="noopener noreffer">动态准入控制</a></p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://kubernetes.io/zh/docs/reference/access-authn-authz/authentication/" target="_blank" rel="noopener noreffer">官方文档：用户认证</a></li>
+<li><a href="https://segmentfault.com/a/1190000018537009" target="_blank" rel="noopener noreffer">Blog: 基于 oAuth2 的 OIDC 原理 学习笔记</a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-03-24&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877: Adjust the directory structure">
+                                    <i class="fas fa-hashtag fa-fw"></i>dc3de05</a></span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/10-apiserver-auth/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/10-apiserver-auth/" data-title="K8s 学习 - 10 - API Server 认证"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/10-apiserver-auth/" data-title="K8s 学习 - 10 - API Server 认证"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/10-apiserver-auth/" data-title="K8s 学习 - 10 - API Server 认证"><i class="fab fa-evernote fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/language/golang/library/ginkgo/" class="prev" rel="prev" title="Ginkgo 学习"><i class="fas fa-angle-left fa-fw"></i>Ginkgo 学习</a>
+            <a href="/posts/cloud/observability/prometheus-learning/basic/" class="next" rel="next" title="Prom 学习 - 基本概念">Prom 学习 - 基本概念<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.95.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

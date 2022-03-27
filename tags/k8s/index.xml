@@ -3,75 +3,75 @@
         <title>k8s - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/k8s/</link>
         <description>k8s - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+    <title>Kubernetes 认证与授权机制</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</link>
+    <pubDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</guid>
+    <description><![CDATA[1 概述 如下图所示，APIServer 在接受到一个 API 请求时，第一阶段就是对请求进行 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 与 [授权]^(Au]]></description>
+</item><item>
     <title>K8s 学习 - 13 - CNI 概念与实现</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/13-cni/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/13-cni/</link>
     <pubDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/13-cni/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/13-cni/</guid>
     <description><![CDATA[1 CNI 基本概念 CNI 全称 Container Network Interface，是 Kubernetes 中的网络接口。Kubectl 会依据 CNI 标准的 API 来调用不同的网络插件接口。 CNI 插件实际上是一个主机上]]></description>
 </item><item>
     <title>Kubernetes 资源更新机制与 CLI 实现</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</link>
     <pubDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</guid>
     <description><![CDATA[1 Update 机制 Update 机制 指的是通过 HTTP Put 方法 上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
 </item><item>
     <title>K8s 实践 - 使用 External DNS</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-external-dns/</link>
     <pubDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-external-dns/</guid>
     <description><![CDATA[1 概述 ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责]]></description>
 </item><item>
     <title>K8s 学习 - 12 - Horizontal Pod Autoscaler</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/12-hpa/</link>
     <pubDate>Mon, 20 Dec 2021 19:16:27 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/12-hpa/</guid>
     <description><![CDATA[HPA 的核心原理就是就是从 Metric Server 采集指标数据，然后根据缩扩容算法进行计算，得到目标的 Pod 副本数量。当目标 Pod 副本数量与当前副本数量不同时，HPA Controller 调用]]></description>
 </item><item>
     <title>K8s 学习 - 11 - CSI 概念与实现</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/11-csi/</link>
     <pubDate>Sat, 20 Nov 2021 08:22:28 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/11-csi/</guid>
     <description><![CDATA[1 设计原理 在 源码阅读 - Volume 实现 中看到，所有的存储插件实现的都是操作 Volume 的方法： Provision Volume Attach Volume Mount Device Setup Volume CSI 整体体系的架构如下图 Sidecar 容器 是一组 Kubernetes 社区维护的标准]]></description>
 </item><item>
     <title>源码阅读 - Volume 实现</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-implementation/</link>
     <pubDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-implementation/</guid>
     <description><![CDATA[1 概述 以一个云存储作为 Volume 为例，其架构图如下： Deploy PVC - 用户 Deploy PVC 对象。 Provision Volume - PV Controller 基于 StorageClass 创建一个 Volume（无法绑定已有 PV 的情况下），并创建 PV 对象]]></description>
 </item><item>
     <title>K8s 实践 - Network Across Cluster</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/across-kubernetes/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/across-kubernetes/</link>
     <pubDate>Thu, 30 Sep 2021 07:25:32 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/across-kubernetes/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/across-kubernetes/</guid>
     <description><![CDATA[Kubernetes 实践 主要记录一些自己的一些部署实践。 1 目标 最近在看 TiDB 的 Multi Kubernetes 集群部署方案，TiDB 本身是灵活扩容的分布式数据库，因此部署前需要确保 Multi Kubernetes 之间服]]></description>
 </item><item>
     <title>K8s 编程 - 8 - Custom Scheduler</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/8-extend-scheduler/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/8-extend-scheduler/</link>
     <pubDate>Wed, 22 Sep 2021 12:19:47 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/8-extend-scheduler/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/8-extend-scheduler/</guid>
     <description><![CDATA[kube-scheduler 负责集群资源的调度，原生的 Kubernetes Scheduler 可以满足大多数情况的需求。不过针对于不同业务的特殊的调度需求，Kubernetes 提供了多种扩展调度器的方式]]></description>
 </item><item>
     <title>K8s 编程 - 7 - Admission Webhook</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/7-admission-webhook/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/7-admission-webhook/</link>
     <pubDate>Tue, 21 Sep 2021 06:58:07 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/7-admission-webhook/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/7-admission-webhook/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 下面代码都来自于 a]]></description>
-</item><item>
-    <title>K8s 编程 - 6 - Custom APIServer</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/6-custom-api-server/</link>
-    <pubDate>Sun, 22 Aug 2021 07:32:49 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_programming/6-custom-api-server/</guid>
-    <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 Custom APIServer 可以作为 CRD 的替]]></description>
 </item></channel>
 </rss>

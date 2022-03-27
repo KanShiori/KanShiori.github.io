@@ -3,9 +3,16 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 17 Mar 2022 21:29:22 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Kubernetes 认证与授权机制</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</link>
+    <pubDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</guid>
+    <description><![CDATA[1 概述 如下图所示，APIServer 在接受到一个 API 请求时，第一阶段就是对请求进行 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 与 [授权]^(Au]]></description>
+</item><item>
     <title>Go 泛型</title>
     <link>https://KanShiori.github.io/posts/language/golang/language/generics/</link>
     <pubDate>Thu, 17 Mar 2022 21:29:22 &#43;0800</pubDate>
@@ -14,17 +21,17 @@
     <description><![CDATA[1 背景概念 这一部分内容 Copy 于文档，可以直接看文档 Properties of types and values。 1.1 Underlying types 每一种类型都有着对应的 underlying types（潜在类型），基础类型的 underlying type 就是]]></description>
 </item><item>
     <title>K8s 学习 - 13 - CNI 概念与实现</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/13-cni/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/13-cni/</link>
     <pubDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/13-cni/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/13-cni/</guid>
     <description><![CDATA[1 CNI 基本概念 CNI 全称 Container Network Interface，是 Kubernetes 中的网络接口。Kubectl 会依据 CNI 标准的 API 来调用不同的网络插件接口。 CNI 插件实际上是一个主机上]]></description>
 </item><item>
     <title>Kubernetes 资源更新机制与 CLI 实现</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</link>
     <pubDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</guid>
     <description><![CDATA[1 Update 机制 Update 机制 指的是通过 HTTP Put 方法 上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
 </item><item>
     <title>DNS 域名解析系统</title>
@@ -35,45 +42,38 @@
     <description><![CDATA[主机使用 IP 地址作为通信地址是很难记忆的，用户更愿意使用比较容易记忆的 Hostname。而 Domain Name System（DNS）就是用于将 Domain 转换为 IP 地址。]]></description>
 </item><item>
     <title>K8s 实践 - 使用 External DNS</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-external-dns/</link>
     <pubDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_practice/use-external-dns/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-external-dns/</guid>
     <description><![CDATA[1 概述 ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责]]></description>
 </item><item>
     <title>K8s 学习 - 12 - Horizontal Pod Autoscaler</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/12-hpa/</link>
     <pubDate>Mon, 20 Dec 2021 19:16:27 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/12-hpa/</guid>
     <description><![CDATA[HPA 的核心原理就是就是从 Metric Server 采集指标数据，然后根据缩扩容算法进行计算，得到目标的 Pod 副本数量。当目标 Pod 副本数量与当前副本数量不同时，HPA Controller 调用]]></description>
 </item><item>
     <title>AWS 学习 - 8 - S3</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/</link>
+    <link>https://KanShiori.github.io/posts/cloud/aws_learning/8-s3/</link>
     <pubDate>Mon, 06 Dec 2021 21:07:09 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/8-s3/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/8-s3/</guid>
     <description><![CDATA[1 Storage Type 为了不同的存储场景，S3 提供了多种类型的存储类型。 存储类型 使用场景 S3 Standard 经常访问的数据 S3 Intelligent-Tiering 动态自动优化访问模式 S3 Standard-IA 不经常访问数据，会跨多]]></description>
 </item><item>
     <title>AWS 学习 - 7 - Elastic Load Balancing</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/7-elb/</link>
+    <link>https://KanShiori.github.io/posts/cloud/aws_learning/7-elb/</link>
     <pubDate>Sat, 04 Dec 2021 13:13:45 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/7-elb/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/7-elb/</guid>
     <description><![CDATA[1 LB 的基本模型 不同的 LB 在使用上是基本相同的，都依据以下的模型： Domain - LB 拥有着一个唯一的域名，Client 通过该域名来访问 LB。 LB 的域名是单点的]]></description>
 </item><item>
     <title>AWS 学习 - 6 - IAM</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/6-iam/</link>
+    <link>https://KanShiori.github.io/posts/cloud/aws_learning/6-iam/</link>
     <pubDate>Wed, 01 Dec 2021 13:47:56 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/6-iam/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/6-iam/</guid>
     <description><![CDATA[使用 AWS 时，不同的员工或者应用程序有着不同的 AWS 资源需求，通过 IAM 对其访问权限进行控制。 IAM 本质上是为了完成两个功能： Authentication - 身份认证，操作资源前确认请]]></description>
-</item><item>
-    <title>AWS 学习 - 5 - VPC 与 Service 通信</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/aws_learning/5-vpc-and-aws/</link>
-    <pubDate>Mon, 29 Nov 2021 13:15:05 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/aws_learning/5-vpc-and-aws/</guid>
-    <description><![CDATA[1 VPC Peering VPC Peering 用于连接两个不同地址范围的 VPC，VPC 可以处于不同的 Region，甚至不同的 AWS 账户。 当 VPC Peering 连接两个 VPC 后，VPC 内部的资源（Ins]]></description>
 </item></channel>
 </rss>

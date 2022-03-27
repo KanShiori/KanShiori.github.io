@@ -5,17 +5,17 @@
         <description>VM - 分类 - Shiori&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 28 Nov 2020 17:29:39 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/vm/" rel="self" type="application/rss+xml" /><item>
     <title>KVM 虚拟机的存储与网络总结</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</link>
+    <link>https://KanShiori.github.io/posts/cloud/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</link>
     <pubDate>Sat, 28 Nov 2020 17:29:39 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/vm/kvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%BD%91%E7%BB%9C/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文主要总结一些遇到的虚拟机使用存储与网络的方式，挖了]]></description>
 </item><item>
     <title>制作虚拟机镜像</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/</link>
+    <link>https://KanShiori.github.io/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/</link>
     <pubDate>Sat, 31 Oct 2020 17:47:42 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/</guid>
     <description><![CDATA[中心思想：通过 libvirt 运行一个虚拟机（domain），并保存其对应的 domain 的镜像文件与配置文件，然后就可以在其他机器通过 virsh define + start 或者 virt-install 启动。 说明：下面]]></description>
 </item></channel>
 </rss>

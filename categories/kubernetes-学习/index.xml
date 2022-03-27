@@ -3,75 +3,75 @@
         <title>Kubernetes 学习 - 分类 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/</link>
         <description>Kubernetes 学习 - 分类 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
+    <title>Kubernetes 认证与授权机制</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</link>
+    <pubDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</guid>
+    <description><![CDATA[1 概述 如下图所示，APIServer 在接受到一个 API 请求时，第一阶段就是对请求进行 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 与 [授权]^(Au]]></description>
+</item><item>
     <title>K8s 学习 - 13 - CNI 概念与实现</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/13-cni/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/13-cni/</link>
     <pubDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/13-cni/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/13-cni/</guid>
     <description><![CDATA[1 CNI 基本概念 CNI 全称 Container Network Interface，是 Kubernetes 中的网络接口。Kubectl 会依据 CNI 标准的 API 来调用不同的网络插件接口。 CNI 插件实际上是一个主机上]]></description>
 </item><item>
     <title>Kubernetes 资源更新机制与 CLI 实现</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</link>
     <pubDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/update-resource-mechanism/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</guid>
     <description><![CDATA[1 Update 机制 Update 机制 指的是通过 HTTP Put 方法 上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
 </item><item>
     <title>K8s 学习 - 12 - Horizontal Pod Autoscaler</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/12-hpa/</link>
     <pubDate>Mon, 20 Dec 2021 19:16:27 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/12-hpa/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/12-hpa/</guid>
     <description><![CDATA[HPA 的核心原理就是就是从 Metric Server 采集指标数据，然后根据缩扩容算法进行计算，得到目标的 Pod 副本数量。当目标 Pod 副本数量与当前副本数量不同时，HPA Controller 调用]]></description>
 </item><item>
     <title>K8s 学习 - 11 - CSI 概念与实现</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/11-csi/</link>
     <pubDate>Sat, 20 Nov 2021 08:22:28 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/11-csi/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/11-csi/</guid>
     <description><![CDATA[1 设计原理 在 源码阅读 - Volume 实现 中看到，所有的存储插件实现的都是操作 Volume 的方法： Provision Volume Attach Volume Mount Device Setup Volume CSI 整体体系的架构如下图 Sidecar 容器 是一组 Kubernetes 社区维护的标准]]></description>
 </item><item>
     <title>源码阅读 - Volume 实现</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-implementation/</link>
     <pubDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/volume-implementation/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-implementation/</guid>
     <description><![CDATA[1 概述 以一个云存储作为 Volume 为例，其架构图如下： Deploy PVC - 用户 Deploy PVC 对象。 Provision Volume - PV Controller 基于 StorageClass 创建一个 Volume（无法绑定已有 PV 的情况下），并创建 PV 对象]]></description>
 </item><item>
     <title>K8s 学习 - 10 - API Server 认证</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/10-apiserver-auth/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/10-apiserver-auth/</link>
     <pubDate>Sat, 03 Jul 2021 05:47:25 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/10-apiserver-auth/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/10-apiserver-auth/</guid>
     <description><![CDATA[1 概述 Kubernetes 中所有的资源访问与操作都是通过 API Server 执行的，因此 API Server 有着一套安全机制。 APIServer 的权限检查从大体上分为三个阶段： Authentication ：身份认证，用于验证请求者的]]></description>
 </item><item>
     <title>K8s 学习 - 9 - Schedule Preemption Eviction</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/9-schedule-preemption-eviction/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/9-schedule-preemption-eviction/</link>
     <pubDate>Wed, 23 Jun 2021 12:09:25 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/9-schedule-preemption-eviction/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/9-schedule-preemption-eviction/</guid>
     <description><![CDATA[1 概述 无论是基本的副本控制器，还是自定义资源，其控制的底层 Pod 的调度都是都通过 Scheduler 完成的。 2 Schedule 2.1 nodeSelector Pod 的 spec.nodeSelector 可以用于控制 Pod 能被调度到哪些节点上。其内]]></description>
 </item><item>
     <title>K8s 学习 - 8 - API</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/8-api/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/8-api/</link>
     <pubDate>Sat, 12 Jun 2021 07:32:36 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/8-api/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/8-api/</guid>
     <description><![CDATA[1 概述 1.1 组织对象的方式 Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用]]></description>
 </item><item>
     <title>K8s 学习 - 7 - CRD</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/7-crd/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/7-crd/</link>
     <pubDate>Thu, 10 Jun 2021 11:45:54 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/7-crd/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/7-crd/</guid>
     <description><![CDATA[1 概述 Kubernetes 不仅仅是一个编排框架，更是提供了极大的扩展性，可以看做一个资源框架。你可以基于 k8s 提供的种种功能，来满足你应用的需要。 其中 CRD 就是允许你]]></description>
-</item><item>
-    <title>K8s 学习 - 6 - StatefulSet</title>
-    <link>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/6-statefulset/</link>
-    <pubDate>Wed, 09 Jun 2021 11:55:46 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud_computing/k8s_learning/6-statefulset/</guid>
-    <description><![CDATA[1 概述 Pod 在设计的理念上是无状态的，Pod 可以在任意时刻被销毁，可以在任意时刻被在别的节点创建相同的副本。 Deployment 与 RelicSets 就是基于这个理念设计的，它们仅]]></description>
 </item></channel>
 </rss>
