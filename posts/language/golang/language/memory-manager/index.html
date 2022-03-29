@@ -10,7 +10,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/language/memory-manager/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-01-05T18:28:41+08:00" />
-<meta property="article:modified_time" content="2022-03-17T21:30:44+08:00" />
+<meta property="article:modified_time" content="2022-03-28T22:54:52+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -27,8 +27,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/memory-manager\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  15525 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/memory-manager\/","datePublished": "2021-01-05T18:28:41+08:00","dateModified": "2022-03-17T21:30:44+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  15458 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/memory-manager\/","datePublished": "2021-01-05T18:28:41+08:00","dateModified": "2022-03-28T22:54:52+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Go 内存管理总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw"></i>Golang</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-05">2021-01-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 15525 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-05">2021-01-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 15458 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 31 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -860,7 +860,7 @@
 </span></span><span class="line"><span class="cl"><span class="nx">mp</span><span class="p">.</span><span class="nx">g0</span><span class="p">.</span><span class="nx">m</span> <span class="p">=</span> <span class="nx">mp</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>可以看到，m 的 g0 属性还是使用的 [<strong>malg() 函数</strong>](#31-新-g-的栈） 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。</p>
+</div><p>可以看到，m 的 g0 属性还是使用的 <a href="#31-%e6%96%b0-g-%e7%9a%84%e6%a0%88" rel=""><strong>malg() 函数</strong></a> 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。</p>
 <p>不过，g0 的栈还是有些不同的，不会进行栈的扩容（因为仅仅内部管理时用到，不需要进行自动扩容），在栈扩容的 <a href="#morestack" rel=""><strong>morestack 汇编代码</strong></a> 里可以看到。</p>
 <h2 id="4-内存模型">4 内存模型</h2>
 <h3 id="41-概览">4.1 概览</h3>
@@ -1769,7 +1769,7 @@
         </div>
     </div>
 <h4 id="441-从-mcentral-申请-mspan">4.4.1 从 mcentral 申请 mspan</h4>
-<p>在 [<strong>mcache 的获取</strong>](#432-mspan-的获取） 中，可以看到 mcache 通过调用 <code>mcentral.cacheSpan()</code> 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 <code>mcentral.oldCacheSpan()</code> 方法中。</p>
+<p>在 <a href="#432-mspan-%e7%9a%84%e8%8e%b7%e5%8f%96" rel=""><strong>mcache 的获取</strong></a> 中，可以看到 mcache 通过调用 <code>mcentral.cacheSpan()</code> 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 <code>mcentral.oldCacheSpan()</code> 方法中。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -2014,7 +2014,7 @@
 <li>执行 <code>mheapBit.initSpan()</code> 初始化 mspan；</li>
 </ol>
 <h4 id="443-mcentral-回收-mspan">4.4.3 mcentral 回收 mspan</h4>
-<p>前面 [<strong>mspan.sweep()</strong>](#422-mspan-的清理） 时看到，通过调用 mcentral.freeSpan() 调整其 mspan:</p>
+<p>前面 <a href="#422-mspan-%e7%9a%84%e6%b8%85%e7%90%86" rel=""><strong>mspan.sweep()</strong></a>时看到，通过调用 mcentral.freeSpan() 调整其 mspan:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -2553,7 +2553,7 @@
 <li>初始化 <code>page alloctor</code>；</li>
 </ol>
 <h4 id="453-mheap-分配-mspan">4.5.3 mheap 分配 mspan</h4>
-<p>在 [<strong>mcentral 扩容流程</strong>](#442-mcentral-扩容）中看到，会调用 <code>mheap.alloc()</code> 申请一个新的 mspan。</p>
+<p>在 <a href="#442-mcentral-%e6%89%a9%e5%ae%b9" rel=""><strong>mcentral 扩容流程</strong></a>中看到，会调用 <code>mheap.alloc()</code> 申请一个新的 mspan。</p>
 <p>而之前说的 large object 分配，也是直接会走 <code>mheap.alloc()</code> 分配到一个合适大小的 mspan，然后分配 object。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3292,8 +3292,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-03-17&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/f2e38fd6f9991adfe7292bd2acf991e9d134965c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) f2e38fd6f9991adfe7292bd2acf991e9d134965c: change path">
-                                    <i class="fas fa-hashtag fa-fw"></i>f2e38fd</a></span>
+                <span>更新于 2022-03-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/d622213853321422ce287440e54dd260edfd7925" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) d622213853321422ce287440e54dd260edfd7925: fix internal link">
+                                    <i class="fas fa-hashtag fa-fw"></i>d622213</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>

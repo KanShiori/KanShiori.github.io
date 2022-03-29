@@ -33,7 +33,7 @@ spec:
     storage: true
 ```
 
-关于 CR 与 CRD 更多的信息见 [**K8s 学习 - CRD**](../../k8s_learning/7-crd/index.md)。
+关于 CR 与 CRD 更多的信息见 [**K8s 学习 - CRD**](../../k8s_learning/7-crd)。
 
 ## 2 服务发现信息
 
@@ -105,7 +105,7 @@ $ kubectl get tidbcluster -v=7
     2. Version（如 v1alpha1）
     3. Resource（如 tidbclusters）
 
-可以想到，这些映射关系在代码中都是靠着 [**RESTMapper**](../2-client-go/index.md#73-rest-map) 实现的。
+可以想到，这些映射关系在代码中都是靠着 [**RESTMapper**](../2-client-go/#73-rest-map) 实现的。
 
 {{< admonition tip "kubectl 的缓存">}}
 kubectl 还会在 *"~/.kube/cache"* 目录中**缓存一份 Resource 的列表，有效期为 10min**。

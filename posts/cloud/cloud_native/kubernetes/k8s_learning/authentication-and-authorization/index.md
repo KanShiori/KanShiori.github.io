@@ -32,7 +32,7 @@ APIServer 支持多种的认证方式，不过从本质上大致分为三类：
 
 ### 2.1 X509 Client Cert
 
-在 [**SSL/TLS 总结**](http://kanshiori.cn/posts/net/tls-总结) 中提到过，TLS 使用证书来对服务器进行身份认证。X509 Client Cert 机制就是需要在 API 请求中提供客户端的证书，然后 APIServer 确认证书是否是由正确的 CA 签发的。
+在 [**SSL/TLS 总结**](../../../../../net/ssl-tls-cert/) 中提到过，TLS 使用证书来对服务器进行身份认证。X509 Client Cert 机制就是需要在 API 请求中提供客户端的证书，然后 APIServer 确认证书是否是由正确的 CA 签发的。
 
 {{< admonition note Note>}}
 APIServer 提供了 CA 证书颁发的接口，需要发送 CertificateSigningRequests 消息给 APIServer 来申请颁发证书，具体过程参考文档：[**Certificate Signing Requests**](https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/)。

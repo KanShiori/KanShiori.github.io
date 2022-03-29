@@ -371,7 +371,7 @@ if iscgo || GOOS == "solaris" || GOOS == "illumos" || GOOS == "windows" || GOOS 
 }
 mp.g0.m = mp
 ```
-可以看到，m 的 g0 属性还是使用的 [**malg() 函数**](#31-新-g-的栈） 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。
+可以看到，m 的 g0 属性还是使用的 [**malg() 函数**](#31-新-g-的栈) 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。
 
 不过，g0 的栈还是有些不同的，不会进行栈的扩容（因为仅仅内部管理时用到，不需要进行自动扩容），在栈扩容的 [**morestack 汇编代码**](#morestack) 里可以看到。
 
@@ -855,7 +855,7 @@ type mcentral struct {
 {{< /admonition >}}
 
 #### 4.4.1 从 mcentral 申请 mspan
-在 [**mcache 的获取**](#432-mspan-的获取） 中，可以看到 mcache 通过调用 `mcentral.cacheSpan()` 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 `mcentral.oldCacheSpan()` 方法中。
+在 [**mcache 的获取**](#432-mspan-的获取) 中，可以看到 mcache 通过调用 `mcentral.cacheSpan()` 申请新的空闲 mspan。在 go1.15 中，因为有新版 mcentral 的实现，因此双链表方式移动到了 `mcentral.oldCacheSpan()` 方法中。
 ```go
 // Allocate a span to use in an mcache.
 func (c *mcentral) cacheSpan() *mspan {
@@ -981,7 +981,7 @@ func (c *mcentral) grow() *mspan {
 2. 执行 `mheapBit.initSpan()` 初始化 mspan；
 
 #### 4.4.3 mcentral 回收 mspan
-前面 [**mspan.sweep()**](#422-mspan-的清理） 时看到，通过调用 mcentral.freeSpan() 调整其 mspan:
+前面 [**mspan.sweep()**](#422-mspan-的清理)时看到，通过调用 mcentral.freeSpan() 调整其 mspan:
 ```go
 // freeSpan updates c and s after sweeping s.
 // It sets s's sweepgen to the latest generation,
@@ -1253,7 +1253,7 @@ func (h *mheap) init() {
 1. 初始化 `page alloctor`；
 
 #### 4.5.3 mheap 分配 mspan
-在 [**mcentral 扩容流程**](#442-mcentral-扩容）中看到，会调用 `mheap.alloc()` 申请一个新的 mspan。
+在 [**mcentral 扩容流程**](#442-mcentral-扩容)中看到，会调用 `mheap.alloc()` 申请一个新的 mspan。
 
 而之前说的 large object 分配，也是直接会走 `mheap.alloc()` 分配到一个合适大小的 mspan，然后分配 object。
 ```go

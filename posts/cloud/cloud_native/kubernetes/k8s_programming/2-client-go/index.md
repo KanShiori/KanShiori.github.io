@@ -602,7 +602,7 @@ func DefaultControllerRateLimiter() *RateLimiter
 3. client 基于 GroupVersionResource 就可以请求对应的 HTTP API Path
 
 ### 7.1 GroupVersionKind
-在 [**API 基本概念 - Kind**](../1-basic/index.md#221-kind) 中说过，Kind 表示一个对象的类型。因为对象都是基于 GroupVersion 来说的，所以在代码中，Kind 的代表就是核心概念：**`GroupVersionKind`**，简写为 **`GVK`**。
+在 [**API 基本概念 - Kind**](../1-basic/#221-kind) 中说过，Kind 表示一个对象的类型。因为对象都是基于 GroupVersion 来说的，所以在代码中，Kind 的代表就是核心概念：**`GroupVersionKind`**，简写为 **`GVK`**。
 看下具体的结构：
 ```go
 // GroupVersionKind unambiguously identifies a kind.  It doesn't anonymously include GroupVersion
@@ -615,7 +615,7 @@ type GroupVersionKind struct {
 ```
 
 ### 7.2 GroupVersionResource
-在 [**API 基本概念 - Resource**](../1-basic/index.md#224-resource) 中说明了 Resource 的概念，Resource 也是基于 GroupVersion 来说的，所以代码中也有着对应的 **`GroupVersionResource`** 的概念，简写为 **`GVR`**。
+在 [**API 基本概念 - Resource**](../1-basic/#224-resource) 中说明了 Resource 的概念，Resource 也是基于 GroupVersion 来说的，所以代码中也有着对应的 **`GroupVersionResource`** 的概念，简写为 **`GVR`**。
 ```go
 // GroupVersionResource unambiguously identifies a resource.  It doesn't anonymously include GroupVersion
 // to avoid automatic coercion.  It doesn't use a GroupVersion to avoid custom marshalling
