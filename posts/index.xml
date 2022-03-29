@@ -3,7 +3,14 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 实践 - 调试 Pod</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/debug-pod/</link>
+    <pubDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/debug-pod/</guid>
+    <description><![CDATA[1 Ephemeral Container 可以使用 kubectl debug 来给一个运行中的 Pod 添加一个 Ephemeral Container 运行，并且不需要重启 Pod。 版本要求 Ephemeral Container 需要 Kubernetes 1.23 版本以上，目前还是处于 beta 状态。 1 kubectl debug -it ${pod_name} --image=busybox --target=${container_name}]]></description>
+</item><item>
     <title>Kubernetes 认证与授权机制</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</link>
     <pubDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud/aws_learning/7-elb/</guid>
     <description><![CDATA[1 LB 的基本模型 不同的 LB 在使用上是基本相同的，都依据以下的模型： Domain - LB 拥有着一个唯一的域名，Client 通过该域名来访问 LB。 LB 的域名是单点的]]></description>
-</item><item>
-    <title>AWS 学习 - 6 - IAM</title>
-    <link>https://KanShiori.github.io/posts/cloud/aws_learning/6-iam/</link>
-    <pubDate>Wed, 01 Dec 2021 13:47:56 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/6-iam/</guid>
-    <description><![CDATA[使用 AWS 时，不同的员工或者应用程序有着不同的 AWS 资源需求，通过 IAM 对其访问权限进行控制。 IAM 本质上是为了完成两个功能： Authentication - 身份认证，操作资源前确认请]]></description>
 </item></channel>
 </rss>
