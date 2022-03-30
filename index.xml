@@ -13,12 +13,12 @@
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/debug-pod/</guid>
     <description><![CDATA[1 Ephemeral Container 可以使用 kubectl debug 来给一个运行中的 Pod 添加一个 Ephemeral Container 运行，并且不需要重启 Pod。 版本要求 Ephemeral Container 需要 Kubernetes 1.23 版本以上，目前还是处于 beta 状态。 1 kubectl debug -it ${pod_name} --image=busybox --target=${container_name}]]></description>
 </item><item>
-    <title>Kubernetes 认证与授权机制</title>
+    <title>Kubernetes 认证与鉴权机制</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</link>
     <pubDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</guid>
-    <description><![CDATA[1 概述 如下图所示，APIServer 在接受到一个 API 请求时，第一阶段就是对请求进行 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 与 [授权]^(Au]]></description>
+    <description><![CDATA[1 概述 如下图所示，APIServer 在接受到一个 API 请求时，第一阶段就是对请求进行 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 与 [鉴权]^(Au]]></description>
 </item><item>
     <title>Go 泛型</title>
     <link>https://KanShiori.github.io/posts/language/golang/language/generics/</link>

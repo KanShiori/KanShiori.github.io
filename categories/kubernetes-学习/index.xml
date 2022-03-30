@@ -4,12 +4,12 @@
         <link>https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/</link>
         <description>Kubernetes 学习 - 分类 - Shiori&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
-    <title>Kubernetes 认证与授权机制</title>
+    <title>Kubernetes 认证与鉴权机制</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</link>
     <pubDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</guid>
-    <description><![CDATA[1 概述 如下图所示，APIServer 在接受到一个 API 请求时，第一阶段就是对请求进行 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 与 [授权]^(Au]]></description>
+    <description><![CDATA[1 概述 如下图所示，APIServer 在接受到一个 API 请求时，第一阶段就是对请求进行 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 与 [鉴权]^(Au]]></description>
 </item><item>
     <title>K8s 学习 - 13 - CNI 概念与实现</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/13-cni/</link>
