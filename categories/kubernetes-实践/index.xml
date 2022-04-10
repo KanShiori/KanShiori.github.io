@@ -3,7 +3,14 @@
         <title>Kubernetes 实践 - 分类 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/categories/kubernetes-%E5%AE%9E%E8%B7%B5/</link>
         <description>Kubernetes 实践 - 分类 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AE%9E%E8%B7%B5/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 06 Apr 2022 21:58:22 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AE%9E%E8%B7%B5/" rel="self" type="application/rss+xml" /><item>
+    <title>使用 Pulumi</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/</link>
+    <pubDate>Wed, 06 Apr 2022 21:58:22 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/</guid>
+    <description><![CDATA[Pulumi 是一个支持 IaC 的平台。与其他 IaC 工具最大的不同时，Pulumi 允许使用熟悉的编程语言来编写部署程序。开发者编写部署程序，Pulumi 解析后创建]]></description>
+</item><item>
     <title>K8s 实践 - 调试 Pod</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/debug-pod/</link>
     <pubDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</pubDate>

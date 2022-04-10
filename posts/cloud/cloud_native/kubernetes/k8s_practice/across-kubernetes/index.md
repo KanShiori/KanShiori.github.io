@@ -76,7 +76,7 @@ Multi Kubernetes 之间物理网络的连通不同场景有着不同的方案。
 
 这些都需要通过 **CoreDNS 配置**来实现，先看参考文档 [**Customizing DNS Service**](https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/) 知晓如何配置 CoreDNS。
 
-从 [**K8s 学习 - 2 - Service**](http://kanshiori.cn/posts/cloud_computing/k8s_learning/3-dns/) 我们知晓，Kubernetes 中的 Domain 分为 Pod 与 Service。
+从 [**K8s 学习 - 2 - Service**](../../k8s_learning/3-dns/) 我们知晓，Kubernetes 中的 Domain 分为 Pod 与 Service。
 * Pod Domain
   * **`<pod_ip>.<namespace>.pod.<clust-domain>`**
   * **`<pod_ip>.<depolyment/daemonset_name>.svc.<cluster_domain>`**
@@ -523,8 +523,7 @@ $ kind create cluster --config cluster-2.yaml --name cluster-2
 
 整个网络数据包的流转为：Pod A -> Node A -> Node B -> Pod B。其中 Pod -> Node 之间的网络是连通的，所以我们需要解决的关键问题就是 Node A -> Node B 的数据包转发。
 
-Kind 创建的多个集群都是在一个 [**Docker Bridge Network**](http://kanshiori.cn/posts/cloud_computing/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/#3-bridge-%E7%BD%91%E7%BB%9C)，因此 Node 之间的网络是天然联通的。
-
+Kind 创建的多个集群都是在一个 [**Docker Bridge Network**](../../../docker/how_docker_work/container-start-stop-summary)，因此 Node 之间的网络是天然联通的。
 
 因此，我们只需要在 Node 上添加路由项，使之能够正确转发发往对方集群的数据包。我们为所有 Node 添加指向另一个集群下的 Node 的路由，路由基于 Node 的 Pod CIDR。
 ```bash

@@ -72,9 +72,11 @@
 {{< /admonition >}}
 
 ### 1.3 PC 与 SP
-这一块在 [**内存管理总结**](https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#2-pc-%E4%B8%8E-sp) 说过，因为对协程切换很重要，这个再次复制一下。
+
+这一块在 [**内存管理总结**](./memory-manager/#2-pc-与-sp) 说过，因为对协程切换很重要，这个再次复制一下。
 
 #### 1.3.1 PC
+
 [程序计数器 PC]^(Program Counter) 是 CPU 中的一个寄存器，**保存着下一个 CPU 执行的指令的位置**。顺序执行指令时，PC = PC + 1（一个指令）。而调用函数或者条件跳转时，会将跳到的指令地址设置到 PC 中。
 
 所以，可以想到，当需要切换执行的 goroutine，调用 JMP 指令跳转到 G 对应的代码。
@@ -1698,9 +1700,11 @@ func preemptone(_p_ *p) bool {
 1. **执行 `preemptM()` 进行信号抢占**；
 
 #### 4.5.3 通过抢占标志抢占
-前面看到，设置 `gp.stackguard0 = stackPreempt`，而这在每次 G 函数调用前的检查是否扩容栈时，**必然会触发 G 栈扩容逻辑** [**newstack()**](https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#33-%E6%A0%88%E7%9A%84%E6%89%A9%E5%AE%B9)。
 
-而在 [**内存管理**](https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#top) 时，介绍了 `newstack()` 如果扩容 G 的栈，但是省略了一个重要的逻辑分支：**`newstack()` 函数中还会进行 G 的调度**：
+前面看到，设置 `gp.stackguard0 = stackPreempt`，而这在每次 G 函数调用前的检查是否扩容栈时，**必然会触发 G 栈扩容逻辑** [**newstack()**](../memory-manager/#33-栈的扩容)。
+
+而在 [**内存管理**](../memory-manager/#332-扩容) 时，介绍了 `newstack()` 如果扩容 G 的栈，但是省略了一个重要的逻辑分支：**`newstack()` 函数中还会进行 G 的调度**：
+
 ```go
 func newstack() {
         thisg := getg()
@@ -1805,7 +1809,8 @@ func asyncPreempt2() {
 {{< /admonition >}}
 
 ## 总结
-相对于 [**内存管理**](https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/) 与 [**垃圾收集**](https://kanshiori.github.io/posts/language/golang/go-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%80%BB%E7%BB%93/)，竟然感觉并发调度的结构还算简单。
+
+相对于 [**内存管理**](../memory-manager/) 与 [**垃圾收集**](../garbage-collection/)，竟然感觉并发调度的结构还算简单。
 
 需要弄清楚的有以下几点：
 * [**协程出现的意义**](#11-进程线程与协程)

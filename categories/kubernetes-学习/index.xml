@@ -46,13 +46,6 @@
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-implementation/</guid>
     <description><![CDATA[1 概述 以一个云存储作为 Volume 为例，其架构图如下： Deploy PVC - 用户 Deploy PVC 对象。 Provision Volume - PV Controller 基于 StorageClass 创建一个 Volume（无法绑定已有 PV 的情况下），并创建 PV 对象]]></description>
 </item><item>
-    <title>K8s 学习 - 10 - API Server 认证</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/10-apiserver-auth/</link>
-    <pubDate>Sat, 03 Jul 2021 05:47:25 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/10-apiserver-auth/</guid>
-    <description><![CDATA[1 概述 Kubernetes 中所有的资源访问与操作都是通过 API Server 执行的，因此 API Server 有着一套安全机制。 APIServer 的权限检查从大体上分为三个阶段： Authentication ：身份认证，用于验证请求者的]]></description>
-</item><item>
     <title>K8s 学习 - 9 - Schedule Preemption Eviction</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/9-schedule-preemption-eviction/</link>
     <pubDate>Wed, 23 Jun 2021 12:09:25 &#43;0000</pubDate>
@@ -73,5 +66,12 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/7-crd/</guid>
     <description><![CDATA[1 概述 Kubernetes 不仅仅是一个编排框架，更是提供了极大的扩展性，可以看做一个资源框架。你可以基于 k8s 提供的种种功能，来满足你应用的需要。 其中 CRD 就是允许你]]></description>
+</item><item>
+    <title>K8s 学习 - 6 - StatefulSet</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/6-statefulset/</link>
+    <pubDate>Wed, 09 Jun 2021 11:55:46 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/6-statefulset/</guid>
+    <description><![CDATA[1 概述 Pod 在设计的理念上是无状态的，Pod 可以在任意时刻被销毁，可以在任意时刻被在别的节点创建相同的副本。 Deployment 与 RelicSets 就是基于这个理念设计的，它们仅]]></description>
 </item></channel>
 </rss>

@@ -3,7 +3,14 @@
         <title>云计算 - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/</link>
         <description>云计算 - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 06 Apr 2022 21:58:22 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+    <title>使用 Pulumi</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/</link>
+    <pubDate>Wed, 06 Apr 2022 21:58:22 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/</guid>
+    <description><![CDATA[Pulumi 是一个支持 IaC 的平台。与其他 IaC 工具最大的不同时，Pulumi 允许使用熟悉的编程语言来编写部署程序。开发者编写部署程序，Pulumi 解析后创建]]></description>
+</item><item>
     <title>K8s 实践 - 调试 Pod</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/debug-pod/</link>
     <pubDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/across-kubernetes/</guid>
     <description><![CDATA[Kubernetes 实践 主要记录一些自己的一些部署实践。 1 目标 最近在看 TiDB 的 Multi Kubernetes 集群部署方案，TiDB 本身是灵活扩容的分布式数据库，因此部署前需要确保 Multi Kubernetes 之间服]]></description>
-</item><item>
-    <title>K8s 编程 - 8 - Custom Scheduler</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/8-extend-scheduler/</link>
-    <pubDate>Wed, 22 Sep 2021 12:19:47 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/8-extend-scheduler/</guid>
-    <description><![CDATA[kube-scheduler 负责集群资源的调度，原生的 Kubernetes Scheduler 可以满足大多数情况的需求。不过针对于不同业务的特殊的调度需求，Kubernetes 提供了多种扩展调度器的方式]]></description>
 </item></channel>
 </rss>

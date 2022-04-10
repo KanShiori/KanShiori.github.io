@@ -323,8 +323,9 @@ func markroot(gcw *gcWork, i uint32) {
 由此我们可以知道，主要有哪些根对象：**数据段**、**缓存**、**BSS 段（全局变量与静态变量）**、**mspan.special（runtime 内部使用的特殊对象）**、**Groutine 的栈上的对象**。
 
 其中，大部分扫描都会是栈上的对象，**通过得到对应 object 的地址，然后判断其地址是否存在与 heap 管理的 mspan 中决定其是否是根对象。**
+
 {{< admonition note Note>}}
-在 [**Go 内存管理总结**](https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#451-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80) 中说过，**任意的内存地址，都可以通过公式得到其对应的 mspan 的地址**，这也可以用于判断一个地址是否是存在与 mheap 上的。
+在 [**Go 内存管理总结**](../memory-manager/#42-mspan) 中说过，**任意的内存地址，都可以通过公式得到其对应的 mspan 的地址**，这也可以用于判断一个地址是否是存在与 mheap 上的。
 {{< /admonition >}}
 
 所有扫描到的 object 地址通过 `greyobject()` 函数进行 mark 并放入 gcWork。
@@ -622,16 +623,22 @@ func bgsweep(c chan int) {
 依旧是通过不断执行 `sweepone()` 进行清理。
 
 ## 4 标记流程
+
 下面来看如何触发的 GC 以及 GC 的大致流程。
 
 ### 4.1 GC 触发
+
 GC 有三个点会被触发：
+
 1. runtime 启动后会启动一个后台 gourtine，被唤醒后就会执行 GC，而**唤醒操作由 sysmon 负责执行**。<br>
 sysmon 会根据系统情况决定是否触发。
-1. **分配新 object 时**（[**mallocgc() 函数**](https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#52-object-%E5%88%86%E9%85%8D)），如果 mcache 需要重新刷新，或者是分配的是 large object，那么也会触发一次 GC。
-1. 通过接口 **runtime.GC() 主动触发**。
+
+1. **分配新 object 时**（[**mallocgc() 函数**](../memory-manager/#52-object-分配)），如果 mcache 需要重新刷新，或者是分配的是 large object，那么也会触发一次 GC。
+
+2. 通过接口 **runtime.GC() 主动触发**。
 
 所有的触发都会使用 `gcTrigger.test()` 进行条件检测（runtime/mgc.go）：
+
 ```go
 // test reports whether the trigger condition is satisfied, meaning
 // that the exit condition for the _GCoff phase has been met. The exit
@@ -665,8 +672,8 @@ func (t gcTrigger) test() bool {
 ```
 对应的条件为：
 1. sysmon 周期性触发：**触发间隔大于 2min**；
-1. 分配 object 触发：**堆内存的分配达到控制计算的触发堆大小**；
-1. runtime.GC() **主动触发**：当前没有正在 GC，则触发；
+2. 分配 object 触发：**堆内存的分配达到控制计算的触发堆大小**；
+3. runtime.GC() **主动触发**：当前没有正在 GC，则触发；
 
 ### 4.2 GC 开始
 所有触发 GC 后调用的都是 **`gcStart()`** 函数（runtime/mgc.go）：

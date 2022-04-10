@@ -2,16 +2,19 @@
 
 
 ## 1 概念
-在 [**API 访问控制**](http://kanshiori.cn/posts/cloud_computing/k8s_learning/api-%E6%A6%82%E5%BF%B5/#52-authorization) 中提到，Kubernetes 支持的授权机制有多种，其中 RBAC 是最常用的授权方式。RBAC 基于角色访问控制，全称 **`Role-Base Access Control`**。
+
+在 [**Kubernetes 认证与鉴权机制**](../authentication-and-authorization/) 中提到，Kubernetes 支持的授权机制有多种，其中 RBAC 是最常用的授权方式。RBAC 基于角色访问控制，全称 **`Role-Base Access Control`**。
 
 对于理解 RBAC，首先需要知道三个关键的概念：
+
 * **`Role`** ：角色，代表一组对 Kubernetes API 对象操作的权限。
+
 * **`Subject`** ：被作用者，包括 User、Group、ServiceAccount
 
-  见 [K8s 学习 - API Server 认证](http://kanshiori.cn/posts/cloud_computing/k8s_learning/api-server-%E8%AE%A4%E8%AF%81/#2-subject)
 * **`RoleBinding`** ：定义 Role 与 Subject 的映射关系；
 
 因此，**我们会预先创建一些 Role，然后创建 Subject 时，定义 RoleBinding 来表明对 Subject 的权限控制。**
+
 {{< admonition note "为什么这么设计？">}}
 通过 RoleBinding，实现了 Role Subject 之间的解耦。
 {{< /admonition >}}

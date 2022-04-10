@@ -1,10 +1,12 @@
 # 容器启停原理总结
 
+
 > **总结系列的文章**是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。
 
 本文主要描述容器启停背后的步骤，但是不涉及源码。
 
 示例的基于 ubuntu 20.04.1 LTS 虚拟机运行，docker 版本如下：
+
 ```bash
 $ docker version
 Client:
@@ -39,44 +41,52 @@ Server:
 ## 1 启动
 
 ### 1.1 Create
+
 通过 `docker create` 命令可以创建一个容器，但是容器并不会真正的运行，其对应进程不会存在。
 
 create 容器经过的具体流程为：
+
  1. 容器参数检查与调整；
  2. 容器对应的读写层（RWLayer）的创建；
  3. 容器元信息的记录（主要是配置信息）；
 
 #### (1) 容器参数检查与调整
+
 检查容器运行参数是否合法，并调整一些参数的值，这一步不具体描述。
 
 #### (2) 读写层的创建
+
 容器的 "层" 可以分为：
 
 * **`读写层`** ：保存容器对 rootfs 写、修改结果的层，并在容器退出后被 docker 删除；
 
   例如，容器中对系统盘 root 目录中某个文件的修改，这个修改后的文件会被复制一份在系统盘上。
+
 * **`init 层`** ：用于处理一些与镜像不绑定，但是与运行容器相关的文件修改，主要是 /etc/resolve.conf /etc/hosts 等；
-{{< admonition note "为什么要有 init 层？">}}
-我的理解是：镜像层（只读层）提供的是一个静态的环境，即所有容器看到的环境都是一样。
 
-而有些东西并不是想让所有容器看到的相同，例如 hostname、nameserver，这些 docker 都提供了参数配置，所 docker   单独抽出了一个 "机器维度" 的只读层，init 层
-
-置于为什么不是在读写层修改，个人觉得是因为读写层是可以被 "导出" 的（docker save），而这些 /etresolve.conf   的内容又是不应该被导出的，所以放在了 init 层。
-{{< /admonition >}}
+  {{< admonition note "为什么要有 init 层？">}}
+  我的理解是：镜像层（只读层）提供的是一个静态的环境，即所有容器看到的环境都是一样。
+  
+  而有些东西并不是想让所有容器看到的相同，例如 hostname、nameserver，这些 docker 都提供了参数配置，所 docker   单独抽出了一个 "机器维度" 的  只读层，init 层
+  
+  置于为什么不是在读写层修改，个人觉得是因为读写层是可以被 "导出" 的（docker save），而这些 /etresolve.conf   的内容又是不应该被导出的，所以  放在了 init 层。
+  {{< /admonition >}}
 
 * **`只读层`** ：镜像包含的所有层，仅仅只读。对只读层任何修改都会以 COW 形式放在读写层。
 
 具体读写层的概念这里不展开，可以阅读官方文档：[storagedriver](https://docs.docker.com/storage/storagedriver/)。
 
-这里读写层的创建仅仅指的是创建了 init 层与读写层的目录，并没有做 union mount，毕竟容器没有运行嘛，没必要。
+**这里读写层的创建仅仅指的是创建了 init 层与读写层的目录**，并没有做 union mount，毕竟容器没有运行嘛，没必要。
 
 找个例子看一下：
+
 ```bash
-$ docker create --rm -t  ubuntu
+$ docker create --rm -t ubuntu
 361c520da78f848d639d65f042fcf5d448c13cbc4ce8c251dcba2250162b48fe
-inspect 可以看到对应的读写层的目录：
+
+# inspect 可以看到对应的读写层的目录：
 $ docker inspect 361c520da78f
-…
+# …
         "GraphDriver": {
             "Data": {
                 "LowerDir": "/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c-init/diff:/var/lib/docker/overlay2/0336c489d40e65588748265a95f18328ddb1f5bcb9ebf10909fbf3f5f35b9496/diff:/var/lib/docker/overlay2/77d3ac91877751678bfec0576dab39ccd4b73666f8040aef387ef47ff30b4cf1/diff:/var/lib/docker/overlay2/ec8326178c990b52970a65371fd375737fdf256db597aa821a2b0f7d79bcc6f3/diff:/var/lib/docker/overlay2/385038374d3d369e98724926d0e1c240dcb74e31b1663ec1cb434c43ca2826f1/diff",
@@ -86,15 +96,16 @@ $ docker inspect 361c520da78f
             },
             "Name": "overlay2"
         },
-…
+# …
 
-$ ls  /var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/ 
+$ ls /var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/ 
 diff  link  lower  work
 ```
   * 所有的层（包含容器、镜像）都位于 */var/lib/docker/[driver]* 目录下，不过不同的 driver 有着不同的目录结构；
   * 每个层的目录结构也和对应的 driver 有关，overlay2 中就会包含 diff、work 等子目录，而真正容器运行后看到的就是 diff 目录被挂载后的内容；
 
 在 */var/lib/docker/overlay2/* 目录下，我们还可以看到一个同读写层类似名字的 "**xxx-init**" 目录，这就是 init 层目录，对应的 diff 子目录也是用于挂载的目录：
+
 ```bash
 $ ls /var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c-init
 committed  diff  link  lower  work

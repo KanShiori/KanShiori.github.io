@@ -28,8 +28,9 @@ Deployment 与 RelicSets 就是基于这个理念设计的，它们仅仅保证 
 所有的问题都由固定的 Pod 命名来解决，Pod 会按照 0-N 的方式来进行命名，而这样 Pod0 可以固定到 Pod0 PVC，固定到 Pod0 DNS 域名，启动顺序按照 Pod0 Pod1 … 来启动。
 
 这就是 StatefulSet 做的事情，总结一下：
+
 * **固定的持久化存储**，通过 PVC；
-* **固定的网络标识**，通过 [**Headless Service**](http://kanshiori.cn/posts/cloud_computing/k8s_learning/service-%E5%AD%A6%E4%B9%A0/#5-headless-service) 使得 `<podname>.<service>.<namespace>` 与固定命名的 Pod 绑定；
+* **固定的网络标识**，通过 [**Headless Service**](../2-service//#5-headless-service) 使得 `<podname>.<service>.<namespace>` 与固定命名的 Pod 绑定；
 * **按照编号进行有序的启动与停止**；
 
 ## 2 StatefulSet 基础

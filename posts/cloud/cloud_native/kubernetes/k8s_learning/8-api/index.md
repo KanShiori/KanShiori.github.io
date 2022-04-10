@@ -256,26 +256,31 @@ Admission Control 是作为对授权模块的补充，用于拦截请求以确�
 
 
 ## 6 扩展 API
+
 Kubernetes 提供了很完善的 API 扩展机制，使得你不需要修改 Kubernetes 的代码，可以动态的添加你自己的资源对象。
 
 目前主要包含两种扩展 API 的方式：
 * CRD ：复用 Kubernetes 的 API Server。用户只需要定义 CRD，并实现一个 CRD Controller，就能够通过 Kubernetes 管理自定义资源对象。
 * API Aggregate ：用户需要编写额外的 API Server，对资源进行更细粒度的控制。
 
-CRD 相关见文章：[CRD](http://kanshiori.cn/posts/cloud_computing/k8s_learning/crd/)
+CRD 相关见文章：[CRD](../7-crd/)。
 
 ### 6.1 API Aggregate
+
 通过 API Aggregate 机制，能够将用户扩展的 API 注册到 kube-apiserver 上。
 
 为了实现该机制，kube-apiserver 中引入了一个 API 聚合层，可以将 API 的访问请求转发到用户提供的 API Server 上，由用户 API Server 完成对请求的处理。
 
 #### 6.1.1 开启 API Aggregate 功能
+
 为了让 kube-apiserver 开启 API Aggregate 功能，需要配置一些启动参数，具体见文档：[启用-kubernetes-apiserver-标志](https://kubernetes.io/zh/docs/tasks/extend-kubernetes/configure-aggregation-layer/#%E5%90%AF%E7%94%A8-kubernetes-apiserver-%E6%A0%87%E5%BF%97)。
 
 #### 6.1.2 注册 APIService 资源对象
+
 用户需要创建一个 **`APIService`** 资源对象，来注册自己的 API Service。
 
 下面示例表明，将 */apis/custom.metrics.k8s.io/v1beta1* 的转发到名为 custom-metrics-server 的 Service。
+
 ```yaml
 apiVersion: apiregistration.k8s.io/v1
 kind: APIService

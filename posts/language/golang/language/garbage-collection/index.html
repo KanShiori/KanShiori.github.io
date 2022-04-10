@@ -10,7 +10,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/language/garbage-collection/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-01-14T20:40:47+08:00" />
-<meta property="article:modified_time" content="2022-03-17T21:30:44+08:00" />
+<meta property="article:modified_time" content="2022-04-10T23:10:15+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,7 +28,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/garbage-collection\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  7450 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/garbage-collection\/","datePublished": "2021-01-14T20:40:47+08:00","dateModified": "2022-03-17T21:30:44+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/garbage-collection\/","datePublished": "2021-01-14T20:40:47+08:00","dateModified": "2022-04-10T23:10:15+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -746,15 +746,15 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>由此我们可以知道，主要有哪些根对象：<strong>数据段</strong>、<strong>缓存</strong>、<strong>BSS 段（全局变量与静态变量）</strong>、<strong>mspan.special（runtime 内部使用的特殊对象）</strong>、<strong>Groutine 的栈上的对象</strong>。</p>
-<p>其中，大部分扫描都会是栈上的对象，<strong>通过得到对应 object 的地址，然后判断其地址是否存在与 heap 管理的 mspan 中决定其是否是根对象。</strong>
+<p>其中，大部分扫描都会是栈上的对象，<strong>通过得到对应 object 的地址，然后判断其地址是否存在与 heap 管理的 mspan 中决定其是否是根对象。</strong></p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">在 <a href="https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#451-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80" target="_blank" rel="noopener noreffer"><strong>Go 内存管理总结</strong></a> 中说过，<strong>任意的内存地址，都可以通过公式得到其对应的 mspan 的地址</strong>，这也可以用于判断一个地址是否是存在与 mheap 上的。</div>
+            <div class="admonition-content">在 <a href="../memory-manager/#42-mspan" rel=""><strong>Go 内存管理总结</strong></a> 中说过，<strong>任意的内存地址，都可以通过公式得到其对应的 mspan 的地址</strong>，这也可以用于判断一个地址是否是存在与 mheap 上的。</div>
         </div>
-    </div></p>
+    </div>
 <p>所有扫描到的 object 地址通过 <code>greyobject()</code> 函数进行 mark 并放入 gcWork。</p>
 <h5 id="2-标记流程">(2) 标记流程</h5>
 <p><code>gcDrain()</code> 中的核心 for 循环就是不断标记的流程，每个 object 会调用 <code>scanobject()</code> 函数：</p>
@@ -1317,10 +1317,16 @@
 <h3 id="41-gc-触发">4.1 GC 触发</h3>
 <p>GC 有三个点会被触发：</p>
 <ol>
-<li>runtime 启动后会启动一个后台 gourtine，被唤醒后就会执行 GC，而<strong>唤醒操作由 sysmon 负责执行</strong>。<br>
-sysmon 会根据系统情况决定是否触发。</li>
-<li><strong>分配新 object 时</strong>（<a href="https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#52-object-%E5%88%86%E9%85%8D" target="_blank" rel="noopener noreffer"><strong>mallocgc() 函数</strong></a>），如果 mcache 需要重新刷新，或者是分配的是 large object，那么也会触发一次 GC。</li>
-<li>通过接口 <strong>runtime.GC() 主动触发</strong>。</li>
+<li>
+<p>runtime 启动后会启动一个后台 gourtine，被唤醒后就会执行 GC，而<strong>唤醒操作由 sysmon 负责执行</strong>。<br>
+sysmon 会根据系统情况决定是否触发。</p>
+</li>
+<li>
+<p><strong>分配新 object 时</strong>（<a href="../memory-manager/#52-object-%e5%88%86%e9%85%8d" rel=""><strong>mallocgc() 函数</strong></a>），如果 mcache 需要重新刷新，或者是分配的是 large object，那么也会触发一次 GC。</p>
+</li>
+<li>
+<p>通过接口 <strong>runtime.GC() 主动触发</strong>。</p>
+</li>
 </ol>
 <p>所有的触发都会使用 <code>gcTrigger.test()</code> 进行条件检测（runtime/mgc.go）：</p>
 <div class="highlight"><div class="chroma">
@@ -1697,8 +1703,8 @@ sysmon 会根据系统情况决定是否触发。</li>
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-03-17&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/f2e38fd6f9991adfe7292bd2acf991e9d134965c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) f2e38fd6f9991adfe7292bd2acf991e9d134965c: change path">
-                                    <i class="fas fa-hashtag fa-fw"></i>f2e38fd</a></span>
+                <span>更新于 2022-04-10&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/67407034c31fbfcb012255e637b55adbd8b7d241" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 67407034c31fbfcb012255e637b55adbd8b7d241: post: pulumi">
+                                    <i class="fas fa-hashtag fa-fw"></i>6740703</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>

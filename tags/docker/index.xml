@@ -5,17 +5,17 @@
         <description>docker - 标签 - Shiori&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 13 Nov 2020 15:45:03 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/docker/" rel="self" type="application/rss+xml" /><item>
     <title>容器启停原理总结</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/%E5%AE%B9%E5%99%A8%E5%90%AF%E5%81%9C%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/container-start-stop-summary/</link>
     <pubDate>Fri, 13 Nov 2020 15:45:03 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/%E5%AE%B9%E5%99%A8%E5%90%AF%E5%81%9C%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/container-start-stop-summary/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文主要描述容器启停背后的步骤，但是不涉及源码。 示例的]]></description>
 </item><item>
     <title>容器网络总结</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/container-network-summary/</link>
     <pubDate>Fri, 06 Nov 2020 20:40:51 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E6%80%BB%E7%BB%93/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/container-network-summary/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对自己使用过的 docker 使用的网络模式的原理的总结。 1 概]]></description>
 </item></channel>
 </rss>
