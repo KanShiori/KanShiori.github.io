@@ -4,12 +4,12 @@
         <link>https://KanShiori.github.io/tags/k8s/</link>
         <description>k8s - 标签 - Shiori&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 06 Apr 2022 21:58:22 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
-    <title>使用 Pulumi</title>
+    <title>Pulumi 入门</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/</link>
     <pubDate>Wed, 06 Apr 2022 21:58:22 &#43;0800</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/</guid>
-    <description><![CDATA[Pulumi 是一个支持 IaC 的平台。与其他 IaC 工具最大的不同时，Pulumi 允许使用熟悉的编程语言来编写部署程序。开发者编写部署程序，Pulumi 解析后创建]]></description>
+    <description><![CDATA[内容基本照搬的官方文档：Architecture &amp; Concepts。 Pulumi 是一个支持 IaC 的平台。与其他 IaC 工具最大的不同时，Pulumi 允许使用熟悉]]></description>
 </item><item>
     <title>K8s 实践 - 调试 Pod</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/debug-pod/</link>
@@ -25,11 +25,11 @@
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</guid>
     <description><![CDATA[1 概述 如下图所示，APIServer 在接受到一个 API 请求时，第一阶段就是对请求进行 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 与 [鉴权]^(Au]]></description>
 </item><item>
-    <title>K8s 学习 - 13 - CNI 概念与实现</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/13-cni/</link>
+    <title>Kubernetes CNI 概念与实现</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/cni/</link>
     <pubDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/13-cni/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/cni/</guid>
     <description><![CDATA[1 CNI 基本概念 CNI 全称 Container Network Interface，是 Kubernetes 中的网络接口。Kubectl 会依据 CNI 标准的 API 来调用不同的网络插件接口。 CNI 插件实际上是一个主机上]]></description>
 </item><item>
     <title>Kubernetes 资源更新机制与 CLI 实现</title>
@@ -46,21 +46,21 @@
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-external-dns/</guid>
     <description><![CDATA[1 概述 ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责]]></description>
 </item><item>
-    <title>K8s 学习 - 12 - Horizontal Pod Autoscaler</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/12-hpa/</link>
+    <title>Kubernetes HPA 与 VPA</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/</link>
     <pubDate>Mon, 20 Dec 2021 19:16:27 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/12-hpa/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/</guid>
     <description><![CDATA[HPA 的核心原理就是就是从 Metric Server 采集指标数据，然后根据缩扩容算法进行计算，得到目标的 Pod 副本数量。当目标 Pod 副本数量与当前副本数量不同时，HPA Controller 调用]]></description>
 </item><item>
-    <title>K8s 学习 - 11 - CSI 概念与实现</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/11-csi/</link>
+    <title>Kubernetes CSI 概念与实现</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/csi/</link>
     <pubDate>Sat, 20 Nov 2021 08:22:28 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/11-csi/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/csi/</guid>
     <description><![CDATA[1 设计原理 在 源码阅读 - Volume 实现 中看到，所有的存储插件实现的都是操作 Volume 的方法： Provision Volume Attach Volume Mount Device Setup Volume CSI 整体体系的架构如下图 Sidecar 容器 是一组 Kubernetes 社区维护的标准]]></description>
 </item><item>
-    <title>源码阅读 - Volume 实现</title>
+    <title>Kubernetes Volume 的实现</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-implementation/</link>
     <pubDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</pubDate>
     <author>作者</author>

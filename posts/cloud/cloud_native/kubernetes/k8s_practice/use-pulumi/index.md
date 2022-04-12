@@ -1,9 +1,13 @@
-# 使用 Pulumi
+# Pulumi 入门
 
+
+> 内容基本照搬的官方文档：[**Architecture & Concepts**](https://www.pulumi.com/docs/intro/concepts/)。
 
 [**Pulumi**](https://www.pulumi.com/) 是一个支持 IaC 的平台。与其他 IaC 工具最大的不同时，Pulumi 允许使用熟悉的编程语言来编写部署程序。开发者编写部署程序，Pulumi 解析后创建对应允许平台的资源。
 
-## 1 基本概念
+## 1 概念与架构
+
+### 1.1 基本概念
 
 Pulumi 使用的主要结构如下：
 
@@ -26,6 +30,34 @@ Pulumi 使用的主要结构如下：
 {{< admonition note 异步构建>}}
 可以看到，代码中的逻辑与实际 Pulumi 运行是异步的，Pulumi 会识别出 Resource 之间的依赖关系，并最大化的并行构建资源。
 {{< /admonition >}}
+
+### 1.2 架构
+
+Pulumi 运行的架构如下：
+
+{{< image src="img1.2.png" >}}
+
+* Language Host
+  
+  Language Host 指的是运行 Program 的物理环境，主要有两部分：
+
+  * executor - 对应语言的二进制程序 `pulumi-language-<language>`，CLI 会调用该程序解析解析并编译 Program
+  * runtime - 各个语言的 runtime，例如 Program 中构建 Resource 代码执行时，就是由 runtime 将其注册到 Deployment Engine
+
+* Deployment Engine
+  
+  Deployment Engine 接受 Language Host 的注册的当前状态，对比保存在 [**Backend**](#4-backend) 中的 Stack State，计算出需要执行的操作，进而调用各个 [**Resource Provider**](#54-resource-provider) 的操作接口。
+
+  Deployment Engine 是内嵌于 pulumi CLI 中的。
+
+* Resource Providers
+  
+  Resource Providers 是针对于各个云服务的接口抽象。由两部分组成：
+
+  * SDK - 提供给 Program 中使用的库，例如使用 `@pulumi/aws` 包中的 Resource 接口来定义 AWS 云资源。
+  * Resource Plugin - Deployment Engine 使用的二进制程序，其中提供了 Resource 操作接口，并转化为调用各个云服务的 API。
+  
+  Pulumi 会根据 Program 中导入的库，自动在后台执行 `pulumi plugin install` 下载对应的 Resource Plugin。
 
 ## 2 Project
 
@@ -216,6 +248,70 @@ Stack 支持使用原始数据的导入与导出，这适用于某些情况你�
 $ pulumi stack export --file stack.json
 
 $ pulumi stack import --file stack.json
+```
+
+### 3.6 Stack 配置文件
+
+每个 Stack 有着独立的配置文件 `Pulumi.<stack>.yaml`，用于在同一个 Program 中能够方便的差异化不同的 Stack。配置文件中以 yaml 格式保存 K/V 对，Program 中可以加载配置并使用相关的参数。
+
+{{< admonition note Note>}}
+创建 Stack 并不会直接创建对应的配置文件，配置文件直到第一次写入 K/V 时才会创建。
+{{< /admonition >}}
+
+Pulumi 提供了两种方式使用配置文件（当然，也可以手动修改文件）：
+
+* CLI 
+  
+  Pulumi 提供了 `config set` 与 `config get` 命令，用于配置或读取 K/V：
+
+  ```bash
+  $ pulumi config set aws:region us-west-2
+  
+  $ pulumi config get aws:region
+  us-west-2
+  ```
+
+  默认传入的是 Key 的字符串，通过 `--path` 参数，可以配置结构化的数据：
+  
+  ```yaml
+  # pulumi config set 'data.enable' true
+  # pulumi config set --path 'data.active' true
+  config:
+  quickstart:data:
+    active: true
+  quickstart:data.enable: "true"
+  ```
+
+* Program
+  
+  Program 中提供了 `Config` 对象，代表着 Stack 的配置文件。通过 `Config.get` 或 `Config.require` 可以读取配置项：
+
+  ```ts
+  let config = new pulumi.Config();
+  let name = config.require("name");
+  let lucky = config.getNumber("lucky") || 42;
+  console.log(`Hello, ${name} -- I see your lucky number is ${lucky}!`);
+  ```
+
+  使用结构化配置时，需要使用 `requireObject` 方法来解析对应的结构：
+
+  ```ts
+  interface Data {
+    active: boolean;
+    nums: number[];
+  }
+  
+  let config = new pulumi.Config();
+  let data = config.requireObject<Data>("data");
+  console.log(`Active: ${data.active}`);
+  ```
+
+实际上，配置文件中的 Key 的格式为 `<namespace>:key`，`<namespace>` 默认为当前的 Project 名称。不过在写入和读取时，都可以忽略 `<namespace>`。
+
+```yaml
+# pulumi config set isMinikube false
+config:
+  quickstart:isMinikube: "false"
 ```
 
 ## 4 Backend
@@ -429,6 +525,8 @@ ComponentResource 中所有的 Child Resource 都默认会继承 Provider，除�
 
 Resource Provider 负责与云服务通信，以 create、read、update 和 delete 代码中定义的 Resource。不同的 Resource 会使用不同的 Provider，例如：AWS Resource Provider，Kubernetes Resource Provider 等。
 
+> 所有支持的 Provider 见 [**Pulumi Registry**](https://www.pulumi.com/registry/)。
+
 默认下，所有的 Provider 都使用 Stack 配置文件作为配置。因此，你可以在 Stack 配置文件中设置 Provider 的相关配置。
 
 例如，下面命令设置当前 Stack 默认将资源部署在 `us-west-2` Region。
@@ -601,6 +699,94 @@ function split(input: pulumi.Input<string>): pulumi.Output<string[]> {
     let output = pulumi.output(input);
     return output.apply(v => v.split());
 }
+```
+
+## 7 Secret
+
+Output 与配置文件默认都是不加密的保存的。如果需要保存一些敏感信息，可以使用 Secret。
+
+无论是 Secret Output 还是 Secret Cofig，Pulumi Service 都会使用每个 Stack 的独立密钥对其进行加密后再保存。
+
+通过 `--secret` 参数创建 Secret 配置，：
+
+```yaml
+# pulumi config set --secret 'token' 123
+config:
+  quickstart:token:
+    # 加密后内容
+    secure: AAABAH31XbQSigUOA10PKZOWPzLMnPIbrdu58QulEeWVED4=
+```
+
+在 Program 中，有三种使用 Secret 的方式：
+
+* Program 中使用 `getSecret` 或 `requireSecret` 方法读取 Secret 配置：
+
+  ```ts
+  const cfg = new pulumi.Config()
+  const param = new aws.ssm.Parameter("a-secret-param", {
+      type: "SecureString",
+      value: cfg.requireSecret("my-secret-value"),
+  });
+  ```
+
+* 使用 `pulumi.secret` 函数创建一个 Secret。
+
+* 定义 Resource 时，通过 `additionalSecretOutputs` 选项标记 Resource 为 Secret
+
+任何通过使用 Secret 的 [**Output**](#6-input-和-output) 也会被标记为 Secret，进而也会被加密保存。
+
+### 7.1 配置 Secret Provider
+
+默认下，Pulumi Service 会为每个 Stack 自动生成独立的加密密钥。保存 Secret 信息时就会使用该密钥进行加密。
+
+Pulumi Service 也支持配置 Secret Provider，以使用云厂商的加密服务，例如 AWS KMS 和 GCP KMS 等。
+
+创建 Stack 时，可以通过 `--secrets-provider` 参数指定 secret provider。
+   
+```bash
+pulumi stack init <name> --secrets-provider="<provider>://<provider-settings>"
+```
+
+关于 `"<provider>://<provider-settings>"` 的具体内容，参考 [**Available Encryption Providers**](https://www.pulumi.com/docs/intro/concepts/secrets/#available-encryption-providers)。
+
+如果要更改当前 Stack 的 Secret Provider，可以使用 `stack change-secret-provider` 命令。这只会影响后续新的 Secret Output 或配置。
+
+```bash
+pulumi stack change-secrets-provider "<secrets-provider>"
+```
+
+## 8 Function Serialization
+
+Pulumi 支持使用 TypeScript 或者 JavaScript 直接编写函数计算的 Function。
+
+例如，下面编写了函数逻辑并直接创建 AWS Lambda 函数：
+
+```ts
+import * as aws from "@pulumi/aws";
+
+const lambda = new aws.lambda.CallbackFunction("mylambda", {
+  callback: async e => {
+    // your code here ...
+    return someOutput;
+  }
+});
+```
+
+甚至，可以直接设置 Lambda 函数的触发器：
+
+```ts
+bucket.onObjectCreated(
+  "mytrigger",
+  new aws.lambda.CallbackFunction("mylambda", {
+    callback: async eventInfo => {
+      for (const record of eventInfo.Records) {
+        // process each record we're notified about.
+      }
+    },
+    // Only let this Lambda run for a minute before forcefully terminating it.
+    timeout: 60
+  })
+);
 ```
 
 ## 参考

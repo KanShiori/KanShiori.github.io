@@ -1,9 +1,10 @@
-# K8s 学习 - 11 - CSI 概念与实现
+# Kubernetes CSI 概念与实现
 
 
 ## 1 设计原理
 
 在 [**源码阅读 - Volume 实现**](../volume-implementation) 中看到，所有的存储插件实现的都是操作 Volume 的方法：
+
 * Provision Volume
 * Attach Volume
 * Mount Device
@@ -13,10 +14,12 @@ CSI 整体体系的架构如下图
 {{< find_img "img1.png" >}}
 
 * **`Sidecar 容器`** 是一组 Kubernetes 社区维护的标准容器，以减少实现 CSI 的重复代码。
+
 * **`CSI Driver`** 就是我们需要编写的 CSI 插件了，一个 CSI 插件只有一个二进制文件，以 gRPC 方式对外提供三个服务：
-  * **`CSI Identity`**
-  * **`CSI Controller`**
-  * **`CSI Node`**
+
+  * **`CSI Identity`** - 提供查询 CSI 插件信息的接口；
+  * **`CSI Controller`** - 提供对 Volume 的管理接口；
+  * **`CSI Node`** - 提供 Node 上操作接口；
 
 ### 1.1 Sidecar Containers
 
@@ -24,7 +27,8 @@ Sidecar 容器会包含<important> Watch 资源的工作，并执行 CSI Driver 
 
 通常，这些容器用于与 CSI Driver 的容器捆绑，作为一个 Pod 部署在一起。
 
-目前开发的 CSI Sidecar 容器包括：
+目前原生提供的的 CSI Sidecar 容器包括：
+
 * [**node-driver-registrar**](https://github.com/kubernetes-csi/node-driver-registrar)
   
   容器调用 CSI Node 的 `NodeGetInfo()` 接口，**将 CSI Node 注册到 Kubelet**。
@@ -68,6 +72,7 @@ CSI Driver 具体实现了对 Volume 的所有操作，本质上需要实现一�
 #### 1.2.1 CSI Identity
 
 **`CSI Identity`** 服务用于**提供插件的一些信息**。
+
 ```protobuf
 service Identity {
   // 返回插件的 name 与 version
@@ -85,6 +90,7 @@ service Identity {
 #### 1.2.2 CSI Controller
 
 **`CSI Controller`** 服务**定义了对 Volume 的管理接口**，包括：Provision/Delete、Attach/Detach、Snapshot 等操作。这些操作都是属于 Controller 的操作，在 Master 节点上执行。
+
 ```protobuf
 service Controller {
   // 创建一个 Volume
@@ -134,6 +140,7 @@ service Controller {
 #### 1.2.3 CSI Node
 
 **`CSI Node`** 提供**在 Node 上的操作**，包括 MountDevice 与 Setup 等操作。
+
 ```protobuf
 service Node {
   // 将 Volume 挂载到一个全局目录，即 MountDevice 操作
@@ -187,6 +194,9 @@ spec:
       expirationSeconds: 3600
   requiresRepublish: true # added in Kubernetes 1.20. See status at https://kubernetes-csi.github.io/docs/token-requests.html#status
 ```
+
+相关字段含义如下：
+
 * `name` - CSI Driver 的名字
 * [**attachRequired**](https://kubernetes-csi.github.io/docs/skip-attach.html) - 表示 Volume 是否需要 Attach 操作（Kubernetes 是否需要创建 VolumeAttachment 资源）
 * [**podInfoOnMount**](https://kubernetes-csi.github.io/docs/pod-info.html) - 表明当调用 Mount 操作时，是否需要传递额外的 Pod 信息给 CSI Driver

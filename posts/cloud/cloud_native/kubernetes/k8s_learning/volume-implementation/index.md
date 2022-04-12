@@ -1,4 +1,4 @@
-# 源码阅读 - Volume 实现
+# Kubernetes Volume 的实现
 
 
 ## 1 概述
@@ -31,6 +31,7 @@
 无论是控制面的 Controller 还是 Kubelet，涉及到实际的 Volume 操作（Create/Delete、Attach/Detach 等）时，都会调用对应的 **`VolumePlugin`** 接口。VolumePlugin 为管理组件提供了 [**概述**](#1-概述) 中的具体操作接口。
 
 目前 Kubernetes 内置了许多的 Volume Plugin，可以分为三类：
+
 * **内置 Volume** - 包括 ConfigMap、HostPath、以及各个云厂商的 Volume，其代码是原生内置在 Controller Manager 中的；
 * **CSI** - Container Storage Interface，在 Controller Mananger 中是一个独立的 Volume Plugin，由该 Plugin 来调用注册的 CSI Plugin；
 * **FlexVolume** - 通过可执行文件实现的动态注册插件

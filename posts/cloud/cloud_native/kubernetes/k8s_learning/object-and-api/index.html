@@ -5,30 +5,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>K8s 学习 - 8 - API - Shiori&#39;s Blog</title><meta name="Description" content="API 版本管理规则与扩展方式"><meta property="og:title" content="K8s 学习 - 8 - API" />
+        <title>Kubernetes Object 与 API 规则 - Shiori&#39;s Blog</title><meta name="Description" content="API 版本管理规则与扩展方式"><meta property="og:title" content="Kubernetes Object 与 API 规则" />
 <meta property="og:description" content="API 版本管理规则与扩展方式" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/8-api/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/object-and-api/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-12T07:32:36+00:00" />
-<meta property="article:modified_time" content="2022-04-10T23:10:15+08:00" />
+<meta property="article:modified_time" content="2022-04-12T22:29:13+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
-<meta name="twitter:title" content="K8s 学习 - 8 - API"/>
+<meta name="twitter:title" content="Kubernetes Object 与 API 规则"/>
 <meta name="twitter:description" content="API 版本管理规则与扩展方式"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/8-api/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/7-crd/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/9-schedule-preemption-eviction/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/object-and-api/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/crd/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/schedule-preemption-eviction/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
-        "headline": "K8s 学习 - 8 - API",
+        "headline": "Kubernetes Object 与 API 规则",
         "inLanguage": "zh-CN",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/8-api\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3214 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/8-api\/","datePublished": "2021-06-12T07:32:36+00:00","dateModified": "2022-04-10T23:10:15+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/object-and-api\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2568 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/object-and-api\/","datePublished": "2021-06-12T07:32:36+00:00","dateModified": "2022-04-12T22:29:13+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -116,10 +116,10 @@
                 <div class="container"><div class="toc" id="toc-auto">
             <h2 class="toc-title">目录</h2>
             <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">K8s 学习 - 8 - API</h1><div class="post-meta">
+        </div><article class="page single"><h1 class="single-title animated flipInX">Kubernetes Object 与 API 规则</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>Kubernetes 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-12">2021-06-12</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3214 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-12">2021-06-12</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2568 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -133,7 +133,7 @@
         <li><a href="#12-rest-风格">1.2 REST 风格</a></li>
       </ul>
     </li>
-    <li><a href="#2-版本控制">2 版本控制</a></li>
+    <li><a href="#2-资源的版本控制">2 资源的版本控制</a></li>
     <li><a href="#3-api-groups">3 API Groups</a>
       <ul>
         <li><a href="#31-启用或禁用-api-group">3.1 启用或禁用 API Group</a></li>
@@ -141,39 +141,30 @@
     </li>
     <li><a href="#4-对象">4 对象</a>
       <ul>
-        <li><a href="#41-watch-对象">4.1 watch 对象</a></li>
+        <li><a href="#41-watch-对象">4.1 Watch 对象</a></li>
         <li><a href="#42-查询对象">4.2 查询对象</a></li>
-        <li><a href="#43-对象表现形式">4.3 对象表现形式</a></li>
+        <li><a href="#43-编码方式">4.3 编码方式</a></li>
         <li><a href="#44-对象的删除">4.4 对象的删除</a></li>
       </ul>
     </li>
-    <li><a href="#5-访问控制">5 访问控制</a>
-      <ul>
-        <li><a href="#51-authentication">5.1 Authentication</a></li>
-        <li><a href="#52-authorization">5.2 Authorization</a></li>
-        <li><a href="#53-admission-control">5.3 Admission Control</a></li>
-      </ul>
-    </li>
-    <li><a href="#6-扩展-api">6 扩展 API</a>
-      <ul>
-        <li><a href="#61-api-aggregate">6.1 API Aggregate</a>
-          <ul>
-            <li><a href="#611-开启-api-aggregate-功能">6.1.1 开启 API Aggregate 功能</a></li>
-            <li><a href="#612-注册-apiservice-资源对象">6.1.2 注册 APIService 资源对象</a></li>
-          </ul>
-        </li>
-      </ul>
-    </li>
+    <li><a href="#5-api-访问控制">5 API 访问控制</a></li>
+    <li><a href="#6-扩展-api">6 扩展 API</a></li>
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
             </div><div class="content" id="content"><h2 id="1-概述">1 概述</h2>
 <h3 id="11-组织对象的方式">1.1 组织对象的方式</h3>
-<p>Kubernetes 中，组织对象的方式，就是按照 Group、Version、Resource 三个层级。</p>
+<p>Kubernetes 中组织对象的方式，就是按照 Group、Version、Resource 三个层级。</p>
 <ul>
-<li><strong><code>Group</code></strong> 用以来对 API 进行分组（分类）；</li>
-<li><strong><code>Version</code></strong> 用以对相同的 API 进行版本控制；</li>
-<li><strong><code>Resource</code></strong> 代表着一个具体的资源对象的 API；</li>
+<li>
+<p><strong><code>Group</code></strong> 用以来对 API 进行分组（分类）；</p>
+</li>
+<li>
+<p><strong><code>Version</code></strong> 用以对相同的 API 进行版本控制；</p>
+</li>
+<li>
+<p><strong><code>Resource</code></strong> 代表着一个具体的资源对象的 API；</p>
+</li>
 </ul>
 
 
@@ -183,7 +174,7 @@
 
 
 
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/8-api/img1.png"/>
+    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/object-and-api/img1.png"/>
 
 
 
@@ -192,7 +183,7 @@
             <i class="icon fas fa-pencil-alt fa-fw"></i>etcd 中如何组织对象<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content"><p>这不是在 etcd 中组织资源对象的方式，etcd 中还是按照资源类型，以及命名来进行分类存储</p>
+            <div class="admonition-content"><p>这不等同于 etcd 中组织资源对象的方式，etcd 中还是按照资源类型，以及命名来进行分类存储</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -231,8 +222,8 @@
 </div>
 </div><p>而 Kubernetes 就是通过比较 Group Version Resource，再加上资源对象的 name 来寻找一个资源。</p>
 <h3 id="12-rest-风格">1.2 REST 风格</h3>
-<p>Kubernetes 系统大部分情况下，API 定义和标准都符合 HTTP REST 标准，即通过 POST、PUT、GET、DELETE 等 HTTP method 来进行对象的增删改查操作。</p>
-<p>目前，Kubernetes 使用 OpenAPI 文档格式生成接口文档。你可以通过 <code>https://&lt;master_ip&gt;:&lt;master_port&gt;/openapi/v2</code> 来访问 API 文档。</p>
+<p>Kubernetes 系统大部分情况下，API 定义和标准都符合 HTTP REST 标准，即通过 <strong>POST、PUT、GET、DELETE</strong> 等 HTTP method 来进行对象的增删改查操作。</p>
+<p>Kubernetes 使用 OpenAPI 文档格式生成接口文档。你可以通过 <strong><code>https://&lt;master_ip&gt;:&lt;master_port&gt;/openapi/v2</code></strong> 来访问 API 文档。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -252,26 +243,26 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 获取 TOEKN
-</span></span><span class="line"><span class="cl">$ TOKEN=$(kubectl describe secrets $(kubectl get secrets -n kube-system |grep admin |cut -f1 -d &#39; &#39;) -n kube-system |grep -E &#39;^token&#39; |cut -f2 -d&#39;:&#39;|tr -d &#39;\t&#39;|tr -d &#39; &#39;)
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 获取 TOEKN</span>
+</span></span><span class="line"><span class="cl">$ <span class="nv">TOKEN</span><span class="o">=</span><span class="k">$(</span>kubectl describe secrets <span class="k">$(</span>kubectl get secrets -n kube-system <span class="p">|</span>grep admin <span class="p">|</span>cut -f1 -d <span class="s1">&#39; &#39;</span><span class="k">)</span> -n kube-system <span class="p">|</span>grep -E <span class="s1">&#39;^token&#39;</span> <span class="p">|</span>cut -f2 -d<span class="s1">&#39;:&#39;</span><span class="p">|</span>tr -d <span class="s1">&#39;\t&#39;</span><span class="p">|</span>tr -d <span class="s1">&#39; &#39;</span><span class="k">)</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># 获取 APIServer 地址
-</span></span><span class="line"><span class="cl">$ APISERVER=$(kubectl config view |grep server|cut -f 2- -d &#34;:&#34; | tr -d &#34; &#34;)
+</span></span><span class="line"><span class="cl"><span class="c1"># 获取 APIServer 地址</span>
+</span></span><span class="line"><span class="cl">$ <span class="nv">APISERVER</span><span class="o">=</span><span class="k">$(</span>kubectl config view <span class="p">|</span>grep server<span class="p">|</span>cut -f 2- -d <span class="s2">&#34;:&#34;</span> <span class="p">|</span> tr -d <span class="s2">&#34; &#34;</span><span class="k">)</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ curl -H &#34;Authorization: Bearer $TOKEN&#34; $APISERVER/openapi/v2 -k  | jq | more
-</span></span><span class="line"><span class="cl">{
-</span></span><span class="line"><span class="cl">  &#34;swagger&#34;: &#34;2.0&#34;,
-</span></span><span class="line"><span class="cl">  &#34;info&#34;: {
-</span></span><span class="line"><span class="cl">    &#34;title&#34;: &#34;Kubernetes&#34;,
-</span></span><span class="line"><span class="cl">    &#34;version&#34;: &#34;v1.21.1&#34;
-</span></span><span class="line"><span class="cl">  },
-</span></span><span class="line"><span class="cl">  &#34;paths&#34;: {
-</span></span><span class="line"><span class="cl"># ...
+</span></span><span class="line"><span class="cl">$ curl -H <span class="s2">&#34;Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">&#34;</span> <span class="nv">$APISERVER</span>/openapi/v2 -k  <span class="p">|</span> jq <span class="p">|</span> more
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;swagger&#34;</span>: <span class="s2">&#34;2.0&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;info&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;title&#34;</span>: <span class="s2">&#34;Kubernetes&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;version&#34;</span>: <span class="s2">&#34;v1.21.1&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;paths&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># ...</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="2-版本控制">2 版本控制</h2>
-<p>Kubernetes 对于版本的控制体现在 URL 中，每个 API 对应的 URL 基于 <code>/apis/&lt;group&gt;/&lt;version&gt;/namespaces/&lt;ns&gt;/&lt;resource&gt;</code> 的格式构建，所以不同的版本有着不同的 URL。</p>
-<p>对于一个特定的版本，例如 v1，包含三种级别的版本：</p>
+</div><h2 id="2-资源的版本控制">2 资源的版本控制</h2>
+<p>Kubernetes 对于资源的版本控制体现在 URL 中，每种资源请求的路径为 <strong><code>/apis/&lt;group&gt;/&lt;version&gt;/namespaces/&lt;ns&gt;/&lt;resource&gt;</code></strong> 的格式构建，其中 <code>version</code> 用于不同版本的资源。</p>
+<p>Kubernetes 使用的 <a href="https://semver.org/lang/zh-CN/" target="_blank" rel="noopener noreffer"><strong>Semantic Version</strong></a> 风格的版本号。并且约定：对于一个特定的版本，包含三种级别的版本：</p>
 <ul>
 <li>
 <p><strong>Alpha</strong> ：预览版本</p>
@@ -290,17 +281,17 @@
 </li>
 </ul>
 <h2 id="3-api-groups">3 API Groups</h2>
-<p>为了更容易扩展 API，Kubernetes 将 API 分组为多个逻辑集合，称为 <code>API Groups</code>。
-当前支持两类的 API Groups：</p>
+<p>为了更容易扩展 API，Kubernetes 将 API 分组为多个逻辑集合，称为 <code>API Groups</code>。</p>
+<p>当前支持两类的 API Groups：</p>
 <ul>
 <li>
 <p><strong>Core Groups（核心组）</strong></p>
 <p>又称为 <strong>Legacy Groups</strong>，大部分核心资源对象都在该组里，例如 Container、Pod、Service 等。</p>
-<p>其 URL 路径前缀为 <strong><code>/api/v1</code></strong>。其 Group 为空，因此使用 <code>spec.apiVersion : v1</code>。</p>
+<p>其资源的访问路径前缀为 <strong><code>/api/v1</code></strong>。其 Group 为空，因此 spec 中使用 <code>spec.apiVersion : v1</code>。</p>
 </li>
 <li>
 <p><strong>其他 API Groups</strong></p>
-<p>URL 路径前缀为 <strong><code>/apis/&lt;Group&gt;/&lt;Version&gt;</code></strong>，使用 <code>spec.apiVersion: &lt;Group&gt;/&lt;Version&gt;</code>。</p>
+<p>其资源的访问路径前缀为 <strong><code>/apis/&lt;Group&gt;/&lt;Version&gt;</code></strong>，spec 中会给出具体的 group <code>spec.apiVersion: &lt;Group&gt;/&lt;Version&gt;</code>。</p>
 <p>常见的分组包括：</p>
 <ul>
 <li><code>apps/v1</code> ：主要包含与用户发布、部署有关资源，包括 Deployments，RollingUpdates，ReplicaSet。</li>
@@ -316,8 +307,7 @@
 </ul>
 <p>Kubernetes 内置的所有 API Group 可以见 <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#-strong-api-groups-strong-" target="_blank" rel="noopener noreffer"><strong>API 参考文档</strong></a>。</p>
 <h3 id="31-启用或禁用-api-group">3.1 启用或禁用 API Group</h3>
-<p>所有 API Group 默认情况都是可用的。可以通过 API Server 启动配置开启用或禁用某个 API 组。</p>
-<p>例如 <em>&ndash;runtime-config=batch/v1=false</em> 表明禁用 batch/v1 下的所有 API。</p>
+<p>所有 API Group 默认情况都是可用的。可以通过 API Server 启动配置开启用或禁用某个 API 组。例如 <em><code>--runtime-config=batch/v1=false</code></em> 表明禁用 batch/v1 下的所有 API。</p>
 <h2 id="4-对象">4 对象</h2>
 <p>Kubernetes API 所有资源类型都是以 <strong>对象</strong> 方式看待，并且以 REST 方式提供 HTTP API 接口。</p>
 <p>每个对象的 API 以以下格式表示：</p>
@@ -336,7 +326,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="41-watch-对象">4.1 watch 对象</h3>
+<h3 id="41-watch-对象">4.1 Watch 对象</h3>
 <p>基于 etcd 的机制，每个 Kubernetes 对象都有一个 <code>resourceVersion</code> 字段，<strong>代表着资源在 etcd 中存储的版本</strong>。</p>
 <p>因此，在 client 的 watch 连接断开，重新连接后，可以通过指定 <code>resourceVersion</code> 来得到断连期间其对象所有的更改。</p>
 <div class="highlight"><div class="chroma">
@@ -375,21 +365,19 @@
 </span></span></span><span class="line"><span class="cl"><span class="err">...
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><p>当然，etcd 只会保存一定时间内的资源变更历史（默认 5min）。如果请求的历史版本不存在，那么会返回 HTTP Code <code>410 Gone</code>。</p>
-<p>所以 client 必须能够处理 410 错误，清理本地对象缓存，调用 list 操作，重新建立 watch。
+</div><p>当然，etcd 只会保存一定时间内的资源变更历史（<strong>默认 5min</strong>）。如果请求的历史版本不存在，那么会返回 HTTP Code <code>410 Gone</code>。因此 client 必须能够处理 410 错误，清理本地对象缓存，调用 list 操作，重新建立 watch。</p>
+<p>为了解决历史窗口太短的问题，为 event 引入了 <a href="https://kubernetes.io/zh/docs/reference/using-api/api-concepts/#Watch-bookmark" target="_blank" rel="noopener noreffer"><strong>bookmark event</strong></a> 的概念。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw"></i>Reflector<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">官方提供了封装好这些功能的代码组件，例如 Go 中 <strong>Reflector</strong> 组件已经实现了这些逻辑</div>
+            <div class="admonition-content">当然，Client SDK 中的 <strong>Reflector</strong> 组件已经实现了这些逻辑，大部分情况下不需要我们实现。</div>
         </div>
-    </div></p>
-<p>为了解决历史窗口太短的问题，为 event 引入了 <code>bookmark event</code> 的概念。</p>
+    </div>
 <h3 id="42-查询对象">4.2 查询对象</h3>
-<p>一般情况下，查询对象只需要使用 HTTP GET URL 就可以对象集合或者指定对象。</p>
-<p>不过有时候，当你查询大量的对象时，可能返回的数据很大，使得浪费网络资源。从 1.9 开始，Kubernetes 支持<strong>分段查询对象</strong>。</p>
-<p>在进行查询请求时，可以指定 <code>limit</code> 和 <code>continue</code> 参数。</p>
+<p>一般情况下，查询对象只需要使用 HTTP GET 请求对应的 URL 接口。</p>
+<p>不过当查询大量的对象时，可能返回的数据很大，使得浪费网络资源。从 1.9 开始，Kubernetes 支持 <a href="https://kubernetes.io/zh/docs/reference/using-api/api-concepts/#retrieving-large-results-sets-in-chunks" target="_blank" rel="noopener noreffer"><strong>分段查询对象</strong></a>。在进行查询请求时，可以指定 <code>limit</code> 和 <code>continue</code> 参数。</p>
 <ol>
 <li>查询 500 个 Pod，指定 &ldquo;limit=500&rdquo;。
 <div class="highlight"><div class="chroma">
@@ -429,7 +417,7 @@
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div></li>
-<li>继续前面调用，查询剩余的 Pod，指定 &ldquo;continue=ENCODED_CONTINUE_TOKEN&rdquo; 表明继续上一次查询。
+<li>继续前面调用，查询剩余的 Pod，指定 <strong>&ldquo;continue=ENCODED_CONTINUE_TOKEN&rdquo;</strong> 表明继续上一次查询。
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -468,14 +456,16 @@
 </div>
 </div></li>
 </ol>
+<blockquote>
 <p>注意，当你使用 continue 继续查询时，<strong>查询的永远是同一个 resourceVersion 的对象</strong>。</p>
-<h3 id="43-对象表现形式">4.3 对象表现形式</h3>
+</blockquote>
+<h3 id="43-编码方式">4.3 编码方式</h3>
 <p>默认 Kubernetes 都是通过 JSON 格式来进行数据的传输。通过下面方式，允许 client 使用 protobuf 形式进行数据传输。</p>
 <ul>
-<li>请求数据时，添加头部 <code>Accept: application/vnd.kubernetes.protobuf</code> 表明<strong>期望返回 protobuf 类型数据</strong>；</li>
-<li>发送数据时，通过指定 <code>Content-Type: application/vnd.kubernetes.protobuf</code> 表明传<strong>输的是一个 protobuf 类型数据</strong>；</li>
+<li>请求数据时，添加头部 <strong><code>Accept: application/vnd.kubernetes.protobuf</code></strong> 表明<strong>期望返回 protobuf 类型数据</strong>；</li>
+<li>发送数据时，通过指定 <strong><code>Content-Type: application/vnd.kubernetes.protobuf</code></strong> 表明传<strong>输的是一个 protobuf 类型数据</strong>；</li>
 </ul>
-<p>不过，部分 CRD 或者 API 扩展加入的资源不支持 Protobuf，可以使用 Accept 头部指定多种类型来允许回退。</p>
+<p>部分 CRD 或者 API 扩展加入的资源不支持 Protobuf，可以使用 Accept 头部指定多种类型来允许回退。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -488,48 +478,28 @@
 <p>资源对象删除经过两个阶段：</p>
 <ol>
 <li>
-<p><strong>finalization 终止</strong></p>
-<p>资源的 <code>metadata.deletionTimestamp</code> 被设置，然后随机顺序执行 Finalizers。</p>
+<p><strong>finalization 终止</strong>：资源的 <code>metadata.deletionTimestamp</code> 被设置，然后等待 <a href="https://kubernetes.io/zh/docs/concepts/overview/working-with-objects/finalizers/" target="_blank" rel="noopener noreffer"><strong>Finalizers</strong></a> 结束。</p>
+<p>该阶段体现在对象上仅仅是设置了 <code>deletionTimestamp</code> 字段，因此是一个 Update Event。</p>
 </li>
 <li>
-<p><strong>delete 删除</strong></p>
-<p>当所有 Finalizers 执行结束后，资源才从 etcd 中被真正删除。</p>
+<p><strong>delete 删除</strong>：当所有 Finalizers 执行结束后（<code>finalizer</code> 字段为空），资源才从 etcd 中被真正删除。</p>
+<p>该阶段会真正删除对象，因此是一个 Delete Event。</p>
 </li>
 </ol>
-<h2 id="5-访问控制">5 访问控制</h2>
+<h2 id="5-api-访问控制">5 API 访问控制</h2>
 <p>Kubernetes 对 API 有着三种访问控制方式：</p>
 <ul>
-<li><strong><ruby>认证<rt>Authentication</rt></ruby></strong></li>
-<li><strong><ruby>授权<rt>Authorization</rt></ruby></strong></li>
-<li><strong><ruby>准入控制<rt>Admission Control</rt></ruby></strong></li>
+<li>
+<p><strong><ruby>认证<rt>Authentication</rt></ruby></strong> - 验证发送请求者的身份</p>
+</li>
+<li>
+<p><strong><ruby>授权<rt>Authorization</rt></ruby></strong> - 确认请求者是否有权限执行操作</p>
+</li>
+<li>
+<p><strong><ruby>准入控制<rt>Admission Control</rt></ruby></strong> - 验证请求操作是否合法</p>
+</li>
 </ul>
-<p>这里仅仅会介绍三种方式的概念，更多的细节后面才深入去学习。</p>
-<h3 id="51-authentication">5.1 Authentication</h3>
-<p>Authentication 用于验证请求者是否是合法的，也就是检查身份。</p>
-<p>每次收到请求时，APIServer 都会通过令排链进行认证，某一个认证成功即可：</p>
-<ul>
-<li>x509 处理程序 ：认证 HTTP 请求的证书是否有效；</li>
-<li>bearer token 处理程序 ：验证 token 是否有效；</li>
-<li>基本认证处理程序 ：确保 HTTP 请求的基本认证凭证与本地的状态匹配；</li>
-</ul>
-<h3 id="52-authorization">5.2 Authorization</h3>
-<p>Authorization 用于验证请求者是否由对应操作的权限，也就是检查权限。</p>
-<p>APIServer 会组合一系列授权方法，只要有一个授权者批准了操作，那么请求就可以继续。</p>
-<blockquote>
-<p>使用哪些授权方法，可以在 APIServer 启动时通过 <code>--authorization_mode</code> 参数设置</p>
-</blockquote>
-<p>目前支持的几种授权方法：</p>
-<ul>
-<li>webhook ：允许集群外的 HTTP(s) 服务进行授权；</li>
-<li>ABAC ：执行静态文件中定义的策略；</li>
-<li>RBAC ：通过 RBAC 机制进行授权，这允许管理员进行动态的配置；</li>
-<li>Node ：确保 kubelet 只能访问自己节点上资源；</li>
-</ul>
-<h3 id="53-admission-control">5.3 Admission Control</h3>
-<p>Admission Control 是作为对授权模块的补充，用于拦截请求以确保其符合集群的期望与规则。</p>
-<p>准入控制仅仅对于对象的创建、删除、更新、连接请求其作用，对于对象读取操作不起作用。</p>
-<p>只有所有的准入控制器都通过，请求才能继续。如果任一准入控制器检查不通过，请求就会被立即拒绝。</p>
-<p>准入控制是最后的关卡，一旦通过后，资源对象就会写入 etcd 中。</p>
+<p>更多细节见 <a href="../authentication-and-authorization/" rel=""><strong>Kubernetes 认证与鉴权机制</strong></a> 与 <a href="../../k8s_programming/6-custom-api-server/#6-admission" rel=""><strong>Admission</strong></a>。</p>
 <h2 id="6-扩展-api">6 扩展 API</h2>
 <p>Kubernetes 提供了很完善的 API 扩展机制，使得你不需要修改 Kubernetes 的代码，可以动态的添加你自己的资源对象。</p>
 <p>目前主要包含两种扩展 API 的方式：</p>
@@ -537,53 +507,7 @@
 <li>CRD ：复用 Kubernetes 的 API Server。用户只需要定义 CRD，并实现一个 CRD Controller，就能够通过 Kubernetes 管理自定义资源对象。</li>
 <li>API Aggregate ：用户需要编写额外的 API Server，对资源进行更细粒度的控制。</li>
 </ul>
-<p>CRD 相关见文章：<a href="../7-crd/" rel="">CRD</a>。</p>
-<h3 id="61-api-aggregate">6.1 API Aggregate</h3>
-<p>通过 API Aggregate 机制，能够将用户扩展的 API 注册到 kube-apiserver 上。</p>
-<p>为了实现该机制，kube-apiserver 中引入了一个 API 聚合层，可以将 API 的访问请求转发到用户提供的 API Server 上，由用户 API Server 完成对请求的处理。</p>
-<h4 id="611-开启-api-aggregate-功能">6.1.1 开启 API Aggregate 功能</h4>
-<p>为了让 kube-apiserver 开启 API Aggregate 功能，需要配置一些启动参数，具体见文档：<a href="https://kubernetes.io/zh/docs/tasks/extend-kubernetes/configure-aggregation-layer/#%E5%90%AF%E7%94%A8-kubernetes-apiserver-%E6%A0%87%E5%BF%97" target="_blank" rel="noopener noreffer">启用-kubernetes-apiserver-标志</a>。</p>
-<h4 id="612-注册-apiservice-资源对象">6.1.2 注册 APIService 资源对象</h4>
-<p>用户需要创建一个 <strong><code>APIService</code></strong> 资源对象，来注册自己的 API Service。</p>
-<p>下面示例表明，将 <em>/apis/custom.metrics.k8s.io/v1beta1</em> 的转发到名为 custom-metrics-server 的 Service。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiregistration.k8s.io/v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">APIService</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">v1beta1.custom.metrics.k8s.io</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">insecureSkipTLSVerify</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l">custom.metrics.k8s.io</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">groupPriorityMinimum</span><span class="p">:</span><span class="w"> </span><span class="m">1000</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">versionPriority</span><span class="p">:</span><span class="w"> </span><span class="m">15</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">custom-metrics-server</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">custom-metrics</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l">v1beta1</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
-<li><code>spec.service</code> ：指定将请求转发到的 Service</li>
-<li><code>spec.version</code> ：API 的 version</li>
-<li><code>spec.group</code> ：API 的 group</li>
-</ul>
-<p>当然，APIService 仅仅负责将请求转发到 Service，而 Service 后端的 Pod 就需要用户自己部署了。</p>
+<p>更多细节见 <a href="../crd/" rel=""><strong>CRD</strong></a> 和 <a href="../../k8s_programming/6-custom-api-server/" rel=""><strong>Custom APIServer</strong></a>。</p>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://blog.csdn.net/qq_33121481/article/details/107331450" target="_blank" rel="noopener noreffer"><strong>Blog：Kubernetes API 的版本控制，分组，对象，访问控制</strong></a></li>
@@ -594,17 +518,17 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-04-10&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/67407034c31fbfcb012255e637b55adbd8b7d241" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 67407034c31fbfcb012255e637b55adbd8b7d241: post: pulumi">
-                                    <i class="fas fa-hashtag fa-fw"></i>6740703</a></span>
+                <span>更新于 2022-04-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/412b2a2968553f8adf3bc8433bc6d8fd414b71e3" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 412b2a2968553f8adf3bc8433bc6d8fd414b71e3: optimize">
+                                    <i class="fas fa-hashtag fa-fw"></i>412b2a2</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/8-api/index.md" target="_blank">阅读原始文档</a>
+                            <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/object-and-api/index.md" target="_blank">阅读原始文档</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/8-api/" data-title="K8s 学习 - 8 - API"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/8-api/" data-title="K8s 学习 - 8 - API"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/8-api/" data-title="K8s 学习 - 8 - API"><i class="fab fa-evernote fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/object-and-api/" data-title="Kubernetes Object 与 API 规则"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/object-and-api/" data-title="Kubernetes Object 与 API 规则"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/object-and-api/" data-title="Kubernetes Object 与 API 规则"><i class="fab fa-evernote fa-fw"></i></a></span>
             </div>
         </div>
     </div>
@@ -616,8 +540,8 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/7-crd/" class="prev" rel="prev" title="K8s 学习 - 7 - CRD"><i class="fas fa-angle-left fa-fw"></i>K8s 学习 - 7 - CRD</a>
-            <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/9-schedule-preemption-eviction/" class="next" rel="next" title="K8s 学习 - 9 - Schedule Preemption Eviction">K8s 学习 - 9 - Schedule Preemption Eviction<i class="fas fa-angle-right fa-fw"></i></a></div>
+    <div class="post-nav"><a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/crd/" class="prev" rel="prev" title="Kubernetes CRD"><i class="fas fa-angle-left fa-fw"></i>Kubernetes CRD</a>
+            <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/schedule-preemption-eviction/" class="next" rel="next" title="Kubernetes Pod 调度机制">Kubernetes Pod 调度机制<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

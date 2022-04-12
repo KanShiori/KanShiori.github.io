@@ -76,7 +76,7 @@ Multi Kubernetes 之间物理网络的连通不同场景有着不同的方案。
 
 这些都需要通过 **CoreDNS 配置**来实现，先看参考文档 [**Customizing DNS Service**](https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/) 知晓如何配置 CoreDNS。
 
-从 [**K8s 学习 - 2 - Service**](../../k8s_learning/3-dns/) 我们知晓，Kubernetes 中的 Domain 分为 Pod 与 Service。
+从 [**K8s 学习 - 2 - Service**](../../k8s_learning/dns-in-k8s/) 我们知晓，Kubernetes 中的 Domain 分为 Pod 与 Service。
 * Pod Domain
   * **`<pod_ip>.<namespace>.pod.<clust-domain>`**
   * **`<pod_ip>.<depolyment/daemonset_name>.svc.<cluster_domain>`**

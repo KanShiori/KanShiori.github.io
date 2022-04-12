@@ -1,4 +1,4 @@
-# K8s 学习 - 13 - CNI 概念与实现
+# Kubernetes CNI 概念与实现
 
 
 ## 1 CNI 基本概念

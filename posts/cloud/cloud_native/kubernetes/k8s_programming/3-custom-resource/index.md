@@ -33,7 +33,7 @@ spec:
     storage: true
 ```
 
-关于 CR 与 CRD 更多的信息见 [**K8s 学习 - CRD**](../../k8s_learning/7-crd)。
+关于 CR 与 CRD 更多的信息见 [**K8s 学习 - CRD**](../../k8s_learning/crd)。
 
 ## 2 服务发现信息
 
