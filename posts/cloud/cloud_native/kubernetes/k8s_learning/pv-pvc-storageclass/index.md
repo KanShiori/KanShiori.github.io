@@ -1,12 +1,14 @@
-# K8s 学习 - 4 - PV PVC StorageClass
-
+# Kubernetes PV PVC StorageClass
 
 
 ## 1 PV
+
 [PV]^(Persistent Volume) 代表一个实际可用的后端存储（也可能不是后端，而是 Local PV）。大多数情况下，PV 是一个网络文件系统，或者分布式存储，或者云厂商的云盘。
 
-### 1.1 PV 的定义
+### 1.1 Spec
+
 PV 的定义仅仅描述了存储的属性：
+
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -51,11 +53,13 @@ spec:
 
   针对不同类型的 PV，这个选项是不同的，具体见 [**Mount Points**](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#mount-options)。
 * **`nodeAffinity`** ：PV 可以设定节点亲和性，来限制只有特定的节点可以使用其 PV。
+
 {{< admonition note Note>}}
 nodeAffinity 在使用 Local PV 时必定要使用。
 {{< /admonition >}}
 
 ### 1.2 PV 生命周期
+
 PV 生命周期包括 5 个阶段：
 1. **Provisioning** ：即 PV 的创建，可以直接创建 PV（静态方式），也可以使用 StorageClass 动态创建；
 1. **Binding** ：将 PV 分配给 PVC；
@@ -70,17 +74,24 @@ PV 生命周期包括 5 个阶段：
 * **Released**：PVC 已经被删除，而该 PV 还没有被回收；
 * **Failed**：PV 自动回收失败；
 
+{{< admonition note Note>}}
+PV 的底层实现见 [**Kubernetes Volume 实现**](../volume-implementation/)。
+{{< /admonition >}}
+
 ## 2 PVC
+
 [PVC]^(Persistent Volume Claim) 描述一个 Pod 对 PV 的需求，是基于 namespace 下的。
+
 {{< admonition tip "为什么需要 PV PVC？" >}}
 感觉还是为了解耦，解耦使得 Pod 与存储形成了多对多的关系。
 
 最直观的好处，一个 PV 可以通过多个 PVC 进行绑定，使得数据可以被多个 Pod 共享使用。也可以预定义多个 PV，而通过 PVC 可以直接由调度去选择合适的 PV 进行绑定。
 {{< /admonition >}}
 
-### 2.1 PVC 定义
-#### 2.1.1 Spec
+### 2.1 Spec
+
 PVC 定义中主要是描述了对 PV 的需求，也就是**告诉调度如何选择一个合适的 PV**。
+
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -109,10 +120,13 @@ spec:
 * `storageClassName` ：指定所属的 StorageClass，只有相同 StorageClass 的 PV PVC 才可以绑定
 
   如果没有指定 StorageClass，如果系统设置了 Default StorageClass 则使用，否则只能绑定没有设置 StorageClass 的 PV。
-{{< admonition note "不指定 StorageClass">}}
-在没有指定 `storageClassName` 下，行为是有多种情况的，见 [**Class**](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1)。
-{{< /admonition >}}
-#### 2.1.2 Status
+  
+  {{< admonition note "不指定 StorageClass">}}
+  在没有指定 `storageClassName` 下，行为是有多种情况的，见 [**Class**](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1)。
+  {{< /admonition >}}
+
+### 2.2 Status
+
 ```yaml
 status:
   accessModes:
@@ -129,7 +143,9 @@ status:
   * **Lost** ：已经绑定到 PV，但是 PV 丢失了；
 
 ### 2.2 PVC 的使用
+
 在 Pod 定义或者 Pod template 中，使用 pvc 类型 `volume` 来指定使用的 PVC。
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -149,6 +165,7 @@ spec:
 ```
 
 ## 3 StorageClass
+
 PV 的创建方法有两种：
 1. [静态创建]^(Static Provision)，由管理员手动创建所有支持的 PV；
 1. [动态创建]^(Dynamic Provision)，定义 StorageClass，按 PVC 来创建合适的 PV；
@@ -157,8 +174,10 @@ PV 的创建方法有两种：
 
 而**创建与回收的 Driver** 就称为 **`Provisioner`**，不同类型的 PV 的创建与回收方式都是不同的，所以有着许多的 Provisioner 实现。
 
-### 3.1 StorageClass 定义
+### 3.1 Spec
+
 StorageClass 中大多数属性是其创建出 **PV 的模板**。
+
 ```yaml
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -201,12 +220,15 @@ volumeBindingMode: Immediate
 {{< find_img "img1.png" >}}
 
 ## 5 Local PV
+
 ### 5.1 手动创建使用 LocalPV
+
 在自己测试环境下，往往没有一个云存储可以作为 PV 使用，而使用 Local PV，使得 Pod 使用的 PV 来自于本地的目录或者块设备。
 
 先明确 Local PV 如何定义，即 **PV 类型为 `hostPath`**，表明实际存储设备来自于宿主机的一个目录。
 
 同时，只有调度到该节点的 Pod 才能使用这个 PV，所以要**设定 PV 的 `spec.nodeAffinity`**，仅仅允许该节点使用该 PV：
+
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -233,6 +255,7 @@ spec:
 ```
 
 而为了让 PVC 与 PV 绑定推迟到 Pod 创建后才决定绑定的 PV，我们需要一个 **StorageClass**，即使其并不能够支持动态创建 PV：
+
 ```yaml
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
@@ -243,6 +266,7 @@ volumeBindingMode: WaitForFirstConsumer  # 让 PVC 绑定推迟
 ```
 
 而在使用时候，我们只需要一个普通的 PVC，指定好 `spec.storageClassName` 后，就可以使用 LocalPV 了。
+
 ```yaml
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -258,20 +282,25 @@ spec:
 ```
 
 ### 5.2 local pv static provisioner
+
 [**local pv static provisioner**](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner) 将上面的步骤进行了简化，其启动了一个 DaemonSet，**根据配置好的目录，自动生成对应目录的 Local PV**。
 
 所以带来的好处就是，我们不需要为一个个节点去创建对应的 PV 了，有 Pod 自动负责该事。
 
 #### 5.2.1 原理
+
 local pv static provisioner 为创建一个 DamonSet，在每个节点创建 Daemon Pod。
 
 每个节点上的 Daemon Pod 会根据其 ConfigMap 配置好的 **`discovery dir`**，在目下查找可以作为 PV 的子目录。
 
 在 discovery dir 下挑选目录有两个条件：
+
 * **目录必须是一个挂载点**，也就是 mountinfo 中可以看到的；
-{{< admonition tip "为什么必须是挂载点？">}}
-我猜测这是为了通过挂载点得到目录容量大小，从而填充 PV 容量相关属性。
-{{< /admonition >}}
+
+  {{< admonition tip "为什么必须是挂载点？">}}
+  我猜测这是为了通过挂载点得到目录容量大小，从而填充 PV 容量相关属性。
+  {{< /admonition >}}
+
 * **满足其 ConfigMap 中指定的目录匹配方式 namePattern**。
 
 #### 5.2.2 示例

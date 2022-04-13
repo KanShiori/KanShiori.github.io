@@ -39,7 +39,7 @@
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/csi/</guid>
     <description><![CDATA[1 设计原理 在 源码阅读 - Volume 实现 中看到，所有的存储插件实现的都是操作 Volume 的方法： Provision Volume Attach Volume Mount Device Setup Volume CSI 整体体系的架构如下图 Sidecar 容器 是一组 Kubernetes 社区维护的标准]]></description>
 </item><item>
-    <title>Kubernetes Volume 的实现</title>
+    <title>Kubernetes Volume 实现</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-implementation/</link>
     <pubDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</pubDate>
     <author>作者</author>

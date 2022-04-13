@@ -9,7 +9,7 @@
     <pubDate>Fri, 13 Nov 2020 15:45:03 &#43;0800</pubDate>
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/container-start-stop-summary/</guid>
-    <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文主要描述容器启停背后的步骤，但是不涉及源码。 示例的]]></description>
+    <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文主要描述容器启停背后的步骤，但是不涉及源码。 1 启动]]></description>
 </item><item>
     <title>容器网络总结</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/container-network-summary/</link>

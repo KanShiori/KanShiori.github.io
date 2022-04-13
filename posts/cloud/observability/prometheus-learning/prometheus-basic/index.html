@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Prometheuse 基本概念 - Shiori&#39;s Blog</title><meta name="Description" content="Prometheus 的基本概念"><meta property="og:title" content="Prometheuse 基本概念" />
+<meta property="og:description" content="Prometheus 的基本概念" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-07-05T14:04:28+00:00" />
+<meta property="article:modified_time" content="2022-04-13T21:14:47+08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="Prometheuse 基本概念"/>
+<meta name="twitter:description" content="Prometheus 的基本概念"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/" /><link rel="prev" href="https://KanShiori.github.io/posts/language/golang/library/ginkgo/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Prometheuse 基本概念",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/observability\/prometheus-learning\/prometheus-basic\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "prometheus, monitor","wordcount":  1949 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/observability\/prometheus-learning\/prometheus-basic\/","datePublished": "2021-07-05T14:04:28+00:00","dateModified": "2022-04-13T21:14:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": "Prometheus 的基本概念"
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Prometheuse 基本概念</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/prometheus-%E7%9B%B8%E5%85%B3/"><i class="far fa-folder fa-fw"></i>Prometheus 相关</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-07-05">2021-07-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1949 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 4 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-数据模型">1 数据模型</a>
+      <ul>
+        <li><a href="#11-metric">1.1 Metric</a></li>
+        <li><a href="#13-sample">1.3 Sample</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-metric-类型">2 Metric 类型</a>
+      <ul>
+        <li><a href="#21-counter">2.1 Counter</a></li>
+        <li><a href="#22-gauge">2.2 Gauge</a></li>
+        <li><a href="#23-histogram">2.3 Histogram</a></li>
+        <li><a href="#24-summary">2.4 Summary</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-job-和-instance">3 Job 和 Instance</a></li>
+    <li><a href="#4-架构">4 架构</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-数据模型">1 数据模型</h2>
+<p>Prometheus 保存的所有数据都是 <strong><ruby>时间序列<rt>time series</rt></ruby></strong> 数据，也就是每个数据会带有一个时间戳。</p>
+<p>通过图表可以理解其模型：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud/observability/prometheus-learning/prometheus-basic/img1.png"/>
+
+
+</p>
+<ul>
+<li>图表中每个点都是一个时间序列数据，也称为 <strong><ruby>样本<rt>Sample</rt></ruby></strong>。</li>
+<li>不同的 label 与 Metric name 组合标识了一个数据流，也就是上面图表的一条线。</li>
+<li>所有的数据都表示 prometheus_http_request_total 项统计。</li>
+</ul>
+<p>所以，其数据模型为：</p>
+<ul>
+<li><strong><code>Metric</code></strong> - 统计项</li>
+<li><strong><code>Metric Name</code></strong> 与 <strong><code>Labels</code></strong> - 统计项下的一个数据流</li>
+<li><strong><code>Sample</code></strong> - 数据流中的某个数据</li>
+</ul>
+<h3 id="11-metric">1.1 Metric</h3>
+<p>Metric 定义了某个监控指标，都由如下格式表示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nv">metric</span><span class="w"> </span><span class="nv">name</span><span class="o">&gt;</span><span class="p">{</span><span class="err">&lt;label</span><span class="w"> </span><span class="err">name&gt;=&lt;label</span><span class="w"> </span><span class="err">value&gt;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>该格式标识也被称为 <strong><code>Notation</code></strong>。</p>
+<p>Metric name 表示监控项的含义，Labels 反映了样本的特征维度：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="nv">node_cpu_seconds_total</span><span class="p">{</span><span class="nl">cpu</span><span class="o">=</span><span class="p">&#34;</span><span class="s">0</span><span class="p">&#34;,</span><span class="nl">mode</span><span class="o">=</span><span class="p">&#34;</span><span class="s">idle</span><span class="p">&#34;}</span><span class="w"> </span><span class="mf">2.01377426</span><span class="err">e</span><span class="o">+</span><span class="mi">06</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">node_cpu_seconds_total</span><span class="p">{</span><span class="nl">cpu</span><span class="o">=</span><span class="p">&#34;</span><span class="s">0</span><span class="p">&#34;,</span><span class="nl">mode</span><span class="o">=</span><span class="p">&#34;</span><span class="s">iowait</span><span class="p">&#34;}</span><span class="w"> </span><span class="mf">1639.03</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">node_cpu_seconds_total</span><span class="p">{</span><span class="nl">cpu</span><span class="o">=</span><span class="p">&#34;</span><span class="s">1</span><span class="p">&#34;,</span><span class="nl">mode</span><span class="o">=</span><span class="p">&#34;</span><span class="s">idle</span><span class="p">&#34;}</span><span class="w"> </span><span class="mf">1.9973224</span><span class="err">e</span><span class="o">+</span><span class="mi">06</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">node_cpu_seconds_total</span><span class="p">{</span><span class="nl">cpu</span><span class="o">=</span><span class="p">&#34;</span><span class="s">1</span><span class="p">&#34;,</span><span class="nl">mode</span><span class="o">=</span><span class="p">&#34;</span><span class="s">iowait</span><span class="p">&#34;}</span><span class="w"> </span><span class="mf">1535.02</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到，Labels 是不同值的组合，都是一个 Metric 实例化。因此 Metric name 与 Labels 的组合才代表一个唯一的数据。</p>
+<p>其中，<code>__</code> 作为前缀的 label 是系统保留的，只能在系统内部使用。例如 Prometheus 底层实现中指标名称实际上是以 <code>__name__=&lt;metric name&gt;</code> 形式保存的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="p">{</span><span class="nl">__name__</span><span class="o">=</span><span class="p">&#34;</span><span class="s">node_cpu_seconds_total</span><span class="p">&#34;,</span><span class="w"> </span><span class="nl">cpu</span><span class="o">=</span><span class="p">&#34;</span><span class="s">0</span><span class="p">&#34;,</span><span class="nl">mode</span><span class="o">=</span><span class="p">&#34;</span><span class="s">idle</span><span class="p">&#34;}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="13-sample">1.3 Sample</h3>
+<p>Sample 为样本，可以理解为某个采集项某次采集的数据。按照时间排序的 Sample 形成了实际的数据序列数据列表。</p>
+<p>每个 Sample 包含三个部分：</p>
+<ul>
+<li><strong>metric</strong> - metric name 与当前样本的 labelsets</li>
+<li><strong>value</strong> - 采集的数据，float64</li>
+<li><strong>timestamp</strong> - 采集数据的时间，ms</li>
+</ul>
+<p>Prometheus 会按照时间顺序来存储 sample，如果 sample 不是顺序收集的，会将其丢弃。</p>
+<h2 id="2-metric-类型">2 Metric 类型</h2>
+<p>目前，Prometheus 提供了 4 种 Metric 类型。</p>
+<ul>
+<li>Counter</li>
+<li>Gauge</li>
+<li>Histogram</li>
+<li>Summary</li>
+</ul>
+<h3 id="21-counter">2.1 Counter</h3>
+<p><strong><code>Counter</code></strong> 代表一个<strong>累加数据</strong>，通常用于跟踪事件次数，累计时间等。</p>
+<p>其特点如下：</p>
+<ul>
+<li><strong>值只能从 0 开始增加，不能减少。</strong></li>
+<li><strong>重启进程后，只会重置为 0。</strong></li>
+</ul>
+<p>Counter 适用于统计累加值。例如下面统计的是宿主机的 CPU 时间：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="c1"># TYPE node_cpu_seconds_total counter</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">node_cpu_seconds_total</span><span class="p">{</span><span class="nl">cpu</span><span class="o">=</span><span class="p">&#34;</span><span class="s">0</span><span class="p">&#34;,</span><span class="nl">mode</span><span class="o">=</span><span class="p">&#34;</span><span class="s">idle</span><span class="p">&#34;}</span><span class="w"> </span><span class="mf">2.01526517</span><span class="err">e</span><span class="o">+</span><span class="mi">06</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">node_cpu_seconds_total</span><span class="p">{</span><span class="nl">cpu</span><span class="o">=</span><span class="p">&#34;</span><span class="s">0</span><span class="p">&#34;,</span><span class="nl">mode</span><span class="o">=</span><span class="p">&#34;</span><span class="s">iowait</span><span class="p">&#34;}</span><span class="w"> </span><span class="mf">1640.01</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">通常，Counter 类指标会命名为 &ldquo;xxx_total&rdquo;。</div>
+        </div>
+    </div>
+<h3 id="22-gauge">2.2 Gauge</h3>
+<p><strong><code>Gauge</code></strong> 反映一个<strong>瞬时测量值</strong>，其值可能随着时间变化上下波动。</p>
+<p>其特点如下：</p>
+<ul>
+<li><strong>测量值是瞬时值，可以任意变化</strong>。</li>
+<li><strong>重启进程后，会被重置。</strong></li>
+</ul>
+<p>Gauge 是适合记录无规律变化的数据。例如机器的负载值，每时每刻都在变化。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="c1"># HELP node_load1 1m load average.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1"># TYPE node_load1 gauge</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">node_load1</span><span class="w"> </span><span class="mf">1.6</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1"># HELP node_load15 15m load average.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1"># TYPE node_load15 gauge</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">node_load15</span><span class="w"> </span><span class="mf">1.01</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="23-histogram">2.3 Histogram</h3>
+<p><strong><code>Histogram</code></strong> 表示直方图，会在一段时间范围内对数据进行采样，并将其计入 bucket 中。</p>
+<p>histogram 中有三类值：</p>
+<ul>
+<li><strong>bucket</strong>：值小于 &ldquo;le&rdquo;（less）下，统计到的数据次数</li>
+<li><strong>sum</strong>：统计值的累计和</li>
+<li><strong>count</strong>：统计次数</li>
+</ul>
+<p>看个例子，下面数据表明了对于 / 的 HTTP 请求的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="c1"># HELP prometheus_http_request_duration_seconds Histogram of latencies for HTTP requests.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1"># TYPE prometheus_http_request_duration_seconds histogram</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_http_request_duration_seconds_bucket</span><span class="p">{</span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/</span><span class="p">&#34;,</span><span class="nl">le</span><span class="o">=</span><span class="p">&#34;</span><span class="s">0.1</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_http_request_duration_seconds_bucket</span><span class="p">{</span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/</span><span class="p">&#34;,</span><span class="nl">le</span><span class="o">=</span><span class="p">&#34;</span><span class="s">0.2</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_http_request_duration_seconds_bucket</span><span class="p">{</span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/</span><span class="p">&#34;,</span><span class="nl">le</span><span class="o">=</span><span class="p">&#34;</span><span class="s">0.4</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_http_request_duration_seconds_bucket</span><span class="p">{</span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/</span><span class="p">&#34;,</span><span class="nl">le</span><span class="o">=</span><span class="p">&#34;</span><span class="s">1</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_http_request_duration_seconds_bucket</span><span class="p">{</span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/</span><span class="p">&#34;,</span><span class="nl">le</span><span class="o">=</span><span class="p">&#34;</span><span class="s">3</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_http_request_duration_seconds_bucket</span><span class="p">{</span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/</span><span class="p">&#34;,</span><span class="nl">le</span><span class="o">=</span><span class="p">&#34;</span><span class="s">8</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_http_request_duration_seconds_bucket</span><span class="p">{</span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/</span><span class="p">&#34;,</span><span class="nl">le</span><span class="o">=</span><span class="p">&#34;</span><span class="s">20</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_http_request_duration_seconds_bucket</span><span class="p">{</span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/</span><span class="p">&#34;,</span><span class="nl">le</span><span class="o">=</span><span class="p">&#34;</span><span class="s">60</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_http_request_duration_seconds_bucket</span><span class="p">{</span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/</span><span class="p">&#34;,</span><span class="nl">le</span><span class="o">=</span><span class="p">&#34;</span><span class="s">120</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_http_request_duration_seconds_bucket</span><span class="p">{</span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/</span><span class="p">&#34;,</span><span class="nl">le</span><span class="o">=</span><span class="p">&#34;</span><span class="s">+Inf</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_http_request_duration_seconds_sum</span><span class="p">{</span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/</span><span class="p">&#34;}</span><span class="w"> </span><span class="mf">0.000184525</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_http_request_duration_seconds_count</span><span class="p">{</span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p>bucket</p>
+<p>le=&ldquo;0.1&rdquo; - 请求处理时间小于 0.1s 的次数为 1 次</p>
+<p>le=&ldquo;0.2&rdquo; - 请求处理时间小于 0.2s 的次数为 1 次</p>
+<p>&hellip;</p>
+<p>le=&quot;+Inf&quot; - 请求处理时间小于 +Inf 的次数为 1 次</p>
+</li>
+<li>
+<p>sum</p>
+<p>所有请求的处理实际的总和为 0.000184525</p>
+</li>
+<li>
+<p>count</p>
+<p>统计的请求次数为 1 次</p>
+</li>
+</ul>
+<p>可以看到，<strong>对于 bucket 的统计结果是累计的</strong>。</p>
+<h3 id="24-summary">2.4 Summary</h3>
+<p><strong><code>summary</code></strong> 为概率图，包含了各百分比样本的值，也就是样本的值的分布区间。</p>
+<p>summary 包含三类数据：</p>
+<ul>
+<li><strong>bucket</strong>：百分比范围样本的值，&ldquo;quantile&rdquo; 表示百分比</li>
+<li><strong>sum</strong>：统计值的累计和</li>
+<li><strong>counter</strong>：统计次数</li>
+</ul>
+<p>看个示例，下面数据表明了所有 wal_fsync 操作的耗时分布区间：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="c1"># HELP prometheus_tsdb_wal_fsync_duration_seconds Duration of WAL fsync.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1"># TYPE prometheus_tsdb_wal_fsync_duration_seconds summary</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_tsdb_wal_fsync_duration_seconds</span><span class="p">{</span><span class="nl">quantile</span><span class="o">=</span><span class="p">&#34;</span><span class="s">0.5</span><span class="p">&#34;}</span><span class="w"> </span><span class="mf">0.012352463</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_tsdb_wal_fsync_duration_seconds</span><span class="p">{</span><span class="nl">quantile</span><span class="o">=</span><span class="p">&#34;</span><span class="s">0.9</span><span class="p">&#34;}</span><span class="w"> </span><span class="mf">0.014458005</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_tsdb_wal_fsync_duration_seconds</span><span class="p">{</span><span class="nl">quantile</span><span class="o">=</span><span class="p">&#34;</span><span class="s">0.99</span><span class="p">&#34;}</span><span class="w"> </span><span class="mf">0.017316173</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_tsdb_wal_fsync_duration_seconds_sum</span><span class="w"> </span><span class="mf">2.888716127000002</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nv">prometheus_tsdb_wal_fsync_duration_seconds_count</span><span class="w"> </span><span class="mi">216</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p>bucket</p>
+<p>quantile=&ldquo;0.5&rdquo; - 50% 的 wal_fsync 操作耗时小于 0.012352463</p>
+<p>quantile=&ldquo;0.9&rdquo; - 90% 的 wal_fsync 操作耗时小于 0.014458005</p>
+<p>quantile=&ldquo;0.99&rdquo; - 99% 的 wal_fsync 操作耗时小于 0.017316173</p>
+</li>
+<li>
+<p>sum</p>
+<p>所有 wal_fsync 操作耗时总和 2.888716127000002</p>
+</li>
+<li>
+<p>count</p>
+<p>统计 wal_fsync 操作 216 次</p>
+</li>
+</ul>
+<p>可以看到，对于 bucket 的统计结果是累计的。</p>
+<h2 id="3-job-和-instance">3 Job 和 Instance</h2>
+<p>在 Prometheus 中，任何被采集的目标（往往是一个 IP:Port）被称为 <strong><code>Intsance</code></strong>。而将相同采集项进行分组，每个组就称为 <strong><code>Job</code></strong>。</p>
+<p>看下 prometheus.yml 配置文件来理解这个概念：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">scrape_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;prometheus&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;localhost:9090&#39;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;node&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;localhost:9100&#39;</span><span class="p">]</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>scrape_configs.job_name</code> 描述了一个脚本，这里有两个 job，分别表示采集 Prometheus 与 Node。</li>
+<li><code>scrape_configs.static_configs.targets</code> 中就表明了需要采集的 Instance。</li>
+</ul>
+<p>Prometheus 拉取一个采集样本时，会自动在时序的基础上添加 <code>&quot;job&quot;</code> 与 <code>&quot;instance&quot;</code> 两个 label，用于识别被采集的目标。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="nv">prometheus_http_requests_total</span><span class="p">{</span><span class="nl">code</span><span class="o">=</span><span class="p">&#34;</span><span class="s">200</span><span class="p">&#34;,</span><span class="w"> </span><span class="nl">handler</span><span class="o">=</span><span class="p">&#34;</span><span class="s">/-/ready</span><span class="p">&#34;,</span><span class="w"> </span><span class="nl">instance</span><span class="o">=</span><span class="p">&#34;</span><span class="s">localhost:9090</span><span class="p">&#34;,</span><span class="w"> </span><span class="nl">job</span><span class="o">=</span><span class="p">&#34;</span><span class="s">prometheus</span><span class="p">&#34;}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">如果这两个 label 已经存在了，那么会根据配置文件中的 <code>honor_label</code> 配置来决定如何处理。</div>
+        </div>
+    </div>
+<p>对于每个被采集的 Instance，Prometheus 也会内置一些统计数据。</p>
+<ul>
+<li>
+<p><strong>up</strong> - 如果 Instance 能够被正常采集，那么值为 1 ，否则为 0</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="nv">up</span><span class="p">{</span><span class="nl">instance</span><span class="o">=</span><span class="p">&#34;</span><span class="s">localhost:9090</span><span class="p">&#34;,</span><span class="w"> </span><span class="nl">job</span><span class="o">=</span><span class="p">&#34;</span><span class="s">prometheus</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>scrape_duration_seconds</strong> - 采集 Instance 累计的使用时间</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="nv">scrape_duration_seconds</span><span class="p">{</span><span class="nl">instance</span><span class="o">=</span><span class="p">&#34;</span><span class="s">localhost:9090</span><span class="p">&#34;,</span><span class="w"> </span><span class="nl">job</span><span class="o">=</span><span class="p">&#34;</span><span class="s">prometheus</span><span class="p">&#34;}</span><span class="w"> </span><span class="mf">0.006962203</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>scrape_samples_post_metric_relabeling</strong> - Instance 的采集数据被 relabel 后，剩余的采集数量累计</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="nv">scrape_samples_post_metric_relabeling</span><span class="p">{</span><span class="nl">instance</span><span class="o">=</span><span class="p">&#34;</span><span class="s">localhost:9090</span><span class="p">&#34;,</span><span class="w"> </span><span class="nl">job</span><span class="o">=</span><span class="p">&#34;</span><span class="s">prometheus</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">723</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>scrape_samples_scraped</strong> - 从该 Instance 采集数据的次数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="nv">scrape_samples_scraped</span><span class="p">{</span><span class="nl">instance</span><span class="o">=</span><span class="p">&#34;</span><span class="s">localhost:9090</span><span class="p">&#34;,</span><span class="w"> </span><span class="nl">job</span><span class="o">=</span><span class="p">&#34;</span><span class="s">prometheus</span><span class="p">&#34;}</span><span class="w"> </span><span class="mi">723</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h2 id="4-架构">4 架构</h2>
+<p>完整的 Prometheus 生态架构图如下：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud/observability/prometheus-learning/prometheus-basic/img5.png"/>
+
+
+</p>
+<ul>
+<li>
+<p>Prometheus Server</p>
+<p>以 Pull 方式收集各个 Instance 的 Metric 数据，并保存在自身的时序数据库中。</p>
+</li>
+<li>
+<p>Exporter</p>
+<p>用于输出被监控组件的 Metric 信息的 HTTP 接口统称为 Exporter，例如 MySQL Exporter 提供 HTTP 查询接口用来采集 MySQL Metric 信息。</p>
+<p>Prometheus Server 会根据 Job 来调用 Exporter 的接口采集信息。</p>
+</li>
+<li>
+<p>Pushgateway</p>
+<p>Prometheus Server 仅仅支持 Pull 方式拉取数据，如果需要支持 Push 方式推送数据，或者服务没有可暴露的 HTTP 接口（例如一些客户端仅仅只能靠 Push），那么需要 Pushgateway 作为中转临时存储。</p>
+<p>程序将 Metric 信息推送给 Pushgateway，Pushgateway 会保存这些 Metric 信息。异步地，Prometheus Server 会定期从 Pushgateway 拉取 Metric 信息并保存。</p>
+</li>
+<li>
+<p>Alertmanager</p>
+<p>Prometheus Server 支持直接配置告警规则，当告警触发时，会将告警信息推送到 Alertmanager。AlertManager 进一步对数据去重过滤等处理，然后路由到不同的通知软件。</p>
+</li>
+</ul>
+<h2 id="参考">参考</h2>
+<ul>
+<li>官方文档：<a href="https://prometheus.io/docs/concepts" target="_blank" rel="noopener noreffer"><strong>CONCEPTS</strong></a></li>
+<li>Blog：<a href="https://www.sohu.com/a/347228004_753508" target="_blank" rel="noopener noreffer"><strong>一文搞懂 Prometheus 的直方图</strong></a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-04-13&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/fd791b9bb7576b4878fb404c63091067e409e0f2" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) fd791b9bb7576b4878fb404c63091067e409e0f2: optimize">
+                                    <i class="fas fa-hashtag fa-fw"></i>fd791b9</a></span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/observability/prometheus-learning/prometheus-basic/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/" data-title="Prometheuse 基本概念"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/" data-title="Prometheuse 基本概念"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/" data-title="Prometheuse 基本概念"><i class="fab fa-evernote fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/prometheus/">prometheus</a>,&nbsp;<a href="/tags/monitor/">monitor</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/language/golang/library/ginkgo/" class="prev" rel="prev" title="Ginkgo 学习"><i class="fas fa-angle-left fa-fw"></i>Ginkgo 学习</a>
+            <a href="/posts/cloud/observability/prometheus-learning/promql/" class="next" rel="next" title="Prometheus 查询语言 PromQL">Prometheus 查询语言 PromQL<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.95.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

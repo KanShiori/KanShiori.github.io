@@ -660,7 +660,7 @@ ABAC 是 Kubernetes 1.6 之前的默认鉴权模块，配置后需要重启 APIS
 
 ### 3.3 鉴权模块 RBAC
 
-参考 [**RBAC 授权机制**](../5-rbac/)。
+参考 [**RBAC 授权机制**](../rbac/)。
 
 ### 3.4 鉴权模块 Webhook
 

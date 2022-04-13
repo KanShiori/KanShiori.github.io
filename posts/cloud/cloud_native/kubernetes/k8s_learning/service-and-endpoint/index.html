@@ -5,30 +5,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>K8s 学习 - 2 - Service - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="K8s 学习 - 2 - Service" />
+        <title>Kubernetes Service 与 Endpoint - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Kubernetes Service 与 Endpoint" />
 <meta property="og:description" content="1 概述 首先我们需要明确 Service 出现的背景：因为 Pod 设计上是无状态的，可以说没有固定的 IP，所以在其他组件访问某一个网络服务时，需要一个 “固定” 的地址" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-06T14:03:01+00:00" />
-<meta property="article:modified_time" content="2022-03-24T21:07:12+08:00" />
+<meta property="article:modified_time" content="2022-04-13T21:14:47+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
-<meta name="twitter:title" content="K8s 学习 - 2 - Service"/>
+<meta name="twitter:title" content="Kubernetes Service 与 Endpoint"/>
 <meta name="twitter:description" content="1 概述 首先我们需要明确 Service 出现的背景：因为 Pod 设计上是无状态的，可以说没有固定的 IP，所以在其他组件访问某一个网络服务时，需要一个 “固定” 的地址"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/1-pod/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
-        "headline": "K8s 学习 - 2 - Service",
+        "headline": "Kubernetes Service 与 Endpoint",
         "inLanguage": "zh-CN",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/2-service\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  4224 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/2-service\/","datePublished": "2021-06-06T14:03:01+00:00","dateModified": "2022-03-24T21:07:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/service-and-endpoint\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  4278 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/service-and-endpoint\/","datePublished": "2021-06-06T14:03:01+00:00","dateModified": "2022-04-13T21:14:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -116,9 +116,9 @@
                 <div class="container"><div class="toc" id="toc-auto">
             <h2 class="toc-title">目录</h2>
             <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">K8s 学习 - 2 - Service</h1><div class="post-meta">
+        </div><article class="page single"><h1 class="single-title animated flipInX">Kubernetes Service 与 Endpoint</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>Kubernetes 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-06">2021-06-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 4224 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-06">2021-06-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 4278 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 9 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -130,7 +130,7 @@
     <li><a href="#1-概述">1 概述</a></li>
     <li><a href="#2-service-基础">2 Service 基础</a>
       <ul>
-        <li><a href="#21-定义">2.1 定义</a></li>
+        <li><a href="#21-spec">2.1 Spec</a></li>
         <li><a href="#22-负载均衡策略">2.2 负载均衡策略</a></li>
         <li><a href="#23-支持的网络协议">2.3 支持的网络协议</a></li>
       </ul>
@@ -179,7 +179,7 @@
         </div>
     </div></p>
 <h2 id="2-service-基础">2 Service 基础</h2>
-<h3 id="21-定义">2.1 定义</h3>
+<h3 id="21-spec">2.1 Spec</h3>
 <p>Service 基本的定义如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -260,8 +260,7 @@
 <p><strong>RoundRobin</strong> ：轮询模式，将请求轮询到后端各个 Pod。默认模式</p>
 </li>
 <li>
-<p><strong>SessionAffinity</strong> ：基于客户端 IP 地址进行会话保持的模式。</p>
-<p>即第一次将某个客户端发起请求到后端某个 Pod，之后相同客户端发起请求都会被转发到对应 Pod。</p>
+<p><strong>SessionAffinity</strong> ：基于客户端 IP 地址进行会话保持的模式。即第一次将某个客户端发起请求到后端某个 Pod，之后相同客户端发起请求都会被转发到对应 Pod。</p>
 </li>
 </ul>
 <p>将 <code>spec.sessionAffinity</code> 指定为 &ldquo;ClientIP&rdquo;，就表明了开启 SessionAffinity 策略。</p>
@@ -296,23 +295,34 @@
 </div><h2 id="3-服务发现">3 服务发现</h2>
 <p>Kubernetes 提供了两种机制供客户端以固定的范式获取后端 Service 的访问地址：环境变量和 DNS。</p>
 <h3 id="31-环境变量方式">3.1 环境变量方式</h3>
-<p>如果 Pod 在 Service 之后创建，那么集群中同 namespace <strong>Service 地址信息会通过 ENV 传递给容器</strong>（不包括 Headless Service）。</p>
-<p>相关的环境变量包括：</p>
-<ul>
-<li>&lt;service&gt;_PORT=&lt;proto&gt;://&lt;clusterip&gt;:&lt;port&gt;</li>
-<li>&lt;service&gt;_PORT_&lt;port&gt;_&lt;proto&gt;=&lt;proto&gt;://&lt;clusterip&gt;:&lt;port&gt;</li>
-<li>&lt;service&gt;_PORT_&lt;port&gt;_&lt;proto&gt;_ADDR=&lt;clusterip&gt;</li>
-<li>&lt;service&gt;_PORT_&lt;port&gt;_&lt;proto&gt;_PORT=&lt;port&gt;</li>
-<li>&lt;service&gt;_PORT_&lt;port&gt;_&lt;proto&gt;_PROTO=&lt;proto&gt;</li>
-<li>&lt;service&gt;_SERVICE_HOST=&lt;clusterip&gt;</li>
-<li>&lt;service&gt;_SERVICE_PORT=&lt;port&gt;</li>
-<li>&lt;service&gt;<em>SERVICE_PORT</em>&lt;NAME&gt;=&lt;port&gt;</li>
-</ul>
-<p>默认相关的环境变量使用的都是 service.spec.port[0] 信息。如果使用的多 port 代理，需要使用 xxx_PORT_xxx 相关环境变量。</p>
+<p>如果 Pod 在 Service 之后创建，那么集群中同 namespace <strong>Service 地址信息会通过 ENV 传递给容器</strong>（不包括 Headless Service）。相关的环境变量包括：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">&lt;service&gt;_PORT<span class="o">=</span>&lt;proto&gt;://&lt;clusterip&gt;:&lt;port&gt;
+</span></span><span class="line"><span class="cl">&lt;service&gt;_PORT_&lt;port&gt;_&lt;proto&gt;<span class="o">=</span>&lt;proto&gt;://&lt;clusterip&gt;:&lt;port&gt;
+</span></span><span class="line"><span class="cl">&lt;service&gt;_PORT_&lt;port&gt;_&lt;proto&gt;_ADDR<span class="o">=</span>&lt;clusterip&gt;
+</span></span><span class="line"><span class="cl">&lt;service&gt;_PORT_&lt;port&gt;_&lt;proto&gt;_PORT<span class="o">=</span>&lt;port&gt;
+</span></span><span class="line"><span class="cl">&lt;service&gt;_PORT_&lt;port&gt;_&lt;proto&gt;_PROTO<span class="o">=</span>&lt;proto&gt;
+</span></span><span class="line"><span class="cl">&lt;service&gt;_SERVICE_HOST<span class="o">=</span>&lt;clusterip&gt;
+</span></span><span class="line"><span class="cl">&lt;service&gt;_SERVICE_PORT<span class="o">=</span>&lt;port&gt;
+</span></span><span class="line"><span class="cl">&lt;service&gt;_SERVICE_PORT_&lt;NAME&gt;<span class="o">=</span>&lt;port&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>默认相关的环境变量使用的都是 service.spec.port[0] 信息。如果使用的多 port 代理，需要使用 xxx_PORT_xxx 相关环境变量。</p>
 <p>环境变量默认还会提供 kubernetes 的 service 地址，用于 Pod 来访问 APIServer。</p>
 <h3 id="32-dns-方式">3.2 DNS 方式</h3>
 <p>所有 Service 都会自动对应一个 DNS 域名，其命令方式为 <code>&lt;service&gt;.&lt;namespace&gt;.svc.cluster.&lt;cluster_domain&gt;</code>。由 CoreDNS 作为集群的默认 DNS 服务器，提供域名解析服务。</p>
-<p>如果 Service 定义中设置了 <code>spec.ports[].name</code>，那么该端口号也会有一个域名：`<em>&lt;port_name&gt;.</em><protocol>.<service>.<namespace>.svc.&lt;cluster_domain&gt;。</p>
+<p>如果 Service 定义中设置了 <code>spec.ports[].name</code>，那么该端口号也会有一个域名：<code>&lt;port_name&gt;._&lt;protocol&gt;.&lt;service&gt;.&lt;namespace&gt;.svc.&lt;cluster_domain&gt;</code>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -333,7 +343,7 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">http</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><p>当执行 nslookup &lt;service&gt; 时，自动在当前的 namespace 下访问。通过 nslookup &lt;service&gt;.&lt;namespace&gt; 可以跨 namespace 进行 DNS 解析。</p>
+</div><p>当执行 <code>nslookup &lt;service&gt;</code> 时，自动在当前的 namespace 下访问。通过 <code>nslookup \&lt;service&gt;.\&lt;namespace&gt;</code> 可以跨 namespace 进行 DNS 解析。</p>
 <h2 id="4-service-类型">4 Service 类型</h2>
 <p>Service 核心的功能是：代理。代理涉及到两个点：访问代理的前端，被代理的后端。</p>
 <p>针对这个前后端的不同，Service 分为了 4 种类型：</p>
@@ -376,19 +386,16 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">ClusterIP</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><p>上述定义创建了一个随机选择 IP，代理 TCP 3000 -&gt; 443 端口的 Service。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/img1.png"/>
-
-
-</p>
+</div><p>上述定义创建了一个随机选择 IP，代理 TCP 3000 -&gt; 443 端口的 Service。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img1.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img1.png, img1.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img1.png" />
+    </a>
 <h3 id="42-nodeport">4.2 NodePort</h3>
 <p>NodePort 是对 ClusterIP 的增强，增加一个宿主机上端口到代理源端口的转发，使得集群外部也可以访问集群内部的服务。</p>
 <div class="details admonition note open">
@@ -432,19 +439,16 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">NodePort</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><p>上述定义在 ClusterIP 基础上，增加了宿主机 30080 的端口转发。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/img2.png"/>
-
-
-</p>
+</div><p>上述定义在 ClusterIP 基础上，增加了宿主机 30080 的端口转发。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img2.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img2.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img2.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img2.png, img2.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img2.png" />
+    </a>
 <h3 id="43-loadbalancer">4.3 LoadBalancer</h3>
 <p>在云厂商环境下，Node 都是在云的托管集群中的，所以外网访问 k8s 集群内的路径为：&ldquo;外网 -&gt; 云集群 -&gt; k8s 集群&rdquo;。而 NodePort 仅仅解决了 &ldquo;云集群 -&gt; k8s 集群&rdquo; 这个问题。</p>
 <p>因此，LoadBalancer Service 在 NodePort 基础上，提供了云厂商需要的负载均衡信息，而云厂商根据该信息设置好 &ldquo;外网 -&gt; 云集群&rdquo; 的转发路径。</p>
@@ -546,19 +550,16 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">externalName</span><span class="p">:</span><span class="w"> </span><span class="l">remote.server.url.com</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><p>通过 <code>serivce.spec.externalName</code> 指定被代理的域名，而集群内部的 Pod 就可以通过该 Service 访问外部服务了。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/img3.png"/>
-
-
-</p>
+</div><p>通过 <code>serivce.spec.externalName</code> 指定被代理的域名，而集群内部的 Pod 就可以通过该 Service 访问外部服务了。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img3.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img3.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img3.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img3.png, img3.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img3.png" />
+    </a>
 <h2 id="5-endpoint">5 Endpoint</h2>
 <p>当创建一个 Service 后，会根据 <code>service.spec.selector</code> 自动来匹配作为后端的 Pod。实际上，会对应一个 <strong><code>Endpoints</code></strong> 对象来代表其匹配到的代理目标，而其每一个被代理的 Pod 称之为 <strong><code>Endpoint</code></strong>。</p>
 <div class="highlight"><div class="chroma">
@@ -575,7 +576,7 @@
 </span></span><span class="line"><span class="cl">kube-system   kube-dns                  10.36.0.4:53,10.36.0.5:53,10.36.0.4:53 + <span class="m">3</span> more...            3d1h
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>当然，你也可以不提供 <code>service.spec.selector</code>，也不使用 ExternalName Service，而指定创建一个 Endpoints 对象。这样可以实现，Service 只代理指定的地址：</p>
+</div><p>当然，你也可以不提供 <code>service.spec.selector</code>，也不使用 ExternalName Service，而指定创建一个 Endpoints 对象。这样可以实现，<strong>Service 只代理指定的地址</strong>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -597,7 +598,6 @@
 </span><span class="lnt">17
 </span><span class="lnt">18
 </span><span class="lnt">19
-</span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
@@ -609,7 +609,6 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">3306</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="m">3306</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nn">---</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Endpoints</span><span class="w">
@@ -679,7 +678,7 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ nsloopup mysql-balance-svc.mysql-space.svc.cluster.local
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ nslookup mysql-balance-svc.mysql-space.svc.cluster.local
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">Server: 169.169.0.100
 </span></span><span class="line"><span class="cl">Address: 169.169.0.100#53
@@ -714,7 +713,7 @@
 
 
 
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/img5.png"/>
+    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img5.png"/>
 
 
 </p>
@@ -789,7 +788,7 @@
 
 
 
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/img4.png"/>
+    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/img4.png"/>
 
 
 </p>
@@ -899,17 +898,17 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-03-24&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877: Adjust the directory structure">
-                                    <i class="fas fa-hashtag fa-fw"></i>dc3de05</a></span>
+                <span>更新于 2022-04-13&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/fd791b9bb7576b4878fb404c63091067e409e0f2" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) fd791b9bb7576b4878fb404c63091067e409e0f2: optimize">
+                                    <i class="fas fa-hashtag fa-fw"></i>fd791b9</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/index.md" target="_blank">阅读原始文档</a>
+                            <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/index.md" target="_blank">阅读原始文档</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/" data-title="K8s 学习 - 2 - Service"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/" data-title="K8s 学习 - 2 - Service"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/" data-title="K8s 学习 - 2 - Service"><i class="fab fa-evernote fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/" data-title="Kubernetes Service 与 Endpoint"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/" data-title="Kubernetes Service 与 Endpoint"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/" data-title="Kubernetes Service 与 Endpoint"><i class="fab fa-evernote fa-fw"></i></a></span>
             </div>
         </div>
     </div>
@@ -921,7 +920,7 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/1-pod/" class="prev" rel="prev" title="K8s 学习 - 1 - Pod"><i class="fas fa-angle-left fa-fw"></i>K8s 学习 - 1 - Pod</a>
+    <div class="post-nav"><a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/" class="prev" rel="prev" title="Kubernetes Pod 基本概念"><i class="fas fa-angle-left fa-fw"></i>Kubernetes Pod 基本概念</a>
             <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/" class="next" rel="next" title="Kubernetes 集群中的 DNS">Kubernetes 集群中的 DNS<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>

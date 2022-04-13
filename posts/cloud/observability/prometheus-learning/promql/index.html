@@ -5,30 +5,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Prom 学习 - PromQL - Shiori&#39;s Blog</title><meta name="Description" content="PromQL 概念以及语法"><meta property="og:title" content="Prom 学习 - PromQL" />
+        <title>Prometheus 查询语言 PromQL - Shiori&#39;s Blog</title><meta name="Description" content="PromQL 概念以及语法"><meta property="og:title" content="Prometheus 查询语言 PromQL" />
 <meta property="og:description" content="PromQL 概念以及语法" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-07-08T14:31:22+00:00" />
-<meta property="article:modified_time" content="2022-03-24T21:07:12+08:00" />
+<meta property="article:modified_time" content="2022-04-13T21:14:47+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
-<meta name="twitter:title" content="Prom 学习 - PromQL"/>
+<meta name="twitter:title" content="Prometheus 查询语言 PromQL"/>
 <meta name="twitter:description" content="PromQL 概念以及语法"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/basic/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/grafana-basic/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/grafana-basic/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
-        "headline": "Prom 学习 - PromQL",
+        "headline": "Prometheus 查询语言 PromQL",
         "inLanguage": "zh-CN",
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/observability\/prometheus-learning\/promql\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "prometheus, monitor","wordcount":  3054 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/observability\/prometheus-learning\/promql\/","datePublished": "2021-07-08T14:31:22+00:00","dateModified": "2022-03-24T21:07:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "prometheus, monitor","wordcount":  2876 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/observability\/prometheus-learning\/promql\/","datePublished": "2021-07-08T14:31:22+00:00","dateModified": "2022-04-13T21:14:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -116,10 +116,10 @@
                 <div class="container"><div class="toc" id="toc-auto">
             <h2 class="toc-title">目录</h2>
             <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">Prom 学习 - PromQL</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/prometheus-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>Prometheus 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-07-08">2021-07-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3054 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Prometheus 查询语言 PromQL</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/prometheus-%E7%9B%B8%E5%85%B3/"><i class="far fa-folder fa-fw"></i>Prometheus 相关</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-07-08">2021-07-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2876 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -161,38 +161,26 @@
   </ul>
 </nav></div>
             </div><div class="content" id="content"><h2 id="1-数据类型">1 数据类型</h2>
-<p>首先，还是先理解 <strong>时间序列</strong> 这个概念：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">  ^                                  -
-</span></span><span class="line"><span class="cl">  │   . . . . . . . . . . . . . . . |.| .   . .  
-</span></span><span class="line"><span class="cl">  │     . . . . . . . . . . . . . . |.| . . . .  
-</span></span><span class="line"><span class="cl">  │     . . . . . . . . . .   . . . |.| . . . .  
-</span></span><span class="line"><span class="cl">  │     . . . . . . . . . . . . . . |.| .   . .  
-</span></span><span class="line"><span class="cl">  v                                  -
-</span></span><span class="line"><span class="cl">    &lt;------------------ 时间 ----------------&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>上图中，横轴是时间，纵轴是时间线，每一个点就是一个 <strong>样本</strong>。而 Prometheus 每次接受数据时，收到的就是图中纵向的一条线。而这一组同时间记录的数据，就是 <strong>时间序列</strong>。</p>
-<p>在实际中，时间序列就是 Metric 项的不同 label 的组合。</p>
-<p>PromQL 将数据归为以下四种类型：</p>
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud/observability/prometheus-learning/promql/img1.png"/>
+
+
+
+<p>上图简单代表了时序数据库的存储。每次 Prometheus 拉取数据时，拉取到就是图中纵向的一条线，也就是一个统计数据多维度的瞬时值，也被称为 <strong><ruby>时间序列<rt>Time Series</rt></ruby></strong>。</p>
+<p>PromQL 将表达式归为以下四种类型：</p>
 <ul>
 <li>
 <p><strong><ruby>即时向量<rt>instant vector</rt></ruby></strong> - <strong>同一时刻的一组时间序列</strong>。可以理解为就是瞬时的样本的集合。</p>
-<p>注意是样本的集合，而不是一个样本，可以理解为时间序列。</p>
 </li>
 <li>
-<p><strong><ruby>区间向量<rt>range vector</rt></ruby></strong> - <strong>一定时间范围内的一组时间序列</strong>。可以理解为时间范围的样本的集合。</p>
-<p>注意是时间范围内的样本集合，可以理解为连续的多组时间序列。</p>
+<p><strong><ruby>区间向量<rt>range vector</rt></ruby></strong> - <strong>一定时间范围内的一组时间序列</strong>。可以理解为有了时间范围即时向量。</p>
 </li>
 <li>
 <p><strong><ruby>标量<rt>scalar</rt></ruby></strong> - <strong>纯量数据</strong>，仅仅是一个数字，没有时间戳。</p>
@@ -810,8 +798,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-03-24&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877: Adjust the directory structure">
-                                    <i class="fas fa-hashtag fa-fw"></i>dc3de05</a></span>
+                <span>更新于 2022-04-13&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/fd791b9bb7576b4878fb404c63091067e409e0f2" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) fd791b9bb7576b4878fb404c63091067e409e0f2: optimize">
+                                    <i class="fas fa-hashtag fa-fw"></i>fd791b9</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
@@ -820,7 +808,7 @@
                             <a class="link-to-markdown" href="/posts/cloud/observability/prometheus-learning/promql/index.md" target="_blank">阅读原始文档</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" data-title="Prom 学习 - PromQL"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" data-title="Prom 学习 - PromQL"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" data-title="Prom 学习 - PromQL"><i class="fab fa-evernote fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" data-title="Prometheus 查询语言 PromQL"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" data-title="Prometheus 查询语言 PromQL"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" data-title="Prometheus 查询语言 PromQL"><i class="fab fa-evernote fa-fw"></i></a></span>
             </div>
         </div>
     </div>
@@ -832,8 +820,8 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud/observability/prometheus-learning/basic/" class="prev" rel="prev" title="Prom 学习 - 基本概念"><i class="fas fa-angle-left fa-fw"></i>Prom 学习 - 基本概念</a>
-            <a href="/posts/cloud/observability/prometheus-learning/grafana-basic/" class="next" rel="next" title="Prom 学习 - Grafana 基础">Prom 学习 - Grafana 基础<i class="fas fa-angle-right fa-fw"></i></a></div>
+    <div class="post-nav"><a href="/posts/cloud/observability/prometheus-learning/prometheus-basic/" class="prev" rel="prev" title="Prometheuse 基本概念"><i class="fas fa-angle-left fa-fw"></i>Prometheuse 基本概念</a>
+            <a href="/posts/cloud/observability/prometheus-learning/grafana-basic/" class="next" rel="next" title="Grafana 基础">Grafana 基础<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

@@ -35,7 +35,7 @@ Deployment 与 RelicSets 就是基于这个理念设计的，它们仅仅保证 
 
 * **固定的持久化存储**，通过 PVC；
 
-* **固定的网络标识**，通过 [**Headless Service**](../2-service//#5-headless-service) 使得 `<podname>.<service>.<namespace>` 与固定命名的 Pod 绑定；
+* **固定的网络标识**，通过 [**Headless Service**](../service-and-endpoint/#5-headless-service) 使得 `<podname>.<service>.<namespace>` 与固定命名的 Pod 绑定；
 
 * **按照编号进行有序的启动与停止**；
 

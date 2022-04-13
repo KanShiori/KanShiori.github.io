@@ -397,9 +397,11 @@ func scanobject(b uintptr, gcw *gcWork) {
         gcw.scanWork += int64(i)
 }
 ```
+
 可以看到，通过当前 object 地址的**不断偏移 8 字节**，然后**通过 `heapArena.bitmap` 判断当前 8 字节是否是指针**，如果是指针就将其放入 gcWork 对象。
+
 {{< admonition note Note>}}
-在 [**Go 内存管理总结**](https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#451-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80) 中看到，**对于 heap 中每 8 个字节，通过存在对应 bit 位标识是否指针，以及是否被 mark**；
+在 [**Go 内存管理总结**](../memory-manager/) 中看到，**对于 heap 中每 8 个字节，通过存在对应 bit 位标识是否指针，以及是否被 mark**；
 {{< /admonition >}}
 
 `greyobject()` 用于将该 object 标记，并放入 gcWork 中：
@@ -582,10 +584,13 @@ func sweepone() uintptr {
   return npages
 }
 ```
-最终的回收工作靠 `mspan.sweep()` 完成，这给在 [**Go 内存管理总结**](https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#451-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80) 中可以看到具体实现，大致就是将 GC 后没有被 mark 的 object 记录为可用，以后续申请使用覆盖。如果整个 mspan 变回空，就由 mheap 回收其对应的 page。
+
+最终的回收工作靠 `mspan.sweep()` 完成，这给在 [**Go 内存管理总结**](../memory-manager/) 中可以看到具体实现，大致就是将 GC 后没有被 mark 的 object 记录为可用，以后续申请使用覆盖。如果整个 mspan 变回空，就由 mheap 回收其对应的 page。
 
 ### 3.2 并发清理
+
 并发清理就是一个死循环，被唤醒后开始执行清理任务。
+
 ```go
 func bgsweep(c chan int) {
 	sweep.g = getg()

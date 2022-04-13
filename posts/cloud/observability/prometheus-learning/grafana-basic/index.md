@@ -1,9 +1,10 @@
-# Prom 学习 - Grafana 基础
+# Grafana 基础
 
 
 ## 1 基本概念
 
 ### 1.1 数据源 Data Source
+
 Grafana 支持多种不同类型的时序数据库，称为[数据源]^(Data Source)。目前官方支持：Graphite、InfluxDB、OpenTSDB、Prometheus、Elasticsearch、CloudWatch。
 
 可以将多个数据源的数据合并到一个单独的仪表盘（Dashboard）上，但是每个面板（Panel）都绑定到属于特定组织的特定数据源。
@@ -13,14 +14,17 @@ Grafana 支持多种不同类型的时序数据库，称为[数据源]^(Data Sou
 * **Browser** 模式：浏览器访问模式，所有请求直接从浏览器发送到数据源。
 
 ### 1.2 组织 Organization
+
 Grafana 可以支持创建多个[组织]^(Organization)，每个组织可以有一个或多个数据源。所有的仪表盘都归特定组织拥有。
 
 ### 1.3 用户 User
+
 [用户]^(User)是 Grafana 的账户，一个用户可以隶属于一个或多个组织，通过角色（Role）为其分配不同级别的权限。
 
 Grafana 也支持各种用户认证方式。
 
 ### 1.4 面板 Panel
+
 [面板]^(Panel)是**最基本的可视化模块**。每个面板根据查询编辑器（例如 Prometheus 就是 PromQL）查询数据，并提供展示图表。
 
 目前，Grafana 支持的面板许多面板类型，最常用的就是 Time series，展示基于时间的样本数据。
@@ -30,17 +34,19 @@ Grafana 也支持各种用户认证方式。
 {{< image src="img0-2.png" >}}
 
 ### 1.5 行 Row
+
 [行]^(Row)用于在**仪表盘界面组织多个面板**，一般为 12 单位的宽度。
 
 {{< image src="img0-0.png" >}}
 
 ### 1.6 查询编辑器 Query Editor
+
 每个面板都有着一个或多个 Query Editor，通过编写语句来读取数据源的样本，将其展示到面板上。
 
 {{< image src="img0-1.png" >}}
 
-
 ### 1.7 仪表盘 Dashboard
+
 多个面板或者多个行构成一个[仪表盘]^(Dashboard)，用于分类不同的指标项。
 
 通过分享链接或者通过快照功能，可以向他人分析仪表盘以及数据。
@@ -48,7 +54,6 @@ Grafana 也支持各种用户认证方式。
 你也可以仅仅通过 Export 功能，将仪表盘结构导出为 JSON 文件。他人可以通过 Import 该 JSON 文件直接构建对应的仪表盘。
 
 {{< image src="img1.png" >}}
-
 
 ## 2 定制图表
 
@@ -71,7 +76,6 @@ Grafana 也支持各种用户认证方式。
    * Timezone     - 配置时区                                            
    * Auto-refresh - 定制相对时间显示和自动刷新选项，默认即可            
 
-
 3. 配置 Variables 选项
    
    可以为仪表盘配置多个模板变量，在面板中可以使用模板变量，变量会在仪表盘顶部展示为下拉选择框。
@@ -90,6 +94,7 @@ Grafana 也支持各种用户认证方式。
 ### 2.2 定制面板
 
 #### 2.2.1 Graph 面板
+
 1. 配置 Query 项
    
    {{< image src="img12.png" >}}
@@ -117,7 +122,6 @@ Grafana 也支持各种用户认证方式。
 5. 配置 Display
    
    Display 选项用于战术显示的样式。
-
 
 ## 参考
 

@@ -1,4 +1,4 @@
-# K8s 学习 - 5 - RBAC 授权机制
+# Kubernetes RBAC 授权机制
 
 
 ## 1 概念
@@ -20,10 +20,13 @@
 {{< /admonition >}}
 
 ## 2 Role 与 ClusterRole
+
 ### 2.1 Role
+
 Role 就是一个 Kubernetes 资源对象，并且是一个 namespaced Resouce，因此其 Role 控制的权限范围也只能是所属的 namespace 下。
 
 基本定义如下：
+
 ```yaml
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
@@ -45,9 +48,11 @@ rules:
 能够支持限制的操作为："get", "list", "watch", "create", "update", "patch", "delete"，"deletecollection" 。
 
 ### 2.2 ClusterRole
+
 ClusterRole 是一个 non-namespaced Resource，所以是针对所有 namespace 的资源生效，也可以实现控制 non-namespaced Resource 的权限。
 
 基本定义如下：
+
 ```yaml
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
@@ -66,7 +71,9 @@ rules:
 示例中 rules 定义的规则是：允许对所有 namespace 下的 所有 Secret 对象，执行 GET、Watch、List 操作。
 
 #### 2.2.1 聚合 ClusterRole
+
 多个 ClusterRole 可以聚合为一个新的 ClusterRole，用于简化 ClusterRole 的管理工作。
+
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -81,7 +88,9 @@ rules: [] # rules 规则会自动被设置
 `aggregationRule` 字段设置了匹配 ClusterRole 的规则，当一个 ClusterRole 被匹配到后，其 rules 自动会填充相关的规则。
 
 ### 2.3 对非资源对象限制
+
 某些 Kubernetes API 包含下次子资源，例如 Pod 的日志。
+
 ```yaml
 # ...
 rules:
@@ -91,7 +100,9 @@ rules:
 ```
 
 ### 2.4 对指定资源对象限制
+
 通过 `rules.resourceName` 字段可以限制对指定资源的权限：
+
 ```yaml
 # ...
 rules:
@@ -104,6 +115,7 @@ rules:
 当然，因为是对指定的资源，因此无法限制 list、watch、create 或 deletecollections 操作。
 
 ### 2.5 内置 Role 与 ClusterRole
+
 默认下，Kubernetes 已经内置了许多个 Role 与 ClusterRole，它们都是以 `system:` 开头命名。
 
 所有系统默认的 ClusterRole 和 RoleBinding 都会使用 label `kubernetes.io/bootstrappiong=rbac-defaults` 来标记。
@@ -118,7 +130,9 @@ rules:
 ## 3 RoleBinding 与 ClusterRoleBinding
 
 ### 3.1 RoleBinding
+
 RoleBinding 用于绑定一个 Role 与多个 Subject，通过 RoleBinding 才能让某个 Subject 有 namespace 相关资源的访问权限。
+
 ```yaml
 # This role binding allows "jane" to read pods in the "default" namespace.
 kind: RoleBinding
@@ -143,8 +157,11 @@ RoleBinding 也可以引用 ClusterRole，将其权限限制在了 RoleBinding �
 {{< /admonition >}}
 
 ### 3.2 ClusterRoleBinding
+
 ClusterRoleBinding 让 Subject 有着整个集群相关资源的访问权限。
+
 #### 3.2.1 ClusterRole 聚合
+
 在 ClusterRole 中可以通过 aggregationRule 来与其他 ClusterRole，也就是可以自动组合多个 ClusterRole 为一个。
 ```yaml
 kind: ClusterRole
@@ -170,8 +187,8 @@ rules:
   verbs: ["get", "list", "watch"]
 ```
 
-
 ## 参考
+
 * 官方文档：[**使用 RBAC 鉴权**](https://kubernetes.io/zh/docs/reference/access-authn-authz/rbac/)
 
 

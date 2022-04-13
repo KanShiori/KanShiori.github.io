@@ -5,30 +5,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>K8s 学习 - 1 - Pod - Shiori&#39;s Blog</title><meta name="Description" content="Pod 基本概念"><meta property="og:title" content="K8s 学习 - 1 - Pod" />
+        <title>Kubernetes Pod 基本概念 - Shiori&#39;s Blog</title><meta name="Description" content="Pod 基本概念"><meta property="og:title" content="Kubernetes Pod 基本概念" />
 <meta property="og:description" content="Pod 基本概念" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/1-pod/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-05T16:29:21+00:00" />
-<meta property="article:modified_time" content="2022-03-24T21:07:12+08:00" />
+<meta property="article:modified_time" content="2022-04-13T21:14:47+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
-<meta name="twitter:title" content="K8s 学习 - 1 - Pod"/>
+<meta name="twitter:title" content="Kubernetes Pod 基本概念"/>
 <meta name="twitter:description" content="Pod 基本概念"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/1-pod/" /><link rel="prev" href="https://KanShiori.github.io/posts/net/ssl-tls-cert/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/" /><link rel="prev" href="https://KanShiori.github.io/posts/net/ssl-tls-cert/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
-        "headline": "K8s 学习 - 1 - Pod",
+        "headline": "Kubernetes Pod 基本概念",
         "inLanguage": "zh-CN",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/1-pod\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3875 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/1-pod\/","datePublished": "2021-06-05T16:29:21+00:00","dateModified": "2022-03-24T21:07:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/pod\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3694 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/pod\/","datePublished": "2021-06-05T16:29:21+00:00","dateModified": "2022-04-13T21:14:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -116,9 +116,9 @@
                 <div class="container"><div class="toc" id="toc-auto">
             <h2 class="toc-title">目录</h2>
             <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">K8s 学习 - 1 - Pod</h1><div class="post-meta">
+        </div><article class="page single"><h1 class="single-title animated flipInX">Kubernetes Pod 基本概念</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>Kubernetes 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-05">2021-06-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3875 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-05">2021-06-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3694 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -174,7 +174,7 @@
 </nav></div>
             </div><div class="content" id="content"><h2 id="1-pod-的进程模型">1 Pod 的进程模型</h2>
 <p>Pod 是一组容器的集合，而为什么实现上需要多个容器？据传，因为开发 Borg 项目的工程师发现，部署的应用往往都是一个进程组，而不是一个进程。换个角度说，部署的业务往往有着多个不同的进程，并且往往需要部署到同一个机器上。</p>
-<p>容器是 “<strong>单进程模型</strong>”，在云上代表的是一个进程。而 Pod 是 “<strong>进程组模型</strong>”，在云上代表着就是进程组。
+<p>容器是 “<strong>单进程模型</strong>”，在云上代表的是一个进程。而 Pod 是 “<strong>进程组模型</strong>”，在云上代表着就是进程组。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw"></i>“单进程模型”<i class="details-icon fas fa-angle-right fa-fw"></i>
@@ -184,11 +184,11 @@
 <p>你可以将其理解为，Pod 实现了 Supervisor/goreman 这样的功能，将多个进程进行分组管理，这对于业务应用的部署是非常有用的。</p>
 </div>
         </div>
-    </div></p>
+    </div>
 <p>所以 Kubernetes 是一个操作系统，管理着 Pod “进程组”。</p>
 <h3 id="11-pause-容器">1.1 Pause 容器</h3>
 <p>在创建 Pod 时，会先创建一个 <strong><code>pause 容器</code></strong>，也称为 <strong><code>根容器</code></strong> 或者 <strong><code>infra 容器</code></strong>。</p>
-<p>pause 容器使用 k8s.gcr.io/pause 镜像，永远处于暂停，占用着很少的资源。
+<p>pause 容器使用 k8s.gcr.io/pause 镜像，永远处于暂停，占用着很少的资源。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw"></i>为什么需要 pause 容器？<i class="details-icon fas fa-angle-right fa-fw"></i>
@@ -199,24 +199,21 @@
 <p>很难选择，实现起来也很复杂，因为两个容器有着前后顺序的依赖性，而不是“平等的”。</p>
 </div>
         </div>
-    </div></p>
+    </div>
 <p>Kubernetes 使用一个占用极少资源，非业务容器的 pause 容器首先启动。然后在其 pause 容器配置好 namespace。接着其他的业务容器加入到 pause 容器的 namespace。</p>
-<p>因为 pause 容器占用极少资源，也没有任何逻辑，所以其他业务容器重启后，只需要加入 pause 容器的 namespace 即可，不需要担心 namespace 发生变化。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/1-pod/img1.png"/>
-
-
-</p>
+<p>因为 pause 容器占用极少资源，也没有任何逻辑，所以其他业务容器重启后，只需要加入 pause 容器的 namespace 即可，不需要担心 namespace 发生变化。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img1.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/img1.png, img1.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/pod/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/img1.png" />
+    </a>
 <h3 id="12-容器共享的资源">1.2 容器共享的资源</h3>
 <p>Pod 内容器<strong>默认共享 network uts ipc namespace</strong>，所以容器间的网络是相同的。</p>
-<p>Pod 可以<strong>配置开启共享 PID namespace</strong>，使得容器之间可以看到对方的进程。
+<p>Pod 可以<strong>配置开启共享 PID namespace</strong>，使得容器之间可以看到对方的进程。</p>
 <div class="details admonition tip open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-lightbulb fa-fw"></i>共享 pid namespace<i class="details-icon fas fa-angle-right fa-fw"></i>
@@ -224,26 +221,18 @@
         <div class="details-content">
             <div class="admonition-content">设置 Pod 定义的 <code>spec.shareProcessNamespace</code> 为 true 来共享 pid namespace。</div>
         </div>
-    </div></p>
+    </div>
 <p>Pod 通过 Volume 的抽象概念来进行共享存储，将其块设备或者目录提供到每个容器内的不同路径。也就是说，<strong>每个容器看到的目录路径或者块设备是独立的，但是都对应同一个宿主机的目录或块设备。</strong></p>
 <h2 id="2-dynamic-pod-与-static-pod">2 Dynamic Pod 与 Static Pod</h2>
 <h3 id="21-dynamic-pod">2.1 Dynamic Pod</h3>
 <p>大多数情况，我们会通过 ReplicaSet 或者 Deployment 这样的副本控制器来创建 Pod，甚至通过编写 Pod 的定义来手动部署 Pod。这种情况下，<strong>Pod 是由 Kubernetes 控制面管理的</strong>，可以通过 APIServer 启停它。</p>
-<p>这样的 Pod 被称为 <strong><ruby>动态 Pod<rt>Dynamic Pod</rt></ruby></strong>。</p>
+<p>这样的 Pod 也被称为 <strong><ruby>动态 Pod<rt>Dynamic Pod</rt></ruby></strong>。</p>
 <h3 id="22-static-pod">2.2 Static Pod</h3>
 <p>另一类是特殊的 Pod，被称为 <strong><ruby>静态 Pod<rt>Static Pod</rt></ruby></strong>。</p>
 <p>静态 Pod 是由本地 kubelet 创建的，仅仅在 kubelet 的 Node 上运行。<strong>Kubernetes 控制面可以看见，但是无法管理它。kubelet 也不会其进行健康检查。</strong></p>
 <p>创建静态 Pod 有着两种方式：配置文件 和 HTTP 方式。</p>
 <h4 id="221-配置文件方式">2.2.1 配置文件方式</h4>
-<p>在 kubelet 的配置文件中社会中 <code>staticPodPath</code> 为一个目录，kubelet 会扫描该目录，读取目录下的 .yaml 或 .json 文件，创建对应的 Pod。
-<div class="details admonition tip open">
-        <div class="details-summary admonition-title">
-            <i class="icon fas fa-lightbulb fa-fw"></i>另一种方式<i class="details-icon fas fa-angle-right fa-fw"></i>
-        </div>
-        <div class="details-content">
-            <div class="admonition-content">也可以使用 kubelet 启动参数 <code>--pod-manifest-path</code> 指定目录，但是这是即将废弃的参数。</div>
-        </div>
-    </div></p>
+<p>在 kubelet 的配置文件中社会中 <code>staticPodPath</code> 为一个目录，kubelet 会扫描该目录，读取目录下的 .yaml 或 .json 文件，创建对应的 Pod。</p>
 <p>你在 APIServer 可以看到该 Pod，但是如果你进行删除操作，该 Pod 会一直进入 Pending 状态，但是不会真正被停止。</p>
 <p>删除该 Pod 只能通过删除目录下的对应 .yaml 文件。</p>
 <h4 id="222-http-方式">2.2.2 HTTP 方式</h4>
@@ -300,7 +289,7 @@
 
 
 
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/1-pod/img2.png"/>
+    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/img2.png"/>
 
 
 
@@ -348,7 +337,7 @@
 <p>但是 kubelet 会等待 postStart 后执行完，才将容器的状态变为 Running。</p>
 </li>
 <li>
-<p><strong>preStop</strong> ：在 kubelet 发送容器停止信号前，执行的操作。
+<p><strong>preStop</strong> ：在 kubelet 发送容器停止信号前，执行的操作。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
@@ -356,7 +345,7 @@
         <div class="details-content">
             <div class="admonition-content">注意，preStop 仅仅在 kubelet 停止容器的情况下才会执行（因为这是 kubelet 执行的操作），而容器自己退出的情况下不会执行。</div>
         </div>
-    </div></p>
+    </div>
 </li>
 </ul>
 <p>使用回调的示例如下：</p>
@@ -522,7 +511,7 @@
 <li><strong>OnFailure</strong> ：容器退出且退出码非 0 时，kubelet 自动重启容器；</li>
 <li><strong>Never</strong> ：任何容器提出，kubelet 都不重启容器；</li>
 </ul>
-<p>kubelet 重启容器的时间间隔以指数的方式增长（1n、2n、4n …），最长延迟 5min。如果容器运行了 10min 没有退出，则间隔时间会被重置。
+<p>kubelet 重启容器的时间间隔以指数的方式增长（1n、2n、4n …），最长延迟 5min。如果容器运行了 10min 没有退出，则间隔时间会被重置。</p>
 <div class="details admonition tip open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-lightbulb fa-fw"></i>重启时间间隔单位<i class="details-icon fas fa-angle-right fa-fw"></i>
@@ -530,7 +519,7 @@
         <div class="details-content">
             <div class="admonition-content">重启间隔时间是以 kubelet handle 周期为单位。</div>
         </div>
-    </div></p>
+    </div>
 <h2 id="4-probe">4 Probe</h2>
 <p>Probe 以旁路的方式，周期性地检测 Pod 容器的情况，检测失败是及时更新 Pod 的状态，使得上层感知后进行一些恢复操作。</p>
 <p>目前包含三种探针：LivenessProbe、ReadinessProbe 和 StartupProbe。</p>
@@ -548,7 +537,7 @@
 <h3 id="42-readinessprobe">4.2 ReadinessProbe</h3>
 <p><strong><code>ReadinessProbe</code></strong> 用于周期性判断一个容器是否是 Ready，<strong>从而影响 Pod 的 Ready condition 是否为 True。</strong></p>
 <p>只有 Pod Ready condition 为 True 时，Service 才可以将其 Pod 加入到 Endpoints，从而该 Pod 才能接受请求并处理。</p>
-<p>同样，当 Pod Ready condition 从 True 变为 False 时，Service 会将其 Pod 从 Endpoints 移除。
+<p>同样，当 Pod Ready condition 从 True 变为 False 时，Service 会将其 Pod 从 Endpoints 移除。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw"></i>为何还需要 Readiness Gate？<i class="details-icon fas fa-angle-right fa-fw"></i>
@@ -556,14 +545,15 @@
         <div class="details-content">
             <div class="admonition-content">因为 ReadinessProbe 是一种被动探测的方式，而 <a href="#331-%e8%87%aa%e5%ae%9a%e4%b9%89-condition" rel=""><strong>Readiness Gate</strong></a> 提供了一种主动修改的方式。</div>
         </div>
-    </div></p>
+    </div>
 <h3 id="43-startupprobe">4.3 StartupProbe</h3>
 <p><strong><code>StartupProbe</code></strong> 仅仅在容器启动后会运行，并且<strong>成功后不会再次运行，直到容器重新启动</strong>。</p>
 <p>StartupProbe 是为了解决有些容器的启动情况很慢的情况，这种情况只需要进行一次成功的探测，所以不适合 ReadyinessProbe 的周期性语义。</p>
 <h3 id="44-使用-probe">4.4 使用 Probe</h3>
 <p>三种探针都可以使用三种探测方式：</p>
 <ul>
-<li><code>exec</code> ：执行一个 shell 命令，退出码为 0 表明容器健康；
+<li>
+<p><code>exec</code> ：执行一个 shell 命令，退出码为 0 表明容器健康；</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -589,7 +579,8 @@
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div></li>
-<li><code>tcpSocket</code> ：连接 TCP 的一个 IP 与 Port，连接成功表明容器健康；
+<li>
+<p><code>tcpSocket</code> ：连接 TCP 的一个 IP 与 Port，连接成功表明容器健康；</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -615,7 +606,8 @@
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div></li>
-<li><code>httpGet</code> ：发送一个 HTTP Get 请求，状态码 [200, 400) 表明容器健康；
+<li>
+<p><code>httpGet</code> ：发送一个 HTTP Get 请求，状态码 [200, 400) 表明容器健康；</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -646,23 +638,11 @@
 </ul>
 <p>每种探测器也包含如下的配置参数，用以控制探测的行为：</p>
 <ul>
-<li>
-<p><code>initialDelaySeconds</code> ：容器启动后多久开始进行探测。</p>
-<p>仅仅适用于 LivenessProbe 与 ReadinessProbe。</p>
-</li>
-<li>
-<p><code>periodSeconds</code> ：执行探测的时间间隔。默认 10s。</p>
-</li>
-<li>
-<p><code>timeoutSeconds</code> ：每次探测的超时时间。默认 1s。</p>
-</li>
-<li>
-<p><code>successThreshold</code> ：探测失败后，经过几次探测成功后，才将其变为健康状态，默认值为 1。</p>
-<p>仅仅适用于 StartupProbe。</p>
-</li>
-<li>
-<p><code>failureThreshold</code> ：连续探测失败多少次后，才将其容器视为不健康状态，默认值为 3。</p>
-</li>
+<li><code>initialDelaySeconds</code> ：容器启动后多久开始进行探测。仅仅适用于 LivenessProbe 与 ReadinessProbe。</li>
+<li><code>periodSeconds</code> ：执行探测的时间间隔。默认 10s。</li>
+<li><code>timeoutSeconds</code> ：每次探测的超时时间。默认 1s。</li>
+<li><code>successThreshold</code> ：探测失败后，经过几次探测成功后，才将其变为健康状态，默认值为 1。仅仅适用于 StartupProbe。</li>
+<li><code>failureThreshold</code> ：连续探测失败多少次后，才将其容器视为不健康状态，默认值为 3。</li>
 </ul>
 <h2 id="5-init-container">5 Init Container</h2>
 <p>大多数应用在启动前都需要进行一些初始化的操作。Kubernetes 提供了 init container 来进行 Pod 的初始化操作。</p>
@@ -676,7 +656,7 @@
 
 
 
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/1-pod/img3.png"/>
+    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/img3.png"/>
 
 
 </p>
@@ -731,67 +711,23 @@
 <li>Pod 重新启动时，init container 将会重新运行。所以 init container 应该是幂等的。</li>
 </ul>
 <h2 id="6-ephemeral-container">6 Ephemeral Container</h2>
-<p>有时由于容器崩溃或者容器镜像不包含 debug 工具，使得通过 <code>kubectl exec</code> 方式不能很好的进行调试。v1.18 版本开始，新添加一个 <code>kubectl debug</code> 命令，用于创建 <strong><code>ephemeral container</code></strong> 来进行 debug。
-<div class="details admonition tip open">
-        <div class="details-summary admonition-title">
-            <i class="icon fas fa-lightbulb fa-fw"></i>开启特性<i class="details-icon fas fa-angle-right fa-fw"></i>
-        </div>
-        <div class="details-content">
-            <div class="admonition-content">需要开启 EphemeralContainers feature gate</div>
-        </div>
-    </div></p>
-<p>使用 <code>kubectl debug</code> 的示例如下：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl debug -it ephemeral-demo --image<span class="o">=</span>busybox --target<span class="o">=</span>ephemeral-demo
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
-<li>&ndash;image ：临时容器使用的镜像；</li>
-<li>&ndash;target ：加入的 Pod 中特定容器的 namespace；</li>
-</ul>
-<p>也可以复制一个 Pod，然后添加临时容器来进行调试：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl debug myapp -it --copy-to<span class="o">=</span>myapp-debug --container<span class="o">=</span>myapp -- sh
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
-<li>&ndash;copy-to ：将 pod 复制一份新命名的 pod；</li>
-</ul>
-<p>你可以让临时容器和应用容器共享 pid namespace，这样可以进行类似 strace 这样的进程排查。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl debug myapp -it --image<span class="o">=</span>ubuntu --share-processes --copy-to<span class="o">=</span>myapp-debug
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
-<li>&ndash;share-processes ：使用 &ndash;copy-to 时，开启 pid namespace 共享；</li>
-</ul>
+<p>有时由于容器崩溃或者容器镜像不包含 debug 工具，使得通过 <code>kubectl exec</code> 方式不能很好的进行调试。v1.18 版本开始，新添加一个 <code>kubectl debug</code> 命令，用于创建 <strong><code>ephemeral container</code></strong> 来进行 debug。</p>
+<p>具体使用方式可以参考：<a href="../../k8s_practice/debug-pod/#1-ephemeral-container" rel=""><strong>Ephemeral Container</strong></a>。</p>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-03-24&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877: Adjust the directory structure">
-                                    <i class="fas fa-hashtag fa-fw"></i>dc3de05</a></span>
+                <span>更新于 2022-04-13&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/fd791b9bb7576b4878fb404c63091067e409e0f2" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) fd791b9bb7576b4878fb404c63091067e409e0f2: optimize">
+                                    <i class="fas fa-hashtag fa-fw"></i>fd791b9</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/1-pod/index.md" target="_blank">阅读原始文档</a>
+                            <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/index.md" target="_blank">阅读原始文档</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/1-pod/" data-title="K8s 学习 - 1 - Pod"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/1-pod/" data-title="K8s 学习 - 1 - Pod"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/1-pod/" data-title="K8s 学习 - 1 - Pod"><i class="fab fa-evernote fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/" data-title="Kubernetes Pod 基本概念"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/" data-title="Kubernetes Pod 基本概念"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/" data-title="Kubernetes Pod 基本概念"><i class="fab fa-evernote fa-fw"></i></a></span>
             </div>
         </div>
     </div>
@@ -804,7 +740,7 @@
     </div>
 
     <div class="post-nav"><a href="/posts/net/ssl-tls-cert/" class="prev" rel="prev" title="SSL/TLS 总结"><i class="fas fa-angle-left fa-fw"></i>SSL/TLS 总结</a>
-            <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/2-service/" class="next" rel="next" title="K8s 学习 - 2 - Service">K8s 学习 - 2 - Service<i class="fas fa-angle-right fa-fw"></i></a></div>
+            <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/" class="next" rel="next" title="Kubernetes Service 与 Endpoint">Kubernetes Service 与 Endpoint<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

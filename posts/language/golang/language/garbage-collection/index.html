@@ -10,7 +10,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/language/garbage-collection/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-01-14T20:40:47+08:00" />
-<meta property="article:modified_time" content="2022-04-10T23:10:15+08:00" />
+<meta property="article:modified_time" content="2022-04-13T21:14:47+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,7 +28,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/garbage-collection\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  7450 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/garbage-collection\/","datePublished": "2021-01-14T20:40:47+08:00","dateModified": "2022-04-10T23:10:15+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/garbage-collection\/","datePublished": "2021-01-14T20:40:47+08:00","dateModified": "2022-04-13T21:14:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -890,15 +890,15 @@
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>可以看到，通过当前 object 地址的<strong>不断偏移 8 字节</strong>，然后<strong>通过 <code>heapArena.bitmap</code> 判断当前 8 字节是否是指针</strong>，如果是指针就将其放入 gcWork 对象。
+</div><p>可以看到，通过当前 object 地址的<strong>不断偏移 8 字节</strong>，然后<strong>通过 <code>heapArena.bitmap</code> 判断当前 8 字节是否是指针</strong>，如果是指针就将其放入 gcWork 对象。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">在 <a href="https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#451-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80" target="_blank" rel="noopener noreffer"><strong>Go 内存管理总结</strong></a> 中看到，<strong>对于 heap 中每 8 个字节，通过存在对应 bit 位标识是否指针，以及是否被 mark</strong>；</div>
+            <div class="admonition-content">在 <a href="../memory-manager/" rel=""><strong>Go 内存管理总结</strong></a> 中看到，<strong>对于 heap 中每 8 个字节，通过存在对应 bit 位标识是否指针，以及是否被 mark</strong>；</div>
         </div>
-    </div></p>
+    </div>
 <p><code>greyobject()</code> 用于将该 object 标记，并放入 gcWork 中：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1238,7 +1238,7 @@
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>最终的回收工作靠 <code>mspan.sweep()</code> 完成，这给在 <a href="https://kanshiori.github.io/posts/language/golang/go-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%80%BB%E7%BB%93/#451-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80" target="_blank" rel="noopener noreffer"><strong>Go 内存管理总结</strong></a> 中可以看到具体实现，大致就是将 GC 后没有被 mark 的 object 记录为可用，以后续申请使用覆盖。如果整个 mspan 变回空，就由 mheap 回收其对应的 page。</p>
+</div><p>最终的回收工作靠 <code>mspan.sweep()</code> 完成，这给在 <a href="../memory-manager/" rel=""><strong>Go 内存管理总结</strong></a> 中可以看到具体实现，大致就是将 GC 后没有被 mark 的 object 记录为可用，以后续申请使用覆盖。如果整个 mspan 变回空，就由 mheap 回收其对应的 page。</p>
 <h3 id="32-并发清理">3.2 并发清理</h3>
 <p>并发清理就是一个死循环，被唤醒后开始执行清理任务。</p>
 <div class="highlight"><div class="chroma">
@@ -1703,8 +1703,8 @@ sysmon 会根据系统情况决定是否触发。</p>
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-04-10&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/67407034c31fbfcb012255e637b55adbd8b7d241" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 67407034c31fbfcb012255e637b55adbd8b7d241: post: pulumi">
-                                    <i class="fas fa-hashtag fa-fw"></i>6740703</a></span>
+                <span>更新于 2022-04-13&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/fd791b9bb7576b4878fb404c63091067e409e0f2" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) fd791b9bb7576b4878fb404c63091067e409e0f2: optimize">
+                                    <i class="fas fa-hashtag fa-fw"></i>fd791b9</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
