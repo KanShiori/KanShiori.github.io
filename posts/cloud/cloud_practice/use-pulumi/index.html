@@ -8,9 +8,9 @@
         <title>Pulumi 入门 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Pulumi 入门" />
 <meta property="og:description" content="内容基本照搬的官方文档：Architecture &amp; Concepts。 Pulumi 是一个支持 IaC 的平台。与其他 IaC 工具最大的不同时，Pulumi 允许使用熟悉" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-04-06T21:58:22+08:00" />
-<meta property="article:modified_time" content="2022-04-12T21:27:43+08:00" />
+<meta property="article:modified_time" content="2022-04-15T17:25:52+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -18,7 +18,7 @@
 <meta name="twitter:title" content="Pulumi 入门"/>
 <meta name="twitter:description" content="内容基本照搬的官方文档：Architecture &amp; Concepts。 Pulumi 是一个支持 IaC 的平台。与其他 IaC 工具最大的不同时，Pulumi 允许使用熟悉"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/debug-pod/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_practice/use-crossplane/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -26,9 +26,9 @@
         "inLanguage": "zh-CN",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_practice\/use-pulumi\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  7586 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_practice\/use-pulumi\/","datePublished": "2022-04-06T21:58:22+08:00","dateModified": "2022-04-12T21:27:43+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/use-pulumi\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "云计算","wordcount":  7586 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/use-pulumi\/","datePublished": "2022-04-06T21:58:22+08:00","dateModified": "2022-04-15T17:25:52+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <h2 class="toc-title">目录</h2>
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Pulumi 入门</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AE%9E%E8%B7%B5/"><i class="far fa-folder fa-fw"></i>Kubernetes 实践</a></span></div>
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/cloud-practice/"><i class="far fa-folder fa-fw"></i>Cloud Practice</a></span></div>
             <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-04-06">2022-04-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 7586 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 16 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
@@ -190,14 +190,14 @@
 <h2 id="1-概念与架构">1 概念与架构</h2>
 <h3 id="11-基本概念">1.1 基本概念</h3>
 <p>Pulumi 使用的主要结构如下：</p>
-<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img1.png">
+<a class="lightgallery" href="/posts/cloud/cloud_practice/use-pulumi/img1.png" title="/posts/cloud/cloud_practice/use-pulumi/img1.png" data-thumbnail="/posts/cloud/cloud_practice/use-pulumi/img1.png">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
             data-src="img1.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img1.png, img1.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img1.png 2x"
+            data-srcset="/posts/cloud/cloud_practice/use-pulumi/img1.png, img1.png 1.5x, /posts/cloud/cloud_practice/use-pulumi/img1.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img1.png" />
+            alt="/posts/cloud/cloud_practice/use-pulumi/img1.png" />
     </a>
 <ul>
 <li>
@@ -229,14 +229,14 @@
     </div>
 <h3 id="12-架构">1.2 架构</h3>
 <p>Pulumi 运行的架构如下：</p>
-<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img1.2.png" title="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img1.2.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img1.2.png">
+<a class="lightgallery" href="/posts/cloud/cloud_practice/use-pulumi/img1.2.png" title="/posts/cloud/cloud_practice/use-pulumi/img1.2.png" data-thumbnail="/posts/cloud/cloud_practice/use-pulumi/img1.2.png">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
             data-src="img1.2.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img1.2.png, img1.2.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img1.2.png 2x"
+            data-srcset="/posts/cloud/cloud_practice/use-pulumi/img1.2.png, img1.2.png 1.5x, /posts/cloud/cloud_practice/use-pulumi/img1.2.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img1.2.png" />
+            alt="/posts/cloud/cloud_practice/use-pulumi/img1.2.png" />
     </a>
 <ul>
 <li>
@@ -302,14 +302,14 @@
 </div>
 </div><h2 id="3-stack">3 Stack</h2>
 <p>Stack 代表一个独立的环境，Pulumi 会跟踪每个 Stack 的当前状态，在部署 Program 到一个 Stack 时，对比期望状态（Program 编写的）和当前状态（Stack 状态）来进行声明式的部署。</p>
-<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img2.png" title="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img2.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img2.png">
+<a class="lightgallery" href="/posts/cloud/cloud_practice/use-pulumi/img2.png" title="/posts/cloud/cloud_practice/use-pulumi/img2.png" data-thumbnail="/posts/cloud/cloud_practice/use-pulumi/img2.png">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
             data-src="img2.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img2.png, img2.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img2.png 2x"
+            data-srcset="/posts/cloud/cloud_practice/use-pulumi/img2.png, img2.png 1.5x, /posts/cloud/cloud_practice/use-pulumi/img2.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img2.png" />
+            alt="/posts/cloud/cloud_practice/use-pulumi/img2.png" />
     </a>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -715,14 +715,14 @@
 <h3 id="42-pulumi-service-架构">4.2 Pulumi Service 架构</h3>
 <p>Pulumi Service 提供两个域名：app.pulumi.com 是针对用户的 Web 控制台，api.pulumi.com 是用于 CLI 访问的 REST 服务。</p>
 <p>Pulumi Service 整体的架构如下：</p>
-<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img3.png" title="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img3.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img3.png">
+<a class="lightgallery" href="/posts/cloud/cloud_practice/use-pulumi/img3.png" title="/posts/cloud/cloud_practice/use-pulumi/img3.png" data-thumbnail="/posts/cloud/cloud_practice/use-pulumi/img3.png">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
             data-src="img3.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img3.png, img3.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img3.png 2x"
+            data-srcset="/posts/cloud/cloud_practice/use-pulumi/img3.png, img3.png 1.5x, /posts/cloud/cloud_practice/use-pulumi/img3.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img3.png" />
+            alt="/posts/cloud/cloud_practice/use-pulumi/img3.png" />
     </a>
 <p>可以看到，Pulumi Service 与 Cloud 之间没有任何关联，调用 Cloud API 完全是由 CLI 中发起的。也就是说，Pulumi Service 不需要任何 Cloud 的权限。</p>
 <p>当线下部署 Pulumi Service 时架构与上图类似，区别在于使用的不是公共域名而是用户设置的私有域名。</p>
@@ -832,14 +832,14 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>不同 URN 的 Resource 之间是被认为没有任何关联的。例如当你改变了某个资源导致 URN 发生变化时，Pulumi 的行为是删除旧 URN 的资源，创建新 URN 的资源。这意味着，Pulumi 调用的是 create 和 delete 操作，而不是 update 和 replace 操作。</p>
-<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img4.png" title="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img4.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img4.png">
+<a class="lightgallery" href="/posts/cloud/cloud_practice/use-pulumi/img4.png" title="/posts/cloud/cloud_practice/use-pulumi/img4.png" data-thumbnail="/posts/cloud/cloud_practice/use-pulumi/img4.png">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
             data-src="img4.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img4.png, img4.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img4.png 2x"
+            data-srcset="/posts/cloud/cloud_practice/use-pulumi/img4.png, img4.png 1.5x, /posts/cloud/cloud_practice/use-pulumi/img4.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/img4.png" />
+            alt="/posts/cloud/cloud_practice/use-pulumi/img4.png" />
     </a>
 <h3 id="52-resource-options">5.2 Resource Options</h3>
 <p>所有的 Resource 创建时可以传入一些选项来控制一些行为，例如：</p>
@@ -1348,29 +1348,30 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-04-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/28581b6222059b3629cfba69a94a6f6fe6516bd1" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 28581b6222059b3629cfba69a94a6f6fe6516bd1: post: pulumi">
-                                    <i class="fas fa-hashtag fa-fw"></i>28581b6</a></span>
+                <span>更新于 2022-04-15&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/09268198a0aaed59bc816a6e7e1577bbadf0cf10" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 09268198a0aaed59bc816a6e7e1577bbadf0cf10: post: crossplane">
+                                    <i class="fas fa-hashtag fa-fw"></i>0926819</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/index.md" target="_blank">阅读原始文档</a>
+                            <a class="link-to-markdown" href="/posts/cloud/cloud_practice/use-pulumi/index.md" target="_blank">阅读原始文档</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/" data-title="Pulumi 入门"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/" data-title="Pulumi 入门"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/" data-title="Pulumi 入门"><i class="fab fa-evernote fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/" data-title="Pulumi 入门"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/" data-title="Pulumi 入门"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/" data-title="Pulumi 入门"><i class="fab fa-evernote fa-fw"></i></a></span>
             </div>
         </div>
     </div>
 
     <div class="post-info-more">
-        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
         <section>
             <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud/cloud_native/kubernetes/k8s_practice/debug-pod/" class="prev" rel="prev" title="K8s 实践 - 调试 Pod"><i class="fas fa-angle-left fa-fw"></i>K8s 实践 - 调试 Pod</a></div>
+    <div class="post-nav"><a href="/posts/cloud/cloud_practice/debug-pod/" class="prev" rel="prev" title="Kubernetes 中调试 Pod"><i class="fas fa-angle-left fa-fw"></i>Kubernetes 中调试 Pod</a>
+            <a href="/posts/cloud/cloud_practice/use-crossplane/" class="next" rel="next" title="Crossplane 入门">Crossplane 入门<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

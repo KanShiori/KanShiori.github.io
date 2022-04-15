@@ -3,19 +3,12 @@
         <title>k8s - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/k8s/</link>
         <description>k8s - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 06 Apr 2022 21:58:22 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
-    <title>Pulumi 入门</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/</link>
-    <pubDate>Wed, 06 Apr 2022 21:58:22 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/</guid>
-    <description><![CDATA[内容基本照搬的官方文档：Architecture &amp; Concepts。 Pulumi 是一个支持 IaC 的平台。与其他 IaC 工具最大的不同时，Pulumi 允许使用熟悉]]></description>
-</item><item>
-    <title>K8s 实践 - 调试 Pod</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/debug-pod/</link>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+    <title>Kubernetes 中调试 Pod</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</link>
     <pubDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/debug-pod/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</guid>
     <description><![CDATA[1 Ephemeral Container 可以使用 kubectl debug 来给一个运行中的 Pod 添加一个 Ephemeral Container 运行，并且不需要重启 Pod。 版本要求 Ephemeral Container 需要 Kubernetes 1.23 版本以上，目前还是处于 beta 状态。 1 kubectl debug -it ${pod_name} --image=busybox --target=${container_name}]]></description>
 </item><item>
     <title>Kubernetes 认证与鉴权机制</title>
@@ -39,11 +32,11 @@
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</guid>
     <description><![CDATA[1 Update 机制 Update 机制 指的是通过 HTTP Put 方法 上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
 </item><item>
-    <title>K8s 实践 - 使用 External DNS</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-external-dns/</link>
+    <title>Kubernetes 使用 ExternalDNS 同步 DNS</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/use-external-dns/</link>
     <pubDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-external-dns/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/use-external-dns/</guid>
     <description><![CDATA[1 概述 ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责]]></description>
 </item><item>
     <title>Kubernetes HPA 与 VPA</title>
@@ -67,11 +60,18 @@
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-implementation/</guid>
     <description><![CDATA[1 概述 以一个云存储作为 Volume 为例，其架构图如下： Deploy PVC - 用户 Deploy PVC 对象。 Provision Volume - PV Controller 基于 StorageClass 创建一个 Volume（无法绑定已有 PV 的情况下），并创建 PV 对象]]></description>
 </item><item>
-    <title>K8s 实践 - Network Across Cluster</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/across-kubernetes/</link>
+    <title>Kubernetes 跨集群网络联通</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/across-kubernetes/</link>
     <pubDate>Thu, 30 Sep 2021 07:25:32 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/across-kubernetes/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/across-kubernetes/</guid>
     <description><![CDATA[Kubernetes 实践 主要记录一些自己的一些部署实践。 1 目标 最近在看 TiDB 的 Multi Kubernetes 集群部署方案，TiDB 本身是灵活扩容的分布式数据库，因此部署前需要确保 Multi Kubernetes 之间服]]></description>
+</item><item>
+    <title>K8s 编程 - 8 - Custom Scheduler</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/8-extend-scheduler/</link>
+    <pubDate>Wed, 22 Sep 2021 12:19:47 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/8-extend-scheduler/</guid>
+    <description><![CDATA[kube-scheduler 负责集群资源的调度，原生的 Kubernetes Scheduler 可以满足大多数情况的需求。不过针对于不同业务的特殊的调度需求，Kubernetes 提供了多种扩展调度器的方式]]></description>
 </item></channel>
 </rss>

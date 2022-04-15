@@ -1,4 +1,4 @@
-# K8s 实践 - 调试 Pod
+# Kubernetes 中调试 Pod
 
 
 ## 1 Ephemeral Container

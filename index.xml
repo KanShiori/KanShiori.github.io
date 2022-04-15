@@ -3,21 +3,28 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 06 Apr 2022 21:58:22 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 14 Apr 2022 20:29:51 &#43;0800</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Crossplane 入门</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/use-crossplane/</link>
+    <pubDate>Thu, 14 Apr 2022 20:29:51 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/use-crossplane/</guid>
+    <description><![CDATA[与 Pulumi 一样，Crossplane 也是一个 Iac 的平台。Crossplane 与 Kubernetes 的集成度更高，允许用户通过创建 Kubernetes 资源来创建云资源。 1 基本概念 Crossplane 的一个]]></description>
+</item><item>
     <title>Pulumi 入门</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/</link>
     <pubDate>Wed, 06 Apr 2022 21:58:22 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-pulumi/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/</guid>
     <description><![CDATA[内容基本照搬的官方文档：Architecture &amp; Concepts。 Pulumi 是一个支持 IaC 的平台。与其他 IaC 工具最大的不同时，Pulumi 允许使用熟悉]]></description>
 </item><item>
-    <title>K8s 实践 - 调试 Pod</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/debug-pod/</link>
+    <title>Kubernetes 中调试 Pod</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</link>
     <pubDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/debug-pod/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</guid>
     <description><![CDATA[1 Ephemeral Container 可以使用 kubectl debug 来给一个运行中的 Pod 添加一个 Ephemeral Container 运行，并且不需要重启 Pod。 版本要求 Ephemeral Container 需要 Kubernetes 1.23 版本以上，目前还是处于 beta 状态。 1 kubectl debug -it ${pod_name} --image=busybox --target=${container_name}]]></description>
 </item><item>
     <title>Kubernetes 认证与鉴权机制</title>
@@ -55,11 +62,11 @@
     <guid>https://KanShiori.github.io/posts/net/dns/</guid>
     <description><![CDATA[主机使用 IP 地址作为通信地址是很难记忆的，用户更愿意使用比较容易记忆的 Hostname。而 Domain Name System（DNS）就是用于将 Domain 转换为 IP 地址。]]></description>
 </item><item>
-    <title>K8s 实践 - 使用 External DNS</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-external-dns/</link>
+    <title>Kubernetes 使用 ExternalDNS 同步 DNS</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/use-external-dns/</link>
     <pubDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</pubDate>
     <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_practice/use-external-dns/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/use-external-dns/</guid>
     <description><![CDATA[1 概述 ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责]]></description>
 </item><item>
     <title>Kubernetes HPA 与 VPA</title>
@@ -68,12 +75,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/</guid>
     <description><![CDATA[HPA 的核心原理就是就是从 Metric Server 采集指标数据，然后根据缩扩容算法进行计算，得到目标的 Pod 副本数量。当目标 Pod 副本数量与当前副本数量不同时，HPA Controller 调用]]></description>
-</item><item>
-    <title>AWS 学习 - 8 - S3</title>
-    <link>https://KanShiori.github.io/posts/cloud/aws_learning/8-s3/</link>
-    <pubDate>Mon, 06 Dec 2021 21:07:09 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/8-s3/</guid>
-    <description><![CDATA[1 Storage Type 为了不同的存储场景，S3 提供了多种类型的存储类型。 存储类型 使用场景 S3 Standard 经常访问的数据 S3 Intelligent-Tiering 动态自动优化访问模式 S3 Standard-IA 不经常访问数据，会跨多]]></description>
 </item></channel>
 </rss>

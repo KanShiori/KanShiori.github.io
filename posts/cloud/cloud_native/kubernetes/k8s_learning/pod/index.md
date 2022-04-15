@@ -364,4 +364,4 @@ init container 与应用容器的区别如下：
 
 有时由于容器崩溃或者容器镜像不包含 debug 工具，使得通过 `kubectl exec` 方式不能很好的进行调试。v1.18 版本开始，新添加一个 `kubectl debug` 命令，用于创建 **`ephemeral container`** 来进行 debug。
 
-具体使用方式可以参考：[**Ephemeral Container**](../../k8s_practice/debug-pod/#1-ephemeral-container)。
+具体使用方式可以参考：[**Ephemeral Container**](../../../../cloud_practice/debug-pod/#1-ephemeral-container)。

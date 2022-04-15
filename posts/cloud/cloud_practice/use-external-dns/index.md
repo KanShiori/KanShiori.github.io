@@ -1,4 +1,4 @@
-# K8s 实践 - 使用 External DNS
+# Kubernetes 使用 ExternalDNS 同步 DNS
 
 
 ## 1 概述
