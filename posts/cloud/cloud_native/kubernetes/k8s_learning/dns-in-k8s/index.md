@@ -1,4 +1,4 @@
-# Kubernetes 集群中的 DNS
+# Kubernetes - 集群中的 DNS
 
 
 ## 1 Pod 的 DNS

@@ -5,30 +5,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Kubernetes StatefulSet - Shiori&#39;s Blog</title><meta name="Description" content="StatefulSet 概念与使用"><meta property="og:title" content="Kubernetes StatefulSet" />
+        <title>Kubernetes - StatefulSet - Shiori&#39;s Blog</title><meta name="Description" content="StatefulSet 概念与使用"><meta property="og:title" content="Kubernetes - StatefulSet" />
 <meta property="og:description" content="StatefulSet 概念与使用" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/statefulset/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-09T11:55:46+00:00" />
-<meta property="article:modified_time" content="2022-04-13T21:14:47+08:00" />
+<meta property="article:modified_time" content="2022-04-28T22:33:45+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
-<meta name="twitter:title" content="Kubernetes StatefulSet"/>
+<meta name="twitter:title" content="Kubernetes - StatefulSet"/>
 <meta name="twitter:description" content="StatefulSet 概念与使用"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
 <meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/statefulset/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rbac/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/crd/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
-        "headline": "Kubernetes StatefulSet",
+        "headline": "Kubernetes - StatefulSet",
         "inLanguage": "zh-CN",
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/statefulset\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1745 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/statefulset\/","datePublished": "2021-06-09T11:55:46+00:00","dateModified": "2022-04-13T21:14:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/statefulset\/","datePublished": "2021-06-09T11:55:46+00:00","dateModified": "2022-04-28T22:33:45+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -116,7 +116,7 @@
                 <div class="container"><div class="toc" id="toc-auto">
             <h2 class="toc-title">目录</h2>
             <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">Kubernetes StatefulSet</h1><div class="post-meta">
+        </div><article class="page single"><h1 class="single-title animated flipInX">Kubernetes - StatefulSet</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>Kubernetes 学习</a></span></div>
             <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-09">2021-06-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1745 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 4 分钟&nbsp;</div>
@@ -174,7 +174,7 @@
 <p><strong>固定的持久化存储</strong>，通过 PVC；</p>
 </li>
 <li>
-<p><strong>固定的网络标识</strong>，通过 <a href="../service-and-endpoint/#5-headless-service" rel=""><strong>Headless Service</strong></a> 使得 <code>&lt;podname&gt;.&lt;service&gt;.&lt;namespace&gt;</code> 与固定命名的 Pod 绑定；</p>
+<p><strong>固定的网络标识</strong>，通过 <a href="../service-and-endpoint/#6-headless-service" rel=""><strong>Headless Service</strong></a> 使得 <code>&lt;podname&gt;.&lt;service&gt;.&lt;namespace&gt;</code> 与固定命名的 Pod 绑定；</p>
 </li>
 <li>
 <p><strong>按照编号进行有序的启动与停止</strong>；</p>
@@ -397,11 +397,11 @@
 <p>不过也许还有好多场景 StatefulSet 也无法满足，可能需要更多的开发。</p>
 <p>需要弄清楚以下几点：</p>
 <ul>
-<li><a href="#1.1-%e2%80%9c%e7%8a%b6%e6%80%81%e2%80%9d%e6%98%af%e4%bb%80%e4%b9%88" rel=""><strong>为了需要有状态应用</strong></a></li>
-<li><a href="#1.1-%e5%a6%82%e4%bd%95%e4%bf%9d%e5%ad%98%e2%80%9c%e7%8a%b6%e6%80%81%e2%80%9d" rel=""><strong>如何为 Pod 实现有状态</strong></a></li>
-<li><a href="#2.1-%e5%ae%9a%e4%b9%89" rel=""><strong>StatefulSet 基本定义与使用</strong></a></li>
-<li><a href="#2.3-Pod-%e7%ae%a1%e7%90%86%e7%ad%96%e7%95%a5" rel=""><strong>StatefulSet 的 Pod 管理策略</strong></a></li>
-<li><a href="#2.4-Pod-%e5%8d%87%e7%ba%a7%e7%ad%96%e7%95%a5" rel=""><strong>StatefulSet 的升级策略</strong></a></li>
+<li><a href="#11-%e7%8a%b6%e6%80%81-%e6%98%af%e4%bb%80%e4%b9%88" rel=""><strong>为了需要有状态应用</strong></a></li>
+<li><a href="#11-%e5%a6%82%e4%bd%95%e4%bf%9d%e5%ad%98-%e7%8a%b6%e6%80%81" rel=""><strong>如何为 Pod 实现有状态</strong></a></li>
+<li><a href="#21-spec" rel=""><strong>StatefulSet 基本定义与使用</strong></a></li>
+<li><a href="#24-pod-%e7%ae%a1%e7%90%86%e7%ad%96%e7%95%a5" rel=""><strong>StatefulSet 的 Pod 管理策略</strong></a></li>
+<li><a href="#25-pod-%e5%8d%87%e7%ba%a7%e7%ad%96%e7%95%a5" rel=""><strong>StatefulSet 的升级策略</strong></a></li>
 </ul>
 <h2 id="参考">参考</h2>
 <ul>
@@ -411,8 +411,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-04-13&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/fd791b9bb7576b4878fb404c63091067e409e0f2" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) fd791b9bb7576b4878fb404c63091067e409e0f2: optimize">
-                                    <i class="fas fa-hashtag fa-fw"></i>fd791b9</a></span>
+                <span>更新于 2022-04-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/ddd0779117c377f23aa5fdd7f9770f97363cf668" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) ddd0779117c377f23aa5fdd7f9770f97363cf668: optimize">
+                                    <i class="fas fa-hashtag fa-fw"></i>ddd0779</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
@@ -421,7 +421,7 @@
                             <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/statefulset/index.md" target="_blank">阅读原始文档</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/statefulset/" data-title="Kubernetes StatefulSet"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/statefulset/" data-title="Kubernetes StatefulSet"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/statefulset/" data-title="Kubernetes StatefulSet"><i class="fab fa-evernote fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/statefulset/" data-title="Kubernetes - StatefulSet"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/statefulset/" data-title="Kubernetes - StatefulSet"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/statefulset/" data-title="Kubernetes - StatefulSet"><i class="fab fa-evernote fa-fw"></i></a></span>
             </div>
         </div>
     </div>
@@ -433,8 +433,8 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/rbac/" class="prev" rel="prev" title="Kubernetes RBAC 授权机制"><i class="fas fa-angle-left fa-fw"></i>Kubernetes RBAC 授权机制</a>
-            <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/crd/" class="next" rel="next" title="Kubernetes CRD">Kubernetes CRD<i class="fas fa-angle-right fa-fw"></i></a></div>
+    <div class="post-nav"><a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/rbac/" class="prev" rel="prev" title="Kubernetes - RBAC 授权机制"><i class="fas fa-angle-left fa-fw"></i>Kubernetes - RBAC 授权机制</a>
+            <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/crd/" class="next" rel="next" title="Kubernetes - CRD">Kubernetes - CRD<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

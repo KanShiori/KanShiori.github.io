@@ -1,4 +1,4 @@
-# Kubernetes StatefulSet
+# Kubernetes - StatefulSet
 
 
 ## 1 概述
@@ -35,7 +35,7 @@ Deployment 与 RelicSets 就是基于这个理念设计的，它们仅仅保证 
 
 * **固定的持久化存储**，通过 PVC；
 
-* **固定的网络标识**，通过 [**Headless Service**](../service-and-endpoint/#5-headless-service) 使得 `<podname>.<service>.<namespace>` 与固定命名的 Pod 绑定；
+* **固定的网络标识**，通过 [**Headless Service**](../service-and-endpoint/#6-headless-service) 使得 `<podname>.<service>.<namespace>` 与固定命名的 Pod 绑定；
 
 * **按照编号进行有序的启动与停止**；
 
@@ -176,11 +176,11 @@ StatefulSet 在原理上设计的让人感觉很优雅，仅仅从固定的 Pod 
 不过也许还有好多场景 StatefulSet 也无法满足，可能需要更多的开发。
 
 需要弄清楚以下几点：
-* [**为了需要有状态应用**](#1.1-“状态”是什么)
-* [**如何为 Pod 实现有状态**](#1.1-如何保存“状态”)
-* [**StatefulSet 基本定义与使用**](#2.1-定义)
-* [**StatefulSet 的 Pod 管理策略**](#2.3-Pod-管理策略)
-* [**StatefulSet 的升级策略**](#2.4-Pod-升级策略)
+* [**为了需要有状态应用**](#11-状态-是什么)
+* [**如何为 Pod 实现有状态**](#11-如何保存-状态)
+* [**StatefulSet 基本定义与使用**](#21-spec)
+* [**StatefulSet 的 Pod 管理策略**](#24-pod-管理策略)
+* [**StatefulSet 的升级策略**](#25-pod-升级策略)
 
 ## 参考
 * [**《Kubernetes 指南》**](https://kubernetes.feisky.xyz/concepts/objects/statefulset)

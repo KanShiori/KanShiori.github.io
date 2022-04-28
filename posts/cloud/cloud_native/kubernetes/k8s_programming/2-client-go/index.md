@@ -598,7 +598,7 @@ func DefaultControllerRateLimiter() *RateLimiter
 {{< image src="img4.png" >}}
 
 1. 代码中，我们得到一个对象，可以通过 [**Scheme**](#74-scheme) 得到对应的 [**GroupVersionKind**](#71-groupversionkind)
-2. 从 GroupVersionKind，通过 [**RESTMapper**](#73-rest-mapping) 可以映射到对应的 [**GroupVersionResource**](#72-groupversionresource)
+2. 从 GroupVersionKind，通过 [**RESTMapper**](#73-rest-map) 可以映射到对应的 [**GroupVersionResource**](#72-groupversionresource)
 3. client 基于 GroupVersionResource 就可以请求对应的 HTTP API Path
 
 ### 7.1 GroupVersionKind

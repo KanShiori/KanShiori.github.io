@@ -5,30 +5,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>AWS 学习 - 6 - IAM - Shiori&#39;s Blog</title><meta name="Description" content="AWS IAM 相关概念"><meta property="og:title" content="AWS 学习 - 6 - IAM" />
+        <title>AWS - IAM - Shiori&#39;s Blog</title><meta name="Description" content="AWS IAM 相关概念"><meta property="og:title" content="AWS - IAM" />
 <meta property="og:description" content="AWS IAM 相关概念" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/6-iam/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/iam/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-01T13:47:56+00:00" />
-<meta property="article:modified_time" content="2022-03-24T21:07:12+08:00" />
+<meta property="article:modified_time" content="2022-04-24T22:16:33+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
-<meta name="twitter:title" content="AWS 学习 - 6 - IAM"/>
+<meta name="twitter:title" content="AWS - IAM"/>
 <meta name="twitter:description" content="AWS IAM 相关概念"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/aws_learning/6-iam/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/aws_learning/5-vpc-and-aws/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/aws_learning/7-elb/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/aws_learning/iam/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-aws/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/aws_learning/elb/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
-        "headline": "AWS 学习 - 6 - IAM",
+        "headline": "AWS - IAM",
         "inLanguage": "zh-CN",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/6-iam\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  2895 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/6-iam\/","datePublished": "2021-12-01T13:47:56+00:00","dateModified": "2022-03-24T21:07:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/iam\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  3468 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/iam\/","datePublished": "2021-12-01T13:47:56+00:00","dateModified": "2022-04-24T22:16:33+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -116,10 +116,10 @@
                 <div class="container"><div class="toc" id="toc-auto">
             <h2 class="toc-title">目录</h2>
             <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">AWS 学习 - 6 - IAM</h1><div class="post-meta">
+        </div><article class="page single"><h1 class="single-title animated flipInX">AWS - IAM</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>AWS 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-01">2021-12-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2895 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-01">2021-12-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3468 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -150,6 +150,12 @@
     </li>
     <li><a href="#5-permission-boundary">5 Permission Boundary</a></li>
     <li><a href="#6-policy-评估">6 Policy 评估</a></li>
+    <li><a href="#7-security-token-service">7 Security Token Service</a>
+      <ul>
+        <li><a href="#71-申请-token-的接口">7.1 申请 Token 的接口</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
             </div><div class="content" id="content"><p>使用 AWS 时，不同的员工或者应用程序有着不同的 AWS 资源需求，通过 IAM 对其访问权限进行控制。</p>
@@ -176,7 +182,7 @@
 
 
 
-    <br><img src="/posts/cloud/aws_learning/6-iam/img1.png"/>
+    <br><img src="/posts/cloud/aws_learning/iam/img1.png"/>
 
 
 </p>
@@ -436,7 +442,7 @@
 
 
 
-    <br><img src="/posts/cloud/aws_learning/6-iam/img2.png"/>
+    <br><img src="/posts/cloud/aws_learning/iam/img2.png"/>
 
 
 </p>
@@ -488,21 +494,71 @@
 </span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="nx">Deny</span>  <span class="c1">// 隐式拒绝
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div></div><div class="post-footer" id="post-footer">
+</div><h2 id="7-security-token-service">7 Security Token Service</h2>
+<p>使用 AssumeRole 提供的临时权限本质上，是为 Role 申请了一个 Token，用以访问 AWS。这些临时的 Token 都是由 Security Token Service 来颁发的，简称为 STS。</p>
+<p>使用 Token 与 IAM User 的差异主要在于：</p>
+<ul>
+<li>Token 是临时的，有着过期时间，过期后不再能够通过身份认证；</li>
+<li>Token 不是跟随用户的，需要通过 AWS API 动态申请的；</li>
+</ul>
+<h3 id="71-申请-token-的接口">7.1 申请 Token 的接口</h3>
+<p>AWS API 中有多个接口可用于请求 STS 以获取 Token：</p>
+<ul>
+<li>
+<p>AssumeRole</p>
+<p>AssumeRole 为 IAM User 获取 Role 对应的 Token。</p>
+<p>Token 有效时间默认为 1h，支持设置 15min 到 Role Session 持续时间。</p>
+</li>
+<li>
+<p>AssumeRoleWithWebIdentity</p>
+<p>AssumeRoleWithWebIdentity 为经过第三方身份认证的用户获取 Role 对应的 TOken。这样配合着第三方的认证也称为：Web <strong><ruby>联合认证<rt>identity federation</rt></ruby></strong>。</p>
+<p>Token 有效时间默认为 1h，支持设置 15min 到 Role Session 持续时间。</p>
+<p>第三方的认证包括：Login with Amazon、Facebook、Google 和 OIDC。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>Kubernetes 中就是使用 OIDC 的访问来获取 STS，使得 Pod 内能够访问 AWS 资源。甚至能够跨云 Kubernetes 访问 AWS。</p>
+<p>AWS 提供了示例 <a href="https://web-identity-federation-playground.s3.amazonaws.com/index.html" target="_blank" rel="noopener noreffer">**Web Identity Federation Playground **</a>。</p>
+</div>
+        </div>
+    </div>
+</li>
+<li>
+<p>AssumeRoleWithSAML</p>
+<p>AssumeRoleWithSAML 为基于 SAML 实现的身份系统的用户获取 Role 对应的 TOken。</p>
+<p>Token 有效时间默认为 1h，支持设置 15min 到 Role Session 持续时间。</p>
+</li>
+<li>
+<p>GetFederationToken</p>
+<p>GetFederationToken 为联合身份用户获取 Role 对应的 TOken。</p>
+<p>不同于 <code>AssumeRole</code>，该接口的默认有效期为 12h 而不是 1h，并且支持设置 15min 到 36h 的有效时间。较长的有效事件以减少获取新 Token 的次数。</p>
+</li>
+<li>
+<p>GetSessionToken</p>
+<p>GetSessionToken 为 IAM User 获取 Role 对应的 Token，通过支持 MFA 提供更高的安全性。</p>
+</li>
+</ul>
+<h2 id="参考">参考</h2>
+<ul>
+<li>官方文档：<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html" target="_blank" rel="noopener noreffer"><strong>IAM User Guide</strong></a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-03-24&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877: Adjust the directory structure">
-                                    <i class="fas fa-hashtag fa-fw"></i>dc3de05</a></span>
+                <span>更新于 2022-04-24&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/5405dec1264bdecb996ec3bdd7edfa2e1025c327" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 5405dec1264bdecb996ec3bdd7edfa2e1025c327: rename">
+                                    <i class="fas fa-hashtag fa-fw"></i>5405dec</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/cloud/aws_learning/6-iam/index.md" target="_blank">阅读原始文档</a>
+                            <a class="link-to-markdown" href="/posts/cloud/aws_learning/iam/index.md" target="_blank">阅读原始文档</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/6-iam/" data-title="AWS 学习 - 6 - IAM"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/6-iam/" data-title="AWS 学习 - 6 - IAM"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/6-iam/" data-title="AWS 学习 - 6 - IAM"><i class="fab fa-evernote fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/iam/" data-title="AWS - IAM"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/iam/" data-title="AWS - IAM"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/iam/" data-title="AWS - IAM"><i class="fab fa-evernote fa-fw"></i></a></span>
             </div>
         </div>
     </div>
@@ -514,8 +570,8 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud/aws_learning/5-vpc-and-aws/" class="prev" rel="prev" title="AWS 学习 - 5 - VPC 与 Service 通信"><i class="fas fa-angle-left fa-fw"></i>AWS 学习 - 5 - VPC 与 Service 通信</a>
-            <a href="/posts/cloud/aws_learning/7-elb/" class="next" rel="next" title="AWS 学习 - 7 - Elastic Load Balancing">AWS 学习 - 7 - Elastic Load Balancing<i class="fas fa-angle-right fa-fw"></i></a></div>
+    <div class="post-nav"><a href="/posts/cloud/aws_learning/vpc-and-aws/" class="prev" rel="prev" title="AWS - VPC 与 Service 通信"><i class="fas fa-angle-left fa-fw"></i>AWS - VPC 与 Service 通信</a>
+            <a href="/posts/cloud/aws_learning/elb/" class="next" rel="next" title="AWS - ELB">AWS - ELB<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

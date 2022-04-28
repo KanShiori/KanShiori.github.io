@@ -1,4 +1,4 @@
-# Kubernetes 资源更新机制与 CLI 实现
+# Kubernetes - 资源更新机制与 CLI 实现
 
 
 ## 1 Update 机制

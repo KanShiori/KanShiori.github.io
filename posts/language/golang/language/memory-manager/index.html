@@ -10,7 +10,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/language/memory-manager/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-01-05T18:28:41+08:00" />
-<meta property="article:modified_time" content="2022-03-28T22:54:52+08:00" />
+<meta property="article:modified_time" content="2022-04-28T22:33:45+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -27,8 +27,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/memory-manager\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  15458 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/memory-manager\/","datePublished": "2021-01-05T18:28:41+08:00","dateModified": "2022-03-28T22:54:52+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  15444 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/memory-manager\/","datePublished": "2021-01-05T18:28:41+08:00","dateModified": "2022-04-28T22:33:45+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Go 内存管理总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw"></i>Golang</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-05">2021-01-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 15458 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-05">2021-01-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 15444 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 31 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -203,7 +203,6 @@
 <p><strong>总结系列的文章</strong>是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。</p>
 </blockquote>
 <p>本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。</p>
-<p>所以学习的书籍与文章见 <a href="#%e5%8f%82%e8%80%83" rel=""><strong>参考</strong></a>。</p>
 <p>下面代码都是基于 go 1.15.6。</p>
 <h2 id="1-linux-内存模型">1 Linux 内存模型</h2>
 <p>所有语言的内存管理，在 Linux 上都是在以基本的进程内存模型基础上实现的，首先需要知道 Linux 进程内存布局。</p>
@@ -3292,8 +3291,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-03-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/d622213853321422ce287440e54dd260edfd7925" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) d622213853321422ce287440e54dd260edfd7925: fix internal link">
-                                    <i class="fas fa-hashtag fa-fw"></i>d622213</a></span>
+                <span>更新于 2022-04-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/ddd0779117c377f23aa5fdd7f9770f97363cf668" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) ddd0779117c377f23aa5fdd7f9770f97363cf668: optimize">
+                                    <i class="fas fa-hashtag fa-fw"></i>ddd0779</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>

@@ -1,4 +1,4 @@
-# AWS 学习 - 4 - VPC 与 Internet 通信
+# AWS - VPC 与 Internet 通信
 
 
 ## 1 Internet Gateway

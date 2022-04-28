@@ -502,7 +502,7 @@ func Convert_wardle_FlunderSpec_To_v1alpha1_FlunderSpec(in *wardle.FlunderSpec, 
 
 #### 3.3.1 Default
 
-除了 Convert 函数之外，External Version 类型也可以设置 Default 函数。在 [**3.1.1 处理流程**](#311-处理流程) 中提到过，APIServer 会在 External Version 转换到 Internal Version 时进行默认值处理。
+除了 Convert 函数之外，External Version 类型也可以设置 Default 函数。在 [**3.1.1 处理流程**](#31-处理流程) 中提到过，APIServer 会在 External Version 转换到 Internal Version 时进行默认值处理。
 
 同样，生成器也会自动生成 Default 相关函数，位于文件 **"pkg/apis/\<group>/\<version>/zz_generated.defaults.go"**，但是底层设置默认值的函数还是要我们自己编写。
 ```go

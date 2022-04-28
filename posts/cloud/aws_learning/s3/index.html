@@ -5,30 +5,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>AWS 学习 - 8 - S3 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="AWS 学习 - 8 - S3" />
+        <title>AWS - S3 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="AWS - S3" />
 <meta property="og:description" content="1 Storage Type 为了不同的存储场景，S3 提供了多种类型的存储类型。 存储类型 使用场景 S3 Standard 经常访问的数据 S3 Intelligent-Tiering 动态自动优化访问模式 S3 Standard-IA 不经常访问数据，会跨多" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/8-s3/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/s3/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-06T21:07:09+08:00" />
-<meta property="article:modified_time" content="2022-03-24T21:07:12+08:00" />
+<meta property="article:modified_time" content="2022-04-28T22:33:45+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
 
-<meta name="twitter:title" content="AWS 学习 - 8 - S3"/>
+<meta name="twitter:title" content="AWS - S3"/>
 <meta name="twitter:description" content="1 Storage Type 为了不同的存储场景，S3 提供了多种类型的存储类型。 存储类型 使用场景 S3 Standard 经常访问的数据 S3 Intelligent-Tiering 动态自动优化访问模式 S3 Standard-IA 不经常访问数据，会跨多"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/aws_learning/8-s3/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/aws_learning/7-elb/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/aws_learning/s3/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/aws_learning/elb/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
-        "headline": "AWS 学习 - 8 - S3",
+        "headline": "AWS - S3",
         "inLanguage": "zh-CN",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/8-s3\/"
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/s3\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  3891 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/8-s3\/","datePublished": "2021-12-06T21:07:09+08:00","dateModified": "2022-03-24T21:07:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/s3\/","datePublished": "2021-12-06T21:07:09+08:00","dateModified": "2022-04-28T22:33:45+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -116,7 +116,7 @@
                 <div class="container"><div class="toc" id="toc-auto">
             <h2 class="toc-title">目录</h2>
             <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">AWS 学习 - 8 - S3</h1><div class="post-meta">
+        </div><article class="page single"><h1 class="single-title animated flipInX">AWS - S3</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>AWS 学习</a></span></div>
             <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-06">2021-12-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3891 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
@@ -287,7 +287,7 @@
 
 
 
-    <br><img src="/posts/cloud/aws_learning/8-s3/img1.png"/>
+    <br><img src="/posts/cloud/aws_learning/s3/img1.png"/>
 
 
 </p>
@@ -328,7 +328,7 @@
 </li>
 <li>
 <p>将 Object 复制到不同的 Storage Type 的 Bucket</p>
-<p>在 <a href="#storage-type" rel=""><strong>Storage Type</strong></a> 中介绍了各种的存储类型，可以使用 Replication 将 Object 复制到其他存储类型的 Bucket。</p>
+<p>在 <a href="#1-storage-type" rel=""><strong>Storage Type</strong></a> 中介绍了各种的存储类型，可以使用 Replication 将 Object 复制到其他存储类型的 Bucket。</p>
 </li>
 <li>
 <p>维护 Object 多个副本，每个副本提供给用户不同的访问权限</p>
@@ -453,7 +453,7 @@
 <p>S3 中，Bucket 与 Object 是最基本的资源，并且它们有着相关的子资源。</p>
 <p>Bucket 的子资源：</p>
 <ul>
-<li>lifecycle - <a href="#s3-lifecycle" rel=""><strong>生命周期配置信息</strong></a></li>
+<li>lifecycle - <a href="#21-s3-lifecycle" rel=""><strong>生命周期配置信息</strong></a></li>
 <li>website - 使用 Bucket 存储静态网站时的配置信息</li>
 <li>versioning - Bucket Versioning 的配置</li>
 <li>policy 和 acl - 保存存储访问权限信息</li>
@@ -572,17 +572,17 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-03-24&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877: Adjust the directory structure">
-                                    <i class="fas fa-hashtag fa-fw"></i>dc3de05</a></span>
+                <span>更新于 2022-04-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/ddd0779117c377f23aa5fdd7f9770f97363cf668" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) ddd0779117c377f23aa5fdd7f9770f97363cf668: optimize">
+                                    <i class="fas fa-hashtag fa-fw"></i>ddd0779</a></span>
             </div>
             <div class="post-info-license"></div>
         </div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/cloud/aws_learning/8-s3/index.md" target="_blank">阅读原始文档</a>
+                            <a class="link-to-markdown" href="/posts/cloud/aws_learning/s3/index.md" target="_blank">阅读原始文档</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/8-s3/" data-title="AWS 学习 - 8 - S3"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/8-s3/" data-title="AWS 学习 - 8 - S3"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/8-s3/" data-title="AWS 学习 - 8 - S3"><i class="fab fa-evernote fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/s3/" data-title="AWS - S3"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/s3/" data-title="AWS - S3"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/s3/" data-title="AWS - S3"><i class="fab fa-evernote fa-fw"></i></a></span>
             </div>
         </div>
     </div>
@@ -594,8 +594,8 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud/aws_learning/7-elb/" class="prev" rel="prev" title="AWS 学习 - 7 - Elastic Load Balancing"><i class="fas fa-angle-left fa-fw"></i>AWS 学习 - 7 - Elastic Load Balancing</a>
-            <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/" class="next" rel="next" title="Kubernetes HPA 与 VPA">Kubernetes HPA 与 VPA<i class="fas fa-angle-right fa-fw"></i></a></div>
+    <div class="post-nav"><a href="/posts/cloud/aws_learning/elb/" class="prev" rel="prev" title="AWS - ELB"><i class="fas fa-angle-left fa-fw"></i>AWS - ELB</a>
+            <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/" class="next" rel="next" title="Kubernetes - HPA 与 VPA">Kubernetes - HPA 与 VPA<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

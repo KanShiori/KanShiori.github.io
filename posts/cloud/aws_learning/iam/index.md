@@ -1,4 +1,4 @@
-# AWS 学习 - 6 - IAM
+# AWS - IAM
 
 
 使用 AWS 时，不同的员工或者应用程序有着不同的 AWS 资源需求，通过 IAM 对其访问权限进行控制。
@@ -239,3 +239,56 @@ if AllAllow {
 
 return Deny  // 隐式拒绝
 ```
+
+## 7 Security Token Service
+
+使用 AssumeRole 提供的临时权限本质上，是为 Role 申请了一个 Token，用以访问 AWS。这些临时的 Token 都是由 Security Token Service 来颁发的，简称为 STS。
+
+使用 Token 与 IAM User 的差异主要在于：
+
+* Token 是临时的，有着过期时间，过期后不再能够通过身份认证；
+* Token 不是跟随用户的，需要通过 AWS API 动态申请的；
+
+### 7.1 申请 Token 的接口
+
+AWS API 中有多个接口可用于请求 STS 以获取 Token：
+
+* AssumeRole
+  
+  AssumeRole 为 IAM User 获取 Role 对应的 Token。
+
+  Token 有效时间默认为 1h，支持设置 15min 到 Role Session 持续时间。
+
+* AssumeRoleWithWebIdentity
+
+  AssumeRoleWithWebIdentity 为经过第三方身份认证的用户获取 Role 对应的 TOken。这样配合着第三方的认证也称为：Web [联合认证]^(identity federation)。
+
+  Token 有效时间默认为 1h，支持设置 15min 到 Role Session 持续时间。
+
+  第三方的认证包括：Login with Amazon、Facebook、Google 和 OIDC。
+
+  {{< admonition note Note>}}
+  Kubernetes 中就是使用 OIDC 的访问来获取 STS，使得 Pod 内能够访问 AWS 资源。甚至能够跨云 Kubernetes 访问 AWS。
+
+  AWS 提供了示例 [**Web Identity Federation Playground **](https://web-identity-federation-playground.s3.amazonaws.com/index.html)。
+  {{< /admonition >}}
+
+* AssumeRoleWithSAML
+  
+  AssumeRoleWithSAML 为基于 SAML 实现的身份系统的用户获取 Role 对应的 TOken。
+
+  Token 有效时间默认为 1h，支持设置 15min 到 Role Session 持续时间。
+
+* GetFederationToken
+  
+  GetFederationToken 为联合身份用户获取 Role 对应的 TOken。
+  
+  不同于 `AssumeRole`，该接口的默认有效期为 12h 而不是 1h，并且支持设置 15min 到 36h 的有效时间。较长的有效事件以减少获取新 Token 的次数。
+
+* GetSessionToken
+  
+  GetSessionToken 为 IAM User 获取 Role 对应的 Token，通过支持 MFA 提供更高的安全性。
+
+## 参考
+
+* 官方文档：[**IAM User Guide**](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html)

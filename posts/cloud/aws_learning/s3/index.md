@@ -1,4 +1,4 @@
-# AWS 学习 - 8 - S3
+# AWS - S3
 
 
 ## 1 Storage Type
@@ -109,7 +109,7 @@ Legal hold 也可以防止 object version 被覆盖或者删除，不过 Legal h
 
 * 将 Object 复制到不同的 Storage Type 的 Bucket
   
-  在 [**Storage Type**](#storage-type) 中介绍了各种的存储类型，可以使用 Replication 将 Object 复制到其他存储类型的 Bucket。
+  在 [**Storage Type**](#1-storage-type) 中介绍了各种的存储类型，可以使用 Replication 将 Object 复制到其他存储类型的 Bucket。
 
 * 维护 Object 多个副本，每个副本提供给用户不同的访问权限
 
@@ -239,7 +239,7 @@ Identity-based Policy 是以 S3 资源为对象，提供给被授予者相关 S3
 S3 中，Bucket 与 Object 是最基本的资源，并且它们有着相关的子资源。
 
 Bucket 的子资源：
-* lifecycle - [**生命周期配置信息**](#s3-lifecycle)
+* lifecycle - [**生命周期配置信息**](#21-s3-lifecycle)
 * website - 使用 Bucket 存储静态网站时的配置信息
 * versioning - Bucket Versioning 的配置
 * policy 和 acl - 保存存储访问权限信息

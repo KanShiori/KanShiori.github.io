@@ -1,4 +1,4 @@
-# Kubernetes Service 与 Endpoint
+# Kubernetes - Service 与 Endpoint
 
 
 ## 1 概述
@@ -49,7 +49,7 @@ spec:
   externalName: string
 ```
 * `spec.selector` ：用于 Service 选择被代理的 Pod；
-* `spec.type` ： Service 类型，见 [**Service 的类型**](#3-service-类型)；
+* `spec.type` ： Service 类型，见 [**Service 的类型**](#4-service-类型)；
 * `spec.clusterIP` ：固定的地址，为空那么随机提供；
 * `spec.sessionAffinity` ： 设置负载均衡策略；
 * `spec.ports` ：提供需要代理的协议，源端口，目的端口，宿主机端口（NodePort 类型）；

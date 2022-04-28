@@ -1,4 +1,4 @@
-# Kubernetes 认证与鉴权机制
+# Kubernetes - 认证与鉴权机制
 
 
 ## 1 概述
@@ -16,7 +16,7 @@ APIServer 支持多种认证与鉴权方式，不过无论经过哪种身份认�
 {{< find_img "img2.png" >}}
 
 {{< admonition note Note>}}
-ServiceAccount 认证后也会对应一个用户，Kubernetes 实际上是封装了一层。更多细节见 [**ServicerAccount Token**](#241-认证与鉴权)
+ServiceAccount 认证后也会对应一个用户，Kubernetes 实际上是封装了一层。更多细节见 [**ServicerAccount Token**](#24-serviceraccount-token)
 {{< /admonition >}}
 
 
@@ -40,7 +40,7 @@ APIServer 提供了 CA 证书颁发的接口，需要发送 **`CertificateSignin
 
 #### 2.1.1 认证原理
 
-{{< find_img "img4.png" >}}
+{{< image src="img4.png" height=220 >}}
 
 **Client 在连接 APIServer 后，提供 Client 证书与私钥，APIServer 检查是否是由 CA 证书签发**。
 
@@ -80,7 +80,7 @@ APIServer 支持预置 **`Static Token`**，后续能够通过 Token 访问集�
 
 #### 2.2.1 认证原理
 
-{{< find_img "img3.png" >}}
+{{< image src="img3.png" height=300 >}}
 
 APIServer 支持启动时指定一个 Static Token 文件，APIServer 会读取该文件中的 Token 作为可访问 APIServer 的 Token。
 
@@ -163,7 +163,7 @@ APIServer 启动参数设置 `--token-auth-file=${token_file}` 时，APIServer �
 
 #### 2.3.1 认证原理
 
-{{< find_img "img5.png" >}}
+{{< image src="img5.png" height=300 >}}
 
 Bootstrap Token 信息以 Secret 资源存储在 `kube-system` namespace 下，支持动态的管理和创建。
 
@@ -281,7 +281,7 @@ ServiceAccount 是最常用的认证方式，使用经过签名的 Token 来访�
 
 #### 2.4.1 认证原理
 
-{{< find_img "img6.png" >}}
+{{< image src="img6.png" height=300 >}}
 
 创建一个 ServiceAccount 资源时，Kubernetes 会在同 namespace 下创建对应的 Secret，其中包含了访问集群所需要的 Token。
 
@@ -383,7 +383,7 @@ APIServer 提供了一种基于 Webhook 的回调认证机制，APIServer 调用
 
 #### 2.6.1 认证原理
 
-{{< find_img "img7.png" >}}
+{{< image src="img7.png" height=300 >}}
 
 需要提供一个 kubeconfig 格式的配置文件给 APIServer，以描述 APIServer 如何访问 Webhook 服务：
 
@@ -477,7 +477,7 @@ Webhook 服务会回复相同的 `TokenReview` 消息，其中填充了 `status`
 
 APIServer 支持从 HTTP Header 中读取用户名（例如 `X-Remote-User`）。这一设计用于支持 Authentication Proxy：Proxy 在前面负责身份认证，认证成功后设置用户名的 HTTP Header，发送给 APIServer 进行权限判断。
 
-{{< find_img "img8.png" >}}
+{{< image src="img8.png" height=230 >}}
 
 #### 2.7.1 开启
 
@@ -493,7 +493,7 @@ APIServer 启动参数与 Proxy 相关的配置：
 
 开启匿名请求功能后，如果请求没有被任何身份认证显式的拒绝，则请求被视为 [匿名请求]^(Anonymous Requests)。这类请求会以用户 `system:anonymous` 和用户组 `system:unauthenticated` 进行鉴权。
 
-Kubernetes 1.6 之后，如果鉴权模式不是 [**AlwaysAllow**](#35-鉴权模块-alwaysdenyalwaysallow)，那么匿名访问默认是启动的。
+Kubernetes 1.6 之后，如果鉴权模式不是 [**AlwaysAllow**](#35-鉴权模块-alwaysdeny-alwaysallow)，那么匿名访问默认是启动的。
 
 不过，为 `*` 用户或 `*` 用户组赋予的访问权限的规则都不包含匿名用户，所以默认匿名用户是没有任何操作权限的，你必须显式的为用户 `system:anonymous` 和用户组 `system:unauthenticated` 赋予访问权限，才能让匿名请求执行操作。
 
@@ -599,7 +599,7 @@ ABAC 基于一个 Policy 文件来传入授权策略，APIServer 启动时读取
 
 #### 3.2.1 鉴权原理
 
-{{< find_img "img9.png" >}}
+{{< image src="img9.png" height=330 >}}
 
 Policy 文件中的每一行是一个 JSON，也被称为 Policy Object。例如：
 
@@ -668,7 +668,7 @@ APIServer 也支持基于 Webhook 的回调鉴权机制，APIServer 会向 Webho
 
 #### 3.4.1 鉴权原理
 
-{{< find_img "img10.png" >}}
+{{< image src="img10.png" height=350 >}}
 
 首先，依旧**需要一个配置文件 kubeconfig 格式的配置文件给 APIServer**，以描述 APIServer 如何访问 Webhook 服务：
 
@@ -786,7 +786,7 @@ Webhook 服务会回复相同的 `SubjectAccessReview` 消息，其中填充了 
 
 配置 APIServer 启动参数 `--authorization-mode=Webhook` 表明使用 Webhook 鉴权模块，使用 `--authorization-webhook-config-file=${file_path}` 来指定 Webhook 服务的配置文件。
 
-### 3.5 鉴权模块 AlwaysDeny/AlwaysAllow 
+### 3.5 鉴权模块 AlwaysDeny AlwaysAllow 
 
 AlwaysDeny 表明所有请求都拒绝（没有啥意义），AlwaysAllow 表示所有请求都允许。
 

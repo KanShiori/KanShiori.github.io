@@ -1,4 +1,4 @@
-# Kubernetes HPA 与 VPA
+# Kubernetes - HPA 与 VPA
 
 
 HPA 的核心原理就是就是从 Metric Server 采集指标数据，然后根据缩扩容算法进行计算，得到目标的 Pod 副本数量。当目标 Pod 副本数量与当前副本数量不同时，HPA Controller 调用指定的资源对象的 scale 操作，进行缩扩容。

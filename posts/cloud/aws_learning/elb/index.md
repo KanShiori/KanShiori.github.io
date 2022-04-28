@@ -1,4 +1,4 @@
-# AWS 学习 - 7 - Elastic Load Balancing
+# AWS - ELB
 
 
 ## 1 LB 的基本模型
