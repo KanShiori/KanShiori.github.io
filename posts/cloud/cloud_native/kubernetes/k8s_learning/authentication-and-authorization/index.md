@@ -16,7 +16,7 @@ APIServer 支持多种认证与鉴权方式，不过无论经过哪种身份认�
 {{< find_img "img2.png" >}}
 
 {{< admonition note Note>}}
-ServiceAccount 认证后也会对应一个用户，Kubernetes 实际上是封装了一层。更多细节见 [**ServicerAccount Token**](#24-serviceraccount-token)
+ServiceAccount 认证后也会对应一个用户，Kubernetes 实际上是封装了一层。更多细节见 [**ServiceAccount Token**](#24-serviceaccount-token)
 {{< /admonition >}}
 
 
@@ -273,7 +273,7 @@ APIServer 会读取 Token ID 与 Token Secret，从而查找对应的 Bootstrap 
    curl --insecure -H "Authorization: Bearer abcdef.0123456789abcdef"  ${APISERVER}/apis/certificates.k8s.io/v1/certificatesigningrequests 
    ```
 
-### 2.4 ServicerAccount Token
+### 2.4 ServiceAccount Token
 
 ServiceAccount 是最常用的认证方式，使用经过签名的 Token 来访问 APIServer。
 
@@ -652,7 +652,7 @@ ABAC 是 Kubernetes 1.6 之前的默认鉴权模块，配置后需要重启 APIS
 {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"group": "system:unauthenticated", "readonly": true, "nonResourcePath": "*"}}
 ```
 
-`kube-system` 命名空间下的 ServiceAccount `default` 有任何的操作权限。ServiceAccount 本质上是特殊的用户，见 [**ServicerAccount Token**](#ServiceAccount-Note)。
+`kube-system` 命名空间下的 ServiceAccount `default` 有任何的操作权限。ServiceAccount 本质上是特殊的用户，见 [**ServiceAccount Token**](#ServiceAccount-Note)。
 
 ```json
 {"apiVersion":"abac.authorization.kubernetes.io/v1beta1","kind":"Policy","spec":{"user":"system:serviceaccount:kube-system:default","namespace":"*","resource":"*","apiGroup":"*"}}

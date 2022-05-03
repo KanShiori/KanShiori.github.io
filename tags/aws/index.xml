@@ -3,7 +3,14 @@
         <title>aws - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/aws/</link>
         <description>aws - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 06 Dec 2021 21:07:09 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/aws/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 02 May 2022 22:01:07 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/aws/" rel="self" type="application/rss+xml" /><item>
+    <title>AWS - EKS</title>
+    <link>https://KanShiori.github.io/posts/cloud/aws_learning/eks/</link>
+    <pubDate>Mon, 02 May 2022 22:01:07 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/eks/</guid>
+    <description><![CDATA[1 集群管理 EKS 集群包含两个层面： EKS Control Plane 控制面包含 Kubernetes 的核心组件，例如 ETCD 和 APIServer。控制面完全是由 AWS 托管的，也就是说用户不需要维护控制面]]></description>
+</item><item>
     <title>AWS - S3</title>
     <link>https://KanShiori.github.io/posts/cloud/aws_learning/s3/</link>
     <pubDate>Mon, 06 Dec 2021 21:07:09 &#43;0800</pubDate>

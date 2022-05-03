@@ -3,7 +3,14 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 27 Apr 2022 17:02:24 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 02 May 2022 22:01:07 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>AWS - EKS</title>
+    <link>https://KanShiori.github.io/posts/cloud/aws_learning/eks/</link>
+    <pubDate>Mon, 02 May 2022 22:01:07 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/eks/</guid>
+    <description><![CDATA[1 集群管理 EKS 集群包含两个层面： EKS Control Plane 控制面包含 Kubernetes 的核心组件，例如 ETCD 和 APIServer。控制面完全是由 AWS 托管的，也就是说用户不需要维护控制面]]></description>
+</item><item>
     <title>Kubernetes - 理解 kubeconfig</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/kubeconfig/</link>
     <pubDate>Wed, 27 Apr 2022 17:02:24 &#43;0800</pubDate>
@@ -66,12 +73,5 @@
     <author>作者</author>
     <guid>https://KanShiori.github.io/posts/net/dns/</guid>
     <description><![CDATA[主机使用 IP 地址作为通信地址是很难记忆的，用户更愿意使用比较容易记忆的 Hostname。而 Domain Name System（DNS）就是用于将 Domain 转换为 IP 地址。]]></description>
-</item><item>
-    <title>Kubernetes 使用 ExternalDNS 同步 DNS</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/use-external-dns/</link>
-    <pubDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/use-external-dns/</guid>
-    <description><![CDATA[1 概述 ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责]]></description>
 </item></channel>
 </rss>

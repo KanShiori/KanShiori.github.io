@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>AWS - EKS - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="AWS - EKS" />
+<meta property="og:description" content="1 集群管理 EKS 集群包含两个层面： EKS Control Plane 控制面包含 Kubernetes 的核心组件，例如 ETCD 和 APIServer。控制面完全是由 AWS 托管的，也就是说用户不需要维护控制面" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/eks/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-05-02T22:01:07+08:00" />
+<meta property="article:modified_time" content="2022-05-03T22:40:23+08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="AWS - EKS"/>
+<meta name="twitter:description" content="1 集群管理 EKS 集群包含两个层面： EKS Control Plane 控制面包含 Kubernetes 的核心组件，例如 ETCD 和 APIServer。控制面完全是由 AWS 托管的，也就是说用户不需要维护控制面"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/aws_learning/eks/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/kubeconfig/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "AWS - EKS",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  3352 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/","datePublished": "2022-05-02T22:01:07+08:00","dateModified": "2022-05-03T22:40:23+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">AWS - EKS</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>AWS 学习</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-05-02">2022-05-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3352 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-集群管理">1 集群管理</a>
+      <ul>
+        <li><a href="#11-创建集群">1.1 创建集群</a></li>
+        <li><a href="#12-升级集群">1.2 升级集群</a></li>
+        <li><a href="#13-删除集群">1.3 删除集群</a></li>
+        <li><a href="#14-addon">1.4 Addon</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-node">2 Node</a>
+      <ul>
+        <li><a href="#21-auto-scale">2.1 Auto Scale</a>
+          <ul>
+            <li><a href="#211-cluster-autoscaler">2.1.1 Cluster AutoScaler</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#3-storage">3 Storage</a>
+      <ul>
+        <li><a href="#31-ebs-csi">3.1 EBS CSI</a></li>
+        <li><a href="#32-efs">3.2 EFS</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-network">4 Network</a>
+      <ul>
+        <li><a href="#41-control-plane-网络">4.1 Control Plane 网络</a></li>
+        <li><a href="#42-node-网络">4.2 Node 网络</a></li>
+        <li><a href="#43-pod-网络">4.3 Pod 网络</a>
+          <ul>
+            <li><a href="#431-service">4.3.1 Service</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#5-security">5 Security</a>
+      <ul>
+        <li><a href="#51-apiserver-访问控制">5.1 APIServer 访问控制</a></li>
+        <li><a href="#52-身份认证">5.2 身份认证</a></li>
+        <li><a href="#53-鉴权">5.3 鉴权</a></li>
+        <li><a href="#54-pod-访问-aws">5.4 Pod 访问 AWS</a>
+          <ul>
+            <li><a href="#541-iam-oidc-provider">5.4.1 IAM OIDC Provider</a></li>
+            <li><a href="#542-关联-role-与-serviceaccount">5.4.2 关联 Role 与 ServiceAccount</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-集群管理">1 集群管理</h2>
+<p>EKS 集群包含两个层面：</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/eks/img2.png" title="/posts/cloud/aws_learning/eks/img2.png" data-thumbnail="/posts/cloud/aws_learning/eks/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img2.png"
+            data-srcset="/posts/cloud/aws_learning/eks/img2.png, img2.png 1.5x, /posts/cloud/aws_learning/eks/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/eks/img2.png" height="350" />
+    </a>
+<ul>
+<li>
+<p>EKS Control Plane</p>
+<p>控制面包含 Kubernetes 的核心组件，例如 ETCD 和 APIServer。控制面完全是由 AWS 托管的，也就是说用户不需要维护控制面。</p>
+<p>AWS 会为控制面配置 ELB，从而可以通过 ELB 来访问 APIServer。</p>
+</li>
+<li>
+<p>EKS Node</p>
+<p>EKS Node 是账户下运行的一组 EC2 Instance，通过 APIServer Endpoint 连接控制面。</p>
+</li>
+</ul>
+<h3 id="11-创建集群">1.1 创建集群</h3>
+<p>有三种方式可以创建 EKS 集群：</p>
+<ul>
+<li><code>eksctl</code> - 开源的 EKS 集群管理命令行。</li>
+<li>AWS Console - 通过 Web 控制台一步步创建 EKS 集群。</li>
+<li>AWS CLI - 通过调用 AWS API 创建 EKS 集群。</li>
+</ul>
+<h3 id="12-升级集群">1.2 升级集群</h3>
+<p>随着 Kubernetes 的版本迭代，AWS 只会维护一定版本的 EKS 集群，并要求用户定期升级。</p>
+<p>升级集群时，AWS 会对 Kubernetes Node 进行滚动升级。当升级后的 Node 就绪后，才会继续升级流程。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">AWS 还会定期备份托管的集群，并且必须要支持恢复集群。</div>
+        </div>
+    </div>
+<p>主要的升级流程见文档：<a href="https://docs.aws.amazon.com/zh_cn/eks/latest/userguide/update-cluster.html#update-kubernetes-version" target="_blank" rel="noopener noreffer"><strong>Update EKS Kubernetes Version</strong></a>。</p>
+<h3 id="13-删除集群">1.3 删除集群</h3>
+<p>在删除 EKS 集群前，需要先手动删除已经创建的 External Service。如果是 AWS CLI 需要自行删除 NodeGroup。</p>
+<h3 id="14-addon">1.4 Addon</h3>
+<p>Addon 是 AWS 为 EKS 提供的一个特殊概念，用于方便的管理 EKS 上部署的某些辅助软件。基于 Addon，可以通过 AWS CLI 中的 addon 相关命令来进行附加组件的管理。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">aws eks describe-addon-versions
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>目前支持使用 Addon 管理的有：</p>
+<ul>
+<li>VPC CNI</li>
+<li>CoreDNS</li>
+<li>kube-proxy</li>
+<li>EBS CSI</li>
+</ul>
+<h2 id="2-node">2 Node</h2>
+<p>EKS 的 Worker Node 可以分为三种类型：</p>
+<ul>
+<li>
+<p>Managed Node Group</p>
+<p>针对集群创建的 Node Group，对应的 Instance 创建出来后自动加入到 Kubernetes 集群中。</p>
+</li>
+<li>
+<p>Self-Managed Node</p>
+<p>用户自行启动的 Instance，启动后再加入到 Kubernetes 集群。</p>
+</li>
+<li>
+<p>AWS Fargate</p>
+</li>
+</ul>
+<blockquote>
+<p>大多数情况下我们都是直接使用 Managed Node Group，后面操作默认表明都是 Managed Node Group 相关操作。</p>
+</blockquote>
+<p>Node Group 表示一组相同机型的 Node，通过修改 Node Group 可以简单的来管理 Node。</p>
+<p>一个 Node Group 对应一个 EC2 ASG，用户只需要调整 Node Group，对应的 ASG 会随之更新。</p>
+<h3 id="21-auto-scale">2.1 Auto Scale</h3>
+<p>EKS 支持两款 AutoScaling 产品：</p>
+<ul>
+<li>
+<p>Kubernetes 社区的 Cluster AutoScaler - 使用 <a href="https://docs.aws.amazon.com/zh_cn/autoscaling/ec2/userguide/AutoScalingGroup.html" target="_blank" rel="noopener noreffer"><strong>AWS Scale Group</strong></a> 来实现 Instance 自动缩扩容</p>
+</li>
+<li>
+<p>Karpenter - 使用 <a href="https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ec2-fleet.html" target="_blank" rel="noopener noreffer"><strong>EC2 fleet</strong></a> 实现 Instance 自动缩扩容</p>
+</li>
+</ul>
+<h4 id="211-cluster-autoscaler">2.1.1 Cluster AutoScaler</h4>
+<p>Cluster AutoScaler 会根据当前集群的负载情况，通过调整 ASG 的 Instance 数量来实现自动缩扩容。</p>
+<p>部署步骤参考官方文档：<a href="https://docs.aws.amazon.com/zh_cn/eks/latest/userguide/autoscaling.html" target="_blank" rel="noopener noreffer"><strong>Cluster Autoscaler</strong></a>。大致的部署流程如下：</p>
+<ol>
+<li>
+<p>创建 IAM Policy，包含 Cluster AutoScaler 需要的相关操作权限。</p>
+</li>
+<li>
+<p>创建 Role，关联上述创建的 Policy，并在 <a href="../iam/#41-trust-relationship" rel=""><strong>Trust Relationship</strong></a> 中填入 EKS 中 OIDC Provider ID，表明允许 AssumeRole。</p>
+</li>
+<li>
+<p>部署 Cluster AutoScaler 所需的 RBAC 一套，并且 ServiceAccount 通过 annotation 表明使用上述创建的 Role。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl annotate serviceaccount cluster-autoscaler <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  eks.amazonaws.com/role-arn<span class="o">=</span>arn:aws:iam::<span class="nv">$ACCOUNT_ID</span>:role/<span class="nv">$AmazonEKSClusterAutoscalerRole</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>或者使用 <code>eksctl create iamserviceaccount</code> 来创建 Role 与 ServiceAccount。</p>
+</blockquote>
+</li>
+<li>
+<p>部署 Cluster AutoScaler。</p>
+</li>
+</ol>
+<h2 id="3-storage">3 Storage</h2>
+<p>AWS 相关的 EBS 已经集成到了 Kubernetes 源码中，因此支持直接创建对应类型的 StorageClass，当创建 PV 时就会创建对应的 AWS EBS 实例。</p>
+<p>目前原生支持的 EBS 类型：io1, gp2, gp3, sc1, st1。</p>
+<p>除了 Kubernetes 原生支持外，也可以安装 AWS EBS CSI 来支持 EBS 类型的 StorageClass。Kubernetes 原生支持与 EBS CSI 有着相同的作用，只是一个是跟着 Kubernetes 发型周期，EBS CSI 是有 AWS 自行维护，往往支持最新的 EBS 存储类型。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>Kubernetes 原生与 EBS CSI 创建 StorageClass 时指定的 <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/#provisioner" target="_blank" rel="noopener noreffer"><strong>Provisioner</strong></a> 不同。 因此创建 PV 时的逻辑完全是两个不同的程序负责的。</p>
+<p>不过两者实现的功能都是一样的。可能 EBS CSI 可以支持更新的存储类型。</p>
+</div>
+        </div>
+    </div>
+<h3 id="31-ebs-csi">3.1 EBS CSI</h3>
+<p>EBS CSI 支持两种部署方式：</p>
+<ul>
+<li>
+<p>EKS Addon 进行部署</p>
+<p>将 EBS CSI 以 EKS 的一种功能进行管理，通过 AWS CLI 来部署与升级。</p>
+</li>
+<li>
+<p>自行部署</p>
+<p>通过 Helm 或者 YAML 定义来部署 EBS CSI。</p>
+</li>
+</ul>
+<p>部署 Driver 后，在创建 StorageClass 时将 <code>provisioner</code> 指定为 <code>ebs.csi.aws.com</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StorageClass</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage.k8s.io/v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">gp3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">provisioner</span><span class="p">:</span><span class="w"> </span><span class="l">ebs.csi.aws.com</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">allowVolumeExpansion</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">volumeBindingMode</span><span class="p">:</span><span class="w"> </span><span class="l">WaitForFirstConsumer</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">parameters</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">gp3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">fsType</span><span class="p">:</span><span class="w"> </span><span class="l">ext4</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">iops</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;4000&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">throughput</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;400&#34;</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="32-efs">3.2 EFS</h3>
+<p>除了 EBS 块存储外，也支持提供 EFS 文件系统给 Pod 使用。EFS 在 Pod 中所见的也是一个目录，区别在于该目录会对应 EFS 中的一个目录。</p>
+<p>要使用 EFS，首先需要安装 EFS CSI。通过 Helm 或者 YAML 定义自行安装 EFS CSI。</p>
+<p>一个 StorageClass 的示例如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StorageClass</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage.k8s.io/v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">efs-sc</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">provisioner</span><span class="p">:</span><span class="w"> </span><span class="l">efs.csi.aws.com</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">parameters</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">provisioningMode</span><span class="p">:</span><span class="w"> </span><span class="l">efs-ap</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">fileSystemId</span><span class="p">:</span><span class="w"> </span><span class="l">fs-92107410</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">directoryPerms</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;700&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">gidRangeStart</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1000&#34;</span><span class="w"> </span><span class="c"># optional</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">gidRangeEnd</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2000&#34;</span><span class="w"> </span><span class="c"># optional</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">basePath</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/dynamic_provisioning&#34;</span><span class="w"> </span><span class="c"># optional</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="4-network">4 Network</h2>
+<p>EKS 的网络结构图大致如下：</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/eks/img2.png" title="/posts/cloud/aws_learning/eks/img2.png" data-thumbnail="/posts/cloud/aws_learning/eks/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img2.png"
+            data-srcset="/posts/cloud/aws_learning/eks/img2.png, img2.png 1.5x, /posts/cloud/aws_learning/eks/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/eks/img2.png" height="400" />
+    </a>
+<h3 id="41-control-plane-网络">4.1 Control Plane 网络</h3>
+<p>Control Plane 处于一个独立的 VPC。</p>
+<p>当创建 EKS 集群时，用户需要选择 EKS Node 所在的 VPC 与 Subnet。集群创建后，AWS 选择在部分 Subnet 中创建访问 Control Plane 使用的 ENI。可以通过 Description <code>Amazon EKS</code> 来搜索这些 ENI。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/eks/img3.png" title="/posts/cloud/aws_learning/eks/img3.png" data-thumbnail="/posts/cloud/aws_learning/eks/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img3.png"
+            data-srcset="/posts/cloud/aws_learning/eks/img3.png, img3.png 1.5x, /posts/cloud/aws_learning/eks/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/eks/img3.png" />
+    </a>
+<h3 id="42-node-网络">4.2 Node 网络</h3>
+<p>所有的 Node 都处于一个独立的 VPC，即创建 EKS 集群时指定的 VPC。创建 Node Group 或者加入 Node 都处于该 VPC 下的某个 Subnet。</p>
+<h3 id="43-pod-网络">4.3 Pod 网络</h3>
+<p>默认下，在 Node 上运行的每个 Pod 的会被分配一个 Subnet 网段下的 IP，也就是说 Pod 和 Node 都是属于同一个网段的。</p>
+<p>每个 Pod 的 IP 会作为 Secondary IP 添加到 Node 对应的 ENI 上。因此，Pod 与 Node 使用相同的 SecurityGroup 来控制网络访问。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/eks/img4.png" title="/posts/cloud/aws_learning/eks/img4.png" data-thumbnail="/posts/cloud/aws_learning/eks/img4.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img4.png"
+            data-srcset="/posts/cloud/aws_learning/eks/img4.png, img4.png 1.5x, /posts/cloud/aws_learning/eks/img4.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/eks/img4.png" height="300" />
+    </a>
+<p>当然，这样弊端也很明显：Pod 地址是有限的。因此，EKS 也支持自定义 Pod 网络，支持将 Pod 使用同 VPC 下的其他 Subnet。详情参考文档：<a href="https://docs.aws.amazon.com/zh_cn/eks/latest/userguide/cni-custom-network.html" target="_blank" rel="noopener noreffer"><strong>CNI 自定义网络</strong></a>。</p>
+<h4 id="431-service">4.3.1 Service</h4>
+<p>Kubernetes LoadBalancer 与 Ingress 可以对应到 AWS 的 ELB 与 ALB 服务。当创建 Service/Ingress 资源时，都是由 AWS Load Balancer Controller 来创建对应的 ELB/ALB 服务的。</p>
+<p>AWS Load Balancer Controller 也可以作为 EKS Addon 进行快速的安装。</p>
+<h2 id="5-security">5 Security</h2>
+<h3 id="51-apiserver-访问控制">5.1 APIServer 访问控制</h3>
+<p>创建 EKS 集群时，可以选择三种 APIServer 的访问方式：</p>
+<ul>
+<li>
+<p>Public（默认）</p>
+<p>APIServer 会具有一个域名 + 公网地址，可以限制访问 APIServer 的 IP 白名单。</p>
+<p>当 Kubernetes 集群同 VPC 内请求 APIServer 时流量也会离开 VPC（但是不会离开 AWS 网络）。</p>
+</li>
+<li>
+<p>Public and Private</p>
+<p>APIServer 会具有一个域名 + 公网地址，可以限制访问 APIServer 的 IP 白名单。</p>
+<p>与 Public 方式的区别在于，同 VPC 内请求 APIServer 时流量不会离开 VPC。</p>
+</li>
+<li>
+<p>Private</p>
+<p>APIServer 具有域名 + 私网地址，必须只有同 VPC 的流量才可以访问 APIServer。</p>
+<blockquote>
+<p>域名可以被公网解析，但是解析后为 VPC 内的私网地址。</p>
+</blockquote>
+</li>
+</ul>
+<p>当然，无论哪种方式访问 APIServer，请求都会受到 AWS IAM 与 Kubernetes RBAC 的权限控制。</p>
+<h3 id="52-身份认证">5.2 身份认证</h3>
+<p><a href="#apiserver-%e8%ae%bf%e9%97%ae%e6%8e%a7%e5%88%b6" rel=""><strong>APIServer 访问控制</strong></a> 中控制的是如何能够访问 APIServer，身份认证控制的请求发送到 APIServer，经过 APIServer 身份认证。</p>
+<p>EKS APIServer 身份认证使用的是 Kubernetes 本身的身份认证方式，而身份是基于 <a href="../iam/" rel=""><strong>IAM Entity</strong></a> 的。简单点说，Kubernetes 会认证 AWS User 或者 Role 是否有权限访问 APIServer。</p>
+<p>在 <a href="../../cloud_native/kubernetes/k8s_learning/authentication-and-authorization/#2-%e8%ba%ab%e4%bb%bd%e8%ae%a4%e8%af%81" rel=""><strong>Kubernetes - 认证与鉴权机制</strong></a> 中提到，Kubernetes 支持多种身份认证的方式。EKS APIServer 使用的身份认证方式类似为 <a href="../../cloud_native/kubernetes/k8s_learning/authentication-and-authorization/#26-webhook-token" rel=""><strong>Webhook Token</strong></a>。其 Webhook Service 为 <a href="../iam/#7-security-token-service" rel=""><strong>AWS STS</strong></a>，有 STS 进行 IAM 的权限控制。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/eks/img5.png" title="/posts/cloud/aws_learning/eks/img5.png" data-thumbnail="/posts/cloud/aws_learning/eks/img5.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img5.png"
+            data-srcset="/posts/cloud/aws_learning/eks/img5.png, img5.png 1.5x, /posts/cloud/aws_learning/eks/img5.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/eks/img5.png" height="250" />
+    </a>
+<p>大致的认证流程如下：</p>
+<ol>
+<li>kubectl 在本地执行 <code>aws eks get-token</code> 从 STS 获取 Token。</li>
+<li>kubectl 发送请求给 APIServer，HTTP Head 中包含 Token。</li>
+<li>APIServer 会请求 STS 验证 Token，STS 会基于 IAM 认证用户是否有权限访问 EKS 集群。</li>
+</ol>
+<h3 id="53-鉴权">5.3 鉴权</h3>
+<p>身份认证后，Kubernetes 会基于 <a href="../../cloud_native/kubernetes/k8s_learning/authentication-and-authorization/#3-%e9%89%b4%e6%9d%83%e6%a8%a1%e5%9d%97" rel=""><strong>鉴权模块</strong></a>（实际只使用 RBAC）进行权限判断。</p>
+<p>因为 EKS 的用户是 IAM Entity，而 Kubernetes 鉴权使用的是集群内部的用户机制。因此，需要构建一个 IAM Entity -&gt; Kubernetes User 的映射关系。</p>
+<p>创建 EKS 时使用的 IAM Entity 会自动加入到 Kubernetes 集群的 <code>system:masters</code> 组中，有着完全的访问权限。</p>
+<p>其他 IAM Entity 需要通过编辑 ConfigMap <code>aws-auth</code> 来映射到某个 Kubernetes 集群的用户或者用户组。<code>aws-auth</code> 在集群创建时自动被创建。</p>
+<p><code>aws-auth</code> 的内容如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">mapRoles</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">    - rolearn: arn:aws:iam::111122223333:role/eksctl-my-cluster-nodegroup-standard-wo-NodeInstanceRole-1WP3NUE3O6UCF
+</span></span></span><span class="line"><span class="cl"><span class="sd">      username: system:node:{{EC2PrivateDNSName}}
+</span></span></span><span class="line"><span class="cl"><span class="sd">      groups:
+</span></span></span><span class="line"><span class="cl"><span class="sd">        - system:bootstrappers
+</span></span></span><span class="line"><span class="cl"><span class="sd">        - system:nodes</span><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">mapUsers</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">    - userarn: arn:aws:iam::111122223333:user/admin
+</span></span></span><span class="line"><span class="cl"><span class="sd">      username: admin
+</span></span></span><span class="line"><span class="cl"><span class="sd">      groups:
+</span></span></span><span class="line"><span class="cl"><span class="sd">        - system:masters
+</span></span></span><span class="line"><span class="cl"><span class="sd">    - userarn: arn:aws:iam::444455556666:user/ops-user
+</span></span></span><span class="line"><span class="cl"><span class="sd">      username: ops-user
+</span></span></span><span class="line"><span class="cl"><span class="sd">      groups:
+</span></span></span><span class="line"><span class="cl"><span class="sd">        - eks-console-dashboard-full-access-group
+</span></span></span><span class="line"><span class="cl"><span class="sd">    - userarn: arn:aws:iam::444455556666:user/ops-user2
+</span></span></span><span class="line"><span class="cl"><span class="sd">      username: ops-user2
+</span></span></span><span class="line"><span class="cl"><span class="sd">      groups:
+</span></span></span><span class="line"><span class="cl"><span class="sd">        - eks-console-dashboard-restricted-access-group</span><span class="w">    
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>mapRoles - 将 IAM Role 映射到 Kubernetes 用户或用户组</li>
+<li>mapUsers - 将 IAM User 映射到 Kubernetes 用户或用户组</li>
+</ul>
+<h3 id="54-pod-访问-aws">5.4 Pod 访问 AWS</h3>
+<p>上面说的都是外部访问 Kubernetes 资源，如果 Pod 内部要访问 AWS 资源，一般有两种方式：</p>
+<ul>
+<li>AK/SK - Pod 内程序直接使用 AK/SK 访问 AWS；</li>
+<li>Role - 将 Service Account 与 Role 构建映射关系，然后 Pod 使用 Service Account 来访问 AWS；</li>
+</ul>
+<p>因此，我们需要在集群启动时部署 IAM OIDC Provider，它负责将 Service Account 转换为对应的 IAM Role。</p>
+<p>大致步骤如下：</p>
+<ol>
+<li>为集群创建 IAM OIDC Provider。</li>
+<li>创建 IAM Role，关联相应的 IAM Policy。</li>
+<li>将 IAM Role 与 Kubernetes ServiceAccount 关联。</li>
+</ol>
+<h4 id="541-iam-oidc-provider">5.4.1 IAM OIDC Provider</h4>
+<p>在 <a href="../../cloud_native/kubernetes/k8s_learning/authentication-and-authorization/#24-serviceaccount-token" rel=""><strong>Kubernetes - 认证与鉴权机制</strong></a> 中提到过，ServiceAccount 本质上是基于 JWT 方式来进行鉴权的，Pod 使用时挂载到容器中也是 JWT 格式的。</p>
+<p>IAM 支持 OIDC 方式的背后，是 OIDC Provider 会请求 AWS STS 获取一个 JWT（AssumeRoleWithWebIdentity 接口），此 JWT 会被认为是某个 Role 的临时凭证，以此来访问 AWS 服务。</p>
+<p>显而易见，IAM OIDC Provider 就是会从 STS 获取 Role 对应的 JWT，然后将其作为 ServiceAccount 对应的 Token，提供给 Pod。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/eks/img6.png" title="/posts/cloud/aws_learning/eks/img6.png" data-thumbnail="/posts/cloud/aws_learning/eks/img6.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="img6.png"
+            data-srcset="/posts/cloud/aws_learning/eks/img6.png, img6.png 1.5x, /posts/cloud/aws_learning/eks/img6.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/eks/img6.png" height="350" />
+    </a>
+<p>为 EKS 提供 OIDC Provider 的方式见官方文档 <a href="https://docs.aws.amazon.com/zh_cn/eks/latest/userguide/enable-iam-roles-for-service-accounts.html" target="_blank" rel="noopener noreffer"><strong>Create an IAM OIDC provider</strong></a>。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">除了 IAM OIDC Provider 外，EKS 也支持使用相同的方式使用任意的 OIDC Provider，以支持使用其他 OIDC 进行身份认证。</div>
+        </div>
+    </div>
+<h4 id="542-关联-role-与-serviceaccount">5.4.2 关联 Role 与 ServiceAccount</h4>
+<p>关联 ServiceAccount 与 Role 的方式很简单，为 ServiceAccount 资源对象添加一个 Annotation，指向对应的 Role ARN。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ServiceAccount</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">eks.amazonaws.com/role-arn=arn:aws:iam::&lt;ACCOUNT_ID&gt;:role/&lt;ROLE_NAME&gt;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">eks.amazonaws.com/sts-regional-endpoints=true</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>eks.amazonaws.com/role-arn</code> 表明 ServiceAccount 关联的 Role</li>
+<li><code>eks.amazonaws.com/sts-regional-endpoints</code> （可选）表明调用同 Region 的 STS 服务接口，而不是全局端口。这样可以减少延迟，但是降低了高可用性</li>
+</ul>
+<p>Pod 使用 ServiceAccount 后，除了 Kubernetes 内部的 ServiceAccount 挂载，APIServer 会自动为 Pod 启动配置中加上 aws-iam-token 的挂载。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/run/secrets/kubernetes.io/serviceaccount</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa-token-gvztp</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/run/secrets/eks.amazonaws.com/serviceaccount</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">aws-iam-token</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">serviceAccount</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">aws-iam-token</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">projected</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">defaultMode</span><span class="p">:</span><span class="w"> </span><span class="m">420</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">sources</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">serviceAccountToken</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">audience</span><span class="p">:</span><span class="w"> </span><span class="l">sts.amazonaws.com</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">expirationSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">86400</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">token</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa-token-gvztp</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">secret</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">defaultMode</span><span class="p">:</span><span class="w"> </span><span class="m">420</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa-token-gvztp</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Pod 启动后，相关的信息会保存在一些环境变量中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">AWS_WEB_IDENTITY_TOKEN_FILE</span><span class="o">=</span>/var/run/secrets/eks.amazonaws.com/serviceaccount/token
+</span></span><span class="line"><span class="cl"><span class="nv">AWS_ROLE_ARN</span><span class="o">=</span>arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
+</span></span><span class="line"><span class="cl"><span class="nv">AWS_STS_REGIONAL_ENDPOINTS</span><span class="o">=</span>regional
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在代码中使用 AWS SDK 时，会自动读取 Token 来作为访问 AWS 的配置。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li>官方文档：<a href="https://docs.aws.amazon.com/zh_cn/zh_cn/eks/latest/userguide/what-is-eks.html" target="_blank" rel="noopener noreffer"><strong>EKS User Guide</strong></a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-05-03&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/071f3303f6328387ed379c662570db812ee88886" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 071f3303f6328387ed379c662570db812ee88886: post: eks">
+                                    <i class="fas fa-hashtag fa-fw"></i>071f330</a></span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/aws_learning/eks/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/eks/" data-title="AWS - EKS"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/eks/" data-title="AWS - EKS"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/eks/" data-title="AWS - EKS"><i class="fab fa-evernote fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/aws/">aws</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/kubeconfig/" class="prev" rel="prev" title="Kubernetes - 理解 kubeconfig"><i class="fas fa-angle-left fa-fw"></i>Kubernetes - 理解 kubeconfig</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.95.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
