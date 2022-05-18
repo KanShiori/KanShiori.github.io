@@ -3,7 +3,15 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 05 May 2022 21:21:14 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 11 May 2022 21:24:25 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>Kubernetes - Rolling Update 与 Rollback</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/</link>
+    <pubDate>Wed, 11 May 2022 21:24:25 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/</guid>
+    <description><![CDATA[1 Deployment 1.1 操作 1.1.1 Update 当用户修改 Deployment 定义中的 .spec.template 任意字段时，就会触发 Deployment 的滚动升级。 1 $ kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.16.1 通过 kubectl rollout status 查看滚动升级的过程： 1 2 3 4 5 6 7 8 9 10 $ kubectl rollout]]></description>
+</item>
+<item>
     <title>AWS - KMS</title>
     <link>https://KanShiori.github.io/posts/cloud/aws_learning/kms/</link>
     <pubDate>Thu, 05 May 2022 21:21:14 &#43;0800</pubDate>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/cni/</guid>
     <description><![CDATA[1 CNI 基本概念 CNI 全称 Container Network Interface，是 Kubernetes 中的网络接口。Kubectl 会依据 CNI 标准的 API 来调用不同的网络插件接口。 CNI 插件实际上是一个主机上]]></description>
-</item>
-<item>
-    <title>Kubernetes - 资源更新机制与 CLI 实现</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</link>
-    <pubDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</guid>
-    <description><![CDATA[1 Update 机制 Update 机制 指的是通过 HTTP Put 方法 上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
 </item>
 </channel>
 </rss>

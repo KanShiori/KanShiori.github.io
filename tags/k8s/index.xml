@@ -3,7 +3,15 @@
         <title>k8s - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/k8s/</link>
         <description>k8s - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 27 Apr 2022 17:02:24 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 11 May 2022 21:24:25 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+    <title>Kubernetes - Rolling Update 与 Rollback</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/</link>
+    <pubDate>Wed, 11 May 2022 21:24:25 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/</guid>
+    <description><![CDATA[1 Deployment 1.1 操作 1.1.1 Update 当用户修改 Deployment 定义中的 .spec.template 任意字段时，就会触发 Deployment 的滚动升级。 1 $ kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.16.1 通过 kubectl rollout status 查看滚动升级的过程： 1 2 3 4 5 6 7 8 9 10 $ kubectl rollout]]></description>
+</item>
+<item>
     <title>Kubernetes - 理解 kubeconfig</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/kubeconfig/</link>
     <pubDate>Wed, 27 Apr 2022 17:02:24 &#43;0800</pubDate>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-implementation/</guid>
     <description><![CDATA[1 概述 以一个云存储作为 Volume 为例，其架构图如下： Deploy PVC - 用户 Deploy PVC 对象。 Provision Volume - PV Controller 基于 StorageClass 创建一个 Volume（无法绑定已有 PV 的情况下），并创建 PV 对象]]></description>
-</item>
-<item>
-    <title>Kubernetes 跨集群网络联通</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/across-kubernetes/</link>
-    <pubDate>Thu, 30 Sep 2021 07:25:32 &#43;0000</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/across-kubernetes/</guid>
-    <description><![CDATA[Kubernetes 实践 主要记录一些自己的一些部署实践。 1 目标 最近在看 TiDB 的 Multi Kubernetes 集群部署方案，TiDB 本身是灵活扩容的分布式数据库，因此部署前需要确保 Multi Kubernetes 之间服]]></description>
 </item>
 </channel>
 </rss>
