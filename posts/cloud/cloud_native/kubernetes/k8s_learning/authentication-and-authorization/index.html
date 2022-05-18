@@ -4,13 +4,12 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
         <title>Kubernetes - 认证与鉴权机制 - Shiori&#39;s Blog</title><meta name="Description" content="Kubernetes 认证与鉴权机制的实现"><meta property="og:title" content="Kubernetes - 认证与鉴权机制" />
 <meta property="og:description" content="Kubernetes 认证与鉴权机制的实现" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-03-24T20:05:42+08:00" />
-<meta property="article:modified_time" content="2022-05-03T22:42:03+08:00" />
+<meta property="article:modified_time" content="2022-05-03T22:42:03+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -18,7 +17,9 @@
 <meta name="twitter:title" content="Kubernetes - 认证与鉴权机制"/>
 <meta name="twitter:description" content="Kubernetes 认证与鉴权机制的实现"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" /><link rel="prev" href="https://KanShiori.github.io/posts/language/golang/language/generics/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" /><link rel="prev" href="https://KanShiori.github.io/posts/language/golang/language/generics/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -36,7 +37,7 @@
             },"description": "Kubernetes 认证与鉴权机制的实现"
     }
     </script></head>
-    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
 
         <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
     <div class="header-wrapper">
@@ -54,16 +55,16 @@
             <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
                         <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
                         <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
                         </a>
                         <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
                         </a>
                         <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
                         </span>
                     </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw"></i>
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
                 </a>
             </div>
         </div>
@@ -89,41 +90,39 @@
                     <div class="search mobile" id="search-mobile">
                         <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
                         <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
                         </a>
                         <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
                         </a>
                         <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
                         </span>
                     </div>
                     <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
                         取消
                     </a>
                 </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw"></i>
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
             </a></div>
     </div>
-</header>
-<div class="search-dropdown desktop">
-    <div id="search-dropdown-desktop"></div>
-</div>
-<div class="search-dropdown mobile">
-    <div id="search-dropdown-mobile"></div>
-</div>
-<main class="main">
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
                 <div class="container"><div class="toc" id="toc-auto">
             <h2 class="toc-title">目录</h2>
             <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">Kubernetes - 认证与鉴权机制</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw"></i>Kubernetes 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-03-24">2022-03-24</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 6555 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 14 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  kept="">
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kubernetes - 认证与鉴权机制</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 学习</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-03-24">2022-03-24</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 6555 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 14 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
                 </div>
                 <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
   <ul>
@@ -241,7 +240,7 @@
 
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
-            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
             <div class="admonition-content">ServiceAccount 认证后也会对应一个用户，Kubernetes 实际上是封装了一层。更多细节见 <a href="#24-serviceaccount-token" rel=""><strong>ServiceAccount Token</strong></a></div>
@@ -259,7 +258,7 @@
 <p>在 <a href="../../../../../net/ssl-tls-cert/" rel=""><strong>SSL/TLS 总结</strong></a> 中提到过，TLS 使用证书来对服务器进行身份认证。<strong><code>X509 Client Cert</code></strong> 机制就是需要在 API 请求中提供客户端的证书，然后 APIServer 确认证书是否是由正确的 CA 签发的。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
-            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
             <div class="admonition-content">APIServer 提供了 CA 证书颁发的接口，需要发送 <strong><code>CertificateSigningRequests</code></strong> 消息给 APIServer 来申请颁发证书，具体过程参考文档：<a href="https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/" target="_blank" rel="noopener noreffer"><strong>Certificate Signing Requests</strong></a>。</div>
@@ -270,10 +269,10 @@
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="img4.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img4.png, img4.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img4.png 2x"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img4.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img4.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img4.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img4.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img4.png" height="220" />
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img4.png" width="638" height="220" />
     </a>
 <p><strong>Client 在连接 APIServer 后，提供 Client 证书与私钥，APIServer 检查是否是由 CA 证书签发</strong>。</p>
 <p>后续，APIServer 会以 Client 证书中的 <strong><code>Common Name</code></strong> 作为用户名，然后进行鉴权判断。</p>
@@ -281,7 +280,7 @@
 <p>在 APIServer 启动时，通过参数 <code>--client-ca-file</code> 开启 X509 Client Cert 认证方式，并指定了 CA 的证书。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
-            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
             <div class="admonition-content"><code>--client-ca-file</code> 提供的证书仅仅用于 APIServer 单向认证 Client 证书，Client 认证 APIServer 是由 <code>--tls-cert-file</code> 以及 <code>--tls-private-key-file</code> 设置的证书与私钥。</div>
@@ -315,7 +314,7 @@
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
-            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
             <div class="admonition-content">Client 访问时需要 CA 证书都是用于验证 APIServer 的证书使用的，后续的示例中会直接指定 <code>--insecure</code> 以跳过提供 CA 证书。</div>
@@ -328,10 +327,10 @@
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="img3.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img3.png, img3.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img3.png 2x"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img3.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img3.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img3.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img3.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img3.png" height="300" />
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img3.png" width="516" height="300" />
     </a>
 <p>APIServer 支持启动时指定一个 Static Token 文件，APIServer 会读取该文件中的 Token 作为可访问 APIServer 的 Token。</p>
 <p>Static Token 文件是一个 CSV 文件，包含至少三个列：<strong>Token</strong> <strong>Username</strong> 和 <strong>UID</strong>。</p>
@@ -456,10 +455,10 @@
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="img5.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img5.png, img5.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img5.png 2x"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img5.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img5.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img5.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img5.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img5.png" height="300" />
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img5.png" width="536" height="300" />
     </a>
 <p>Bootstrap Token 信息以 Secret 资源存储在 <code>kube-system</code> namespace 下，支持动态的管理和创建。</p>
 <div class="highlight"><div class="chroma">
@@ -502,7 +501,7 @@
 </ul>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
-            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
             <div class="admonition-content">关于 Bootstrap Token Secret 的配置细节，见文档：<a href="https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/#bootstrap-token-secret-format" target="_blank" rel="noopener noreffer"><strong>Bootstrap Token Secret Format</strong></a></div>
@@ -659,10 +658,10 @@
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="img6.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img6.png, img6.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img6.png 2x"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img6.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img6.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img6.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img6.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img6.png" height="300" />
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img6.png" width="754" height="300" />
     </a>
 <p>创建一个 ServiceAccount 资源时，Kubernetes 会在同 namespace 下创建对应的 Secret，其中包含了访问集群所需要的 Token。</p>
 <div class="highlight"><div class="chroma">
@@ -756,7 +755,7 @@
 <p><span id = "ServiceAccount-Note"> </span></p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
-            <i class="icon fas fa-pencil-alt fa-fw"></i>Note<i class="details-icon fas fa-angle-right fa-fw"></i>
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
             <div class="admonition-content">可以看到，ServiceAccount 对应的用户自动所属 <code>system:serviceaccounts</code> 和 <code>system:serviceaccounts:${NAMESPACE}</code> 用户组，因此可以使用用户组批量管理 ServiceAccount 的权限。</div>
@@ -821,10 +820,10 @@
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="img7.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img7.png, img7.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img7.png 2x"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img7.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img7.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img7.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img7.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img7.png" height="300" />
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img7.png" width="643" height="300" />
     </a>
 <p>需要提供一个 kubeconfig 格式的配置文件给 APIServer，以描述 APIServer 如何访问 Webhook 服务：</p>
 <div class="highlight"><div class="chroma">
@@ -984,10 +983,10 @@
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="img8.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img8.png, img8.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img8.png 2x"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img8.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img8.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img8.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img8.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img8.png" height="230" />
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img8.png" width="821" height="230" />
     </a>
 <h4 id="271-开启">2.7.1 开启</h4>
 <p>APIServer 启动参数与 Proxy 相关的配置：</p>
@@ -1129,10 +1128,10 @@
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="img9.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img9.png, img9.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img9.png 2x"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img9.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img9.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img9.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img9.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img9.png" height="330" />
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img9.png" width="659" height="330" />
     </a>
 <p>Policy 文件中的每一行是一个 JSON，也被称为 Policy Object。例如：</p>
 <div class="highlight"><div class="chroma">
@@ -1172,7 +1171,7 @@
 <p>当需要修改 Policy 文件时，需要重新启动 APIServer 来重新加载。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
-            <i class="icon fas fa-pencil-alt fa-fw"></i>Deprecated<i class="details-icon fas fa-angle-right fa-fw"></i>
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Deprecated<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
             <div class="admonition-content">ABAC 是 Kubernetes 1.6 之前的默认鉴权模块，配置后需要重启 APIServer，因此目前推荐使用 RBAC 鉴权替代。</div>
@@ -1224,10 +1223,10 @@
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="img10.png"
-            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img10.png, img10.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img10.png 2x"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img10.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img10.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img10.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img10.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img10.png" height="350" />
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/img10.png" width="918" height="350" />
     </a>
 <p>首先，依旧<strong>需要一个配置文件 kubeconfig 格式的配置文件给 APIServer</strong>，以描述 APIServer 如何访问 Webhook 服务：</p>
 <div class="highlight"><div class="chroma">
@@ -1481,41 +1480,39 @@
         <div class="post-info-line">
             <div class="post-info-mod">
                 <span>更新于 2022-05-03&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/99069c540bec98913375dbd2a98d0718e4ea9a17" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 99069c540bec98913375dbd2a98d0718e4ea9a17: fix ci">
-                                    <i class="fas fa-hashtag fa-fw"></i>99069c5</a></span>
-            </div>
-            <div class="post-info-license"></div>
-        </div>
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>99069c5</a></span>
+            </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
                             <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/index.md" target="_blank">阅读原始文档</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" data-title="Kubernetes - 认证与鉴权机制"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" data-title="Kubernetes - 认证与鉴权机制"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/baidu.svg"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" data-title="Kubernetes - 认证与鉴权机制"><i class="fab fa-evernote fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" data-title="Kubernetes - 认证与鉴权机制" data-hashtags="k8s,云计算"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" data-hashtag="k8s"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" data-title="Kubernetes - 认证与鉴权机制"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" data-title="Kubernetes - 认证与鉴权机制"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" data-title="Kubernetes - 认证与鉴权机制"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" data-title="Kubernetes - 认证与鉴权机制"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/" data-title="Kubernetes - 认证与鉴权机制"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
             </div>
         </div>
     </div>
 
     <div class="post-info-more">
-        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
         <section>
             <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/language/golang/language/generics/" class="prev" rel="prev" title="Go 泛型"><i class="fas fa-angle-left fa-fw"></i>Go 泛型</a>
-            <a href="/posts/cloud/cloud_practice/debug-pod/" class="next" rel="next" title="Kubernetes 中调试 Pod">Kubernetes 中调试 Pod<i class="fas fa-angle-right fa-fw"></i></a></div>
+    <div class="post-nav"><a href="/posts/language/golang/language/generics/" class="prev" rel="prev" title="Go 泛型"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Go 泛型</a>
+            <a href="/posts/cloud/cloud_practice/debug-pod/" class="next" rel="next" title="Kubernetes 中调试 Pod">Kubernetes 中调试 Pod<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.95.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
 
         <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw"></i>
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
             </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw"></i>
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
             </a>
-        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightgallery":true,"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
 </html>

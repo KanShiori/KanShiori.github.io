@@ -120,4 +120,4 @@ Pod 名字基于 Node 的名字生成，运行在宿主机的 IPC Net PID 命名
 
 ## 参考
 
-* 官方文档：[**Debug Running Pods**](https://kubernetes.io/docs/tasks/debug-application-cluster/debug-running-pod/#before-you-begin)
+* 官方文档：[**Debug Running Pods**](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/)

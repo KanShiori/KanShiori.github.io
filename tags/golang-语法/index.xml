@@ -7,8 +7,9 @@
     <title>Go 泛型</title>
     <link>https://KanShiori.github.io/posts/language/golang/language/generics/</link>
     <pubDate>Thu, 17 Mar 2022 21:29:22 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/language/golang/language/generics/</guid>
     <description><![CDATA[1 背景概念 这一部分内容 Copy 于文档，可以直接看文档 Properties of types and values。 1.1 Underlying types 每一种类型都有着对应的 underlying types（潜在类型），基础类型的 underlying type 就是]]></description>
-</item></channel>
+</item>
+</channel>
 </rss>

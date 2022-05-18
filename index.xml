@@ -9,71 +9,81 @@
     <title>AWS - KMS</title>
     <link>https://KanShiori.github.io/posts/cloud/aws_learning/kms/</link>
     <pubDate>Thu, 05 May 2022 21:21:14 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/aws_learning/kms/</guid>
     <description><![CDATA[1 概述 Key Management Service（简称 KMS）是用于管理密钥的服务：KMS 保管密钥，用户请求 KMS 以加密或解密数据。大多数的 AWS 服务都支持直接使用 KMS，]]></description>
-</item><item>
+</item>
+<item>
     <title>AWS - EKS</title>
     <link>https://KanShiori.github.io/posts/cloud/aws_learning/eks/</link>
     <pubDate>Mon, 02 May 2022 22:01:07 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/aws_learning/eks/</guid>
     <description><![CDATA[1 集群管理 EKS 集群包含两个层面： EKS Control Plane 控制面包含 Kubernetes 的核心组件，例如 ETCD 和 APIServer。控制面完全是由 AWS 托管的，也就是说用户不需要维护控制面]]></description>
-</item><item>
+</item>
+<item>
     <title>Kubernetes - 理解 kubeconfig</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/kubeconfig/</link>
     <pubDate>Wed, 27 Apr 2022 17:02:24 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/kubeconfig/</guid>
     <description><![CDATA[1 基本概念 kubeconfig 文件是 kubectl 用以查找访问集群的配置。 kubeconfig 文件的结构如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 apiVersion:v1kind:Configcurrent-context:federal-contextclusters:- cluster:certificate-authority:path/to/my/cafileserver:https://horse.org:4443name:horse-cluster- cluster:insecure-skip-tls-verify:trueserver:https://pig.org:443name:pig-clustercontexts:- context:cluster:horse-clusternamespace:chisel-nsuser:green-username:federal-context- context:cluster:pig-clusternamespace:saw-nsuser:black-username:queen-anne-contextpreferences:colors:trueusers:- name:blue-useruser:token:blue-token-]]></description>
-</item><item>
+</item>
+<item>
     <title>Crossplane 入门</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_practice/use-crossplane/</link>
     <pubDate>Thu, 14 Apr 2022 20:29:51 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/use-crossplane/</guid>
     <description><![CDATA[与 Pulumi 一样，Crossplane 也是一个 Iac 的平台。Crossplane 与 Kubernetes 的集成度更高，允许用户通过创建 Kubernetes 资源来创建云资源。 1 基本概念 Crossplane 的一个]]></description>
-</item><item>
+</item>
+<item>
     <title>Pulumi 入门</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/</link>
     <pubDate>Wed, 06 Apr 2022 21:58:22 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/</guid>
     <description><![CDATA[内容基本照搬的官方文档：Architecture &amp; Concepts。 Pulumi 是一个支持 IaC 的平台。与其他 IaC 工具最大的不同时，Pulumi 允许使用熟悉]]></description>
-</item><item>
+</item>
+<item>
     <title>Kubernetes 中调试 Pod</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</link>
     <pubDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</guid>
     <description><![CDATA[1 Ephemeral Container 可以使用 kubectl debug 来给一个运行中的 Pod 添加一个 Ephemeral Container 运行，并且不需要重启 Pod。 版本要求 Ephemeral Container 需要 Kubernetes 1.23 版本以上，目前还是处于 beta 状态。 1 kubectl debug -it ${pod_name} --image=busybox --target=${container_name}]]></description>
-</item><item>
+</item>
+<item>
     <title>Kubernetes - 认证与鉴权机制</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</link>
     <pubDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</guid>
     <description><![CDATA[1 概述 如下图所示，APIServer 在接受到一个 API 请求时，第一阶段就是对请求进行 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 与 [鉴权]^(Au]]></description>
-</item><item>
+</item>
+<item>
     <title>Go 泛型</title>
     <link>https://KanShiori.github.io/posts/language/golang/language/generics/</link>
     <pubDate>Thu, 17 Mar 2022 21:29:22 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/language/golang/language/generics/</guid>
     <description><![CDATA[1 背景概念 这一部分内容 Copy 于文档，可以直接看文档 Properties of types and values。 1.1 Underlying types 每一种类型都有着对应的 underlying types（潜在类型），基础类型的 underlying type 就是]]></description>
-</item><item>
+</item>
+<item>
     <title>Kubernetes - CNI 概念与实现</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/cni/</link>
     <pubDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/cni/</guid>
     <description><![CDATA[1 CNI 基本概念 CNI 全称 Container Network Interface，是 Kubernetes 中的网络接口。Kubectl 会依据 CNI 标准的 API 来调用不同的网络插件接口。 CNI 插件实际上是一个主机上]]></description>
-</item><item>
+</item>
+<item>
     <title>Kubernetes - 资源更新机制与 CLI 实现</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</link>
     <pubDate>Thu, 13 Jan 2022 11:22:02 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</guid>
     <description><![CDATA[1 Update 机制 Update 机制 指的是通过 HTTP Put 方法 上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
-</item></channel>
+</item>
+</channel>
 </rss>

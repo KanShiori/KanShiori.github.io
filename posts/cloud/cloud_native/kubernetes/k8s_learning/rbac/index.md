@@ -1,7 +1,7 @@
-# Kubernetes - RBAC 授权机制
+# Kubernetes - RBAC 与 ServiceAccount
 
 
-## 1 概念
+## 1 概述
 
 在 [**Kubernetes 认证与鉴权机制**](../authentication-and-authorization/) 中提到，Kubernetes 支持的授权机制有多种，其中 RBAC 是最常用的授权方式。RBAC 基于角色访问控制，全称 **`Role-Base Access Control`**。
 
@@ -9,11 +9,13 @@
 
 * **`Role`** ：角色，代表一组对 Kubernetes API 对象操作的权限。
 
-* **`Subject`** ：被作用者，包括 User、Group、ServiceAccount
+* **`Subject`** ：被作用者，包括 User、Group、ServiceAccount。
 
-* **`RoleBinding`** ：定义 Role 与 Subject 的映射关系；
+* **`RoleBinding`** ：定义 Role 与 Subject 的映射关系。
 
 因此，**我们会预先创建一些 Role，然后创建 Subject 时，定义 RoleBinding 来表明对 Subject 的权限控制。**
+
+{{< image src="img1.png" height=250 >}}
 
 {{< admonition note "为什么这么设计？">}}
 通过 RoleBinding，实现了 Role Subject 之间的解耦。
@@ -185,6 +187,161 @@ rules:
 - apiGroups: [""]
   resources: ["services", "endpoints", "pods"]
   verbs: ["get", "list", "watch"]
+```
+
+## 4 Subject
+
+Subject 表明请求者的身份，包括：User、User Group 和 ServiceAccount。
+
+不过，Kubernetes 并不包含一个用户系统，我们并不可以创建或删除用户或者用户组。User 仅仅会在权限检查时使用：请求提供 User 信息，鉴权模块根据 User 判断是否有对应操作的权限。
+
+### 4.1 User 与 User Group
+
+前面提到，User 只是一个逻辑上的标识。不需要任何的注册与登陆，我们就可以基于一个 User 来设置相关的权限。
+
+下面以设置 User 的权限为示例，为 `shiori` 用户仅提供 Pod 相关的权限：
+
+```yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-admin
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["*"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: shiori-pod-admin
+subjects:
+- kind: User
+  name: shiori
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: pod-admin
+  apiGroup: rbac.authorization.k8s.io
+```
+
+创建后，我们会发现已经可以以 `shiori` 用户来执行了，并且限制了他的权限：
+
+```bash
+$ kubectl get nodes --as=shiori
+Error from server (Forbidden): nodes is forbidden: User "shiori" cannot list resource "nodes" in API group "" at the cluster scope
+
+$ kubectl get pods --as=shiori
+No resources found in default namespace.
+```
+
+User Group 是 User 的集合，以 `group:group` 的格式配置，User Group 用于更加方便的管理多个 User 的权限。
+
+Kubernetes 默认创建的 RoleBinding/ClusterRoleBinding 一般会设置几个 User Group 的权限。例如，`system:unauthenticated` 表示 [**匿名用户**](../authentication-and-authorization/#28-匿名请求-anonymous-requests)。
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations:
+    rbac.authorization.kubernetes.io/autoupdate: "true"
+  labels:
+    kubernetes.io/bootstrapping: rbac-defaults
+  name: system:public-info-viewer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:public-info-viewer
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: Group
+  name: system:authenticated
+- apiGroup: rbac.authorization.k8s.io
+  kind: Group
+  name: system:unauthenticated
+```
+
+{{< admonition note ServiceAccount>}}
+下面会说到，ServiceAccount 也是一种特殊的用户。
+{{< /admonition >}}
+
+### 4.2 ServiceAccount
+
+ServiceAccount 本质上也是一种特殊的 User，对应的 User 命为 `system:serviceaccount:${NAMESPACE}:${SERVICE_ACCOUNT}`。可以看到，所有的 ServiceAccount 是属于 `system:serviceaccount` User Group 的。
+
+Kubernetes 为 ServiceAccount 提供了专门的认证方式 [**ServiceAccount Token**](../authentication-and-authorization/#24-serviceaccount-token)，并且设置权限起来非常方便。
+
+```yaml
+# 创建 ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: crossplane-provider
+  namespace: infra
+---
+# ClusterRoleBinding 绑定 ServiceAccount 与 Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: crossplane-provider
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: crossplane-provider
+subjects:
+- kind: ServiceAccount
+  name: crossplane-provider
+  namespace: infra
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: crossplane-provider
+rules:
+- apiGroups:
+  - "*"
+  resources:
+  - "*"
+  verbs:
+  - "*"
+```
+
+ServiceAccount 本质上还是基于 Token 的方式来进行身份认证，创建一个 ServiceAccount 会对应自动创建相关 Secret。Secret 中记录了对应的 JWT Token。
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    kubernetes.io/service-account.name: crossplane-provider
+    kubernetes.io/service-account.uid: b8d7500c-66cd-491c-bba3-ff00ef5e1ccf
+  name: crossplane-provider-token-x6x7j
+  namespace: infra
+type: kubernetes.io/service-account-token
+data:
+  ca.crt: <OMIT>
+  namespace: aW5mcmE=
+  # JWT base64 encode
+  token: <OMIT>
+```
+
+使用 JWT 记录了相关的用户信息，从而使得 Kubernetes 能够知道该 Token 对应于哪个 ServiceAccount，进一步通过 RBAC 进行权限判断。
+
+```json
+// JWT Header
+{
+  "alg": "RS256",
+  "kid": "hdxo5HvF6FihotWJ9Mf1uu8bgLAwa37nOLseffIvg6w"
+}
+// JWT PAYLOAD
+{
+  "iss": "kubernetes/serviceaccount",
+  "kubernetes.io/serviceaccount/namespace": "infra",
+  "kubernetes.io/serviceaccount/secret.name": "crossplane-provider-token-x6x7j",
+  "kubernetes.io/serviceaccount/service-account.name": "crossplane-provider",
+  "kubernetes.io/serviceaccount/service-account.uid": "b8d7500c-66cd-491c-bba3-ff00ef5e1ccf",
+  "sub": "system:serviceaccount:infra:crossplane-provider"
+}
 ```
 
 ## 参考

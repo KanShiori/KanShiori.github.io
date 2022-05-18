@@ -7,8 +7,9 @@
     <title>[WIP] Go 调试方法总结</title>
     <link>https://KanShiori.github.io/posts/language/golang/language/debug-method/</link>
     <pubDate>Thu, 18 Feb 2021 17:54:17 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/language/golang/language/debug-method/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 调试方法的一个总结，基本内容来源于网络的学习]]></description>
-</item></channel>
+</item>
+</channel>
 </rss>

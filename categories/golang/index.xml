@@ -7,43 +7,49 @@
     <title>Go 泛型</title>
     <link>https://KanShiori.github.io/posts/language/golang/language/generics/</link>
     <pubDate>Thu, 17 Mar 2022 21:29:22 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/language/golang/language/generics/</guid>
     <description><![CDATA[1 背景概念 这一部分内容 Copy 于文档，可以直接看文档 Properties of types and values。 1.1 Underlying types 每一种类型都有着对应的 underlying types（潜在类型），基础类型的 underlying type 就是]]></description>
-</item><item>
+</item>
+<item>
     <title>Ginkgo 学习</title>
     <link>https://KanShiori.github.io/posts/language/golang/library/ginkgo/</link>
     <pubDate>Sun, 27 Jun 2021 07:26:25 &#43;0000</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/language/golang/library/ginkgo/</guid>
     <description><![CDATA[1 概述 ginkgo 是一个 BDD 框架，Kubernetes 的 E2E 测试使用该框架实现集群的测试。 ginkgo 是集成在 Go 测试框架的，在目录下执行 ginkgo bootstrap 就会构建测试的入口： 1 2]]></description>
-</item><item>
+</item>
+<item>
     <title>[WIP] Go 调试方法总结</title>
     <link>https://KanShiori.github.io/posts/language/golang/language/debug-method/</link>
     <pubDate>Thu, 18 Feb 2021 17:54:17 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/language/golang/language/debug-method/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 调试方法的一个总结，基本内容来源于网络的学习]]></description>
-</item><item>
+</item>
+<item>
     <title>Go 并发调度总结</title>
     <link>https://KanShiori.github.io/posts/language/golang/language/goroutine/</link>
     <pubDate>Sat, 23 Jan 2021 17:45:55 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/language/golang/language/goroutine/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 并发调度实现的一个总结，基本内容来源于网络的]]></description>
-</item><item>
+</item>
+<item>
     <title>Go 垃圾收集总结</title>
     <link>https://KanShiori.github.io/posts/language/golang/language/garbage-collection/</link>
     <pubDate>Thu, 14 Jan 2021 20:40:47 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/language/golang/language/garbage-collection/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 垃圾收集的一个总结，基本内容来源于网络的学习]]></description>
-</item><item>
+</item>
+<item>
     <title>Go 内存管理总结</title>
     <link>https://KanShiori.github.io/posts/language/golang/language/memory-manager/</link>
     <pubDate>Tue, 05 Jan 2021 18:28:41 &#43;0800</pubDate>
-    <author>作者</author>
+    <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/language/golang/language/memory-manager/</guid>
     <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于]]></description>
-</item></channel>
+</item>
+</channel>
 </rss>
