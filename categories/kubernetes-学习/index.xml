@@ -4,12 +4,12 @@
         <link>https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/</link>
         <description>Kubernetes 学习 - 分类 - Shiori&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 11 May 2022 21:24:25 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
-    <title>Kubernetes - Rolling Update 与 Rollback</title>
+    <title>Kubernetes - Update 与 Rollback</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/</link>
     <pubDate>Wed, 11 May 2022 21:24:25 &#43;0800</pubDate>
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/</guid>
-    <description><![CDATA[1 Deployment 1.1 操作 1.1.1 Update 当用户修改 Deployment 定义中的 .spec.template 任意字段时，就会触发 Deployment 的滚动升级。 1 $ kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.16.1 通过 kubectl rollout status 查看滚动升级的过程： 1 2 3 4 5 6 7 8 9 10 $ kubectl rollout]]></description>
+    <description><![CDATA[1 操作 1.1 Update 当用户修改 Deployment DaemonSet StatefulSet 定义中的 .spec.template 任意字段时，就会触发 Pod 的升级，默认都是 Rolling Update。 1 $ kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.16.1 通过 kubectl rollout status 查看滚动升级的过程： 1 2 3]]></description>
 </item>
 <item>
     <title>Kubernetes - 理解 kubeconfig</title>
