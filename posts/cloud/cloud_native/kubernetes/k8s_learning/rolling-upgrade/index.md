@@ -292,6 +292,37 @@ status:
 
 #### 1.4.3 StatefulSet
 
+StatefulSet Status 中一些参数可以观察到 Update 状态：
+
+```yaml
+status:
+  replicas: 3
+  readyReplicas: 3
+  availableReplicas: 3
+  collisionCount: 0
+  currentReplicas: 3
+  updatedReplicas: 3
+  currentRevision: main-cluster-pd-6584676774
+  updateRevision: main-cluster-pd-6584676774
+  observedGeneration: 4
+```
+
+Pod 数量相关：
+
+* `replicas` 为期望运行的 Pod 数量
+
+* `readyReplicas` 为 Ready Pod 数量
+
+* `availableReplicas` 为 Available Pod 数量
+
+* `currentReplicas` 为当前 Revision 的运行中的 Pod 数量，`updatedReplicas` 为已经升级 Revision 的运行中的 Pod 数量
+
+  在升级流程中，`currentReplicas` 表示旧版本的 Pod，`updatedReplicas` 为升级完成的 Pod。两者会交替变化。
+
+* `currentRevision` 为当前 Revision，`updatedReplicas` 为需要升级的 Revision
+  
+  `currentRevision` != `updatedReplicas` 就表明正在升级中
+
 ## 2 Deployment 实现
 
 ### 2.1 架构
@@ -364,7 +395,9 @@ Rolling Update 流程就是一个交替缩扩容的流程：
 
 {{< image src="img6.png" height=300 >}}
 
-## 3 DaemonSet 实现
+## 3 DaemonSet/StatefulSet 实现
+
+DaemonSet 与 StatefulSet 都是直接管理的 Pod，两者在 Pod 管理与 Update 实现上基本相同，因此下面以 DaemonSet 为例来说明。
 
 ### 3.1 架构
 
@@ -454,8 +487,6 @@ metadata:
 {{< image src="img9.png" height=300 >}}
 
 那么 Controller 就会更新该 ControllerRevision 的 `spec.revision` 大小，表明该 ControllerRevision 是当前使用中的，然后以该 ControllerRevision 的 Pod Template 和 Hash 值去执行 Update 操作。
-
-## 3 StatefulSet
 
 ## 4 PodDisruptionBudget
 
