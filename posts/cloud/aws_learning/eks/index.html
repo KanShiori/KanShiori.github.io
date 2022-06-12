@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/eks/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-05-02T22:01:07+08:00" />
-<meta property="article:modified_time" content="2022-05-03T22:40:23+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:51:59+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  3352 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/","datePublished": "2022-05-02T22:01:07+08:00","dateModified": "2022-05-03T22:40:23+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/","datePublished": "2022-05-02T22:01:07+08:00","dateModified": "2022-06-12T22:51:59+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -226,8 +226,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">aws eks describe-addon-versions
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">aws eks describe-addon-versions
+</code></pre></td></tr></table>
 </div>
 </div><p>目前支持使用 Addon 管理的有：</p>
 <ul>
@@ -284,9 +284,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl annotate serviceaccount cluster-autoscaler <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  eks.amazonaws.com/role-arn<span class="o">=</span>arn:aws:iam::<span class="nv">$ACCOUNT_ID</span>:role/<span class="nv">$AmazonEKSClusterAutoscalerRole</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">kubectl annotate serviceaccount cluster-autoscaler <span class="se">\
+</span><span class="se"></span>  eks.amazonaws.com/role-arn<span class="o">=</span>arn:aws:iam::<span class="nv">$ACCOUNT_ID</span>:role/<span class="nv">$AmazonEKSClusterAutoscalerRole</span>
+</code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>或者使用 <code>eksctl create iamserviceaccount</code> 来创建 Role 与 ServiceAccount。</p>
@@ -339,19 +339,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StorageClass</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage.k8s.io/v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">gp3</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">provisioner</span><span class="p">:</span><span class="w"> </span><span class="l">ebs.csi.aws.com</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">allowVolumeExpansion</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">volumeBindingMode</span><span class="p">:</span><span class="w"> </span><span class="l">WaitForFirstConsumer</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">parameters</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">gp3</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">fsType</span><span class="p">:</span><span class="w"> </span><span class="l">ext4</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">iops</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;4000&#34;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">throughput</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;400&#34;</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StorageClass</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage.k8s.io/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">gp3</span><span class="w">
+</span><span class="w"></span><span class="nt">provisioner</span><span class="p">:</span><span class="w"> </span><span class="l">ebs.csi.aws.com</span><span class="w">
+</span><span class="w"></span><span class="nt">allowVolumeExpansion</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w"></span><span class="nt">volumeBindingMode</span><span class="p">:</span><span class="w"> </span><span class="l">WaitForFirstConsumer</span><span class="w">
+</span><span class="w"></span><span class="nt">parameters</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">gp3</span><span class="w">
+</span><span class="w">  </span><span class="nt">fsType</span><span class="p">:</span><span class="w"> </span><span class="l">ext4</span><span class="w">
+</span><span class="w">  </span><span class="nt">iops</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;4000&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">throughput</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;400&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><h3 id="32-efs">3.2 EFS</h3>
 <p>除了 EBS 块存储外，也支持提供 EFS 文件系统给 Pod 使用。EFS 在 Pod 中所见的也是一个目录，区别在于该目录会对应 EFS 中的一个目录。</p>
@@ -373,19 +373,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StorageClass</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage.k8s.io/v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">efs-sc</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">provisioner</span><span class="p">:</span><span class="w"> </span><span class="l">efs.csi.aws.com</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">parameters</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">provisioningMode</span><span class="p">:</span><span class="w"> </span><span class="l">efs-ap</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">fileSystemId</span><span class="p">:</span><span class="w"> </span><span class="l">fs-92107410</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">directoryPerms</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;700&#34;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">gidRangeStart</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1000&#34;</span><span class="w"> </span><span class="c"># optional</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">gidRangeEnd</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2000&#34;</span><span class="w"> </span><span class="c"># optional</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">basePath</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/dynamic_provisioning&#34;</span><span class="w"> </span><span class="c"># optional</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StorageClass</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage.k8s.io/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">efs-sc</span><span class="w">
+</span><span class="w"></span><span class="nt">provisioner</span><span class="p">:</span><span class="w"> </span><span class="l">efs.csi.aws.com</span><span class="w">
+</span><span class="w"></span><span class="nt">parameters</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">provisioningMode</span><span class="p">:</span><span class="w"> </span><span class="l">efs-ap</span><span class="w">
+</span><span class="w">  </span><span class="nt">fileSystemId</span><span class="p">:</span><span class="w"> </span><span class="l">fs-92107410</span><span class="w">
+</span><span class="w">  </span><span class="nt">directoryPerms</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;700&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">gidRangeStart</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1000&#34;</span><span class="w"> </span><span class="c"># optional</span><span class="w">
+</span><span class="w">  </span><span class="nt">gidRangeEnd</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2000&#34;</span><span class="w"> </span><span class="c"># optional</span><span class="w">
+</span><span class="w">  </span><span class="nt">basePath</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/dynamic_provisioning&#34;</span><span class="w"> </span><span class="c"># optional</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><h2 id="4-network">4 Network</h2>
 <p>EKS 的网络结构图大致如下：</p>
@@ -501,28 +501,28 @@
 </span><span class="lnt">21
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">mapRoles</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
-</span></span></span><span class="line"><span class="cl"><span class="sd">    - rolearn: arn:aws:iam::111122223333:role/eksctl-my-cluster-nodegroup-standard-wo-NodeInstanceRole-1WP3NUE3O6UCF
-</span></span></span><span class="line"><span class="cl"><span class="sd">      username: system:node:{{EC2PrivateDNSName}}
-</span></span></span><span class="line"><span class="cl"><span class="sd">      groups:
-</span></span></span><span class="line"><span class="cl"><span class="sd">        - system:bootstrappers
-</span></span></span><span class="line"><span class="cl"><span class="sd">        - system:nodes</span><span class="w">    
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">mapUsers</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
-</span></span></span><span class="line"><span class="cl"><span class="sd">    - userarn: arn:aws:iam::111122223333:user/admin
-</span></span></span><span class="line"><span class="cl"><span class="sd">      username: admin
-</span></span></span><span class="line"><span class="cl"><span class="sd">      groups:
-</span></span></span><span class="line"><span class="cl"><span class="sd">        - system:masters
-</span></span></span><span class="line"><span class="cl"><span class="sd">    - userarn: arn:aws:iam::444455556666:user/ops-user
-</span></span></span><span class="line"><span class="cl"><span class="sd">      username: ops-user
-</span></span></span><span class="line"><span class="cl"><span class="sd">      groups:
-</span></span></span><span class="line"><span class="cl"><span class="sd">        - eks-console-dashboard-full-access-group
-</span></span></span><span class="line"><span class="cl"><span class="sd">    - userarn: arn:aws:iam::444455556666:user/ops-user2
-</span></span></span><span class="line"><span class="cl"><span class="sd">      username: ops-user2
-</span></span></span><span class="line"><span class="cl"><span class="sd">      groups:
-</span></span></span><span class="line"><span class="cl"><span class="sd">        - eks-console-dashboard-restricted-access-group</span><span class="w">    
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">mapRoles</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">    - rolearn: arn:aws:iam::111122223333:role/eksctl-my-cluster-nodegroup-standard-wo-NodeInstanceRole-1WP3NUE3O6UCF
+</span><span class="sd">      username: system:node:{{EC2PrivateDNSName}}
+</span><span class="sd">      groups:
+</span><span class="sd">        - system:bootstrappers
+</span><span class="sd">        - system:nodes</span><span class="w">    
+</span><span class="w">  </span><span class="nt">mapUsers</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">    - userarn: arn:aws:iam::111122223333:user/admin
+</span><span class="sd">      username: admin
+</span><span class="sd">      groups:
+</span><span class="sd">        - system:masters
+</span><span class="sd">    - userarn: arn:aws:iam::444455556666:user/ops-user
+</span><span class="sd">      username: ops-user
+</span><span class="sd">      groups:
+</span><span class="sd">        - eks-console-dashboard-full-access-group
+</span><span class="sd">    - userarn: arn:aws:iam::444455556666:user/ops-user2
+</span><span class="sd">      username: ops-user2
+</span><span class="sd">      groups:
+</span><span class="sd">        - eks-console-dashboard-restricted-access-group</span><span class="w">    
+</span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>mapRoles - 将 IAM Role 映射到 Kubernetes 用户或用户组</li>
@@ -575,13 +575,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ServiceAccount</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">eks.amazonaws.com/role-arn=arn:aws:iam::&lt;ACCOUNT_ID&gt;:role/&lt;ROLE_NAME&gt;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">eks.amazonaws.com/sts-regional-endpoints=true</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ServiceAccount</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="l">eks.amazonaws.com/role-arn=arn:aws:iam::&lt;ACCOUNT_ID&gt;:role/&lt;ROLE_NAME&gt;</span><span class="w">
+</span><span class="w">    </span><span class="l">eks.amazonaws.com/sts-regional-endpoints=true</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li><code>eks.amazonaws.com/role-arn</code> 表明 ServiceAccount 关联的 Role</li>
@@ -614,29 +614,29 @@
 </span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/run/secrets/kubernetes.io/serviceaccount</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa-token-gvztp</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/run/secrets/eks.amazonaws.com/serviceaccount</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">aws-iam-token</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">serviceAccount</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">aws-iam-token</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">projected</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">defaultMode</span><span class="p">:</span><span class="w"> </span><span class="m">420</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">sources</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">serviceAccountToken</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">audience</span><span class="p">:</span><span class="w"> </span><span class="l">sts.amazonaws.com</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">expirationSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">86400</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">token</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa-token-gvztp</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">secret</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">defaultMode</span><span class="p">:</span><span class="w"> </span><span class="m">420</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa-token-gvztp</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/run/secrets/kubernetes.io/serviceaccount</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa-token-gvztp</span><span class="w">
+</span><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/run/secrets/eks.amazonaws.com/serviceaccount</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">aws-iam-token</span><span class="w">
+</span><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">serviceAccount</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa</span><span class="w">
+</span><span class="w">  </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">aws-iam-token</span><span class="w">
+</span><span class="w">    </span><span class="nt">projected</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">defaultMode</span><span class="p">:</span><span class="w"> </span><span class="m">420</span><span class="w">
+</span><span class="w">      </span><span class="nt">sources</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">serviceAccountToken</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">audience</span><span class="p">:</span><span class="w"> </span><span class="l">sts.amazonaws.com</span><span class="w">
+</span><span class="w">          </span><span class="nt">expirationSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">86400</span><span class="w">
+</span><span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">token</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa-token-gvztp</span><span class="w">
+</span><span class="w">    </span><span class="nt">secret</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">defaultMode</span><span class="p">:</span><span class="w"> </span><span class="m">420</span><span class="w">
+</span><span class="w">      </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l">your-sa-token-gvztp</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>Pod 启动后，相关的信息会保存在一些环境变量中：</p>
 <div class="highlight"><div class="chroma">
@@ -646,10 +646,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">AWS_WEB_IDENTITY_TOKEN_FILE</span><span class="o">=</span>/var/run/secrets/eks.amazonaws.com/serviceaccount/token
-</span></span><span class="line"><span class="cl"><span class="nv">AWS_ROLE_ARN</span><span class="o">=</span>arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
-</span></span><span class="line"><span class="cl"><span class="nv">AWS_STS_REGIONAL_ENDPOINTS</span><span class="o">=</span>regional
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">AWS_WEB_IDENTITY_TOKEN_FILE</span><span class="o">=</span>/var/run/secrets/eks.amazonaws.com/serviceaccount/token
+<span class="nv">AWS_ROLE_ARN</span><span class="o">=</span>arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
+<span class="nv">AWS_STS_REGIONAL_ENDPOINTS</span><span class="o">=</span>regional
+</code></pre></td></tr></table>
 </div>
 </div><p>在代码中使用 AWS SDK 时，会自动读取 Token 来作为访问 AWS 的配置。</p>
 <h2 id="参考">参考</h2>
@@ -660,8 +660,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-05-03&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/071f3303f6328387ed379c662570db812ee88886" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 071f3303f6328387ed379c662570db812ee88886: post: eks">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>071f330</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/c89e094c6f96c5d95110f1589607d938fe70519a" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) c89e094c6f96c5d95110f1589607d938fe70519a: fix">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>c89e094</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -685,7 +685,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

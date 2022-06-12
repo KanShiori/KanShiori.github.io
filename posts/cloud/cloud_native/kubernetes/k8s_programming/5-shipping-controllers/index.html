@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/5-shipping-controllers/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-08-20T14:53:38+00:00" />
-<meta property="article:modified_time" content="2022-03-24T21:07:12+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:51:59+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/5-shipping-controllers\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1591 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/5-shipping-controllers\/","datePublished": "2021-08-20T14:53:38+00:00","dateModified": "2022-03-24T21:07:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/5-shipping-controllers\/","datePublished": "2021-08-20T14:53:38+00:00","dateModified": "2022-06-12T22:51:59+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -184,32 +184,32 @@
 </span><span class="lnt">25
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1 </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span>{{<span class="w"> </span><span class="l">include &#34;flagger.fullname&#34; . }} </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># ... </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Recreate </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">app.kubernetes.io/name</span><span class="p">:</span><span class="w"> </span>{{<span class="w"> </span><span class="l">template &#34;flagger.name&#34; . }} </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">app.kubernetes.io/instance</span><span class="p">:</span><span class="w"> </span>{{<span class="w"> </span><span class="l">.Release.Name }} </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">app.kubernetes.io/name</span><span class="p">:</span><span class="w"> </span>{{<span class="w"> </span><span class="l">template &#34;flagger.name&#34; . }}         app.kubernetes.io/instance: {{ .Release.Name }} </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span>{{<span class="w"> </span><span class="l">template &#34;flagger.serviceAccountName&#34; . }} </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">flagger </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">securityContext</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">readOnlyRootFilesystem</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="m">10001</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;{{ .Values.image.repository }}:{{ .Values.image.tag }}&#34;</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1 </span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment </span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span>{{<span class="w"> </span><span class="l">include &#34;flagger.fullname&#34; . }} </span><span class="w">
+</span><span class="w"></span><span class="c"># ... </span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w"> 
+</span><span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> 
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Recreate </span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"> 
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"> 
+</span><span class="w">      </span><span class="nt">app.kubernetes.io/name</span><span class="p">:</span><span class="w"> </span>{{<span class="w"> </span><span class="l">template &#34;flagger.name&#34; . }} </span><span class="w">
+</span><span class="w">      </span><span class="nt">app.kubernetes.io/instance</span><span class="p">:</span><span class="w"> </span>{{<span class="w"> </span><span class="l">.Release.Name }} </span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"> 
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"> 
+</span><span class="w">        </span><span class="nt">app.kubernetes.io/name</span><span class="p">:</span><span class="w"> </span>{{<span class="w"> </span><span class="l">template &#34;flagger.name&#34; . }}         app.kubernetes.io/instance: {{ .Release.Name }} </span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
+</span><span class="w">      </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span>{{<span class="w"> </span><span class="l">template &#34;flagger.serviceAccountName&#34; . }} </span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"> 
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">flagger </span><span class="w">
+</span><span class="w">          </span><span class="nt">securityContext</span><span class="p">:</span><span class="w"> 
+</span><span class="w">            </span><span class="nt">readOnlyRootFilesystem</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> 
+</span><span class="w">            </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="m">10001</span><span class="w"> 
+</span><span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;{{ .Values.image.repository }}:{{ .Values.image.tag }}&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>可以看到，所有的变量都以 <strong>{{ .Some.value.here }}</strong> 的格式表示。</p>
 <p>通过 <code>helm install</code> 命令，就可以安装一个 Chart。最简单的方式是安装官方发布的一些 Chart：</p>
@@ -232,22 +232,22 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># get the latest list of charts:</span>
-</span></span><span class="line"><span class="cl">$ helm repo update 
-</span></span><span class="line"><span class="cl"> 
-</span></span><span class="line"><span class="cl"><span class="c1"># install MySQL:</span>
-</span></span><span class="line"><span class="cl">$ helm install stable/mysql 
-</span></span><span class="line"><span class="cl">Released smiling-penguin 
-</span></span><span class="line"><span class="cl"> 
-</span></span><span class="line"><span class="cl"><span class="c1"># list running apps:</span>
-</span></span><span class="line"><span class="cl">$ helm ls 
-</span></span><span class="line"><span class="cl">NAME             VERSION   UPDATED                   STATUS    CHART 
-</span></span><span class="line"><span class="cl">smiling-penguin  <span class="m">1</span>         Wed Sep <span class="m">28</span> 12:59:46 <span class="m">2016</span>  DEPLOYED  mysql-0.1.0 
-</span></span><span class="line"><span class="cl"> 
-</span></span><span class="line"><span class="cl"><span class="c1"># remove it:</span>
-</span></span><span class="line"><span class="cl">$ helm delete smiling-penguin 
-</span></span><span class="line"><span class="cl">Removed smiling-penguin
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># get the latest list of charts:</span>
+$ helm repo update 
+ 
+<span class="c1"># install MySQL:</span>
+$ helm install stable/mysql 
+Released smiling-penguin 
+ 
+<span class="c1"># list running apps:</span>
+$ helm ls 
+NAME             VERSION   UPDATED                   STATUS    CHART 
+smiling-penguin  <span class="m">1</span>         Wed Sep <span class="m">28</span> 12:59:46 <span class="m">2016</span>  DEPLOYED  mysql-0.1.0 
+ 
+<span class="c1"># remove it:</span>
+$ helm delete smiling-penguin 
+Removed smiling-penguin
+</code></pre></td></tr></table>
 </div>
 </div><p>想要发布的你的 Controller，需要编写一个 Helm Chart 并上传到公共仓库。默认情况，你可以把它发布到 <a href="https://artifacthub.io/" target="_blank" rel="noopener noreffer"><strong>Artifact Hub</strong></a> 提供的公共仓库。</p>
 <h3 id="12-kustomize">1.2 Kustomize</h3>
@@ -263,12 +263,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">imageTags</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">quay.io/programming-kubernetes/cnat-operator </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">newTag</span><span class="p">:</span><span class="w"> </span><span class="m">0.1.0</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">resources</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="l">cnat-controller.yaml</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">imageTags</span><span class="p">:</span><span class="w"> 
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">quay.io/programming-kubernetes/cnat-operator </span><span class="w">
+</span><span class="w">    </span><span class="nt">newTag</span><span class="p">:</span><span class="w"> </span><span class="m">0.1.0</span><span class="w"> 
+</span><span class="w"></span><span class="nt">resources</span><span class="p">:</span><span class="w"> 
+</span><span class="w"></span>- <span class="l">cnat-controller.yaml</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>然后创建原始的文件 cnat-controller.yaml 上：</p>
 <div class="highlight"><div class="chroma">
@@ -289,21 +289,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1beta1 </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">cnat-controller </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">cnat </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">custom-controller </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">quay.io/programming-kubernetes/cnat-operator</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1beta1 </span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment </span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">cnat-controller </span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w"> 
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"> 
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"> 
+</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">cnat </span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"> 
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">custom-controller </span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">quay.io/programming-kubernetes/cnat-operator</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>使用 <code>kustomize build</code> 命令，cat-controller.yaml 文件不变，但是会输出如下配置：</p>
 <div class="highlight"><div class="chroma">
@@ -323,20 +323,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1beta1 </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">cnat-controller </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec:   replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">cnat </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"> 
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">custom-controller </span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">quay.io/programming-kubernetes/cnat-operator:0.1.0l</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1beta1 </span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment </span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">cnat-controller </span><span class="w">
+</span><span class="w"></span><span class="nt">spec:   replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w"> 
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"> 
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"> 
+</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">cnat </span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"> 
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"> 
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">custom-controller </span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">quay.io/programming-kubernetes/cnat-operator:0.1.0l</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><h3 id="13-最佳打包实践">1.3 最佳打包实践</h3>
 <p>无论你用什么机制，下面这些经验都很适用：</p>
@@ -394,8 +394,8 @@ in CI for Integration and E2E tests</strong></a>。</p>
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-03-24&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) dc3de05694b72b3aa7b4ae5ab6192c1f06ccb877: Adjust the directory structure">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>dc3de05</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/c89e094c6f96c5d95110f1589607d938fe70519a" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) c89e094c6f96c5d95110f1589607d938fe70519a: fix">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>c89e094</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -419,7 +419,7 @@ in CI for Integration and E2E tests</strong></a>。</p>
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

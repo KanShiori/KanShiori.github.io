@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/net/dns/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-23T20:55:43+08:00" />
-<meta property="article:modified_time" content="2022-02-09T17:58:40+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:51:59+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/net\/dns\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "网络","wordcount":  2028 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/net\/dns\/","datePublished": "2021-12-23T20:55:43+08:00","dateModified": "2022-02-09T17:58:40+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/net\/dns\/","datePublished": "2021-12-23T20:55:43+08:00","dateModified": "2022-06-12T22:51:59+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -260,26 +260,26 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dig www.google.com
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.16.1-Ubuntu &lt;&lt;&gt;&gt; www.google.com
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> global options: +cmd
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> Got answer:
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">55926</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> flags: qr rd ad<span class="p">;</span> QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: <span class="m">0</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> WARNING: recursion requested but not available
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> QUESTION SECTION:
-</span></span><span class="line"><span class="cl"><span class="p">;</span>www.google.com.                        IN      A
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> ANSWER SECTION:
-</span></span><span class="line"><span class="cl">www.google.com.         <span class="m">0</span>       IN      A       172.217.26.228
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> Query time: <span class="m">0</span> msec
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> SERVER: 172.23.64.1#53<span class="o">(</span>172.23.64.1<span class="o">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> WHEN: Sat Dec <span class="m">25</span> 22:42:48 CST <span class="m">2021</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> MSG SIZE  rcvd: <span class="m">62</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ dig www.google.com
+
+<span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.16.1-Ubuntu &lt;&lt;&gt;&gt; www.google.com
+<span class="p">;;</span> global options: +cmd
+<span class="p">;;</span> Got answer:
+<span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">55926</span>
+<span class="p">;;</span> flags: qr rd ad<span class="p">;</span> QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: <span class="m">0</span>
+<span class="p">;;</span> WARNING: recursion requested but not available
+
+<span class="p">;;</span> QUESTION SECTION:
+<span class="p">;</span>www.google.com.                        IN      A
+
+<span class="p">;;</span> ANSWER SECTION:
+www.google.com.         <span class="m">0</span>       IN      A       172.217.26.228
+
+<span class="p">;;</span> Query time: <span class="m">0</span> msec
+<span class="p">;;</span> SERVER: 172.23.64.1#53<span class="o">(</span>172.23.64.1<span class="o">)</span>
+<span class="p">;;</span> WHEN: Sat Dec <span class="m">25</span> 22:42:48 CST <span class="m">2021</span>
+<span class="p">;;</span> MSG SIZE  rcvd: <span class="m">62</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="42-aaaa-类型">4.2 AAAA 类型</h3>
 <p>AAAA 类型 DNS Record 表示 <strong>Domain 对应的 IPv6 地址</strong>。</p>
@@ -307,26 +307,26 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dig www.google.com AAAA
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.16.1-Ubuntu &lt;&lt;&gt;&gt; www.google.com AAAA
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> global options: +cmd
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> Got answer:
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">57495</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> flags: qr rd ad<span class="p">;</span> QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: <span class="m">0</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> WARNING: recursion requested but not available
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> QUESTION SECTION:
-</span></span><span class="line"><span class="cl"><span class="p">;</span>www.google.com.                        IN      AAAA
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> ANSWER SECTION:
-</span></span><span class="line"><span class="cl">www.google.com.         <span class="m">0</span>       IN      AAAA    2404:6800:4004:801::2004
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> Query time: <span class="m">40</span> msec
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> SERVER: 172.23.64.1#53<span class="o">(</span>172.23.64.1<span class="o">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> WHEN: Sat Dec <span class="m">25</span> 22:44:47 CST <span class="m">2021</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> MSG SIZE  rcvd: <span class="m">74</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ dig www.google.com AAAA
+
+<span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.16.1-Ubuntu &lt;&lt;&gt;&gt; www.google.com AAAA
+<span class="p">;;</span> global options: +cmd
+<span class="p">;;</span> Got answer:
+<span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">57495</span>
+<span class="p">;;</span> flags: qr rd ad<span class="p">;</span> QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: <span class="m">0</span>
+<span class="p">;;</span> WARNING: recursion requested but not available
+
+<span class="p">;;</span> QUESTION SECTION:
+<span class="p">;</span>www.google.com.                        IN      AAAA
+
+<span class="p">;;</span> ANSWER SECTION:
+www.google.com.         <span class="m">0</span>       IN      AAAA    2404:6800:4004:801::2004
+
+<span class="p">;;</span> Query time: <span class="m">40</span> msec
+<span class="p">;;</span> SERVER: 172.23.64.1#53<span class="o">(</span>172.23.64.1<span class="o">)</span>
+<span class="p">;;</span> WHEN: Sat Dec <span class="m">25</span> 22:44:47 CST <span class="m">2021</span>
+<span class="p">;;</span> MSG SIZE  rcvd: <span class="m">74</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="43-cname-类型">4.3 CNAME 类型</h3>
 <p>CNAME 类型表示使用别名的 <strong><ruby>权威域名<rt>canonical name</rt></ruby></strong>。也就是说，<strong>CNAME 是 Domain 的域名的别名</strong>。</p>
@@ -337,8 +337,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">CNAME &lt;source site&gt; &#34;xx.cdn.dnsv1.com&#34;
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">CNAME &lt;source site&gt; &#34;xx.cdn.dnsv1.com&#34;
+</code></pre></td></tr></table>
 </div>
 </div><p>这样，用户访问 source site 时后会返回 CNAME 地址，接着用户就会对 CNAME 地址的服务器发起 DNS 解析以及访问，从而用户就放回到了 CDN 的缓存服务器。
 
@@ -380,28 +380,28 @@
 </span><span class="lnt">21
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dig qq.com MX
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.16.1-Ubuntu &lt;&lt;&gt;&gt; qq.com MX
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> global options: +cmd
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> Got answer:
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">1841</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> flags: qr rd ad<span class="p">;</span> QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: <span class="m">0</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> WARNING: recursion requested but not available
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> QUESTION SECTION:
-</span></span><span class="line"><span class="cl"><span class="p">;</span>qq.com.                                IN      MX
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> ANSWER SECTION:
-</span></span><span class="line"><span class="cl">qq.com.                 <span class="m">0</span>       IN      MX      <span class="m">20</span> mx2.qq.com.
-</span></span><span class="line"><span class="cl">qq.com.                 <span class="m">0</span>       IN      MX      <span class="m">30</span> mx1.qq.com.
-</span></span><span class="line"><span class="cl">qq.com.                 <span class="m">0</span>       IN      MX      <span class="m">10</span> mx3.qq.com.
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> Query time: <span class="m">10</span> msec
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> SERVER: 172.23.64.1#53<span class="o">(</span>172.23.64.1<span class="o">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> WHEN: Sat Dec <span class="m">25</span> 23:10:03 CST <span class="m">2021</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> MSG SIZE  rcvd: <span class="m">108</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ dig qq.com MX
+
+<span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.16.1-Ubuntu &lt;&lt;&gt;&gt; qq.com MX
+<span class="p">;;</span> global options: +cmd
+<span class="p">;;</span> Got answer:
+<span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">1841</span>
+<span class="p">;;</span> flags: qr rd ad<span class="p">;</span> QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: <span class="m">0</span>
+<span class="p">;;</span> WARNING: recursion requested but not available
+
+<span class="p">;;</span> QUESTION SECTION:
+<span class="p">;</span>qq.com.                                IN      MX
+
+<span class="p">;;</span> ANSWER SECTION:
+qq.com.                 <span class="m">0</span>       IN      MX      <span class="m">20</span> mx2.qq.com.
+qq.com.                 <span class="m">0</span>       IN      MX      <span class="m">30</span> mx1.qq.com.
+qq.com.                 <span class="m">0</span>       IN      MX      <span class="m">10</span> mx3.qq.com.
+
+<span class="p">;;</span> Query time: <span class="m">10</span> msec
+<span class="p">;;</span> SERVER: 172.23.64.1#53<span class="o">(</span>172.23.64.1<span class="o">)</span>
+<span class="p">;;</span> WHEN: Sat Dec <span class="m">25</span> 23:10:03 CST <span class="m">2021</span>
+<span class="p">;;</span> MSG SIZE  rcvd: <span class="m">108</span>
+</code></pre></td></tr></table>
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -441,29 +441,29 @@
 </span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dig qq.com NS
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.16.1-Ubuntu &lt;&lt;&gt;&gt; qq.com NS
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> global options: +cmd
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> Got answer:
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">25101</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> flags: qr rd ad<span class="p">;</span> QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: <span class="m">0</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> WARNING: recursion requested but not available
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> QUESTION SECTION:
-</span></span><span class="line"><span class="cl"><span class="p">;</span>qq.com.                                IN      NS
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> ANSWER SECTION:
-</span></span><span class="line"><span class="cl">qq.com.                 <span class="m">0</span>       IN      NS      ns4.qq.com.
-</span></span><span class="line"><span class="cl">qq.com.                 <span class="m">0</span>       IN      NS      ns1.qq.com.
-</span></span><span class="line"><span class="cl">qq.com.                 <span class="m">0</span>       IN      NS      ns2.qq.com.
-</span></span><span class="line"><span class="cl">qq.com.                 <span class="m">0</span>       IN      NS      ns3.qq.com.
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> Query time: <span class="m">60</span> msec
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> SERVER: 172.23.64.1#53<span class="o">(</span>172.23.64.1<span class="o">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> WHEN: Sat Dec <span class="m">25</span> 23:15:17 CST <span class="m">2021</span>
-</span></span><span class="line"><span class="cl"><span class="p">;;</span> MSG SIZE  rcvd: <span class="m">126</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ dig qq.com NS
+
+<span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.16.1-Ubuntu &lt;&lt;&gt;&gt; qq.com NS
+<span class="p">;;</span> global options: +cmd
+<span class="p">;;</span> Got answer:
+<span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">25101</span>
+<span class="p">;;</span> flags: qr rd ad<span class="p">;</span> QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: <span class="m">0</span>
+<span class="p">;;</span> WARNING: recursion requested but not available
+
+<span class="p">;;</span> QUESTION SECTION:
+<span class="p">;</span>qq.com.                                IN      NS
+
+<span class="p">;;</span> ANSWER SECTION:
+qq.com.                 <span class="m">0</span>       IN      NS      ns4.qq.com.
+qq.com.                 <span class="m">0</span>       IN      NS      ns1.qq.com.
+qq.com.                 <span class="m">0</span>       IN      NS      ns2.qq.com.
+qq.com.                 <span class="m">0</span>       IN      NS      ns3.qq.com.
+
+<span class="p">;;</span> Query time: <span class="m">60</span> msec
+<span class="p">;;</span> SERVER: 172.23.64.1#53<span class="o">(</span>172.23.64.1<span class="o">)</span>
+<span class="p">;;</span> WHEN: Sat Dec <span class="m">25</span> 23:15:17 CST <span class="m">2021</span>
+<span class="p">;;</span> MSG SIZE  rcvd: <span class="m">126</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="46-txt-类型">4.6 TXT 类型</h3>
 <p>TXT 类型记录不是实际上影响 DNS 解析的记录，而是保存一些文本信息，其中一些信息是 DNS 解析的配置。</p>
@@ -471,8 +471,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/70ce3a7283623d19b4c61c3eefdbb9d7d7fc770d" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 70ce3a7283623d19b4c61c3eefdbb9d7d7fc770d: update md">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>70ce3a7</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/c89e094c6f96c5d95110f1589607d938fe70519a" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) c89e094c6f96c5d95110f1589607d938fe70519a: fix">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>c89e094</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -496,7 +496,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

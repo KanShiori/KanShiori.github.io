@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/iam/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-01T13:47:56+00:00" />
-<meta property="article:modified_time" content="2022-04-24T22:16:33+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:51:59+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/iam\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  3468 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/iam\/","datePublished": "2021-12-01T13:47:56+00:00","dateModified": "2022-04-24T22:16:33+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/iam\/","datePublished": "2021-12-01T13:47:56+00:00","dateModified": "2022-06-12T22:51:59+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -272,34 +272,34 @@
 </span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;Version&#34;</span><span class="p">:</span> <span class="s2">&#34;2012-10-17&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;Statement&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">        <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;ec2:*&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Resource&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">},</span>
-</span></span><span class="line"><span class="cl">        <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;iam:CreateServiceLinkedRole&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Resource&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Condition&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;StringEquals&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                    <span class="nt">&#34;iam:AWSServiceName&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;autoscaling.amazonaws.com&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;ec2scheduled.amazonaws.com&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;elasticloadbalancing.amazonaws.com&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;spot.amazonaws.com&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;spotfleet.amazonaws.com&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;transitgateway.amazonaws.com&#34;</span>
-</span></span><span class="line"><span class="cl">                    <span class="p">]</span>
-</span></span><span class="line"><span class="cl">                <span class="p">}</span>
-</span></span><span class="line"><span class="cl">            <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">]</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;Version&#34;</span><span class="p">:</span> <span class="s2">&#34;2012-10-17&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;Statement&#34;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;ec2:*&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Resource&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;iam:CreateServiceLinkedRole&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Resource&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Condition&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;StringEquals&#34;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&#34;iam:AWSServiceName&#34;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="s2">&#34;autoscaling.amazonaws.com&#34;</span><span class="p">,</span>
+                        <span class="s2">&#34;ec2scheduled.amazonaws.com&#34;</span><span class="p">,</span>
+                        <span class="s2">&#34;elasticloadbalancing.amazonaws.com&#34;</span><span class="p">,</span>
+                        <span class="s2">&#34;spot.amazonaws.com&#34;</span><span class="p">,</span>
+                        <span class="s2">&#34;spotfleet.amazonaws.com&#34;</span><span class="p">,</span>
+                        <span class="s2">&#34;transitgateway.amazonaws.com&#34;</span>
+                    <span class="p">]</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>Statement - 各个语句数组，多个规则之间为 OR 逻辑；
@@ -370,19 +370,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;Version&#34;</span><span class="p">:</span> <span class="s2">&#34;2012-10-17&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;Statement&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">    <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;Principal&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;Service&#34;</span><span class="p">:</span> <span class="s2">&#34;ec2.amazonaws.com&#34;</span>
-</span></span><span class="line"><span class="cl">      <span class="p">},</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;sts:AssumeRole&#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">  <span class="p">]</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;Version&#34;</span><span class="p">:</span> <span class="s2">&#34;2012-10-17&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;Statement&#34;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;Principal&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;Service&#34;</span><span class="p">:</span> <span class="s2">&#34;ec2.amazonaws.com&#34;</span>
+      <span class="p">},</span>
+      <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;sts:AssumeRole&#34;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="42-session-policy">4.2 Session Policy</h3>
 <p>执行 Assume Role 行为时，可以传递一个 <strong><code>Session Policy</code></strong>，作为<strong>本次 Assume Role 期间额外添加的 Policy</strong>。通过 Session Policy 实现一次性的约束。</p>
@@ -409,19 +409,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="p">[</span>   <span class="c1">// -&gt; 针对创建 User 等相关的 API
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="s2">&#34;iam:CreateUser&#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">]</span>
-</span></span><span class="line"><span class="cl">  <span class="s2">&#34;Condition&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;StringEqua1s&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;iam:permissionsBoundary&#34;</span><span class="p">:</span> <span class="s2">&#34;arn:aws:iam::ACCOUNT_ID:policy/PolicyX&#34;</span><span class="err">，</span><span class="c1">// -&gt; 要求 Permission Boundary 必须指定了某个 Policy
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="p">[</span>   <span class="c1">// -&gt; 针对创建 User 等相关的 API
+</span><span class="c1"></span>    <span class="s2">&#34;iam:CreateUser&#34;</span>
+    <span class="c1">// ...
+</span><span class="c1"></span>  <span class="p">]</span>
+  <span class="s2">&#34;Condition&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;StringEqua1s&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;iam:permissionsBoundary&#34;</span><span class="p">:</span> <span class="s2">&#34;arn:aws:iam::ACCOUNT_ID:policy/PolicyX&#34;</span><span class="err">，</span><span class="c1">// -&gt; 要求 Permission Boundary 必须指定了某个 Policy
+</span><span class="c1"></span>    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="6-policy-评估">6 Policy 评估</h2>
 <p>总结一下前面提到的所有 IAM 会评估的 Policy：</p>
@@ -478,20 +478,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">anyDeny</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">Deny</span>  <span class="c1">// 显式拒绝
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">ResourceBasedAllow</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">Allow</span>  <span class="c1">// 基于资源策略显式允许
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">AllAllow</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">allow</span>  <span class="c1">// 交集取允许
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="nx">Deny</span>  <span class="c1">// 隐式拒绝
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">anyDeny</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">Deny</span>  <span class="c1">// 显式拒绝
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="k">if</span> <span class="nx">ResourceBasedAllow</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">Allow</span>  <span class="c1">// 基于资源策略显式允许
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="k">if</span> <span class="nx">AllAllow</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">allow</span>  <span class="c1">// 交集取允许
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="k">return</span> <span class="nx">Deny</span>  <span class="c1">// 隐式拒绝
+</span></code></pre></td></tr></table>
 </div>
 </div><h2 id="7-security-token-service">7 Security Token Service</h2>
 <p>使用 AssumeRole 提供的临时权限本质上，是为 Role 申请了一个 Token，用以访问 AWS。这些临时的 Token 都是由 Security Token Service 来颁发的，简称为 STS。</p>
@@ -547,8 +547,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-04-24&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/5405dec1264bdecb996ec3bdd7edfa2e1025c327" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 5405dec1264bdecb996ec3bdd7edfa2e1025c327: rename">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>5405dec</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/c89e094c6f96c5d95110f1589607d938fe70519a" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) c89e094c6f96c5d95110f1589607d938fe70519a: fix">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>c89e094</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -572,7 +572,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

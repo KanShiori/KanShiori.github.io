@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/kms/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-05-05T21:21:14+08:00" />
-<meta property="article:modified_time" content="2022-05-10T22:28:02+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:51:59+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/kms\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  3361 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/kms\/","datePublished": "2022-05-05T21:21:14+08:00","dateModified": "2022-05-10T22:28:02+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  3223 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/kms\/","datePublished": "2022-05-05T21:21:14+08:00","dateModified": "2022-06-12T22:51:59+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">AWS - KMS</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>AWS 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-05-05">2022-05-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3361 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-05-05">2022-05-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3223 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -308,13 +308,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="err">$</span> <span class="err">aws</span> <span class="err">kms</span> <span class="err">encrypt</span> <span class="err">--key-id</span> <span class="err">&lt;key-id&gt;</span> <span class="err">--plaintext</span> <span class="err">&lt;plaintext&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;CiphertextBlob&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;ciphertext&gt;&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;KeyId&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;key-arn&gt;&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;EncryptionAlgorithm&#34;</span><span class="p">:</span> <span class="s2">&#34;SYMMETRIC_DEFAULT&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="err">$</span> <span class="err">aws</span> <span class="err">kms</span> <span class="err">encrypt</span> <span class="err">--key-id</span> <span class="err">&lt;key-id&gt;</span> <span class="err">--plaintext</span> <span class="err">&lt;plaintext&gt;</span>
+<span class="p">{</span>
+    <span class="nt">&#34;CiphertextBlob&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;ciphertext&gt;&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;KeyId&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;key-arn&gt;&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;EncryptionAlgorithm&#34;</span><span class="p">:</span> <span class="s2">&#34;SYMMETRIC_DEFAULT&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>对应的，使用 Decrypt 来解密：</p>
 <div class="highlight"><div class="chroma">
@@ -327,13 +327,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="err">$</span>  <span class="err">aws</span> <span class="err">kms</span> <span class="err">decrypt</span> <span class="err">--key-id</span> <span class="err">&lt;key-id&gt;</span> <span class="err">--ciphertext-blob</span> <span class="err">&lt;ciphertext&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;KeyId&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;key-arn&gt;&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;Plaintext&#34;</span><span class="p">:</span> <span class="s2">&#34;aGVsbG8K&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;EncryptionAlgorithm&#34;</span><span class="p">:</span> <span class="s2">&#34;SYMMETRIC_DEFAULT&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="err">$</span>  <span class="err">aws</span> <span class="err">kms</span> <span class="err">decrypt</span> <span class="err">--key-id</span> <span class="err">&lt;key-id&gt;</span> <span class="err">--ciphertext-blob</span> <span class="err">&lt;ciphertext&gt;</span>
+<span class="p">{</span>
+    <span class="nt">&#34;KeyId&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;key-arn&gt;&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;Plaintext&#34;</span><span class="p">:</span> <span class="s2">&#34;aGVsbG8K&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;EncryptionAlgorithm&#34;</span><span class="p">:</span> <span class="s2">&#34;SYMMETRIC_DEFAULT&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="4-alias">4 Alias</h2>
 <p>KMS Key 使用 Key ID 来索引，不利于记忆与使用。可以使用 Alias 来为 Key 定义别名。</p>
@@ -403,26 +403,26 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;Version&#34;</span><span class="p">:</span> <span class="s2">&#34;2012-10-17&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;Statement&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">    <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;Sid&#34;</span><span class="p">:</span> <span class="s2">&#34;Describe the policy statement&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;Principal&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;AWS&#34;</span><span class="p">:</span> <span class="s2">&#34;arn:aws:iam::111122223333:user/Alice&#34;</span>
-</span></span><span class="line"><span class="cl">      <span class="p">},</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;kms:DescribeKey&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;Resource&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;Condition&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;StringEquals&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">          <span class="nt">&#34;kms:KeySpec&#34;</span><span class="p">:</span> <span class="s2">&#34;SYMMETRIC_DEFAULT&#34;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">  <span class="p">]</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;Version&#34;</span><span class="p">:</span> <span class="s2">&#34;2012-10-17&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;Statement&#34;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;Sid&#34;</span><span class="p">:</span> <span class="s2">&#34;Describe the policy statement&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;Principal&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;AWS&#34;</span><span class="p">:</span> <span class="s2">&#34;arn:aws:iam::111122223333:user/Alice&#34;</span>
+      <span class="p">},</span>
+      <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;kms:DescribeKey&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;Resource&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;Condition&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;StringEquals&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;kms:KeySpec&#34;</span><span class="p">:</span> <span class="s2">&#34;SYMMETRIC_DEFAULT&#34;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="52-grant">5.2 Grant</h3>
 <p>Grant 是 KMS Key 特有的授权方式，创建 Grant 可以直接将 KMS Key 的访问权限赋予某个 Entity。</p>
@@ -462,13 +462,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"> aws kms create-grant <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --key-id 1234abcd-12ab-34cd-56ef-1234567890ab <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --grantee-principal arn:aws:iam::111122223333:user/exampleUser <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --operations Decrypt <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --retiring-principal arn:aws:iam::111122223333:role/adminRole <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --constraints <span class="nv">EncryptionContextSubset</span><span class="o">={</span><span class="nv">Department</span><span class="o">=</span>IT<span class="o">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"> aws kms create-grant <span class="se">\
+</span><span class="se"></span>    --key-id 1234abcd-12ab-34cd-56ef-1234567890ab <span class="se">\
+</span><span class="se"></span>    --grantee-principal arn:aws:iam::111122223333:user/exampleUser <span class="se">\
+</span><span class="se"></span>    --operations Decrypt <span class="se">\
+</span><span class="se"></span>    --retiring-principal arn:aws:iam::111122223333:role/adminRole <span class="se">\
+</span><span class="se"></span>    --constraints <span class="nv">EncryptionContextSubset</span><span class="o">={</span><span class="nv">Department</span><span class="o">=</span>IT<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h4 id="522-grant-constraint">5.2.2 Grant Constraint</h4>
 <p>Grant Constraint 指的是在授予权限的同时，指定操作的约束条件。例如，加密操作的原文必须包含某些字符串。</p>
@@ -487,14 +487,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ <span class="nv">token</span><span class="o">=</span><span class="k">$(</span>aws kms create-grant <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --key-id 1234abcd-12ab-34cd-56ef-1234567890ab <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --grantee-principal arn:aws:iam::111122223333:user/appUser <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --retiring-principal arn:aws:iam::111122223333:user/acctAdmin <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --operations GenerateDataKey Decrypt <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --query GrantToken <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --output text<span class="k">)</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ <span class="nv">token</span><span class="o">=</span><span class="k">$(</span>aws kms create-grant <span class="se">\
+</span><span class="se"></span>    --key-id 1234abcd-12ab-34cd-56ef-1234567890ab <span class="se">\
+</span><span class="se"></span>    --grantee-principal arn:aws:iam::111122223333:user/appUser <span class="se">\
+</span><span class="se"></span>    --retiring-principal arn:aws:iam::111122223333:user/acctAdmin <span class="se">\
+</span><span class="se"></span>    --operations GenerateDataKey Decrypt <span class="se">\
+</span><span class="se"></span>    --query GrantToken <span class="se">\
+</span><span class="se"></span>    --output text<span class="k">)</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>在 KMS API 中，通过传入 Grant Token 来使用：</p>
 <div class="highlight"><div class="chroma">
@@ -505,27 +505,16 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ aws kms generate-data-key <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --key-id 1234abcd-12ab-34cd-56ef-1234567890ab <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    –-key-spec AES_256 <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --grant-tokens <span class="nv">$token</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ aws kms generate-data-key <span class="se">\
+</span><span class="se"></span>    --key-id 1234abcd-12ab-34cd-56ef-1234567890ab <span class="se">\
+</span><span class="se"></span>    –-key-spec AES_256 <span class="se">\
+</span><span class="se"></span>    --grant-tokens <span class="nv">$token</span>
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="6-使用-kms-密钥">6 使用 KMS 密钥</h2>
 <h3 id="61-aws-服务">6.1 AWS 服务</h3>
 <h4 id="611-ebs">6.1.1 EBS</h4>
-<p>EBS 可以 KMS Key 来加密存储的数据。加密和解密对于用户都是透明的：数据写入时会加密并保存到磁盘，读取数据时会先解密后读取。当然，前提是 EC2 有着 KMS Key 相关的加解密访问权限。</p>
-<p>EC2 使用信封加密的方式来加密数据：使用 KMS Key 来加解密 Data Key，加密后的 Data Key 会与加密后的数据一起保存到磁盘上。</p>
-<p>EBS 使用 KMS 的大致原理如下：</p>
-<a class="lightgallery" href="/posts/cloud/aws_learning/kms/img6.png" title="/posts/cloud/aws_learning/kms/img6.png" data-thumbnail="/posts/cloud/aws_learning/kms/img6.png">
-        <img
-            class="lazyload"
-            src="/svg/loading.min.svg"
-            data-src="/posts/cloud/aws_learning/kms/img6.png"
-            data-srcset="/posts/cloud/aws_learning/kms/img6.png, /posts/cloud/aws_learning/kms/img6.png 1.5x, /posts/cloud/aws_learning/kms/img6.png 2x"
-            data-sizes="auto"
-            alt="/posts/cloud/aws_learning/kms/img6.png" width="1231" height="270" />
-    </a>
+<p>见 <a href="../ebs/#62-ebs-%e5%8a%a0%e5%af%86" rel=""><strong>EBS 加密</strong></a>。</p>
 <h4 id="612-s3">6.1.2 S3</h4>
 <p>S3 提供多种加密方案：</p>
 <ul>
@@ -573,8 +562,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-05-10&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/880d5fb31cd942de363f4258bd00a3b1c964cf31" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 880d5fb31cd942de363f4258bd00a3b1c964cf31: post: kms">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>880d5fb</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/c89e094c6f96c5d95110f1589607d938fe70519a" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) c89e094c6f96c5d95110f1589607d938fe70519a: fix">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>c89e094</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -598,7 +587,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

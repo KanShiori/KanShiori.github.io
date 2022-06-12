@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/net/cache-mechanism/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-10-11T12:45:53+00:00" />
-<meta property="article:modified_time" content="2021-12-25T23:21:33+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:51:59+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/net\/cache-mechanism\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "网络","wordcount":  3097 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/net\/cache-mechanism\/","datePublished": "2021-10-11T12:45:53+00:00","dateModified": "2021-12-25T23:21:33+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/net\/cache-mechanism\/","datePublished": "2021-10-11T12:45:53+00:00","dateModified": "2022-06-12T22:51:59+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -174,9 +174,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-</span></span><span class="line"><span class="cl"><span class="n">Expires</span><span class="o">:</span> <span class="l">Web, 8 Apr 2020 07:28:00 GMT</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="n">Expires</span><span class="o">:</span> <span class="l">Web, 8 Apr 2020 07:28:00 GMT</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>Expires 是最初的 HTTP 缓存机制，其设计非常简单，但是无法处理缓存提前失效等问题。</p>
 <h4 id="122-cache-control">1.2.2 Cache-Control</h4>
@@ -187,9 +187,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-</span></span><span class="line"><span class="cl"><span class="n">Cache-Control</span><span class="o">:</span> <span class="l">max-age=60</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="n">Cache-Control</span><span class="o">:</span> <span class="l">max-age=60</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>Cache-Control 在客户端请求 Header 或者服务端回复 Header 中都可以存在，其值可以为一系列参数：</p>
 <ul>
@@ -248,10 +248,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">304</span> <span class="ne">Not Modified</span>
-</span></span><span class="line"><span class="cl"><span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
-</span></span><span class="line"><span class="cl"><span class="n">Last-Modified</span><span class="o">:</span> <span class="l">Wed, 8 Apr 2020 15:31:30 GMT</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">304</span> <span class="ne">Not Modified</span>
+<span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
+<span class="n">Last-Modified</span><span class="o">:</span> <span class="l">Wed, 8 Apr 2020 15:31:30 GMT</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>服务器收到该请求后，发现资源变动后，那么返回 200/OK 回复，并且包含完整的资源内容。</p>
 <div class="highlight"><div class="chroma">
@@ -263,12 +263,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-</span></span><span class="line"><span class="cl"><span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
-</span></span><span class="line"><span class="cl"><span class="n">Last-Modified</span><span class="o">:</span> <span class="l">Wed, 8 Apr 2020 15:31:30 GMT</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="g">Content
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
+<span class="n">Last-Modified</span><span class="o">:</span> <span class="l">Wed, 8 Apr 2020 15:31:30 GMT</span>
+
+<span class="g">Content
+</span></code></pre></td></tr></table>
 </div>
 </div><h4 id="132-etag-和-if-none-match">1.3.2 ETag 和 If-None-Match</h4>
 <p>Etag 是服务器回复的 Header，告诉客户端该资源的唯一标识。当客户端再次请求该资源时，会通过 If-None-Match 把收到的唯一标识发送回服务端。</p>
@@ -280,10 +280,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">304</span> <span class="ne">Not Modified</span>
-</span></span><span class="line"><span class="cl"><span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
-</span></span><span class="line"><span class="cl"><span class="n">ETag</span><span class="o">:</span> <span class="l">&#34;28c3f612-ceb0-4ddc-ae35-791ca840c5fa&#34;</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">304</span> <span class="ne">Not Modified</span>
+<span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
+<span class="n">ETag</span><span class="o">:</span> <span class="l">&#34;28c3f612-ceb0-4ddc-ae35-791ca840c5fa&#34;</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>服务器收到该请求后，发现资源唯一标识有变动，就返回 200/OK 与完成资源内容。</p>
 <div class="highlight"><div class="chroma">
@@ -295,12 +295,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-</span></span><span class="line"><span class="cl"><span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
-</span></span><span class="line"><span class="cl"><span class="n">ETag</span><span class="o">:</span> <span class="l">&#34;28c3f612-ceb0-4ddc-ae35-791ca840c5fa&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="g">Content
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="n">Cache-Control</span><span class="o">:</span> <span class="l">public, max-age=600</span>
+<span class="n">ETag</span><span class="o">:</span> <span class="l">&#34;28c3f612-ceb0-4ddc-ae35-791ca840c5fa&#34;</span>
+
+<span class="g">Content
+</span></code></pre></td></tr></table>
 </div>
 </div><p>可以看到，ETag 通过判断资源唯一表示来判断资源是否变动过，其一致性比 Last-Modified 更高（可能资源修改过但是内容每发生变化，这样 Last-Modified 其实是失效的）。 但是，因为每次需要计算资源的唯一标识，因此其性能也是最差的。</p>
 <h3 id="14-多版本资源缓存">1.4 多版本资源缓存</h3>
@@ -312,9 +312,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-</span></span><span class="line"><span class="cl"><span class="n">Vary</span><span class="o">:</span> <span class="l">Accept, User-Agent</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-HTTP" data-lang="HTTP"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="n">Vary</span><span class="o">:</span> <span class="l">Accept, User-Agent</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>以上回复就是告知客户端，根据 Accept 与 User-Agent 来缓存资源，不同 Accept 和 User-Agent 的组合缓存不同的资源。</p>
 <h2 id="2-cdn">2 CDN</h2>
@@ -372,8 +372,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2021-12-25&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/08b925728c131e01100bd490ca9e7063dac0d19f" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 08b925728c131e01100bd490ca9e7063dac0d19f: post: dns">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>08b9257</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/c89e094c6f96c5d95110f1589607d938fe70519a" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) c89e094c6f96c5d95110f1589607d938fe70519a: fix">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>c89e094</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -397,7 +397,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
