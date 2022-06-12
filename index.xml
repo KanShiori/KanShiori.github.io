@@ -3,9 +3,17 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 23 May 2022 21:30:43 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 25 May 2022 21:43:54 &#43;0800</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>AWS EBS</title>
+    <link>https://KanShiori.github.io/posts/cloud/aws_learning/ebs/</link>
+    <pubDate>Wed, 25 May 2022 21:43:54 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/ebs/</guid>
+    <description><![CDATA[1 概述 AWS Elastic Block Store（简称 EBS） 是 AWS 中的主要存储服务，EBS Volume 可以附加到某个 EC2 Instance 上，在 Instance 上看就是一个未经过格式化的块设备，与其他物理硬盘]]></description>
+</item>
+<item>
     <title>Kustomize</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_practice/kustomize/</link>
     <pubDate>Mon, 23 May 2022 21:30:43 &#43;0800</pubDate>
@@ -76,14 +84,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</guid>
     <description><![CDATA[1 概述 如下图所示，APIServer 在接受到一个 API 请求时，第一阶段就是对请求进行 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 与 [鉴权]^(Au]]></description>
-</item>
-<item>
-    <title>Go 泛型</title>
-    <link>https://KanShiori.github.io/posts/language/golang/language/generics/</link>
-    <pubDate>Thu, 17 Mar 2022 21:29:22 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/language/golang/language/generics/</guid>
-    <description><![CDATA[1 背景概念 这一部分内容 Copy 于文档，可以直接看文档 Properties of types and values。 1.1 Underlying types 每一种类型都有着对应的 underlying types（潜在类型），基础类型的 underlying type 就是]]></description>
 </item>
 </channel>
 </rss>

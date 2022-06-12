@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/kms/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-05-05T21:21:14+08:00" />
-<meta property="article:modified_time" content="2022-05-10T22:28:02+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T15:27:32+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/kms\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  3361 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/kms\/","datePublished": "2022-05-05T21:21:14+08:00","dateModified": "2022-05-10T22:28:02+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  3223 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/kms\/","datePublished": "2022-05-05T21:21:14+08:00","dateModified": "2022-06-12T15:27:32+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">AWS - KMS</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>AWS 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-05-05">2022-05-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3361 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-05-05">2022-05-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3223 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -514,18 +514,7 @@
 </div><h2 id="6-使用-kms-密钥">6 使用 KMS 密钥</h2>
 <h3 id="61-aws-服务">6.1 AWS 服务</h3>
 <h4 id="611-ebs">6.1.1 EBS</h4>
-<p>EBS 可以 KMS Key 来加密存储的数据。加密和解密对于用户都是透明的：数据写入时会加密并保存到磁盘，读取数据时会先解密后读取。当然，前提是 EC2 有着 KMS Key 相关的加解密访问权限。</p>
-<p>EC2 使用信封加密的方式来加密数据：使用 KMS Key 来加解密 Data Key，加密后的 Data Key 会与加密后的数据一起保存到磁盘上。</p>
-<p>EBS 使用 KMS 的大致原理如下：</p>
-<a class="lightgallery" href="/posts/cloud/aws_learning/kms/img6.png" title="/posts/cloud/aws_learning/kms/img6.png" data-thumbnail="/posts/cloud/aws_learning/kms/img6.png">
-        <img
-            class="lazyload"
-            src="/svg/loading.min.svg"
-            data-src="/posts/cloud/aws_learning/kms/img6.png"
-            data-srcset="/posts/cloud/aws_learning/kms/img6.png, /posts/cloud/aws_learning/kms/img6.png 1.5x, /posts/cloud/aws_learning/kms/img6.png 2x"
-            data-sizes="auto"
-            alt="/posts/cloud/aws_learning/kms/img6.png" width="1231" height="270" />
-    </a>
+<p>见 <a href="../ebs/#62-ebs-%e5%8a%a0%e5%af%86" rel=""><strong>EBS 加密</strong></a>。</p>
 <h4 id="612-s3">6.1.2 S3</h4>
 <p>S3 提供多种加密方案：</p>
 <ul>
@@ -573,8 +562,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-05-10&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/880d5fb31cd942de363f4258bd00a3b1c964cf31" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 880d5fb31cd942de363f4258bd00a3b1c964cf31: post: kms">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>880d5fb</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/1cb4bce173230c19fad42c1e791bf2d127a8edeb" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 1cb4bce173230c19fad42c1e791bf2d127a8edeb: Post: AWS EBS (#1)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>1cb4bce</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
