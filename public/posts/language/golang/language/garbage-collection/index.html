@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Go 垃圾收集总结 - Shiori&#39;s Blog</title><meta name="Description" content="Golang 三色标记收集算法，算法实现原理"><meta property="og:title" content="Go 垃圾收集总结" />
+<meta property="og:description" content="Golang 三色标记收集算法，算法实现原理" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/language/garbage-collection/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-01-14T20:40:47+08:00" />
+<meta property="article:modified_time" content="2022-06-12T22:05:23+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="Go 垃圾收集总结"/>
+<meta name="twitter:description" content="Golang 三色标记收集算法，算法实现原理"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/language/golang/language/garbage-collection/" /><link rel="prev" href="https://KanShiori.github.io/posts/language/golang/language/memory-manager/" /><link rel="next" href="https://KanShiori.github.io/posts/language/golang/language/goroutine/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Go 垃圾收集总结",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/garbage-collection\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  7436 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/garbage-collection\/","datePublished": "2021-01-14T20:40:47+08:00","dateModified": "2022-06-12T22:05:23+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": "Golang 三色标记收集算法，算法实现原理"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Go 垃圾收集总结</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Golang</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-01-14">2021-01-14</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 7436 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 15 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-背景知识">1 背景知识</a>
+      <ul>
+        <li><a href="#11-术语">1.1 术语</a></li>
+        <li><a href="#12-三色标记算法">1.2 三色标记算法</a></li>
+        <li><a href="#13-屏障技术">1.3 屏障技术</a>
+          <ul>
+            <li><a href="#131-插入写屏障">1.3.1 插入写屏障</a></li>
+            <li><a href="#132-删除写屏障">1.3.2 删除写屏障</a></li>
+            <li><a href="#133-go-中的屏障">1.3.3 Go 中的屏障</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#2-三色标记算法实现">2 三色标记算法实现</a>
+      <ul>
+        <li><a href="#21-标记">2.1 标记</a>
+          <ul>
+            <li><a href="#211-并发标记框架">2.1.1 并发标记框架</a></li>
+            <li><a href="#212-groutine-标记流程">2.1.2 groutine 标记流程</a>
+              <ul>
+                <li><a href="#1-根对象构建">(1) 根对象构建</a></li>
+                <li><a href="#2-标记流程">(2) 标记流程</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#22-写屏障">2.2 写屏障</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-内存清理">3 内存清理</a>
+      <ul>
+        <li><a href="#31-阻塞清理">3.1 阻塞清理</a></li>
+        <li><a href="#32-并发清理">3.2 并发清理</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-标记流程">4 标记流程</a>
+      <ul>
+        <li><a href="#41-gc-触发">4.1 GC 触发</a></li>
+        <li><a href="#42-gc-开始">4.2 GC 开始</a></li>
+        <li><a href="#43-标记结束">4.3 标记结束</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><blockquote>
+<p><strong>总结系列的文章</strong>是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。</p>
+</blockquote>
+<p>本文是对 Golang 垃圾收集的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。</p>
+<p>下面代码都是基于 go 1.15.6。</p>
+<h2 id="1-背景知识">1 背景知识</h2>
+<h3 id="11-术语">1.1 术语</h3>
+<p>垃圾回收算法有一些基本的术语，首先需要知道对应的含义：</p>
+<ul>
+<li><strong><code>Mutator</code></strong>：具有“改变对象”的意思，GC 中就是改动对象间引用关系的意思，也就是程序；</li>
+<li><strong><code>堆</code></strong>：对象使用的内存空间，GC 就是将垃圾对象空间放回到堆中；</li>
+<li><strong><code>根对象</code></strong>：对象的指针的“起点”部分，一般就是全局对象和栈对象；</li>
+</ul>
+<h3 id="12-三色标记算法">1.2 三色标记算法</h3>
+<p>三色标记算法是 GC <strong><ruby>标记清除算法<rt>Mark-Sweep</rt></ruby></strong> 的一种，也是 Golang 中使用的算法。
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>推荐阅读<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">推荐阅读文章，写的非常详细：<a href="https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-garbage-collector/#72-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8" target="_blank" rel="noopener noreffer"><strong>垃圾收集器</strong></a></div>
+        </div>
+    </div></p>
+<p>首先，三色标记算法的最基本逻辑为：</p>
+<ol>
+<li>标记的最开始，<strong>所有对象默认为<code>白色</code></strong>；</li>
+<li>将 <strong><code>根对象</code>标记为灰色</strong>，放入灰色集合；</li>
+<li>从 <strong><code>灰色集合</code></strong> 中取出灰色对象，将其<strong>子对象标记为<code>灰色</code></strong>，加入灰色集合，该灰色对象标记为黑色；</li>
+<li>重复第 3 步，直到灰色集合为空；</li>
+<li><strong>清理所有的白色对象</strong>；</li>
+</ol>
+<p>整个逻辑很简单，就是一个树的层次遍历，将所有可达的结点标记，然后清理未标记的不可达结点。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/language/garbage-collection/img1.png"/>
+
+
+</p>
+<p>但是，仅仅是普通的三色标记算法要求执行时，Mutator 不能同时运行。因为如果 Mutator 并行时，某个扫描过的结点的引用关系变化，就可能导致 <strong><ruby>悬挂指针<rt>dangling pointer</rt></ruby></strong> 问题。</p>
+<p>例如，上图中第 3 步将 A 指向 D，那么 D 还是无法被标记，被错误回收。</p>
+<p>而想要让 Mutator 同时运行时，标记的结果还保持正确，那么每个时刻标记的结果要满足 <strong><ruby>三色不变性<rt>Tri-color invariant</rt></ruby></strong> <a id="三色不变性"></a></p>
+<ul>
+<li><strong><code>强三色不变性</code></strong>：<strong>黑色对象不会指向白色对象，只会指向灰色对象或者黑色对象</strong>。<br>
+因为黑色对象不会再被扫描，如果黑色对象指向白色对象，那么肯定该白色对象会被错误回收。<br>
+当然，除非这种情况能够满足弱三色不变性。</li>
+<li><strong><code>弱三色不变性</code></strong>：<strong>黑色对象执行白色对象，那么必须包含一条灰色对象经由多个白色对象的可达路径</strong>。<br>
+因为有了后面这个可达路径，也就是说白色对象还是可以被标记的，那么黑色对象可以指向该白色对象。</li>
+</ul>
+<h3 id="13-屏障技术">1.3 屏障技术</h3>
+<p>为了满足两个不变性，所以要在对象引用变更时，做出一些操作改变对象标记。这就是 GC 里 <strong><ruby>屏障技术<rt>barrier</rt></ruby></strong> 的作用。</p>
+<p>Go 中使用了写屏障，即<strong>在用户程序更新对象指针时，执行一些代码，使得继续满足不变性</strong>。
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">这里的屏障技术似乎和我知道的 CPU 的屏障技术含义不太类似，<strong>更像是<code>回调函数</code></strong>，也挺困惑</div>
+        </div>
+    </div></p>
+<h4 id="131-插入写屏障">1.3.1 插入写屏障</h4>
+<p>Dijkstra 提出的 <strong><code>插入写屏障</code></strong>，在更新对象指针时，将其被指向的对象重新加入扫描集合（三色标记中也就是变为灰色），这样接下来还是能够被扫描。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/language/garbage-collection/img2.png"/>
+
+
+</p>
+<p>可以看到，这样黑色对象始终指向的是灰色对象，永远都会满足强三色不变性。</p>
+<p>但是，Dijkstra 也有一些缺点：</p>
+<ul>
+<li>对象指针变动时，没有考虑旧的指针引用。例如 <code>*field</code> 原来的对象 oldobj 已经扫描成黑色了，那么 <code>*field = newobj</code> 变动后，可能 oldobj 变为垃圾对象，只有等到下一轮标记时才会被回收。</li>
+<li>TODO</li>
+</ul>
+<h4 id="132-删除写屏障">1.3.2 删除写屏障</h4>
+<p>Yuasa 提出的 <strong><code>删除写屏障</code></strong>，让老对象的引用被删除时，将白色的老对象涂成灰色，这样删除写屏障就可以保证弱三色不变性。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/language/golang/language/garbage-collection/img3.png"/>
+
+
+</p>
+<h4 id="133-go-中的屏障">1.3.3 Go 中的屏障</h4>
+<p>Go 中使用 <strong><code>混合写屏障</code></strong>，即插入写屏障与删除写屏障都开启，并且在标记阶段开始后，将创建的所有新对象都标记为黑色，防止新分配的对象被错误的回收。</p>
+<p>具体操作为：</p>
+<ol>
+<li>GC 开始将栈上的对象全部扫描并标记为黑色（之后不再进行第二次重复扫描，无需 STW)，</li>
+<li>GC 期间，任何在栈上创建的新对象，均为黑色。</li>
+<li>被删除的对象标记为灰色。</li>
+<li>被添加的对象标记为灰色。</li>
+</ol>
+<h2 id="2-三色标记算法实现">2 三色标记算法实现</h2>
+<p>我们先不看整个的流程实现，而是从核心的标记算法入手。</p>
+<h3 id="21-标记">2.1 标记</h3>
+<h4 id="211-并发标记框架">2.1.1 并发标记框架</h4>
+<p>runtime 使用并发的标记方式，多个 groutine 同时执行一部分内存的标记操作。其整个就是基于一个<strong>工作池框架</strong>。
+首先，有着一个全局的工作队列，其放在 <code>work</code> 全局变量中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">work</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">full</span>  <span class="nx">lfstack</span>          <span class="c1">// lock-free list of full blocks workbuf
+</span><span class="c1"></span>	<span class="nx">empty</span> <span class="nx">lfstack</span>          <span class="c1">// lock-free list of empty blocks workbuf
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>full</code>：全局的非空的队列组成的链表，单个 groutine 没有任务时就从这里取一个队列使用；</li>
+<li><code>empty</code>：全局的空的队列组成的链表，单个 groutine 的工作队列满时就会这里去一个队列切换；</li>
+</ul>
+<p>每个 goroutine 有着独立对应的 <code>gcWork</code> 对象，其类似一个队列，从队列中取出需要扫描的内存的地址。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">workbuf</span> <span class="kd">struct</span> <span class="p">{</span>
+        <span class="nx">workbufhdr</span>
+        <span class="nx">obj</span> <span class="p">[(</span><span class="nx">_WorkbufSize</span> <span class="o">-</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">workbufhdr</span><span class="p">{}))</span> <span class="o">/</span> <span class="nx">sys</span><span class="p">.</span><span class="nx">PtrSize</span><span class="p">]</span><span class="kt">uintptr</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">gcWork</span> <span class="kd">struct</span> <span class="p">{</span>
+        <span class="c1">// wbuf1 and wbuf2 are the primary and secondary work buffers.
+</span><span class="c1"></span>        <span class="c1">//
+</span><span class="c1"></span>        <span class="c1">// This can be thought of as a stack of both work buffers&#39;
+</span><span class="c1"></span>        <span class="c1">// pointers concatenated. When we pop the last pointer, we
+</span><span class="c1"></span>        <span class="c1">// shift the stack up by one work buffer by bringing in a new
+</span><span class="c1"></span>        <span class="c1">// full buffer and discarding an empty one. When we fill both
+</span><span class="c1"></span>        <span class="c1">// buffers, we shift the stack down by one work buffer by
+</span><span class="c1"></span>        <span class="c1">// bringing in a new empty buffer and discarding a full one.
+</span><span class="c1"></span>        <span class="c1">// This way we have one buffer&#39;s worth of hysteresis, which
+</span><span class="c1"></span>        <span class="c1">// amortizes the cost of getting or putting a work buffer over
+</span><span class="c1"></span>        <span class="c1">// at least one buffer of work and reduces contention on the
+</span><span class="c1"></span>        <span class="c1">// global work lists.
+</span><span class="c1"></span>        <span class="c1">//
+</span><span class="c1"></span>        <span class="c1">// wbuf1 is always the buffer we&#39;re currently pushing to and
+</span><span class="c1"></span>        <span class="c1">// popping from and wbuf2 is the buffer that will be discarded
+</span><span class="c1"></span>        <span class="c1">// next.
+</span><span class="c1"></span>        <span class="c1">//
+</span><span class="c1"></span>        <span class="c1">// Invariant: Both wbuf1 and wbuf2 are nil or neither are.
+</span><span class="c1"></span>        <span class="nx">wbuf1</span><span class="p">,</span> <span class="nx">wbuf2</span> <span class="o">*</span><span class="nx">workbuf</span>
+        <span class="err">…</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>wbuf1</code> 与 <code>wbuf2</code>: 就是主队列与备队列。所有操作都会先操作 wbuf1，如果 wbuf1 空间不足或者没有对象，就会触发 wbuf1 与 wbuf2 切换。当两个缓冲区都空间不足或者满时，就会从 work.free 或者 work.list 得到一个空闲的，并赋值 wbuf1。</li>
+</ul>
+<p>gcWork 有几个重要的方法：</p>
+<ul>
+<li><code>gcWork.tryGetFast()</code> ：从 wbuf1 快速得到一个 obj 的地址；</li>
+<li><code>gcWork.tryGet()</code> ：从 wbuf1 -&gt; wbuf2 -&gt; work.full 获取一个 obj；</li>
+<li><code>gcWork.putFast()</code> ：将一个待扫描的 obj 放入 wbuf1；</li>
+<li><code>gcWork.put()</code> ：将一个待扫描的 obj 放入 wbuf1 -&gt; wbuf2 -&gt; work.empty；</li>
+<li><code>gcWork.balance()</code> ：将 wbuf2/wbuf1 放入 work.full 中；</li>
+<li><code>gcWork.empty()</code> ：判断是否 gcWork 为空，为空表明没有会灰色 obj；</li>
+</ul>
+<p>可以看到，整个过程就是围绕了各个工作队列的生产-消费过程。<strong>先从根对象开始，goroutine 从 gcWork 取出待扫描的 obj，将其标记，然后将 obj 指向的子 obj 再次放入 gcWork。不断循环，直到 gcWork 为空</strong>。</p>
+<h4 id="212-groutine-标记流程">2.1.2 groutine 标记流程</h4>
+<p>下面看下核心的标记流程，这里我们仅仅关注一个 groutine 的工作。大致的标记步骤如下：</p>
+<ol>
+<li>将根对象放入 gcWork；</li>
+<li>groutine 从 gcWork 取出一个 object 地址，将其标记；</li>
+<li>将 object 包含的指针指向的 object 再次放入 gcWork；</li>
+<li>重复 2-3 步，直到 gcWork 为空；</li>
+</ol>
+<p>而对应于三色标记，我们可以确认不同颜色的对象在 runtime 中的对应：</p>
+<ul>
+<li>灰色对象 -&gt; gcWork 中的 object；</li>
+<li>黑色对象 -&gt; 不在 gcWork 中，但是被 mark 的 object；</li>
+<li>白色对象 -&gt; 不在 gcWork 中，没有被 mark 的 object；</li>
+</ul>
+<p>每个 P 会对应一个标记使用的 groutine，执行 <strong><code>gcDrain()</code></strong> 函数（runtime/mgcmark.go）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// gcDrain scans roots and objects in work buffers, blackening grey
+</span><span class="c1">// objects until it is unable to get more work. It may return before
+</span><span class="c1">// GC is done; it&#39;s the caller&#39;s responsibility to balance work from
+</span><span class="c1">// other Ps.
+</span><span class="c1">//
+</span><span class="c1">// If flags&amp;gcDrainUntilPreempt != 0, gcDrain returns when g.preempt
+</span><span class="c1">// is set.
+</span><span class="c1">//
+</span><span class="c1">// If flags&amp;gcDrainIdle != 0, gcDrain returns when there is other work
+</span><span class="c1">// to do.
+</span><span class="c1">//
+</span><span class="c1">// If flags&amp;gcDrainFractional != 0, gcDrain self-preempts when
+</span><span class="c1">// pollFractionalWorkerExit() returns true. This implies
+</span><span class="c1">// gcDrainNoBlock.
+</span><span class="c1">//
+</span><span class="c1">// If flags&amp;gcDrainFlushBgCredit != 0, gcDrain flushes scan work
+</span><span class="c1">// credit to gcController.bgScanCredit every gcCreditSlack units of
+</span><span class="c1">// scan work.
+</span><span class="c1">//
+</span><span class="c1">// gcDrain will always return if there is a pending STW.
+</span><span class="c1">//
+</span><span class="c1">//go:nowritebarrier
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">gcDrain</span><span class="p">(</span><span class="nx">gcw</span> <span class="o">*</span><span class="nx">gcWork</span><span class="p">,</span> <span class="nx">flags</span> <span class="nx">gcDrainFlags</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">gp</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">().</span><span class="nx">m</span><span class="p">.</span><span class="nx">curg</span>
+        <span class="nx">preemptible</span> <span class="o">:=</span> <span class="nx">flags</span><span class="o">&amp;</span><span class="nx">gcDrainUntilPreempt</span> <span class="o">!=</span> <span class="mi">0</span>
+        <span class="nx">flushBgCredit</span> <span class="o">:=</span> <span class="nx">flags</span><span class="o">&amp;</span><span class="nx">gcDrainFlushBgCredit</span> <span class="o">!=</span> <span class="mi">0</span>
+        <span class="nx">idle</span> <span class="o">:=</span> <span class="nx">flags</span><span class="o">&amp;</span><span class="nx">gcDrainIdle</span> <span class="o">!=</span> <span class="mi">0</span>
+
+        <span class="nx">initScanWork</span> <span class="o">:=</span> <span class="nx">gcw</span><span class="p">.</span><span class="nx">scanWork</span>
+
+        <span class="c1">// 配置退出标记的 check 函数，根据不同策略退出标记
+</span><span class="c1"></span>        <span class="nx">checkWork</span> <span class="o">:=</span> <span class="nb">int64</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">63</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="kd">var</span> <span class="nx">check</span> <span class="kd">func</span><span class="p">()</span> <span class="kt">bool</span>
+        <span class="k">if</span> <span class="nx">flags</span><span class="o">&amp;</span><span class="p">(</span><span class="nx">gcDrainIdle</span><span class="p">|</span><span class="nx">gcDrainFractional</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="nx">checkWork</span> <span class="p">=</span> <span class="nx">initScanWork</span> <span class="o">+</span> <span class="nx">drainCheckThreshold</span>
+                <span class="k">if</span> <span class="nx">idle</span> <span class="p">{</span>
+                        <span class="nx">check</span> <span class="p">=</span> <span class="nx">pollWork</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">flags</span><span class="o">&amp;</span><span class="nx">gcDrainFractional</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+                        <span class="nx">check</span> <span class="p">=</span> <span class="nx">pollFractionalWorkerExit</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="c1">// 扫描根对象放入 gcWork
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">work</span><span class="p">.</span><span class="nx">markrootNext</span> <span class="p">&lt;</span> <span class="nx">work</span><span class="p">.</span><span class="nx">markrootJobs</span> <span class="p">{</span>
+                <span class="c1">// Stop if we&#39;re preemptible or if someone wants to STW.
+</span><span class="c1"></span>                <span class="k">for</span> <span class="p">!(</span><span class="nx">gp</span><span class="p">.</span><span class="nx">preempt</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">preemptible</span> <span class="o">||</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">gcwaiting</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
+                        <span class="nx">job</span> <span class="o">:=</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">Xadd</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">work</span><span class="p">.</span><span class="nx">markrootNext</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="nx">job</span> <span class="o">&gt;=</span> <span class="nx">work</span><span class="p">.</span><span class="nx">markrootJobs</span> <span class="p">{</span>
+                                <span class="k">break</span>
+                        <span class="p">}</span>
+                        <span class="nf">markroot</span><span class="p">(</span><span class="nx">gcw</span><span class="p">,</span> <span class="nx">job</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nx">check</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nf">check</span><span class="p">()</span> <span class="p">{</span>
+                                <span class="k">goto</span> <span class="nx">done</span>
+                        <span class="p">}</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="c1">// 标记循环
+</span><span class="c1"></span>        <span class="k">for</span> <span class="p">!(</span><span class="nx">gp</span><span class="p">.</span><span class="nx">preempt</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">preemptible</span> <span class="o">||</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">gcwaiting</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="nx">work</span><span class="p">.</span><span class="nx">full</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                        <span class="nx">gcw</span><span class="p">.</span><span class="nf">balance</span><span class="p">()</span>
+                <span class="p">}</span>
+
+        <span class="c1">// 从 gcWork 得到一个 object addr（灰色对象）
+</span><span class="c1"></span>        <span class="nx">b</span> <span class="o">:=</span> <span class="nx">gcw</span><span class="p">.</span><span class="nf">tryGetFast</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nx">b</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="nx">b</span> <span class="p">=</span> <span class="nx">gcw</span><span class="p">.</span><span class="nf">tryGet</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nx">b</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                        <span class="c1">// Flush the write barrier
+</span><span class="c1"></span>                        <span class="c1">// buffer; this may create
+</span><span class="c1"></span>                        <span class="c1">// more work.
+</span><span class="c1"></span>                        <span class="nf">wbBufFlush</span><span class="p">(</span><span class="kc">nil</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                        <span class="nx">b</span> <span class="p">=</span> <span class="nx">gcw</span><span class="p">.</span><span class="nf">tryGet</span><span class="p">()</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="nx">b</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="c1">// 没有任何灰色对象，退出
+</span><span class="c1"></span>                <span class="k">break</span>
+        <span class="p">}</span>
+        
+        <span class="c1">// 标记 object（灰色对象变为黑色），并扫描子 object，加入 gcWork
+</span><span class="c1"></span>        <span class="nf">scanobject</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="nx">gcw</span><span class="p">)</span>
+
+        <span class="c1">// 检查是否退出
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">gcw</span><span class="p">.</span><span class="nx">scanWork</span> <span class="o">&gt;=</span> <span class="nx">gcCreditSlack</span> <span class="p">{</span>
+                <span class="nx">atomic</span><span class="p">.</span><span class="nf">Xaddint64</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">gcController</span><span class="p">.</span><span class="nx">scanWork</span><span class="p">,</span> <span class="nx">gcw</span><span class="p">.</span><span class="nx">scanWork</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nx">flushBgCredit</span> <span class="p">{</span>
+                        <span class="nf">gcFlushBgCredit</span><span class="p">(</span><span class="nx">gcw</span><span class="p">.</span><span class="nx">scanWork</span> <span class="o">-</span> <span class="nx">initScanWork</span><span class="p">)</span>
+                        <span class="nx">initScanWork</span> <span class="p">=</span> <span class="mi">0</span>
+                <span class="p">}</span>
+                <span class="nx">checkWork</span> <span class="o">-=</span> <span class="nx">gcw</span><span class="p">.</span><span class="nx">scanWork</span>
+                <span class="nx">gcw</span><span class="p">.</span><span class="nx">scanWork</span> <span class="p">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="nx">checkWork</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="nx">checkWork</span> <span class="o">+=</span> <span class="nx">drainCheckThreshold</span>
+                <span class="k">if</span> <span class="nx">check</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nf">check</span><span class="p">()</span> <span class="p">{</span>
+                        <span class="k">break</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+
+<span class="nx">done</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nx">gcw</span><span class="p">.</span><span class="nx">scanWork</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="nx">atomic</span><span class="p">.</span><span class="nf">Xaddint64</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">gcController</span><span class="p">.</span><span class="nx">scanWork</span><span class="p">,</span> <span class="nx">gcw</span><span class="p">.</span><span class="nx">scanWork</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nx">flushBgCredit</span> <span class="p">{</span>
+                        <span class="nf">gcFlushBgCredit</span><span class="p">(</span><span class="nx">gcw</span><span class="p">.</span><span class="nx">scanWork</span> <span class="o">-</span> <span class="nx">initScanWork</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="nx">gcw</span><span class="p">.</span><span class="nx">scanWork</span> <span class="p">=</span> <span class="mi">0</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="1-根对象构建">(1) 根对象构建</h5>
+<p>上述流程看到，所有 gourtine 会不断调用 <code>makeroot()</code> 函数，用于多个 goroutine 并行扫描根对象，并放入 gcWork 中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// markroot scans the i&#39;th root.
+</span><span class="c1">//go:nowritebarrier
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">markroot</span><span class="p">(</span><span class="nx">gcw</span> <span class="o">*</span><span class="nx">gcWork</span><span class="p">,</span> <span class="nx">i</span> <span class="kt">uint32</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">baseFlushCache</span> <span class="o">:=</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">fixedRootCount</span><span class="p">)</span>
+        <span class="nx">baseData</span> <span class="o">:=</span> <span class="nx">baseFlushCache</span> <span class="o">+</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">work</span><span class="p">.</span><span class="nx">nFlushCacheRoots</span><span class="p">)</span>
+        <span class="nx">baseBSS</span> <span class="o">:=</span> <span class="nx">baseData</span> <span class="o">+</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">work</span><span class="p">.</span><span class="nx">nDataRoots</span><span class="p">)</span>
+        <span class="nx">baseSpans</span> <span class="o">:=</span> <span class="nx">baseBSS</span> <span class="o">+</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">work</span><span class="p">.</span><span class="nx">nBSSRoots</span><span class="p">)</span>
+        <span class="nx">baseStacks</span> <span class="o">:=</span> <span class="nx">baseSpans</span> <span class="o">+</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">work</span><span class="p">.</span><span class="nx">nSpanRoots</span><span class="p">)</span>
+        <span class="nx">end</span> <span class="o">:=</span> <span class="nx">baseStacks</span> <span class="o">+</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">work</span><span class="p">.</span><span class="nx">nStackRoots</span><span class="p">)</span>
+
+        <span class="c1">// Note: if you add a case here, please also update heapdump.go:dumproots.
+</span><span class="c1"></span>        <span class="k">switch</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="nx">baseFlushCache</span> <span class="o">&lt;=</span> <span class="nx">i</span> <span class="o">&amp;&amp;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">baseData</span><span class="p">:</span>
+                <span class="nf">flushmcache</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nx">i</span> <span class="o">-</span> <span class="nx">baseFlushCache</span><span class="p">))</span>
+        <span class="k">case</span> <span class="nx">baseData</span> <span class="o">&lt;=</span> <span class="nx">i</span> <span class="o">&amp;&amp;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">baseBSS</span><span class="p">:</span>
+                <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">datap</span> <span class="o">:=</span> <span class="k">range</span> <span class="nf">activeModules</span><span class="p">()</span> <span class="p">{</span>
+                        <span class="nf">markrootBlock</span><span class="p">(</span><span class="nx">datap</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="nx">datap</span><span class="p">.</span><span class="nx">edata</span><span class="o">-</span><span class="nx">datap</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="nx">datap</span><span class="p">.</span><span class="nx">gcdatamask</span><span class="p">.</span><span class="nx">bytedata</span><span class="p">,</span> <span class="nx">gcw</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nx">i</span><span class="o">-</span><span class="nx">baseData</span><span class="p">))</span>
+                <span class="p">}</span>
+        <span class="k">case</span> <span class="nx">baseBSS</span> <span class="o">&lt;=</span> <span class="nx">i</span> <span class="o">&amp;&amp;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">baseSpans</span><span class="p">:</span>
+                <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">datap</span> <span class="o">:=</span> <span class="k">range</span> <span class="nf">activeModules</span><span class="p">()</span> <span class="p">{</span>
+                        <span class="nf">markrootBlock</span><span class="p">(</span><span class="nx">datap</span><span class="p">.</span><span class="nx">bss</span><span class="p">,</span> <span class="nx">datap</span><span class="p">.</span><span class="nx">ebss</span><span class="o">-</span><span class="nx">datap</span><span class="p">.</span><span class="nx">bss</span><span class="p">,</span> <span class="nx">datap</span><span class="p">.</span><span class="nx">gcbssmask</span><span class="p">.</span><span class="nx">bytedata</span><span class="p">,</span> <span class="nx">gcw</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nx">i</span><span class="o">-</span><span class="nx">baseBSS</span><span class="p">))</span>
+                <span class="p">}</span>
+        <span class="k">case</span> <span class="nx">i</span> <span class="o">==</span> <span class="nx">fixedRootFinalizers</span><span class="p">:</span>
+                <span class="k">for</span> <span class="nx">fb</span> <span class="o">:=</span> <span class="nx">allfin</span><span class="p">;</span> <span class="nx">fb</span> <span class="o">!=</span> <span class="kc">nil</span><span class="p">;</span> <span class="nx">fb</span> <span class="p">=</span> <span class="nx">fb</span><span class="p">.</span><span class="nx">alllink</span> <span class="p">{</span>
+                        <span class="nx">cnt</span> <span class="o">:=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">atomic</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">fb</span><span class="p">.</span><span class="nx">cnt</span><span class="p">))</span>
+                        <span class="nf">scanblock</span><span class="p">(</span><span class="nb">uintptr</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">fb</span><span class="p">.</span><span class="nx">fin</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="nx">cnt</span><span class="o">*</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">fb</span><span class="p">.</span><span class="nx">fin</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="o">&amp;</span><span class="nx">finptrmask</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">gcw</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+                <span class="p">}</span>
+        <span class="k">case</span> <span class="nx">i</span> <span class="o">==</span> <span class="nx">fixedRootFreeGStacks</span><span class="p">:</span>
+                <span class="c1">// Switch to the system stack so we can call
+</span><span class="c1"></span>                <span class="c1">// stackfree.
+</span><span class="c1"></span>                <span class="nf">systemstack</span><span class="p">(</span><span class="nx">markrootFreeGStacks</span><span class="p">)</span>
+        <span class="k">case</span> <span class="nx">baseSpans</span> <span class="o">&lt;=</span> <span class="nx">i</span> <span class="o">&amp;&amp;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">baseStacks</span><span class="p">:</span>
+                <span class="c1">// mark mspan.specials
+</span><span class="c1"></span>                <span class="nf">markrootSpans</span><span class="p">(</span><span class="nx">gcw</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nx">i</span><span class="o">-</span><span class="nx">baseSpans</span><span class="p">))</span>
+        <span class="k">default</span><span class="p">:</span>
+                <span class="c1">// 从 G 总量链表取出需要扫描的 G
+</span><span class="c1"></span>                <span class="c1">// 因为调用 makeroot() 会不断递增 job，所以不会重复扫描
+</span><span class="c1"></span>                <span class="kd">var</span> <span class="nx">gp</span> <span class="o">*</span><span class="nx">g</span>
+                <span class="k">if</span> <span class="nx">baseStacks</span> <span class="o">&lt;=</span> <span class="nx">i</span> <span class="o">&amp;&amp;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">end</span> <span class="p">{</span>
+                        <span class="nx">gp</span> <span class="p">=</span> <span class="nx">allgs</span><span class="p">[</span><span class="nx">i</span><span class="o">-</span><span class="nx">baseStacks</span><span class="p">]</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="nf">throw</span><span class="p">(</span><span class="s">&#34;markroot: bad index&#34;</span><span class="p">)</span>
+                <span class="p">}</span>
+                
+                <span class="err">…</span>
+
+        <span class="c1">// scanstack must be done on the system stack in case
+</span><span class="c1"></span>        <span class="c1">// we&#39;re trying to scan our own stack.
+</span><span class="c1"></span>        <span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+                <span class="c1">// 一些检查
+</span><span class="c1"></span>                <span class="err">…</span>
+                
+                <span class="c1">// 扫描 goroutine stack
+</span><span class="c1"></span>                <span class="nf">scanstack</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">gcw</span><span class="p">)</span>
+                <span class="nx">gp</span><span class="p">.</span><span class="nx">gcscandone</span> <span class="p">=</span> <span class="kc">true</span>
+                <span class="nf">resumeG</span><span class="p">(</span><span class="nx">stopped</span><span class="p">)</span>
+        <span class="p">})</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>由此我们可以知道，主要有哪些根对象：<strong>数据段</strong>、<strong>缓存</strong>、<strong>BSS 段（全局变量与静态变量）</strong>、<strong>mspan.special（runtime 内部使用的特殊对象）</strong>、<strong>Groutine 的栈上的对象</strong>。</p>
+<p>其中，大部分扫描都会是栈上的对象，<strong>通过得到对应 object 的地址，然后判断其地址是否存在与 heap 管理的 mspan 中决定其是否是根对象。</strong></p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">在 <a href="../memory-manager/#42-mspan" rel=""><strong>Go 内存管理总结</strong></a> 中说过，<strong>任意的内存地址，都可以通过公式得到其对应的 mspan 的地址</strong>，这也可以用于判断一个地址是否是存在与 mheap 上的。</div>
+        </div>
+    </div>
+<p>所有扫描到的 object 地址通过 <code>greyobject()</code> 函数进行 mark 并放入 gcWork。</p>
+<h5 id="2-标记流程">(2) 标记流程</h5>
+<p><code>gcDrain()</code> 中的核心 for 循环就是不断标记的流程，每个 object 会调用 <code>scanobject()</code> 函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// scanobject scans the object starting at b, adding pointers to gcw.
+</span><span class="c1">// b must point to the beginning of a heap object or an oblet.
+</span><span class="c1">// scanobject consults the GC bitmap for the pointer mask and the
+</span><span class="c1">// spans for the size of the object.
+</span><span class="c1">//
+</span><span class="c1">//go:nowritebarrier
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">scanobject</span><span class="p">(</span><span class="nx">b</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">gcw</span> <span class="o">*</span><span class="nx">gcWork</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 得到 b 对应 object 的 heapArena.bitmap 与 mspan
+</span><span class="c1"></span>        <span class="nx">hbits</span> <span class="o">:=</span> <span class="nf">heapBitsForAddr</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span>
+        <span class="nx">s</span> <span class="o">:=</span> <span class="nf">spanOfUnchecked</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span>
+        <span class="nx">n</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">elemsize</span>
+        
+        <span class="c1">// large object 对象的子 object 扫描
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">n</span> <span class="p">&gt;</span> <span class="nx">maxObletBytes</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="nx">b</span> <span class="o">==</span> <span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">spanclass</span><span class="p">.</span><span class="nf">noscan</span><span class="p">()</span> <span class="p">{</span>
+                                <span class="c1">// Bypass the whole scan.
+</span><span class="c1"></span>                                <span class="nx">gcw</span><span class="p">.</span><span class="nx">bytesMarked</span> <span class="o">+=</span> <span class="nb">uint64</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
+                                <span class="k">return</span>
+                        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="nx">oblet</span> <span class="o">:=</span> <span class="nx">b</span> <span class="o">+</span> <span class="nx">maxObletBytes</span><span class="p">;</span> <span class="nx">oblet</span> <span class="p">&lt;</span> <span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()</span><span class="o">+</span><span class="nx">s</span><span class="p">.</span><span class="nx">elemsize</span><span class="p">;</span> <span class="nx">oblet</span> <span class="o">+=</span> <span class="nx">maxObletBytes</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">!</span><span class="nx">gcw</span><span class="p">.</span><span class="nf">putFast</span><span class="p">(</span><span class="nx">oblet</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">gcw</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="nx">oblet</span><span class="p">)</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="nx">n</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">base</span><span class="p">()</span> <span class="o">+</span> <span class="nx">s</span><span class="p">.</span><span class="nx">elemsize</span> <span class="o">-</span> <span class="nx">b</span>
+        <span class="k">if</span> <span class="nx">n</span> <span class="p">&gt;</span> <span class="nx">maxObletBytes</span> <span class="p">{</span>
+                <span class="nx">n</span> <span class="p">=</span> <span class="nx">maxObletBytes</span>
+        <span class="p">}</span>
+
+        <span class="c1">// 普通 object 的子对象扫描
+</span><span class="c1"></span>        <span class="c1">// 通过指针大小的地址偏移不断扫描
+</span><span class="c1"></span>        <span class="kd">var</span> <span class="nx">i</span> <span class="kt">uintptr</span>
+        <span class="k">for</span> <span class="nx">i</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="nx">sys</span><span class="p">.</span><span class="nx">PtrSize</span> <span class="p">{</span>
+                <span class="c1">// Find bits for this word.
+</span><span class="c1"></span>                <span class="k">if</span> <span class="nx">i</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+                        <span class="c1">// Avoid needless hbits.next() on last iteration.
+</span><span class="c1"></span>                        <span class="nx">hbits</span> <span class="p">=</span> <span class="nx">hbits</span><span class="p">.</span><span class="nf">next</span><span class="p">()</span>
+                <span class="p">}</span>
+                
+                <span class="nx">通过</span> <span class="nx">bitmap</span> <span class="nx">判断其是否是一个指针</span>
+                <span class="nx">bits</span> <span class="o">:=</span> <span class="nx">hbits</span><span class="p">.</span><span class="nf">bits</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nx">i</span> <span class="o">!=</span> <span class="mi">1</span><span class="o">*</span><span class="nx">sys</span><span class="p">.</span><span class="nx">PtrSize</span> <span class="o">&amp;&amp;</span> <span class="nx">bits</span><span class="o">&amp;</span><span class="nx">bitScan</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                        <span class="k">break</span> <span class="c1">// no more pointers in this object
+</span><span class="c1"></span>                <span class="p">}</span>
+                <span class="k">if</span> <span class="nx">bits</span><span class="o">&amp;</span><span class="nx">bitPointer</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                        <span class="k">continue</span> <span class="c1">// not a pointer
+</span><span class="c1"></span>                <span class="p">}</span>
+
+        <span class="c1">// 指针的值，也是就 object 地址
+</span><span class="c1"></span>        <span class="nx">obj</span> <span class="o">:=</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="kt">uintptr</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">b</span> <span class="o">+</span> <span class="nx">i</span><span class="p">))</span>
+
+        <span class="c1">// 依旧通过 heapArena 的公式找到对应的 obj、mspan，将其放入 gcWork 
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">obj</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">obj</span><span class="o">-</span><span class="nx">b</span> <span class="o">&gt;=</span> <span class="nx">n</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="nx">obj</span><span class="p">,</span> <span class="nx">span</span><span class="p">,</span> <span class="nx">objIndex</span> <span class="o">:=</span> <span class="nf">findObject</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">i</span><span class="p">);</span> <span class="nx">obj</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+                        <span class="nf">greyobject</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">span</span><span class="p">,</span> <span class="nx">gcw</span><span class="p">,</span> <span class="nx">objIndex</span><span class="p">)</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="nx">gcw</span><span class="p">.</span><span class="nx">bytesMarked</span> <span class="o">+=</span> <span class="nb">uint64</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
+        <span class="nx">gcw</span><span class="p">.</span><span class="nx">scanWork</span> <span class="o">+=</span> <span class="nb">int64</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到，通过当前 object 地址的<strong>不断偏移 8 字节</strong>，然后<strong>通过 <code>heapArena.bitmap</code> 判断当前 8 字节是否是指针</strong>，如果是指针就将其放入 gcWork 对象。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">在 <a href="../memory-manager/" rel=""><strong>Go 内存管理总结</strong></a> 中看到，<strong>对于 heap 中每 8 个字节，通过存在对应 bit 位标识是否指针，以及是否被 mark</strong>；</div>
+        </div>
+    </div>
+<p><code>greyobject()</code> 用于将该 object 标记，并放入 gcWork 中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// obj is the start of an object with mark mbits.
+</span><span class="c1">// If it isn&#39;t already marked, mark it and enqueue into gcw.
+</span><span class="c1">// base and off are for debugging only and could be removed.
+</span><span class="c1">//
+</span><span class="c1">// See also wbBufFlush1, which partially duplicates this logic.
+</span><span class="c1">//
+</span><span class="c1">//go:nowritebarrierrec
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">greyobject</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">base</span><span class="p">,</span> <span class="nx">off</span> <span class="kt">uintptr</span><span class="p">,</span> <span class="nx">span</span> <span class="o">*</span><span class="nx">mspan</span><span class="p">,</span> <span class="nx">gcw</span> <span class="o">*</span><span class="nx">gcWork</span><span class="p">,</span> <span class="nx">objIndex</span> <span class="kt">uintptr</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">mbits</span> <span class="o">:=</span> <span class="nx">span</span><span class="p">.</span><span class="nf">markBitsForIndex</span><span class="p">(</span><span class="nx">objIndex</span><span class="p">)</span>
+
+        <span class="c1">// mark object
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">useCheckmark</span> <span class="p">{</span>
+                <span class="nx">hbits</span> <span class="o">:=</span> <span class="nf">heapBitsForAddr</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nx">hbits</span><span class="p">.</span><span class="nf">isCheckmarked</span><span class="p">(</span><span class="nx">span</span><span class="p">.</span><span class="nx">elemsize</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">return</span>
+                <span class="p">}</span>
+                <span class="nx">hbits</span><span class="p">.</span><span class="nf">setCheckmarked</span><span class="p">(</span><span class="nx">span</span><span class="p">.</span><span class="nx">elemsize</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">!</span><span class="nx">hbits</span><span class="p">.</span><span class="nf">isCheckmarked</span><span class="p">(</span><span class="nx">span</span><span class="p">.</span><span class="nx">elemsize</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nf">throw</span><span class="p">(</span><span class="s">&#34;setCheckmarked and isCheckmarked disagree&#34;</span><span class="p">)</span>
+                <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="c1">// If marked we have nothing to do.
+</span><span class="c1"></span>                <span class="k">if</span> <span class="nx">mbits</span><span class="p">.</span><span class="nf">isMarked</span><span class="p">()</span> <span class="p">{</span>
+                        <span class="k">return</span>
+                <span class="p">}</span>
+                <span class="nx">mbits</span><span class="p">.</span><span class="nf">setMarked</span><span class="p">()</span>
+
+        <span class="c1">// Mark span.
+</span><span class="c1"></span>        <span class="nx">arena</span><span class="p">,</span> <span class="nx">pageIdx</span><span class="p">,</span> <span class="nx">pageMask</span> <span class="o">:=</span> <span class="nf">pageIndexOf</span><span class="p">(</span><span class="nx">span</span><span class="p">.</span><span class="nf">base</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nx">arena</span><span class="p">.</span><span class="nx">pageMarks</span><span class="p">[</span><span class="nx">pageIdx</span><span class="p">]</span><span class="o">&amp;</span><span class="nx">pageMask</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="nx">atomic</span><span class="p">.</span><span class="nf">Or8</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">arena</span><span class="p">.</span><span class="nx">pageMarks</span><span class="p">[</span><span class="nx">pageIdx</span><span class="p">],</span> <span class="nx">pageMask</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="c1">// If this is a noscan object, fast-track it to black
+</span><span class="c1"></span>        <span class="c1">// instead of greying it.
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">span</span><span class="p">.</span><span class="nx">spanclass</span><span class="p">.</span><span class="nf">noscan</span><span class="p">()</span> <span class="p">{</span>
+                <span class="nx">gcw</span><span class="p">.</span><span class="nx">bytesMarked</span> <span class="o">+=</span> <span class="nb">uint64</span><span class="p">(</span><span class="nx">span</span><span class="p">.</span><span class="nx">elemsize</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="p">}</span>
+
+        <span class="c1">// 放入 gcWork 中
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">!</span><span class="nx">gcw</span><span class="p">.</span><span class="nf">putFast</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">gcw</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="22-写屏障">2.2 写屏障</h3>
+<p>在各个代码的注释中，可以看到 &ldquo;//go:nowritebarrier&rdquo;。显然，这样让编译器编译时不加入写屏障的意思，因此可以想到，默认的函数执行都会加入写屏障的逻辑。</p>
+<p>在 SSA 中间代码生成阶段，编译器会在 Store、Move、Zero 操作中加入写屏障，写屏障函数为 <code>writebarrier()</code> 函数（cmd/compile/internal/ssa/writebarrier.go）。</p>
+<p><code>writebarrier()</code> 函数很复杂，这里不展开。再次看一下混合写屏障操作：</p>
+<ol>
+<li>GC 开始将栈上的对象全部扫描并标记为黑色（之后不再进行第二次重复扫描，无需 STW)。</li>
+<li>GC 期间，任何在栈上创建的新对象，均为黑色。</li>
+<li>被删除的对象标记为灰色。</li>
+<li>被添加的对象标记为灰色。</li>
+</ol>
+<p>当开始 GC 时，全局变量 <code>runtime.writeBarrier.enabled</code> 变为 true，所有的写操作都会经过 <code>writebarrier()</code> 的操作。</p>
+<h2 id="3-内存清理">3 内存清理</h2>
+<p>内存清理与标记就是完全分隔的逻辑了，通过判断对象是否被标记就可决定是否将其内存回收。</p>
+<p><strong><code>gcSweep()</code></strong> 函数用于在 GC 标记结束后执行清理（src/runtime/mgc.go）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// gcSweep must be called on the system stack because it acquires the heap
+</span><span class="c1">// lock. See mheap for details.
+</span><span class="c1">//
+</span><span class="c1">// The world must be stopped.
+</span><span class="c1">//
+</span><span class="c1">//go:systemstack
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">gcSweep</span><span class="p">(</span><span class="nx">mode</span> <span class="nx">gcMode</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+        <span class="c1">// 关键的 sweepgen 变量
+</span><span class="c1"></span>        <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepgen</span> <span class="o">+=</span> <span class="mi">2</span>
+        <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepdone</span> <span class="p">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="p">!</span><span class="nx">go115NewMCentralImpl</span> <span class="o">&amp;&amp;</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepSpans</span><span class="p">[</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepgen</span><span class="o">/</span><span class="mi">2</span><span class="o">%</span><span class="mi">2</span><span class="p">].</span><span class="nx">index</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="c1">// We should have drained this list during the last
+</span><span class="c1"></span>                <span class="c1">// sweep phase. We certainly need to start this phase
+</span><span class="c1"></span>                <span class="c1">// with an empty swept list.
+</span><span class="c1"></span>                <span class="nf">throw</span><span class="p">(</span><span class="s">&#34;non-empty swept list&#34;</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="nx">mheap_</span><span class="p">.</span><span class="nx">pagesSwept</span> <span class="p">=</span> <span class="mi">0</span>
+        <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepArenas</span> <span class="p">=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">allArenas</span>
+        <span class="nx">mheap_</span><span class="p">.</span><span class="nx">reclaimIndex</span> <span class="p">=</span> <span class="mi">0</span>
+        <span class="nx">mheap_</span><span class="p">.</span><span class="nx">reclaimCredit</span> <span class="p">=</span> <span class="mi">0</span>
+        <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nx">go115NewMCentralImpl</span> <span class="p">{</span>
+                <span class="nx">sweep</span><span class="p">.</span><span class="nx">centralIndex</span><span class="p">.</span><span class="nf">clear</span><span class="p">()</span>
+        <span class="p">}</span>
+
+	    <span class="c1">// 阻塞清理
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">!</span><span class="nx">_ConcurrentSweep</span> <span class="o">||</span> <span class="nx">mode</span> <span class="o">==</span> <span class="nx">gcForceBlockMode</span> <span class="p">{</span>
+                <span class="c1">// Special case synchronous sweep.
+</span><span class="c1"></span>                <span class="c1">// Record that no proportional sweeping has to happen.
+</span><span class="c1"></span>                <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+                <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepPagesPerByte</span> <span class="p">=</span> <span class="mi">0</span>
+                <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+                
+                <span class="c1">// 清理 span !
+</span><span class="c1"></span>                <span class="c1">// Sweep all spans eagerly.
+</span><span class="c1"></span>                <span class="k">for</span> <span class="nf">sweepone</span><span class="p">()</span> <span class="o">!=</span> <span class="p">^</span><span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">sweep</span><span class="p">.</span><span class="nx">npausesweep</span><span class="o">++</span>
+                <span class="p">}</span>
+                
+                <span class="c1">// Free workbufs eagerly.
+</span><span class="c1"></span>                <span class="nf">prepareFreeWorkbufs</span><span class="p">()</span>
+                <span class="k">for</span> <span class="nf">freeSomeWbufs</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+                <span class="p">}</span>
+                <span class="c1">// All &#34;free&#34; events for this mark/sweep cycle have
+</span><span class="c1"></span>                <span class="c1">// now happened, so we can make this profile cycle
+</span><span class="c1"></span>                <span class="c1">// available immediately.
+</span><span class="c1"></span>                <span class="nf">mProf_NextCycle</span><span class="p">()</span>
+                <span class="nf">mProf_Flush</span><span class="p">()</span>
+                <span class="k">return</span>
+        <span class="p">}</span>
+ 
+	      <span class="c1">// 后台清理（并发清理）
+</span><span class="c1"></span>        <span class="c1">// Background sweep.
+</span><span class="c1"></span>        <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">sweep</span><span class="p">.</span><span class="nx">parked</span> <span class="p">{</span>
+                <span class="nx">sweep</span><span class="p">.</span><span class="nx">parked</span> <span class="p">=</span> <span class="kc">false</span>
+                <span class="nf">ready</span><span class="p">(</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">g</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>不断执行 <code>sweepone()</code> 来清理 mspan；</li>
+<li>启动后台并发清理；</li>
+</ol>
+<h3 id="31-阻塞清理">3.1 阻塞清理</h3>
+<p>通过不断执行 <code>sweepone()</code> 来进行 mspan 的清理，<code>sweepone()</code> 从 heap 得到一个 mspan 并清理（src/runtime/mgcsweep.go）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// sweepone sweeps some unswept heap span and returns the number of pages returned
+</span><span class="c1">// to the heap, or ^uintptr(0) if there was nothing to sweep.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">sweepone</span><span class="p">()</span> <span class="kt">uintptr</span> <span class="p">{</span>
+  <span class="err">…</span>
+  
+  <span class="c1">// 得到一个被清理的 mspan
+</span><span class="c1"></span>  <span class="kd">var</span> <span class="nx">s</span> <span class="o">*</span><span class="nx">mspan</span>
+  <span class="nx">sg</span> <span class="o">:=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepgen</span>
+  <span class="k">for</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="nx">go115NewMCentralImpl</span> <span class="p">{</span>
+                  <span class="nx">s</span> <span class="p">=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nf">nextSpanForSweep</span><span class="p">()</span>
+          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                  <span class="nx">s</span> <span class="p">=</span> <span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepSpans</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="nx">sg</span><span class="o">/</span><span class="mi">2</span><span class="o">%</span><span class="mi">2</span><span class="p">].</span><span class="nf">pop</span><span class="p">()</span>
+          <span class="p">}</span>
+          <span class="k">if</span> <span class="nx">s</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+                  <span class="nx">atomic</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">sweepdone</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                  <span class="k">break</span>
+          <span class="p">}</span>
+          <span class="c1">// 设置标记
+</span><span class="c1"></span>          <span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span> <span class="o">==</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">Cas</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">sweepgen</span><span class="p">,</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="nx">sg</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                  <span class="k">break</span>
+          <span class="p">}</span>
+  <span class="p">}</span> 
+  <span class="c1">// 清理 mspan
+</span><span class="c1"></span>  <span class="nx">npages</span> <span class="o">:=</span> <span class="p">^</span><span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+  <span class="k">if</span> <span class="nx">s</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+          <span class="nx">npages</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">npages</span>
+          <span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nf">sweep</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+                  <span class="c1">// Whole span was freed. Count it toward the
+</span><span class="c1"></span>                  <span class="c1">// page reclaimer credit since these pages can
+</span><span class="c1"></span>                  <span class="c1">// now be used for span allocation.
+</span><span class="c1"></span>                  <span class="nx">atomic</span><span class="p">.</span><span class="nf">Xadduintptr</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">mheap_</span><span class="p">.</span><span class="nx">reclaimCredit</span><span class="p">,</span> <span class="nx">npages</span><span class="p">)</span>
+          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                  <span class="c1">// Span is still in-use, so this returned no
+</span><span class="c1"></span>                  <span class="c1">// pages to the heap and the span needs to
+</span><span class="c1"></span>                  <span class="c1">// move to the swept in-use list.
+</span><span class="c1"></span>                  <span class="nx">npages</span> <span class="p">=</span> <span class="mi">0</span>
+          <span class="p">}</span>
+  <span class="p">}</span> 
+  <span class="err">…</span>
+  
+  <span class="k">return</span> <span class="nx">npages</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>最终的回收工作靠 <code>mspan.sweep()</code> 完成，这给在 <a href="../memory-manager/" rel=""><strong>Go 内存管理总结</strong></a> 中可以看到具体实现，大致就是将 GC 后没有被 mark 的 object 记录为可用，以后续申请使用覆盖。如果整个 mspan 变回空，就由 mheap 回收其对应的 page。</p>
+<h3 id="32-并发清理">3.2 并发清理</h3>
+<p>并发清理就是一个死循环，被唤醒后开始执行清理任务。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">bgsweep</span><span class="p">(</span><span class="nx">c</span> <span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">sweep</span><span class="p">.</span><span class="nx">g</span> <span class="p">=</span> <span class="nf">getg</span><span class="p">()</span>
+
+	<span class="nf">lockInit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">,</span> <span class="nx">lockRankSweep</span><span class="p">)</span>
+	<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+	<span class="nx">sweep</span><span class="p">.</span><span class="nx">parked</span> <span class="p">=</span> <span class="kc">true</span>
+	<span class="nx">c</span> <span class="o">&lt;-</span> <span class="mi">1</span>
+	<span class="nf">goparkunlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">,</span> <span class="nx">waitReasonGCSweepWait</span><span class="p">,</span> <span class="nx">traceEvGoBlock</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="c1">// 依旧通过 sweepone() 清理
+</span><span class="c1"></span>		<span class="k">for</span> <span class="nf">sweepone</span><span class="p">()</span> <span class="o">!=</span> <span class="p">^</span><span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">sweep</span><span class="p">.</span><span class="nx">nbgsweep</span><span class="o">++</span>
+			<span class="nf">Gosched</span><span class="p">()</span>
+		<span class="p">}</span>
+		<span class="k">for</span> <span class="nf">freeSomeWbufs</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nf">Gosched</span><span class="p">()</span>
+		<span class="p">}</span>
+		<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="k">if</span> <span class="p">!</span><span class="nf">isSweepDone</span><span class="p">()</span> <span class="p">{</span>
+			<span class="c1">// This can happen if a GC runs between
+</span><span class="c1"></span>			<span class="c1">// gosweepone returning ^0 above
+</span><span class="c1"></span>			<span class="c1">// and the lock being acquired.
+</span><span class="c1"></span>			<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+			<span class="k">continue</span>
+		<span class="p">}</span>
+		
+		<span class="c1">// 等待唤醒
+</span><span class="c1"></span>		<span class="nx">sweep</span><span class="p">.</span><span class="nx">parked</span> <span class="p">=</span> <span class="kc">true</span>
+		<span class="nf">goparkunlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sweep</span><span class="p">.</span><span class="nx">lock</span><span class="p">,</span> <span class="nx">waitReasonGCSweepWait</span><span class="p">,</span> <span class="nx">traceEvGoBlock</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>依旧是通过不断执行 <code>sweepone()</code> 进行清理。</p>
+<h2 id="4-标记流程">4 标记流程</h2>
+<p>下面来看如何触发的 GC 以及 GC 的大致流程。</p>
+<h3 id="41-gc-触发">4.1 GC 触发</h3>
+<p>GC 有三个点会被触发：</p>
+<ol>
+<li>
+<p>runtime 启动后会启动一个后台 gourtine，被唤醒后就会执行 GC，而<strong>唤醒操作由 sysmon 负责执行</strong>。<br>
+sysmon 会根据系统情况决定是否触发。</p>
+</li>
+<li>
+<p><strong>分配新 object 时</strong>（<a href="../memory-manager/#421-object-%e5%88%86%e9%85%8d" rel=""><strong>mallocgc() 函数</strong></a>），如果 mcache 需要重新刷新，或者是分配的是 large object，那么也会触发一次 GC。</p>
+</li>
+<li>
+<p>通过接口 <strong>runtime.GC() 主动触发</strong>。</p>
+</li>
+</ol>
+<p>所有的触发都会使用 <code>gcTrigger.test()</code> 进行条件检测（runtime/mgc.go）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// test reports whether the trigger condition is satisfied, meaning
+</span><span class="c1">// that the exit condition for the _GCoff phase has been met. The exit
+</span><span class="c1">// condition should be tested when allocating.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="nx">gcTrigger</span><span class="p">)</span> <span class="nf">test</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">!</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">enablegc</span> <span class="o">||</span> <span class="nx">panicking</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">gcphase</span> <span class="o">!=</span> <span class="nx">_GCoff</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kc">false</span>
+        <span class="p">}</span>
+        <span class="k">switch</span> <span class="nx">t</span><span class="p">.</span><span class="nx">kind</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="nx">gcTriggerHeap</span><span class="p">:</span>
+                <span class="c1">// 由 heap 触发，也就是分配 object 时触发
+</span><span class="c1"></span>                <span class="c1">// Non-atomic access to heap_live for performance. If
+</span><span class="c1"></span>                <span class="c1">// we are going to trigger on this, this thread just
+</span><span class="c1"></span>                <span class="c1">// atomically wrote heap_live anyway and we&#39;ll see our
+</span><span class="c1"></span>                <span class="c1">// own write.
+</span><span class="c1"></span>                <span class="k">return</span> <span class="nx">memstats</span><span class="p">.</span><span class="nx">heap_live</span> <span class="o">&gt;=</span> <span class="nx">memstats</span><span class="p">.</span><span class="nx">gc_trigger</span>
+        <span class="k">case</span> <span class="nx">gcTriggerTime</span><span class="p">:</span>
+                <span class="c1">// 由 sysmon 周期性触发
+</span><span class="c1"></span>                <span class="k">if</span> <span class="nx">gcpercent</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
+                        <span class="k">return</span> <span class="kc">false</span>
+                <span class="p">}</span>
+                <span class="nx">lastgc</span> <span class="o">:=</span> <span class="nb">int64</span><span class="p">(</span><span class="nx">atomic</span><span class="p">.</span><span class="nf">Load64</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">memstats</span><span class="p">.</span><span class="nx">last_gc_nanotime</span><span class="p">))</span>
+                <span class="k">return</span> <span class="nx">lastgc</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">now</span><span class="o">-</span><span class="nx">lastgc</span> <span class="p">&gt;</span> <span class="nx">forcegcperiod</span>
+        <span class="k">case</span> <span class="nx">gcTriggerCycle</span><span class="p">:</span>
+                <span class="c1">// 通过 runtime.GC() 主动触发
+</span><span class="c1"></span>                <span class="c1">// t.n &gt; work.cycles, but accounting for wraparound.
+</span><span class="c1"></span>                <span class="k">return</span> <span class="nb">int32</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">n</span><span class="o">-</span><span class="nx">work</span><span class="p">.</span><span class="nx">cycles</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对应的条件为：</p>
+<ol>
+<li>sysmon 周期性触发：<strong>触发间隔大于 2min</strong>；</li>
+<li>分配 object 触发：<strong>堆内存的分配达到控制计算的触发堆大小</strong>；</li>
+<li>runtime.GC() <strong>主动触发</strong>：当前没有正在 GC，则触发；</li>
+</ol>
+<h3 id="42-gc-开始">4.2 GC 开始</h3>
+<p>所有触发 GC 后调用的都是 <strong><code>gcStart()</code></strong> 函数（runtime/mgc.go）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// gcStart starts the GC. It transitions from _GCoff to _GCmark (if
+</span><span class="c1">// debug.gcstoptheworld == 0) or performs all of GC (if
+</span><span class="c1">// debug.gcstoptheworld != 0).
+</span><span class="c1">//
+</span><span class="c1">// This may return without performing this transition in some cases,
+</span><span class="c1">// such as when called on a system stack or with locks held.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">gcStart</span><span class="p">(</span><span class="nx">trigger</span> <span class="nx">gcTrigger</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Since this is called from malloc and malloc is called in
+</span><span class="c1"></span>  <span class="c1">// the guts of a number of libraries that might be holding
+</span><span class="c1"></span>  <span class="c1">// locks, don&#39;t attempt to start GC in non-preemptible or
+</span><span class="c1"></span>  <span class="c1">// potentially unstable situations.
+</span><span class="c1"></span>  <span class="nx">mp</span> <span class="o">:=</span> <span class="nf">acquirem</span><span class="p">()</span>
+  <span class="k">if</span> <span class="nx">gp</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">();</span> <span class="nx">gp</span> <span class="o">==</span> <span class="nx">mp</span><span class="p">.</span><span class="nx">g0</span> <span class="o">||</span> <span class="nx">mp</span><span class="p">.</span><span class="nx">locks</span> <span class="p">&gt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="nx">mp</span><span class="p">.</span><span class="nx">preemptoff</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+    <span class="nf">releasem</span><span class="p">(</span><span class="nx">mp</span><span class="p">)</span>
+    <span class="k">return</span>
+  <span class="p">}</span>
+  <span class="nf">releasem</span><span class="p">(</span><span class="nx">mp</span><span class="p">)</span>
+  <span class="nx">mp</span> <span class="p">=</span> <span class="kc">nil</span>
+
+  <span class="c1">// 再次验证是否条件，并不断调用 sweepone() 来完成上一次垃圾收集的收尾工作
+</span><span class="c1"></span>  <span class="c1">// Pick up the remaining unswept/not being swept spans concurrently
+</span><span class="c1"></span>  <span class="c1">//
+</span><span class="c1"></span>  <span class="c1">// This shouldn&#39;t happen if we&#39;re being invoked in background
+</span><span class="c1"></span>  <span class="c1">// mode since proportional sweep should have just finished
+</span><span class="c1"></span>  <span class="c1">// sweeping everything, but rounding errors, etc, may leave a
+</span><span class="c1"></span>  <span class="c1">// few spans unswept. In forced mode, this is necessary since
+</span><span class="c1"></span>  <span class="c1">// GC can be forced at any point in the sweeping cycle.
+</span><span class="c1"></span>  <span class="c1">//
+</span><span class="c1"></span>  <span class="c1">// We check the transition condition continuously here in case
+</span><span class="c1"></span>  <span class="c1">// this G gets delayed in to the next GC cycle.
+</span><span class="c1"></span>  <span class="k">for</span> <span class="nx">trigger</span><span class="p">.</span><span class="nf">test</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="nf">sweepone</span><span class="p">()</span> <span class="o">!=</span> <span class="p">^</span><span class="nb">uintptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">sweep</span><span class="p">.</span><span class="nx">nbgsweep</span><span class="o">++</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Perform GC initialization and the sweep termination
+</span><span class="c1"></span>  <span class="c1">// transition.
+</span><span class="c1"></span>  <span class="nf">semacquire</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">work</span><span class="p">.</span><span class="nx">startSema</span><span class="p">)</span>
+  <span class="c1">// Re-check transition condition under transition lock.
+</span><span class="c1"></span>  <span class="k">if</span> <span class="p">!</span><span class="nx">trigger</span><span class="p">.</span><span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nf">semrelease</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">work</span><span class="p">.</span><span class="nx">startSema</span><span class="p">)</span>
+    <span class="k">return</span>
+  <span class="p">}</span>
+
+  <span class="c1">// 获取 STW 的锁
+</span><span class="c1"></span>  <span class="c1">// Ok, we&#39;re doing it! Stop everybody else
+</span><span class="c1"></span>  <span class="nf">semacquire</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">gcsema</span><span class="p">)</span>
+  <span class="nf">semacquire</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">worldsema</span><span class="p">)</span>
+
+  <span class="c1">// 每个 P 分配一个 G，准备开始执行后台的标记工作
+</span><span class="c1"></span>  <span class="nf">gcBgMarkStartWorkers</span><span class="p">()</span>
+
+  <span class="c1">// 执行 STW !
+</span><span class="c1"></span>  <span class="nf">systemstack</span><span class="p">(</span><span class="nx">stopTheWorldWithSema</span><span class="p">)</span>
+  <span class="c1">// Finish sweep before we start concurrent scan.
+</span><span class="c1"></span>  <span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nf">finishsweep_m</span><span class="p">()</span>
+  <span class="p">})</span>
+
+  <span class="c1">// 修改 GC 状态，进入标记
+</span><span class="c1"></span>  <span class="nf">setGCPhase</span><span class="p">(</span><span class="nx">_GCmark</span><span class="p">)</span>
+
+  <span class="c1">// 初始化标记所需状态
+</span><span class="c1"></span>  <span class="nf">gcBgMarkPrepare</span><span class="p">()</span> 
+  <span class="c1">// 计算 Data、BSS、Stack 等需要扫描的数量
+</span><span class="c1"></span>  <span class="nf">gcMarkRootPrepare</span><span class="p">()</span>
+
+  <span class="c1">// 直接标记 tiny object
+</span><span class="c1"></span>  <span class="nf">gcMarkTinyAllocs</span><span class="p">()</span>
+
+  <span class="c1">// 可以开始运行标记
+</span><span class="c1"></span>  <span class="nx">atomic</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">gcBlackenEnabled</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+          
+  <span class="c1">// STW 结束，G 开始进行并行标记
+</span><span class="c1"></span>  <span class="c1">// Concurrent mark.
+</span><span class="c1"></span>  <span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">now</span> <span class="p">=</span> <span class="nf">startTheWorldWithSema</span><span class="p">(</span><span class="nx">trace</span><span class="p">.</span><span class="nx">enabled</span><span class="p">)</span>
+    <span class="nx">work</span><span class="p">.</span><span class="nx">pauseNS</span> <span class="o">+=</span> <span class="nx">now</span> <span class="o">-</span> <span class="nx">work</span><span class="p">.</span><span class="nx">pauseStart</span>
+    <span class="nx">work</span><span class="p">.</span><span class="nx">tMark</span> <span class="p">=</span> <span class="nx">now</span>
+  <span class="p">})</span>
+
+  <span class="c1">// 释放锁
+</span><span class="c1"></span>  <span class="nf">semrelease</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">worldsema</span><span class="p">)</span>
+  <span class="nf">releasem</span><span class="p">(</span><span class="nx">mp</span><span class="p">)</span>
+     
+	<span class="k">if</span> <span class="nx">mode</span> <span class="o">!=</span> <span class="nx">gcBackgroundMode</span> <span class="p">{</span>
+		<span class="nf">Gosched</span><span class="p">()</span>
+	<span class="p">}</span>
+	<span class="nf">semrelease</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">work</span><span class="p">.</span><span class="nx">startSema</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>该函数比较复杂，大致分为下面几个步骤：</p>
+<ol>
+<li>主动进入休眠状态，并<strong>等待唤醒</strong>；</li>
+<li>根据 P.gcMarkWorkerMode <strong>决定标记的策略</strong>；</li>
+<li>调用 <a href="#212-groutine-%e6%a0%87%e8%ae%b0%e6%b5%81%e7%a8%8b" rel=""><strong>gcDrain()</strong></a> 进行标记</li>
+<li>所有标记任务完成后，调用 <code>gcMarkDone()</code> 完成标记阶段；</li>
+</ol>
+<p>因为标记阶段是与用户进程并发的，所以会涉及到执行垃圾收集还是普通程序的问题。为此，每个垃圾收集的 G 有着不同的标记策略，其依赖于 P.gcMarkWorkerMode（由一个独立的 G 计算出不同模式的 P 的数量并设置）。</p>
+<p>其包含三种标记策略：</p>
+<ul>
+<li><strong>gcMarkWorkerDedicatedMode</strong>：P 专门用于标记对象，不会被抢占；</li>
+<li><strong>gcMarkWorkerFractionalMode</strong>：当垃圾收集后台 CPU 使用率达不到 25%，会启动该类型工作协程帮助垃圾收集达到利用率目标，因为只占用一个 CPU 部分资源，可以被抢占；</li>
+<li><strong>gcMarkWorkerIdleMode</strong>：当 P 没有可以执行的 G 时，会运行垃圾收集标记任务直到被抢占；</li>
+</ul>
+<h3 id="43-标记结束">4.3 标记结束</h3>
+<p>当每个标记 Groutine 结束后，都会调用 <code>gcMarkDone()</code>，但是等待所有标记结束后，<strong>只有一个 groutine 会真正执行结束逻辑</strong>（runtime/mgc.go）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">gcMarkDone</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// 第一个获取到锁的才会执行 gcMarkDone()
+</span><span class="c1"></span>	<span class="c1">// Ensure only one thread is running the ragged barrier at a
+</span><span class="c1"></span>	<span class="c1">// time.
+</span><span class="c1"></span>	<span class="nf">semacquire</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">work</span><span class="p">.</span><span class="nx">markDoneSema</span><span class="p">)</span>
+
+<span class="nx">top</span><span class="p">:</span>
+	<span class="c1">// 后续的 gouroute 会串行的在这里退出
+</span><span class="c1"></span>	<span class="k">if</span> <span class="p">!(</span><span class="nx">gcphase</span> <span class="o">==</span> <span class="nx">_GCmark</span> <span class="o">&amp;&amp;</span> <span class="nx">work</span><span class="p">.</span><span class="nx">nwait</span> <span class="o">==</span> <span class="nx">work</span><span class="p">.</span><span class="nx">nproc</span> <span class="o">&amp;&amp;</span> <span class="p">!</span><span class="nf">gcMarkWorkAvailable</span><span class="p">(</span><span class="kc">nil</span><span class="p">))</span> <span class="p">{</span>
+		<span class="nf">semrelease</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">work</span><span class="p">.</span><span class="nx">markDoneSema</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	
+	<span class="c1">// 循环等待所有标记结束
+</span><span class="c1"></span>	<span class="nx">gcMarkDoneFlushed</span> <span class="p">=</span> <span class="mi">0</span>
+	<span class="nf">systemstack</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">gp</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">().</span><span class="nx">m</span><span class="p">.</span><span class="nx">curg</span>
+		<span class="nf">casgstatus</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">_Grunning</span><span class="p">,</span> <span class="nx">_Gwaiting</span><span class="p">)</span>
+		<span class="nf">forEachP</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">_p_</span> <span class="o">*</span><span class="nx">p</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nf">wbBufFlush1</span><span class="p">(</span><span class="nx">_p_</span><span class="p">)</span>
+			<span class="nx">_p_</span><span class="p">.</span><span class="nx">gcw</span><span class="p">.</span><span class="nf">dispose</span><span class="p">()</span>
+			<span class="k">if</span> <span class="nx">_p_</span><span class="p">.</span><span class="nx">gcw</span><span class="p">.</span><span class="nx">flushedWork</span> <span class="p">{</span>
+				<span class="nx">atomic</span><span class="p">.</span><span class="nf">Xadd</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">gcMarkDoneFlushed</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+				<span class="nx">_p_</span><span class="p">.</span><span class="nx">gcw</span><span class="p">.</span><span class="nx">flushedWork</span> <span class="p">=</span> <span class="kc">false</span>
+			<span class="p">}</span>
+		<span class="p">})</span>
+		<span class="nf">casgstatus</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">_Gwaiting</span><span class="p">,</span> <span class="nx">_Grunning</span><span class="p">)</span>
+	<span class="p">})</span>
+
+	<span class="k">if</span> <span class="nx">gcMarkDoneFlushed</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">goto</span> <span class="nx">top</span>
+	<span class="p">}</span>
+	<span class="err">…</span>
+	
+	<span class="c1">// Perform mark termination. This will restart the world.
+</span><span class="c1"></span>	<span class="nf">gcMarkTermination</span><span class="p">(</span><span class="nx">nextTriggerRatio</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在一大堆判断标记结束的逻辑后，调用 <strong><code>gcMarkTermination()</code></strong> 进入标记终止阶段。</p>
+<p>在 <code>gcMarkTermination()</code> 会关闭混合写屏障，决定触发垃圾收集的 heap 阈值，并进行相关信息的统计，然后调用 <a href="#3-%e5%86%85%e5%ad%98%e6%b8%85%e7%90%86" rel=""><strong>gcSweep()</strong></a> 进行阻塞式清理。</p>
+<h2 id="总结">总结</h2>
+<p>垃圾回收真的很复杂，上面省略了大量的细节，也有可能理解错误的情况。但是忽略掉繁琐的细节，需要完全明白的有几个点：</p>
+<ul>
+<li><a href="#12-%e4%b8%89%e8%89%b2%e6%a0%87%e8%ae%b0%e7%ae%97%e6%b3%95" rel=""><strong><strong>三色标记算法的步骤</strong></strong></a></li>
+<li><a href="#12-%e4%b8%89%e8%89%b2%e6%a0%87%e8%ae%b0%e7%ae%97%e6%b3%95" rel=""><strong><strong>强三色不变性概念，以及为什么需要</strong></strong></a></li>
+<li><a href="#13-%e5%b1%8f%e9%9a%9c%e6%8a%80%e6%9c%af" rel=""><strong><strong>写屏障的作用，以及 Go 使用的混合写屏障</strong></strong></a></li>
+<li><a href="#41-gc-%e8%a7%a6%e5%8f%91" rel=""><strong><strong>GC 触发的时机与条件</strong></strong></a></li>
+<li><a href="#211-%e5%b9%b6%e5%8f%91%e6%a0%87%e8%ae%b0%e6%a1%86%e6%9e%b6" rel=""><strong><strong>GC 并发标记的实现</strong></strong></a></li>
+<li><a href="#212-groutine-%e6%a0%87%e8%ae%b0%e6%b5%81%e7%a8%8b" rel=""><strong><strong>GC 标记的实现，与内存管理的协同</strong></strong></a></li>
+<li><a href="#3-%e5%86%85%e5%ad%98%e6%b8%85%e7%90%86" rel=""><strong><strong>内存清理的时机</strong></strong></a></li>
+</ul>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://github.com/qyuhen/book" target="_blank" rel="noopener noreffer">《Golang 学习笔记》</a></li>
+<li><a href="https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-garbage-collector/#72-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8" target="_blank" rel="noopener noreffer">《Golang 设计与实现》：内存分配器</a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/be4372b810cc3256e0030896bbb55fe4f2304a01" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) be4372b810cc3256e0030896bbb55fe4f2304a01: Modify CD">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>be4372b</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/language/golang/language/garbage-collection/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/language/golang/language/garbage-collection/" data-title="Go 垃圾收集总结" data-hashtags="Golang,Golang 原理"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/language/golang/language/garbage-collection/" data-hashtag="Golang"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/language/golang/language/garbage-collection/" data-title="Go 垃圾收集总结"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/language/golang/language/garbage-collection/" data-title="Go 垃圾收集总结"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/language/golang/language/garbage-collection/" data-title="Go 垃圾收集总结"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/language/golang/language/garbage-collection/" data-title="Go 垃圾收集总结"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/language/golang/language/garbage-collection/" data-title="Go 垃圾收集总结"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/golang/">Golang</a>,&nbsp;<a href="/tags/golang-%E5%8E%9F%E7%90%86/">Golang 原理</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/language/golang/language/memory-manager/" class="prev" rel="prev" title="Go 内存管理总结"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Go 内存管理总结</a>
+            <a href="/posts/language/golang/language/goroutine/" class="next" rel="next" title="Go 并发调度总结">Go 并发调度总结<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

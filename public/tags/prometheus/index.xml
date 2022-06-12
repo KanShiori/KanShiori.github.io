@@ -1,0 +1,31 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>prometheus - 标签 - Shiori&#39;s Blog</title>
+        <link>https://KanShiori.github.io/tags/prometheus/</link>
+        <description>prometheus - 标签 - Shiori&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 17 Jul 2021 08:19:12 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/prometheus/" rel="self" type="application/rss+xml" /><item>
+    <title>Grafana 基础</title>
+    <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/grafana-basic/</link>
+    <pubDate>Sat, 17 Jul 2021 08:19:12 &#43;0000</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/grafana-basic/</guid>
+    <description><![CDATA[1 基本概念 1.1 数据源 Data Source Grafana 支持多种不同类型的时序数据库，称为<strong><ruby>数据源<rt>Data Source</rt></ruby></strong>。目前官方支持：Graphite、Influx]]></description>
+</item>
+<item>
+    <title>Prometheus 查询语言 PromQL</title>
+    <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/</link>
+    <pubDate>Thu, 08 Jul 2021 14:31:22 &#43;0000</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/</guid>
+    <description><![CDATA[1 数据类型 上图简单代表了时序数据库的存储。每次 Prometheus 拉取数据时，拉取到就是图中纵向的一条线，也就是一个统计数据多维度的瞬时值，也被称为 [时间序列]]></description>
+</item>
+<item>
+    <title>Prometheuse 基本概念</title>
+    <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/</link>
+    <pubDate>Mon, 05 Jul 2021 14:04:28 &#43;0000</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/</guid>
+    <description><![CDATA[1 数据模型 Prometheus 保存的所有数据都是 <strong><ruby>时间序列<rt>time series</rt></ruby></strong> 数据，也就是每个数据会带有一个时间戳。 通过图表可以理解其模型： 图表中每个点都是一个时]]></description>
+</item>
+</channel>
+</rss>

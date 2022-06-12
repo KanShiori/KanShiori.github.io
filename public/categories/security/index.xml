@@ -1,0 +1,31 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Security - 分类 - Shiori&#39;s Blog</title>
+        <link>https://KanShiori.github.io/categories/security/</link>
+        <description>Security - 分类 - Shiori&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 25 Oct 2021 13:16:57 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/security/" rel="self" type="application/rss+xml" /><item>
+    <title>凭证 Credential</title>
+    <link>https://KanShiori.github.io/posts/security/credentials/</link>
+    <pubDate>Mon, 25 Oct 2021 13:16:57 &#43;0000</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/security/credentials/</guid>
+    <description><![CDATA[在授权过程中，基本每种授权模式目的就是为了得到一个令牌，令牌就是 <strong><ruby>凭证<rt>Credential</rt></ruby></strong>。目前主流有两种令牌实现方式：Cookie]]></description>
+</item>
+<item>
+    <title>授权 Authorization</title>
+    <link>https://KanShiori.github.io/posts/security/authorization/</link>
+    <pubDate>Sun, 24 Oct 2021 09:05:39 &#43;0000</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/security/authorization/</guid>
+    <description><![CDATA[认证解决了对用户身份认证的问题，授用于解决用户有着哪些权限的问题。涉及两个独立的问题： 确保授权的过程可靠 - 常用 OAuth2 和 SAML 2.0 确保授权的结果可控 - 常]]></description>
+</item>
+<item>
+    <title>认证 Authentication</title>
+    <link>https://KanShiori.github.io/posts/security/authentication/</link>
+    <pubDate>Sat, 23 Oct 2021 15:20:07 &#43;0000</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/security/authentication/</guid>
+    <description><![CDATA[文章内容来自于《凤凰架构》，推荐阅读。 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 用来解决系统对用户身份认证的问题，例如用户密码就是最简单的认]]></description>
+</item>
+</channel>
+</rss>

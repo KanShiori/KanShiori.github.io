@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>制作虚拟机镜像 - Shiori&#39;s Blog</title><meta name="Description" content="制作虚拟机镜像"><meta property="og:title" content="制作虚拟机镜像" />
+<meta property="og:description" content="制作虚拟机镜像" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-10-31T17:47:42+08:00" />
+<meta property="article:modified_time" content="2020-10-31T17:47:42+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="制作虚拟机镜像"/>
+<meta name="twitter:description" content="制作虚拟机镜像"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_practice/create-cluster/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/container-network-summary/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "制作虚拟机镜像",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/vm\/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "虚拟机, KVM, 云计算","wordcount":  2221 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/vm\/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F\/","datePublished": "2020-10-31T17:47:42+08:00","dateModified": "2020-10-31T17:47:42+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": "制作虚拟机镜像"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">制作虚拟机镜像</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/vm/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>VM</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-10-31">2020-10-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2221 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-从-iso-镜像安装">1 从 ISO 镜像安装</a>
+      <ul>
+        <li><a href="#11-手动安装">1.1 手动安装</a></li>
+        <li><a href="#12-自动安装">1.2 自动安装</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-使用-cloud-image">2 使用 Cloud Image</a>
+      <ul>
+        <li><a href="#21-cloud-init">2.1 cloud-init</a>
+          <ul>
+            <li><a href="#1-基本概念">(1) 基本概念</a></li>
+            <li><a href="#2-运行过程">(2) 运行过程</a></li>
+          </ul>
+        </li>
+        <li><a href="#22-制作镜像">2.2 制作镜像</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>中心思想：通过 libvirt 运行一个虚拟机（domain），并保存其对应的 domain 的镜像文件与配置文件，然后就可以在其他机器通过 <code>virsh define + start</code> 或者 <code>virt-install</code> 启动。</p>
+<p>说明：下面环境都是在 centos 上制作基于 KVM 的虚拟机镜像。</p>
+<h2 id="1-从-iso-镜像安装">1 从 ISO 镜像安装</h2>
+<p>最基本的安装方式，通过安装并运行一个新的虚拟机，然后得到对应的配置文件与镜像文件。</p>
+<h3 id="11-手动安装">1.1 手动安装</h3>
+<p>最基本的安装方式，通过 ISO 文件进行安装。</p>
+<ol>
+<li>
+<p>下载 ISO 镜像文件，镜像文件在各个镜像站中就可以找到。（因为不使用图形界面，所以下载的是非图形化的 ISO）</p>
+</li>
+<li>
+<p>通过 <code>virt-install</code> 命令安装镜像（因为使用的是非图形化的安装，所以参数有一些不一样）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">virt-install --name guest1_fromiso --memory <span class="m">2048</span> --vcpus <span class="m">2</span> <span class="se">\
+</span><span class="se"></span>    --disk <span class="nv">size</span><span class="o">=</span><span class="m">8</span> --location CentOS-7-x86_64-DVD-2003.iso <span class="se">\
+</span><span class="se"></span>    --os-type Linux --os-variant<span class="o">=</span>centos7.0  --virt-type kvm <span class="se">\
+</span><span class="se"></span>    --boot <span class="nv">menu</span><span class="o">=</span>on  --graphics none --console pty --extra-args <span class="s1">&#39;console=ttyS0&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中要注意几个参数：</p>
+<ul>
+<li>因为我们是安装非图形化，所以需要 <code>--location</code> 参数指定 iso，并指定 <code>--boot menu=on</code> 打开安装菜单，最后还需要指定安装信息的输出 <code>--console pty --extra-args 'console=ttyS0'</code> 这样安装菜单才能正常展示出来</li>
+<li><code>--graphics none</code> 指定非图形化；</li>
+<li><code>--network bridge=virbr0</code>，指定网络模式，这里指定 libvirt 默认创建的 bridge 网卡，可以认为这是一个 libvirt 维护内网，安装时选择 dhcp 就可以获得一个可用的内网地址；</li>
+</ul>
+<p>具体 libvirt 的网络模型，后面在单独研究下。</p>
+<ul>
+<li><code>-- disk size=8</code>，disk 参数用于指定系统盘，这里指定自动创建一个 8G 的 qcow2 文件，作为系统盘（默认镜像文件保存在 /var/lib/libvirt/images/）目录下；</li>
+</ul>
+<p>这时就会进入虚拟机的安装步骤，具体安装步骤就不赘述了。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img1.png"/>
+
+
+</p>
+</li>
+<li>
+<p>安装成功后，可以看到 domain 就被创建了，这就可以得到它的配置文件与镜像文件了。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ virsh list
+Id    Name                           State
+----------------------------------------------------
+<span class="m">18</span>    guest1_fromiso                 running
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h3 id="12-自动安装">1.2 自动安装</h3>
+<p>可以看到，手动安装需要人为在菜单中选择、配置，这不适用于多个虚拟机的安装。而 RedHat 创建了 kickstart 安装方法，使得整个虚拟机安装流程变得自动化。</p>
+<p>这块不了解，具体见红帽官方文档：<a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/installation_guide/ch-kickstart2#s1-kickstart2-whatis" target="_blank" rel="noopener noreffer">KICKSTART INSTALLATIONS</a></p>
+<h2 id="2-使用-cloud-image">2 使用 Cloud Image</h2>
+<p>当然，上面制作过程中耗时都在安装系统上了，而各个云厂商的虚拟机数量那么多，肯定不会一台台去安装操作系统了。所以，目前最常见的都是直接下载已经安装过系统的虚拟机镜像文件。</p>
+<p>但是这样的虚拟机是没有特殊配置的，例如密码、hostname 都是一致的，所以 <strong>cloud-init</strong> 出现，用于在第一次启动虚拟机时进行系统的配置。</p>
+<p>所以，最快速的制作方法就是：虚拟机镜像文件 + cloud-init 配置。</p>
+<h3 id="21-cloud-init">2.1 cloud-init</h3>
+<p>下面内容都来自于文档，这里仅为自己做个记录。</p>
+<p>首先明确 cloud init 的功能：系统第一次启动时，cloud init 相关的进程会根据配置信息去进行系统的配置，包括：设置 hostname、ssh key、password 等；</p>
+<h4 id="1-基本概念">(1) 基本概念</h4>
+<ul>
+<li><strong>metadata</strong>：包含服务器信息，用于 cloud-init 配置；</li>
+<li><strong>userdata</strong>：包含 cloud-init 系统配置信息，可以是 文件，脚本，yaml 文件等；</li>
+<li><strong>datasource</strong>：cloud-init 读取配置数据的来源，包含大部分云厂商，当然，也可以来自本地的文件 (<a href="https://cloudinit.readthedocs.io/en/latest/topics/datasources/nocloud.html" target="_blank" rel="noopener noreffer">NoCloud datasource</a>)；</li>
+</ul>
+<h4 id="2-运行过程">(2) 运行过程</h4>
+<p>cloud init 设置包括五个阶段：</p>
+<ol>
+<li>
+<p>Generator</p>
+<p>机器启动阶段，systemd 的一个 generator 将会决定是否将 <strong>cloud-init.target</strong>（target 可以简单认为特定事件下触发的一组 unit）包含在启动过程中。这就表示启动 cloud-init。</p>
+<p>默认情况下，generator 会启动 cloud-init，除非以下情况：</p>
+<ul>
+<li><code>/etc/cloud/cloud-init.disabled</code> 文件存在；</li>
+<li>内核启动命令行 <code>/proc/cmdline</code> 中包含 &ldquo;cloud-init=disabled&rdquo;。如果是容器中运行，会读取环境变量 <code>KERNEL_CMDLINE</code>；</li>
+</ul>
+<p>而下面的步骤，就是由 target 包含的各个 unit 执行的。</p>
+</li>
+<li>
+<p>Local</p>
+<p>由 <strong>cloud-init-local.service</strong> 执行，主要目的：找到 &ldquo;local&rdquo; 的 datasource，根据配置网络。</p>
+<p>配置网络有三种情况：</p>
+<ol>
+<li>首先，根据传入配置 &ldquo;metadata&rdquo; 配置网络；</li>
+<li>当上面情况失败，直接配置 &ldquo;dhcp on eth0&rdquo;；</li>
+<li>如果 /etc/cloud/cloud.cfg 配置文件中禁用了网络：network: {config: disabled}，那么就不进行网络配置；</li>
+</ol>
+</li>
+<li>
+<p>Init、Config、Final 阶段</p>
+<p>对应 service 为 <strong>cloud-init.service</strong>、<strong>cloud-config.service</strong>、 <strong>cloud-final.service</strong>。</p>
+<p>通过 local 阶段，网络已经配置好了，并且已经得到了 metadata。而 <code>/etc/cloud/cloud.cfg</code> 配置定义了剩下三个阶段对应的任务，也就是 module。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img2.png"/>
+
+
+</p>
+<p>cloud init 通过一些缓存信息来判断机器是否经过初始化，通过 <code>cloud-init clean</code> 也可以手动清理缓存信息。</p>
+<p><code>/var/log/cloud-init.log</code> 记录了 cloud-init 运行的完整过程。</p>
+</li>
+</ol>
+<h3 id="22-制作镜像">2.2 制作镜像</h3>
+<p>下面就开始进行镜像制作：</p>
+<ol>
+<li>
+<p>下载 cloud image，这里使用中科大提供的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ wget  https://mirrors.ustc.edu.cn/centos-cloud/centos/7/images/CentOS-7-x86_64-GenericCloud-2003.qcow2
+</code></pre></td></tr></table>
+</div>
+</div><div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>修改密码<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>当然，该镜像其实就可以直接进行 virt-install 来启动（因为我们没有配置文件，所以通过 virt-install 来启动并生成配置文件），但是不知道密码，也搜不到，无法登陆进入。不过你也可以使用下面命令来设置密码后进行登陆：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ virt-customize -a CentOS-7-x86_64-GenericCloud-2003.qcow2  --root-password password:yourpassword
+</code></pre></td></tr></table>
+</div>
+</div></div>
+        </div>
+    </div>
+</li>
+<li>
+<p>因为 cloud-init 需要一个 datasource，而我们没有使用云厂商，所以使用 NoCloud 形式，按照官方的 s 示例创建一个 disk 文件。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 创建 user-data 与 meta-date 配置文件</span>
+$ cat meta-data
+instance-id: guest1
+local-hostname: guest1
+
+$ cat user-data
+<span class="c1">#cloud-config</span>
+chpasswd:
+    expire: <span class="nb">false</span>
+    list: <span class="p">|</span>
+    root: password1
+ssh_pwauth: True
+
+<span class="c1"># 生成 disk 文件，包含 userdata 与 metadata 配置数据</span>
+$ genisoimage  -output seed.iso -volid cidata -joliet -rock user-data meta-data
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建并运行虚拟机。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ virt-install --memory <span class="m">2048</span> --vcpus <span class="m">2</span> --name guest2 <span class="se">\
+</span><span class="se"></span>    --disk CentOS-7-x86_64-GenericCloud-2003.qcow2 --disk seed.iso <span class="se">\
+</span><span class="se"></span>    --os-type Linux --os-variant centos7.0 --virt-type kvm <span class="se">\
+</span><span class="se"></span>    --graphics none --network default <span class="se">\
+</span><span class="se"></span>    --import
+</code></pre></td></tr></table>
+</div>
+</div><p>几个比较重要的参数：</p>
+<ul>
+<li><code>--disk CentOS-7-x86_64-GenericCloud-2003.qcow2</code>：制定系统盘；</li>
+<li><code>--import</code>：跳过安装过程，因为已经安装好操作系统，不需要进行安装过程；</li>
+<li><code>--disk seed.iso</code>：传递 cloud-init datasource 信息；</li>
+</ul>
+<p>虚拟机启动过程中，可以看到 cloud-init 配置信息的一些打印：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img3.png"/>
+
+
+</p>
+<p>最后根据配置的密码成功进入：
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img4.png"/>
+
+
+</p>
+</li>
+<li>
+<p>而 <strong>CentOS-7-x86_64-GenericCloud-2003.qcow2</strong> 就是虚拟机经过配置的镜像文件，而 libvirt 启动所需的配置文件就是 <code>/etc/libvirt/qemu/guest1.xml</code>。</p>
+</li>
+</ol>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/virtualization_deployment_and_administration_guide/sect-guest_virtual_machine_installation_overview-creating_guests_with_virt_install" target="_blank" rel="noopener noreffer">CREATING GUESTS WITH VIRT-INSTALL</a></li>
+<li><a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/installation_guide/ch-kickstart2#s1-kickstart2-whatis" target="_blank" rel="noopener noreffer">KICKSTART INSTALLATIONS</a></li>
+<li><a href="https://cloudinit.readthedocs.io/en/latest/" target="_blank" rel="noopener noreffer">cloud-init Documentation</a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2020-10-31</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/" data-title="制作虚拟机镜像" data-hashtags="虚拟机,KVM,云计算"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/" data-hashtag="虚拟机"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/" data-title="制作虚拟机镜像"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/" data-title="制作虚拟机镜像"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/" data-title="制作虚拟机镜像"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/" data-title="制作虚拟机镜像"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/" data-title="制作虚拟机镜像"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E8%99%9A%E6%8B%9F%E6%9C%BA/">虚拟机</a>,&nbsp;<a href="/tags/kvm/">KVM</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud/cloud_practice/create-cluster/" class="prev" rel="prev" title="Kubernetes 集群搭建"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Kubernetes 集群搭建</a>
+            <a href="/posts/cloud/cloud_native/docker/how_docker_work/container-network-summary/" class="next" rel="next" title="容器网络总结">容器网络总结<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

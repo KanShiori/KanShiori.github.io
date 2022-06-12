@@ -1,0 +1,31 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>网络 - 分类 - Shiori&#39;s Blog</title>
+        <link>https://KanShiori.github.io/categories/%E7%BD%91%E7%BB%9C/</link>
+        <description>网络 - 分类 - Shiori&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 23 Dec 2021 20:55:43 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/%E7%BD%91%E7%BB%9C/" rel="self" type="application/rss+xml" /><item>
+    <title>DNS 域名解析系统</title>
+    <link>https://KanShiori.github.io/posts/net/dns/</link>
+    <pubDate>Thu, 23 Dec 2021 20:55:43 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/net/dns/</guid>
+    <description><![CDATA[主机使用 IP 地址作为通信地址是很难记忆的，用户更愿意使用比较容易记忆的 Hostname。而 Domain Name System（DNS）就是用于将 Domain 转换为 IP 地址。]]></description>
+</item>
+<item>
+    <title>Cache 机制</title>
+    <link>https://KanShiori.github.io/posts/net/cache-mechanism/</link>
+    <pubDate>Mon, 11 Oct 2021 12:45:53 &#43;0000</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/net/cache-mechanism/</guid>
+    <description><![CDATA[文章内容来自于《凤凰架构》，推荐阅读。 1 HTTP 客户端缓存 HTTP 设计之初就是确定客户端与服务端 “无状态” 的交互原则，所以不可避免地导致携带重复数据导致]]></description>
+</item>
+<item>
+    <title>SSL/TLS 总结</title>
+    <link>https://KanShiori.github.io/posts/net/ssl-tls-cert/</link>
+    <pubDate>Sat, 01 May 2021 15:09:13 &#43;0000</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/net/ssl-tls-cert/</guid>
+    <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 之前一直对 TLS 与证书理解的不清晰，这里尝试进行总结一下。]]></description>
+</item>
+</channel>
+</rss>

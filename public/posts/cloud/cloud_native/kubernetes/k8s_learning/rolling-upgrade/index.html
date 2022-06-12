@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Kubernetes - Update 与 Rollback - Shiori&#39;s Blog</title><meta name="Description" content="Update 与 Rollback 原理"><meta property="og:title" content="Kubernetes - Update 与 Rollback" />
+<meta property="og:description" content="Update 与 Rollback 原理" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-05-11T21:24:25+08:00" />
+<meta property="article:modified_time" content="2022-06-12T22:05:23+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="Kubernetes - Update 与 Rollback"/>
+<meta name="twitter:description" content="Update 与 Rollback 原理"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/aws_learning/kms/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_practice/kustomize/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Kubernetes - Update 与 Rollback",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/rolling-upgrade\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  4375 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/rolling-upgrade\/","datePublished": "2022-05-11T21:24:25+08:00","dateModified": "2022-06-12T22:05:23+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": "Update 与 Rollback 原理"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kubernetes - Update 与 Rollback</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 学习</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-05-11">2022-05-11</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4375 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 9 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-操作">1 操作</a>
+      <ul>
+        <li><a href="#11-update">1.1 Update</a></li>
+        <li><a href="#12-rollback">1.2 Rollback</a></li>
+        <li><a href="#13-流程控制">1.3 流程控制</a>
+          <ul>
+            <li><a href="#131-deployment">1.3.1 Deployment</a></li>
+            <li><a href="#132-daemonset">1.3.2 DaemonSet</a></li>
+            <li><a href="#133-statefulset">1.3.3 StatefulSet</a></li>
+          </ul>
+        </li>
+        <li><a href="#14-流程观测">1.4 流程观测</a>
+          <ul>
+            <li><a href="#141-deployment">1.4.1 Deployment</a></li>
+            <li><a href="#142-daemonset">1.4.2 DaemonSet</a></li>
+            <li><a href="#143-statefulset">1.4.3 StatefulSet</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#2-deployment-实现">2 Deployment 实现</a>
+      <ul>
+        <li><a href="#21-架构">2.1 架构</a></li>
+        <li><a href="#22-trigger">2.2 Trigger</a></li>
+        <li><a href="#23-update">2.3 Update</a></li>
+        <li><a href="#24-rollback">2.4 Rollback</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-daemonsetstatefulset-实现">3 DaemonSet/StatefulSet 实现</a>
+      <ul>
+        <li><a href="#31-架构">3.1 架构</a></li>
+        <li><a href="#32-update-实现">3.2 Update 实现</a></li>
+        <li><a href="#33-rollback-实现">3.3 Rollback 实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-poddisruptionbudget">4 PodDisruptionBudget</a>
+      <ul>
+        <li><a href="#41-spec-与-status">4.1 Spec 与 Status</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-操作">1 操作</h2>
+<h3 id="11-update">1.1 Update</h3>
+<p>当用户修改 Deployment DaemonSet StatefulSet 定义中的 <code>.spec.template</code> 任意字段时，就会触发 Pod 的升级，默认都是 Rolling Update。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ kubectl <span class="nb">set</span> image deployment.v1.apps/nginx-deployment <span class="nv">nginx</span><span class="o">=</span>nginx:1.16.1
+</code></pre></td></tr></table>
+</div>
+</div><p>通过 <code>kubectl rollout status</code> 查看滚动升级的过程：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ kubectl rollout status deployment/nginx-deployment
+
+Waiting <span class="k">for</span> deployment <span class="s2">&#34;nginx-deployment&#34;</span> rollout to finish: <span class="m">1</span> out of <span class="m">3</span> new replicas have been updated...
+Waiting <span class="k">for</span> deployment <span class="s2">&#34;nginx-deployment&#34;</span> rollout to finish: <span class="m">1</span> out of <span class="m">3</span> new replicas have been updated...
+Waiting <span class="k">for</span> deployment <span class="s2">&#34;nginx-deployment&#34;</span> rollout to finish: <span class="m">2</span> out of <span class="m">3</span> new replicas have been updated...
+Waiting <span class="k">for</span> deployment <span class="s2">&#34;nginx-deployment&#34;</span> rollout to finish: <span class="m">2</span> out of <span class="m">3</span> new replicas have been updated...
+Waiting <span class="k">for</span> deployment <span class="s2">&#34;nginx-deployment&#34;</span> rollout to finish: <span class="m">2</span> out of <span class="m">3</span> new replicas have been updated...
+Waiting <span class="k">for</span> deployment <span class="s2">&#34;nginx-deployment&#34;</span> rollout to finish: <span class="m">1</span> old replicas are pending termination...
+Waiting <span class="k">for</span> deployment <span class="s2">&#34;nginx-deployment&#34;</span> rollout to finish: <span class="m">1</span> old replicas are pending termination...
+deployment <span class="s2">&#34;nginx-deployment&#34;</span> successfully rolled out
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="12-rollback">1.2 Rollback</h3>
+<p>使用 <code>kubectl rollout history</code> 来查看某个 Deployment DaemonSet StatefulSet 的修订历史。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ kubectl rollout <span class="nb">history</span> deployment/nginx-deployment
+
+deployment.apps/nginx-deployment
+REVISION  CHANGE-CAUSE
+<span class="m">1</span>         &lt;none&gt;
+<span class="m">2</span>         &lt;none&gt;
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>更新时使用 <code>--record=true</code> 参考可以记录更新的命令，并记录在 Change Cause 中。</p>
+</blockquote>
+<p>使用 <code>--revision</code> 参数具体查看某个版本的 Pod template。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ kubectl rollout <span class="nb">history</span> deployment/nginx-deployment --revision <span class="m">2</span>
+
+deployment.apps/nginx-deployment with revision <span class="c1">#2</span>
+Pod Template:
+  Labels:       <span class="nv">app</span><span class="o">=</span>nginx
+        pod-template-hash<span class="o">=</span>ff6655784
+  Containers:
+   nginx:
+    Image:      nginx:1.16.1
+    Port:       80/TCP
+    Host Port:  0/TCP
+    Environment:        &lt;none&gt;
+    Mounts:     &lt;none&gt;
+  Volumes:      &lt;none&gt;
+</code></pre></td></tr></table>
+</div>
+</div><p>使用 <code>kubectl rollout undo</code> 来回滚到上一个版本，或者使用 <code>--to-revision</code> 参数回滚到特定的版本。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ kubectl rollout undo deployment/nginx-deployment
+
+deployment.apps/nginx-deployment rolled back
+</code></pre></td></tr></table>
+</div>
+</div><div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">Rollback 本质上也是 Update，因此相关的控制参数都是适用的。</div>
+        </div>
+    </div>
+<h3 id="13-流程控制">1.3 流程控制</h3>
+<h4 id="131-deployment">1.3.1 Deployment</h4>
+<p>Deployment 升级流程中，会交替更新旧的与新的 ReplicaSet。有一些参数可以控制滚动升级。</p>
+<p><code>spec.strategy.type</code> 策略用于指定如何进行 Pod 升级：</p>
+<ul>
+<li><code>RollingUpdate</code> - 默认值，滚动升级；</li>
+<li><code>Recreate</code> - 先删除所有旧 Pod，后启动新 Pod；</li>
+</ul>
+<p>在使用 <code>RollingUpdate</code> 策略下，可以通过下面两个字段来控制滚动升级的速率：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">RollingUpdate</span><span class="w">
+</span><span class="w">    </span><span class="nt">rollingUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="l">%</span><span class="w">
+</span><span class="w">      </span><span class="nt">maxSurge</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="l">%</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>maxUnavailable</code> - 指定升级过程中，不可用的 Pod 的个数上限。支持数字或者百分比（向下取整），默认值 25%。</p>
+<p>例如 <code>maxUnavailable: 30%</code> 时，那么滚动升级期间，会确保可用的 Pod 保持为总数的 70%。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img1.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img1.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img1.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img1.png" width="609" height="200" />
+    </a>
+</li>
+<li>
+<p><code>maxSurge</code> -  指定升级过程中，允许创建的超出期望的 Pod 的个数。支持数字或者百分比（向上取整），默认值为 25%。</p>
+<p>例如 <code>maxSurge: 30%</code> 时，表明升级过程中可能所有的 Pod 数量会是期望的 130%，然后再会交替的进行滚动升级。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img2.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img2.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img2.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img2.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img2.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img2.png" width="609" height="200" />
+    </a>
+</li>
+</ul>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">Deployment 设计上是用于管理无状态应用的，因此滚动升级中通过多创建一些 Pod 作为 Buffer，以获得更好的升级体验。而 StatefulSet 相反，因为运行的是有状态的，因此整个滚动升级过程中，Pod 总数是不变的。</div>
+        </div>
+    </div>
+<p>其他一些相关的参数包括：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">revisionHistoryLimit</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">minReadySeconds</span><span class="p">:</span><span class="w"> </span><span class="m">30</span><span class="w">
+</span><span class="w">  </span><span class="nt">paused</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>revisionHistoryLimit</code> - 保留的历史版本数量（也就是 ReplicaSet 数量），默认为 10。</p>
+<p>如果为 0 则表示不保留任何版本，并且会立即清理。</p>
+</li>
+<li>
+<p><code>minReadySeconds</code> - 滚动升级过程中，新创建的 Pod 就绪后的等待时间。</p>
+<p>每当新创建的 Pod 为就绪状态后，等待 <code>minReadySeconds</code> 秒后会继续进行下一个 Pod 的升级。如果为 0，那么表明 Pod 就绪后立即可用。</p>
+</li>
+<li>
+<p><code>paused</code> - 暂停 Deployment 的升级，修复 Pod template 不会触发滚动升级。</p>
+<p>使用 <code>kubectl rollout pause/resume</code> 本质上就是修改 Deployment 的该字段。</p>
+</li>
+</ul>
+<h4 id="132-daemonset">1.3.2 DaemonSet</h4>
+<p>DaemonSet 代表着长期运行的守护程序，<code>spec.strategy.type</code> 支持:</p>
+<ul>
+<li>RollingUpdate -（默认值）滚动升级；</li>
+<li>OnDelete - 不自动升级，当 Pod 被删除时才会升级；</li>
+</ul>
+<p>同样，DaemonSet 也支持滚动升级的速率控制：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">RollingUpdate</span><span class="w">
+</span><span class="w">    </span><span class="nt">rollingUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="l">%</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>maxUnavailable</code> - 指定升级过程中，不可用的 Pod 的个数上限。支持数字或者百分比（向下取整），默认值 25%。</p>
+<p>例如 <code>maxUnavailable: 30%</code> 时，那么滚动升级期间，会确保可用的 Pod 保持为总数的 70%。</p>
+</li>
+</ul>
+<p>其他一些相关的参数包括：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">revisionHistoryLimit</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">minReadySeconds</span><span class="p">:</span><span class="w"> </span><span class="m">30</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>revisionHistoryLimit</code> - 保留的历史版本数量（也就是 ControllRevision 数量），默认为 10。</p>
+<p>如果为 0 则表示不保留任何版本，并且会立即清理。</p>
+</li>
+<li>
+<p><code>minReadySeconds</code> - 滚动升级过程中，新创建的 Pod 就绪后的等待时间，默认为 0。</p>
+<p>每当新创建的 Pod 为就绪状态后，等待 <code>minReadySeconds</code> 秒后会继续进行下一个 Pod 的升级。如果为 0，那么表明 Pod 就绪后立即可用。</p>
+</li>
+</ul>
+<h4 id="133-statefulset">1.3.3 StatefulSet</h4>
+<p>与 DaemonSet 类似，StatefulSet 的 <code>spec.strategy.type</code> 支持：</p>
+<ul>
+<li>RollingUpdate -（默认值）滚动升级；</li>
+<li>OnDelete - 不自动升级，当 Pod 被删除时才会升级；</li>
+</ul>
+<p>StatefulSet 的速率控制更加偏向于手动，基于分区的方式：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">rollingUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">partition</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">RollingUpdate</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>partition</code> - 只有 Pod 编号大于等于 <code>partition</code> 值的 Pod 才可以升级，其他 Pod 保持不变（删除也不会升级）。</p>
+<p>例如，4 副本并且 <code>partition: 2</code> 时，那么表明只有 pod-3 与 pod-2 会升级，而 pod-1 pod-0 不会升级。</p>
+</li>
+</ul>
+<p>StatefulSet 还支持并行地缩扩容，基于 <code>spec.podManagementPolicy</code> 配置：</p>
+<ul>
+<li>OrderedReady -（默认）按编号顺序依次创建或停止，前一个 Pod 完成后才会进行下一个 Pod 操作；</li>
+<li>Parallel - 所有 Pod 创建与停止是并行的；</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">revisionHistoryLimit</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">minReadySeconds</span><span class="p">:</span><span class="w"> </span><span class="m">30</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>revisionHistoryLimit</code> - 保留的历史版本数量（也就是 ControllRevision 数量），默认为 10。</p>
+<p>如果为 0 则表示不保留任何版本，并且会立即清理。</p>
+</li>
+<li>
+<p><code>minReadySeconds</code> - 滚动升级过程中，新创建的 Pod 就绪后的等待时间，默认为 0。</p>
+<p>每当新创建的 Pod 为就绪状态后，等待 <code>minReadySeconds</code> 秒后会继续进行下一个 Pod 的升级。如果为 0，那么表明 Pod 就绪后立即可用。</p>
+</li>
+</ul>
+<h3 id="14-流程观测">1.4 流程观测</h3>
+<h4 id="141-deployment">1.4.1 Deployment</h4>
+<p>DaemonSet Status 中一些参数可以观察 Update 的状态：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">updatedReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">readyReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">availableReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">unavailableReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">  </span><span class="nt">conditions</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">lastTransitionTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2022-05-16T12:13:27Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">lastUpdateTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2022-05-16T12:13:27Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment has minimum availability.</span><span class="w">
+</span><span class="w">    </span><span class="nt">reason</span><span class="p">:</span><span class="w"> </span><span class="l">MinimumReplicasAvailable</span><span class="w">
+</span><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;True&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Available</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">lastTransitionTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2022-05-16T12:12:57Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">lastUpdateTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2022-05-18T12:21:22Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="l">ReplicaSet &#34;nginx-deployment-5cc64f49d7&#34; has successfully progressed.</span><span class="w">
+</span><span class="w">    </span><span class="nt">reason</span><span class="p">:</span><span class="w"> </span><span class="l">NewReplicaSetAvailable</span><span class="w">
+</span><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;True&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Progressing</span><span class="w">
+</span><span class="w">  </span><span class="nt">observedGeneration</span><span class="p">:</span><span class="w"> </span><span class="m">7</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Pod 数量相关：</p>
+<ul>
+<li>
+<p><code>replicas</code> 表示当前运行中的 Pod 数量（所有 RS <code>status.replica</code> 之和）</p>
+</li>
+<li>
+<p><code>updatedReplicas</code> 为已经升级的 Pod 数量（当前 RS <code>status.replica</code>）</p>
+</li>
+<li>
+<p><code>readyReplicas</code> 为 Ready Pod 数量（所有 RS <code>status.readyReplicas</code> 之和）</p>
+</li>
+<li>
+<p><code>availableReplicas</code> 为 Available Pod 数量（所有 RS <code>status.availableReplicas</code> 之和）</p>
+<p><code>unavailableReplicas</code> 为 Unavailable Pod 数量（所有 RS <code>spec.replica</code> 之和 - <code>availableReplicas</code></p>
+</li>
+</ul>
+<p>Condition 相关：</p>
+<ul>
+<li>
+<p><code>Progressing</code> 表示 Deployment 是否正常处理中。</p>
+</li>
+<li>
+<p><code>Available</code> 表示是否大部分 Pod 处于 Available 状态，即 <code>availableReplicas</code> &gt;= <code>spec.replica</code> - <code>spec.maxUnavailable</code></p>
+</li>
+<li>
+<p><code>ReplicaFailure</code> 表示是否有任意的 ReplicaSet 处于异常情况。</p>
+</li>
+</ul>
+<p><code>observedGeneration</code> 为 Deployment 的 <code>metadata.generation</code> 值。当更新 Status 时，如果 <code>observedGeneration</code> 小于当前的就放弃更新，以防止使用了旧的 Deployment 定义。</p>
+<h4 id="142-daemonset">1.4.2 DaemonSet</h4>
+<p>DaemonSet Status 中一些参数可以观察 Update 的状态：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">desiredNumberScheduled</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">currentNumberScheduled</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">numberAvailable</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">numberMisscheduled</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">  </span><span class="nt">numberReady</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">updatedNumberScheduled</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">observedGeneration</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>下面表明对应状态的 Pod 数量，状态是按顺序判断的（处于后面的状态必定包含前面的状态）：</p>
+<ul>
+<li>
+<p><code>desiredNumberScheduled</code> 表明期望运行 Pod 的数量</p>
+<ul>
+<li>
+<p><code>currentNumberScheduled</code> 表示调度到 Node 上的 Pod 数量，也就是 Pod 总数</p>
+<ul>
+<li>
+<p><code>updatedNumberScheduled</code> 表示已升级 Pod 数量</p>
+</li>
+<li>
+<p><code>numberReady</code> 表示 Ready Pod 数量</p>
+<ul>
+<li><code>numberAvailable</code> 表明 Available Pod 数量</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>numberMisscheduled</code> 表明不期望运行，但是运行中的 Pod 数量</p>
+</li>
+</ul>
+<p><code>observedGeneration</code> 为 DaemonSet 的 <code>metadata.generation</code> 值。当更新 Status 时，如果 <code>observedGeneration</code> 小于当前的就放弃更新，以防止使用了旧的 DaemonSet 定义。</p>
+<h4 id="143-statefulset">1.4.3 StatefulSet</h4>
+<p>StatefulSet Status 中一些参数可以观察到 Update 状态：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">readyReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">availableReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">collisionCount</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">  </span><span class="nt">currentReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">updatedReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">currentRevision</span><span class="p">:</span><span class="w"> </span><span class="l">main-cluster-pd-6584676774</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateRevision</span><span class="p">:</span><span class="w"> </span><span class="l">main-cluster-pd-6584676774</span><span class="w">
+</span><span class="w">  </span><span class="nt">observedGeneration</span><span class="p">:</span><span class="w"> </span><span class="m">4</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Pod 数量相关：</p>
+<ul>
+<li>
+<p><code>replicas</code> 为期望运行的 Pod 数量</p>
+</li>
+<li>
+<p><code>readyReplicas</code> 为 Ready Pod 数量</p>
+</li>
+<li>
+<p><code>availableReplicas</code> 为 Available Pod 数量</p>
+</li>
+<li>
+<p><code>currentReplicas</code> 为当前 Revision 的运行中的 Pod 数量，<code>updatedReplicas</code> 为已经升级 Revision 的运行中的 Pod 数量</p>
+<p>在升级流程中，<code>currentReplicas</code> 表示旧版本的 Pod，<code>updatedReplicas</code> 为升级完成的 Pod。两者会交替变化。</p>
+</li>
+<li>
+<p><code>currentRevision</code> 为当前 Revision，<code>updatedReplicas</code> 为需要升级的 Revision</p>
+<p><code>currentRevision</code> != <code>updatedReplicas</code> 就表明正在升级中</p>
+</li>
+</ul>
+<h2 id="2-deployment-实现">2 Deployment 实现</h2>
+<h3 id="21-架构">2.1 架构</h3>
+<p>Deployment 不是直接管理 Pod，而是通过 ReplicaSet 来间接管理。Deployment 仅仅会操作 ReplicaSet，由 ReplicaSet 来操作 Pod 的缩扩容。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img3.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img3.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img3.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img3.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img3.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img3.png" width="1100" height="350" />
+    </a>
+<ul>
+<li>
+<p>Deployment 与 ReplicaSet</p>
+<p>ReplicaSet 与 Deployment 通过 <code>ownerReferences</code> 来表明所属关系，通过 <code>revision</code> annotation 来表示 ReplicaSet 的修订版本。</p>
+</li>
+<li>
+<p>ReplicaSet 与 Pod</p>
+<p>基于 Pod Template 会生成一个 Hash 值，设置到 ReplicaSet 的 Labels 中，并该 Label 作为筛选 ReplicaSet 管理的 Pod。</p>
+</li>
+</ul>
+<p>Hash 值其实也是 ReplicaSet 命名的一部分，通过 Hash 值使得多个 ReplicaSet 正确管理着属于自己的 Pod。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ReplicaSet</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">pod-template-hash</span><span class="p">:</span><span class="w"> </span><span class="l">ff6655784</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-deployment-ff6655784</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>每一次 Pod Template 的更新，Deployment 都会创建 New ReplicaSet。Deployment 会保存多个 ReplicaSet，每个 ReplicaSet 会有着一个版本号 <code>revision</code>，最大的就是当前 Deployment 对应的。因此，通过 ReplicaSet 实现了版本的机制。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ kubectl get rs
+
+NAME                                DESIRED   CURRENT   READY   AGE
+nginx-deployment-9456bbbf9          <span class="m">3</span>         <span class="m">3</span>         <span class="m">3</span>       47m
+nginx-deployment-ff6655784          <span class="m">0</span>         <span class="m">0</span>         <span class="m">0</span>       45m
+</code></pre></td></tr></table>
+</div>
+</div><p>Deployment 相关代码都位于 <a href="https://github.com/kubernetes/kubernetes/blob/master/pkg/controller/deployment/deployment_controller.go" target="_blank" rel="noopener noreffer"><strong>Deployment Controller</strong></a>。</p>
+<h3 id="22-trigger">2.2 Trigger</h3>
+<p>当用户修改 Deployment 的 Pod Template 定义后，Controller 判断出当前 Deployment 与任何 ReplicaSet 的 Pod Template 不相同，那么就会创建新的 ReplicaSet。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img4.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img4.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img4.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img4.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img4.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img4.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img4.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img4.png" width="512" height="300" />
+    </a>
+<p>新的 ReplicaSet 的 revision 会加 1，使得整体有了版本的概念。</p>
+<h3 id="23-update">2.3 Update</h3>
+<p>Rolling Update 流程就是一个交替缩扩容的流程：</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img5.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img5.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img5.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img5.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img5.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img5.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img5.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img5.png" width="700" height="250" />
+    </a>
+<ol>
+<li>
+<p>扩容 New RS</p>
+<p>满足当前所有 ReplicaSet 的 Pod 总数不能超过 <code>desired replica</code> + <code>max surge</code> 前提下，扩容 New RS。</p>
+</li>
+<li>
+<p>缩容 Old RS</p>
+<p>满足当前所有 ReplicaSet 的 Pod 总数不低于 <code>desired replica</code> - <code>max unavailable</code> 前提下，缩容 Old RS。</p>
+</li>
+<li>
+<p>循环执行，直到 New RS 满足 <code>desired replica</code>，那么剩余的 Old RS Pod 可以被删除。</p>
+</li>
+</ol>
+<h3 id="24-rollback">2.4 Rollback</h3>
+<p>前面看到，Deployment 都是基于 ReplicaSet 来管理 Pod 的，并且会保留一定数量的 ReplicaSet。</p>
+<p>当执行 <code>kubectl rollback</code> 时，kubectl 会读取对应 <code>revision</code> 的 ReplicaSet 的 Pod Template，对比当前的 Deployment 的 Pod Template，生成 Patch 请求更新 Deployment。</p>
+<p>在 <a href="#121-trigger" rel=""><strong>Trigger</strong></a> 阶段，如果 Deployment 的 Pod Template 与存在的 ReplicaSet 相等，那么就会将 ReplicaSet 更新 revision。那么剩下的流程又是 <a href="#122-update" rel=""><strong>Update</strong></a> 阶段了。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img6.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img6.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img6.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img6.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img6.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img6.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img6.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img6.png" width="937" height="300" />
+    </a>
+<h2 id="3-daemonsetstatefulset-实现">3 DaemonSet/StatefulSet 实现</h2>
+<p>DaemonSet 与 StatefulSet 都是直接管理的 Pod，两者在 Pod 管理与 Update 实现上基本相同，因此下面以 DaemonSet 为例来说明。</p>
+<h3 id="31-架构">3.1 架构</h3>
+<p>DaemonSet 是基于 Pod Label 的方式来管理的 Pod。对于每一个 Node，会生成绑定到 Node 上的一个 Pod（通过 <code>pod.spec.affinity</code>）。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img7.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img7.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img7.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img7.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img7.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img7.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img7.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img7.png" width="456" height="300" />
+    </a>
+<p>因为直接管理 Pod，DaemonSet 需要一种方式记录所有的历史版本。DaemonSet 将所有的历史版本记录到 ControllRevision 资源。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ kubectl get controllerrevisions.apps
+
+NAME                              CONTROLLER                              REVISION   AGE
+nginx-daemonset-664df6cb85        daemonset.apps/nginx-daemonset          <span class="m">3</span>          62m
+nginx-daemonset-7686cf8cb5        daemonset.apps/nginx-daemonset          <span class="m">1</span>          63m
+nginx-daemonset-7f9fcbbcc8        daemonset.apps/nginx-daemonset          <span class="m">2</span>          62m
+</code></pre></td></tr></table>
+</div>
+</div><p>ControllRevision 记录了历史版本的 <code>revision</code> 以及具体配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ControllerRevision</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-ds</span><span class="w">
+</span><span class="w">    </span><span class="nt">controller-revision-hash</span><span class="p">:</span><span class="w"> </span><span class="l">664df6cb85</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-daemonset-664df6cb85</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w">  </span><span class="nt">ownerReferences</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">blockOwnerDeletion</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">    </span><span class="nt">controller</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">DaemonSet</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-daemonset</span><span class="w">
+</span><span class="w">    </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l">df462976-70a2-43e2-9f46-e0a92a452b93</span><span class="w">
+</span><span class="w"></span><span class="nt">revision</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="c"># ...</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>revision</code> - 版本号</li>
+<li><code>ownerReferences</code> - 基于 <code>ownerReferences</code> 表明所属哪个 DaemonSet/StatefulSet</li>
+<li><code>data</code> - 记录了具体的 Pod Template</li>
+<li><code>labels.controller-revision-hash</code> - 记录 Pod Template 的 Hash 值</li>
+</ul>
+<h3 id="32-update-实现">3.2 Update 实现</h3>
+<p>当用户修改 DaemonSet 的 Pod Template 定义后，Controller 判断出当前 DaemonSet 与任何的 ControllerReview 记录的 Pod Template 不相同，那么就会创建新的 ControllerRevision。</p>
+<p>每个 ControllerRevision 会记录 Label &ldquo;controller-revision-hash&rdquo;，为当前 Pod Template 的 Hash 值（也可能有随机加盐）。该 Hash 值也会记录在 Pod Label 中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ControllerRevision</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">controller-revision-hash</span><span class="p">:</span><span class="w"> </span><span class="l">664df6cb85</span><span class="w">
+</span><span class="w"></span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nn">---</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">controller-revision-hash</span><span class="p">:</span><span class="w"> </span><span class="l">664df6cb85</span><span class="w">
+</span><span class="w"></span><span class="c"># ...</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>控制循环逻辑中，Controller 会遍历所有的运行中的 Pod，如果 Pod 与 ControllerRevision 的 &ldquo;controller-revision-hash&rdquo; 不相等，说明 Pod 就需要升级。</p>
+<p>对 Pod 执行升级操作实际上就是 Delete 操作，等待在下一次控制循环中会认为 Pod 不存在，而按照当前 DS 创建一个新的 Pod。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img8.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img8.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img8.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img8.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img8.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img8.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img8.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img8.png" width="760" height="300" />
+    </a>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">如果是 OnDelete 升级策略，Controller 就不会走上面的判断升级与删除逻辑，而是依赖着用户删除。</div>
+        </div>
+    </div>
+<h3 id="33-rollback-实现">3.3 Rollback 实现</h3>
+<p>当执行 <code>kubectl rollout</code>，kubectl 会读取对应 ControllerRevision 的 Pod Template，对比 DaemonSet 生成 Patch 请求，并更新 DaemonSet。</p>
+<p>在 <a href="#33-rollback-%e5%ae%9e%e7%8e%b0" rel=""><strong>Update 实现</strong></a> 中第一步看到，Controller 会比较所有 ControllerRevision 的 Pod Template。在 Rollback 场景下，Controller 就会发现一个 Old ControllerRevision 的 Pod Template 匹配。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img9.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img9.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img9.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img9.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img9.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img9.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img9.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/img9.png" width="931" height="300" />
+    </a>
+<p>那么 Controller 就会更新该 ControllerRevision 的 <code>spec.revision</code> 大小，表明该 ControllerRevision 是当前使用中的，然后以该 ControllerRevision 的 Pod Template 和 Hash 值去执行 Update 操作。</p>
+<h2 id="4-poddisruptionbudget">4 PodDisruptionBudget</h2>
+<p>根据 Pod 销毁的场景，Kubernetes 将其分为了两个概念：</p>
+<ul>
+<li>
+<p>Involuntary Disruptions</p>
+<p>Pod 环境出现异常，导致 Pod 不得不被销毁。例如：</p>
+<ul>
+<li>Node 硬件故障</li>
+<li>Node 失联</li>
+<li>Node 资源不足，导致 Pod 被驱逐</li>
+</ul>
+</li>
+<li>
+<p>Voluntary Disruptions</p>
+<p>由 Pod 管理员或程序发起的主动操作。例如：</p>
+<ul>
+<li>更新了 Deployment</li>
+<li>执行了 Drain Node</li>
+</ul>
+</li>
+</ul>
+<p>因为 Involuntary Disruptions 是未知的，因此只能通过一些高可用的方式来避免。而对于 Voluntary Disruptions，Kubernetes 提供了 PodDisruptionBudget 来作为一个全局的限制，后续称为 PDB。</p>
+<p>PDB 基于 Eviction API 来进行限制，因此只有驱逐操作时才会触发 PDB 的检查。因此，使用 PDB 后应该通过 Eviction API 来改变 Pod 数量。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">PDB 仅仅限制 Evict 的操作，典型的就是使用 Drain Node 操作。</div>
+        </div>
+    </div>
+<h3 id="41-spec-与-status">4.1 Spec 与 Status</h3>
+<p>PDB 定义如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">policy/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PodDisruptionBudget</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">zk-pdb</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">minAvailable</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">zookeeper</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p><code>selector</code> 就是用于筛选哪些 Pod 会收到管理。如果为空表明集群所有的 Pod。</p>
+<p>PDB 基于两种方式来控制 Pod 数量（只能选择其中一个）：</p>
+<ul>
+<li>
+<p><code>minAvailable</code> - 驱逐后，必须保证可用的 Pod 最小数量，支持数值与百分比。</p>
+</li>
+<li>
+<p><code>maxUnavailable</code> - 驱逐后，允许不可用的 Pod 最大数量，支持数值与百分比。</p>
+</li>
+</ul>
+<p>如果使用 Kubernetes 内置的 Workload（例如 Deployment、StatefulSet 等），那么上述两中方式都能使用。使用其他管理 Pod 方式时，有一些其他的限制：</p>
+<ul>
+<li>只允许使用 <code>minAvailable</code>，并且只能使用数值。</li>
+</ul>
+<p>PDB 的状态中可以看到一些相关的信息：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">policy/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PodDisruptionBudget</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">zk-pdb</span><span class="w">
+</span><span class="w"></span><span class="c"># …</span><span class="w">
+</span><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">currentHealthy</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">desiredHealthy</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span><span class="w">  </span><span class="nt">disruptionsAllowed</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">  </span><span class="nt">expectedPods</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">observedGeneration</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="参考">参考</h2>
+<ul>
+<li>官方文档：<a href="https://kubernetes.io/zh/docs/concepts/workloads/pods/disruptions/#pod-disruption-budgets" target="_blank" rel="noopener noreffer"><strong>Pod Disruptions</strong></a></li>
+<li>官方文档：<a href="https://kubernetes.io/zh/docs/concepts/workloads/controllers/deployment/" target="_blank" rel="noopener noreffer"><strong>Deployments</strong></a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/be4372b810cc3256e0030896bbb55fe4f2304a01" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) be4372b810cc3256e0030896bbb55fe4f2304a01: Modify CD">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>be4372b</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/" data-title="Kubernetes - Update 与 Rollback" data-hashtags="k8s,云计算"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/" data-hashtag="k8s"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/" data-title="Kubernetes - Update 与 Rollback"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/" data-title="Kubernetes - Update 与 Rollback"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/" data-title="Kubernetes - Update 与 Rollback"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/" data-title="Kubernetes - Update 与 Rollback"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/" data-title="Kubernetes - Update 与 Rollback"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud/aws_learning/kms/" class="prev" rel="prev" title="AWS - KMS"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>AWS - KMS</a>
+            <a href="/posts/cloud/cloud_practice/kustomize/" class="next" rel="next" title="Kustomize">Kustomize<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightgallery":true,"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

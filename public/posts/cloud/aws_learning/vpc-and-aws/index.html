@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>AWS - VPC 与 Service 通信 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="AWS - VPC 与 Service 通信" />
+<meta property="og:description" content="1 VPC Peering VPC Peering 用于连接两个不同地址范围的 VPC，VPC 可以处于不同的 Region，甚至不同的 AWS 账户。 当 VPC Peering 连接两个 VPC 后，VPC 内部的资源（Ins" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-aws/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-11-29T13:15:05+00:00" />
+<meta property="article:modified_time" content="2022-06-12T22:05:23+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="AWS - VPC 与 Service 通信"/>
+<meta name="twitter:description" content="1 VPC Peering VPC Peering 用于连接两个不同地址范围的 VPC，VPC 可以处于不同的 Region，甚至不同的 AWS 账户。 当 VPC Peering 连接两个 VPC 后，VPC 内部的资源（Ins"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-aws/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-internet/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/aws_learning/iam/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "AWS - VPC 与 Service 通信",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/vpc-and-aws\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  2354 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/vpc-and-aws\/","datePublished": "2021-11-29T13:15:05+00:00","dateModified": "2022-06-12T22:05:23+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">AWS - VPC 与 Service 通信</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>AWS 学习</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-11-29">2021-11-29</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2354 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-vpc-peering">1 VPC Peering</a>
+      <ul>
+        <li><a href="#11-使用-vpc-peering">1.1 使用 VPC Peering</a></li>
+        <li><a href="#12-vpc-peering-的状态流转">1.2 VPC Peering 的状态流转</a></li>
+        <li><a href="#13-vpc-peering-构建步骤">1.3 VPC Peering 构建步骤</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-transit-gateway">2 Transit Gateway</a>
+      <ul>
+        <li><a href="#22-attachment">2.2 Attachment</a>
+          <ul>
+            <li><a href="#221-vpc">2.2.1 VPC</a></li>
+            <li><a href="#222-transit-gateway-peering">2.2.2 Transit Gateway Peering</a></li>
+          </ul>
+        </li>
+        <li><a href="#23-route-table">2.3 Route Table</a>
+          <ul>
+            <li><a href="#231-association">2.3.1 Association</a></li>
+            <li><a href="#232-route-propagation">2.3.2 Route propagation</a></li>
+            <li><a href="#233-prefix-list-references">2.3.3 Prefix list references</a></li>
+          </ul>
+        </li>
+        <li><a href="#24-multicast">2.4 Multicast</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-endpoint-与-private-link">3 Endpoint 与 Private Link</a>
+      <ul>
+        <li><a href="#31-gateway-endpoint">3.1 Gateway Endpoint</a></li>
+        <li><a href="#32-interface-endpoint">3.2 Interface Endpoint</a></li>
+        <li><a href="#33-gateway-load-balancer-endpoint">3.3 Gateway Load Balancer Endpoint</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-endpoint-service">4 Endpoint Service</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-vpc-peering">1 VPC Peering</h2>
+<p><strong><code>VPC Peering</code></strong> 用于<important>连接两个不同地址范围的 VPC，VPC 可以处于不同的 Region，甚至不同的 AWS 账户</important>。</p>
+<p>当 VPC Peering 连接两个 VPC 后，VPC 内部的资源（Instance、RDS 等）可以直接访问到对端 VPC 的资源。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud/aws_learning/vpc-and-aws/img1.png"/>
+
+
+</p>
+<p>但是，VPC Peering 是<strong>不具有传递性的</strong>。以上图来说，VPC1 是无法通过 VPC2 与 VPC3 通信的。</p>
+<h3 id="11-使用-vpc-peering">1.1 使用 VPC Peering</h3>
+<p>使用 VPC Peering 连接 VPC 需要的工作：</p>
+<ol>
+<li>
+<p>由源端 VPC <strong>发起 VPC Peering</strong>，连接到对端 VPC。</p>
+<p>发起的称为 <strong><code>Requester VPC</code></strong>。</p>
+</li>
+<li>
+<p>对端 VPC <strong>接受 VPC Peering</strong>。</p>
+<p>对端的称为 <strong><code>Accepter VPC</code></strong>。</p>
+</li>
+<li>
+<p><strong>配置 Route Table</strong>，将对方 VPC 的数据包发往 VPC Peering。</p>
+<table>
+<thead>
+<tr>
+<th>Destination</th>
+<th>Target</th>
+<th>Status</th>
+<th>Propagated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>172.31.0.0/16</td>
+<td>pcx-1353251</td>
+<td>Active</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>配置链路上的 Network ACL 与 Instance 的 Security Group</strong>，不影响流量。</p>
+</li>
+</ol>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>VPC 地址范围不能重叠<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">因为要通过 IP 地址寻址表明了，VPC 之间的地址范围不能重叠。</div>
+        </div>
+    </div>
+<h3 id="12-vpc-peering-的状态流转">1.2 VPC Peering 的状态流转</h3>
+<p>从发起请求开始，VPC Peering 会经过各个阶段：</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/vpc-and-aws/img2.png" title="/posts/cloud/aws_learning/vpc-and-aws/img2.png" data-thumbnail="/posts/cloud/aws_learning/vpc-and-aws/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/vpc-and-aws/img2.png"
+            data-srcset="/posts/cloud/aws_learning/vpc-and-aws/img2.png, /posts/cloud/aws_learning/vpc-and-aws/img2.png 1.5x, /posts/cloud/aws_learning/vpc-and-aws/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/vpc-and-aws/img2.png" width="1007" height="527" />
+    </a>
+<h3 id="13-vpc-peering-构建步骤">1.3 VPC Peering 构建步骤</h3>
+<p>使用 VPC Peering 联通两个 VPC 的大致流程如下：</p>
+<ol>
+<li>
+<p>构建 VPC Peering</p>
+<p>VPC A 发起 VPC Peering 连接，而 VPC B 需要 Accept 该 VPC Peering。</p>
+</li>
+<li>
+<p>配置 Route Table</p>
+<p>两个 VPC 或 Subnet 的 Route Table 都需要添加一项指向对方 VPC 子网的路由项，Destination 为 Peering ID <code>pcx-xxxx</code>。</p>
+</li>
+<li>
+<p>配置 Network ACL</p>
+<p>确保互相访问的 Subnet 的 Network ACL 不会拦截对方网段的数据包。</p>
+</li>
+<li>
+<p>配置 Security Group</p>
+<p>确保互相访问的 Instance 的 Security Group 能够允许对方网段的数据包。</p>
+</li>
+</ol>
+<h2 id="2-transit-gateway">2 Transit Gateway</h2>
+<p>Transit Gateway（简称为 TGW）类似于一个路由器，可以连接多个 VPC 或者其他网络设备，基于网络层（IP）来路由数据包。</p>
+<p>因此 TGW 更适用于多个 VPC 之间的互联，简化整体的网络架构。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/vpc-and-aws/img6.png" title="/posts/cloud/aws_learning/vpc-and-aws/img6.png" data-thumbnail="/posts/cloud/aws_learning/vpc-and-aws/img6.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/vpc-and-aws/img6.png"
+            data-srcset="/posts/cloud/aws_learning/vpc-and-aws/img6.png, /posts/cloud/aws_learning/vpc-and-aws/img6.png 1.5x, /posts/cloud/aws_learning/vpc-and-aws/img6.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/vpc-and-aws/img6.png" width="573" height="250" />
+    </a>
+<p>Transit Gateway 的基本概念如下：</p>
+<ul>
+<li>
+<p>Attachment</p>
+<p>Attachment 意味着将 VPC 或者网络设备连接到 TGW。</p>
+</li>
+<li>
+<p>Transit Gateway Route Table</p>
+<p>TGW Route Table 决定了 TGW 如何转发数据报。</p>
+</li>
+<li>
+<p>Associations</p>
+<p>Associations 代表 Attachment 与 Route Table 的关联关系。一个 Attachment 与一个 Route Table 关联，Route Table 可以有多个 Attachment 复用。</p>
+</li>
+<li>
+<p>Route propagation</p>
+<p>对于部分 Attachment 那么支持动态将路由传播给 Route Table。</p>
+</li>
+</ul>
+<h3 id="22-attachment">2.2 Attachment</h3>
+<p>Attachment 表示将 VPC 或者其他网络设备连接到 Transit Gateway 中，构建了一个双向联通的通道。</p>
+<p>目前支持连接的网络设备包括：</p>
+<ul>
+<li>VPC（本质是 Subnet）</li>
+<li>Connect SD-WAN / 第三方网络设备</li>
+<li>Direct Connect 网关</li>
+<li>Transit Gateway Peering - 连接到另一个 Transit Gateway</li>
+<li>VPN 连接</li>
+</ul>
+<h4 id="221-vpc">2.2.1 VPC</h4>
+<p>Attach VPC 本质上是物理上联通 AZ 下的某个 Subnet 与 TGW，并通过配置 Subnet 的 Route Table 来实现网络层的联通。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/vpc-and-aws/img6.5.png" title="/posts/cloud/aws_learning/vpc-and-aws/img6.5.png" data-thumbnail="/posts/cloud/aws_learning/vpc-and-aws/img6.5.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/vpc-and-aws/img6.5.png"
+            data-srcset="/posts/cloud/aws_learning/vpc-and-aws/img6.5.png, /posts/cloud/aws_learning/vpc-and-aws/img6.5.png 1.5x, /posts/cloud/aws_learning/vpc-and-aws/img6.5.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/vpc-and-aws/img6.5.png" width="561" height="250" />
+    </a>
+<p>Attach VPC 的大致流程为：</p>
+<ol>
+<li>
+<p>创建 Attachment，选择类型为 <code>VPC</code>，接着指定需要连接的 TGW 与 Subnet。</p>
+</li>
+<li>
+<p>修改 Subnet 的 Route Table，添加指向 TGW ID 的路由项。</p>
+<table>
+<thead>
+<tr>
+<th>Destination</th>
+<th>Target</th>
+<th>Status</th>
+<th>Propagated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10.99.99.0/24</td>
+<td>tgw-0b20f516255224ace</td>
+<td>Active</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">创建一个 Attachment 实际上会在对应的 Subnet 创建一个 ENI，而所有数据包会路由给 ENI 从而传输到 TGW。</div>
+        </div>
+    </div>
+<h4 id="222-transit-gateway-peering">2.2.2 Transit Gateway Peering</h4>
+<p>Transit Gateway Peering 支持在两个 TGW 之间路由流量，并且支持跨账户 TGW 之间的联通。</p>
+<p>与 VPC Peering 类似，创建 TGW Peering 后，需要对端接受 Peering 连接，才能完成构建。TGW Peering 的构建仅仅表示物理网络上的联通，网络层的联通还是需要通过配置 TGW Route Table 实现。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/vpc-and-aws/img7.png" title="/posts/cloud/aws_learning/vpc-and-aws/img7.png" data-thumbnail="/posts/cloud/aws_learning/vpc-and-aws/img7.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/vpc-and-aws/img7.png"
+            data-srcset="/posts/cloud/aws_learning/vpc-and-aws/img7.png, /posts/cloud/aws_learning/vpc-and-aws/img7.png 1.5x, /posts/cloud/aws_learning/vpc-and-aws/img7.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/vpc-and-aws/img7.png" width="504" height="200" />
+    </a>
+<p>使用 TGW Peering 大致流程为：</p>
+<ol>
+<li>
+<p>创建 Attachment，选择类型为 <code>Peering Connection</code>，指定对端的 TGW。</p>
+</li>
+<li>
+<p>修改两个 TGW 的 Route Table，添加指向 Attachment ID 的路由项。</p>
+<table>
+<thead>
+<tr>
+<th>Destination</th>
+<th>Target</th>
+<th>Status</th>
+<th>Propagated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>17.31.0.0/24</td>
+<td>tgw-attach-069fe98e37eb88937</td>
+<td>Active</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+<h3 id="23-route-table">2.3 Route Table</h3>
+<p>与路由器一样，TGW 处理数据包都是基于 TGW Route Table。因此，当使用 TGW 互联各个网段时，关键就是需要配置 Route Table。</p>
+<h4 id="231-association">2.3.1 Association</h4>
+<p>TGW Route Table 是一个静态的路由表，需要创建 Association 将 Route Table 与 Attachment 关联，从而使得 Route Table 生效。</p>
+<p>因为 Route Table 是与 Attachment 关联的，所以 TGW 可以包含多个 Route Table，以针对不同的 Attachment 实现隔离。</p>
+<p>当 TGW 创建时，会创建一个默认的 Route Table，没有构建 Association 的 Attachment 都会默认关联该 Route Table。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">本质上，路由是基于 Attachment 来判断的。TGW 收到某个 Attachment 的数据包，根据该 Attachment 关联的 Route Table 来决定从哪个 Attachment 出。</div>
+        </div>
+    </div>
+<h4 id="232-route-propagation">2.3.2 Route propagation</h4>
+<p>Route propagation 指的是：创建 Attachment 时，是否会将相关的路由信息自动同步到 Route Table，其路由项的 <code>Route type</code> 为 &ldquo;Propagated&rdquo;。</p>
+<ul>
+<li>
+<p>对于 VPC Attachment，会自动在 Route Table 创建指向 VPC 的 CIDR 的路由项。</p>
+<table>
+<thead>
+<tr>
+<th>CIDR</th>
+<th>Attachment ID</th>
+<th>Resource ID</th>
+<th>Resource type</th>
+<th>Route type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10.0.0.0/24</td>
+<td>tgw-attach-053ad9590c5ceba7c</td>
+<td>vpc-04547264eb685fb15</td>
+<td>VPC</td>
+<td>Propagated</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>对于 Direct Connect 网关，会通过 BGP 将本地路由器的路由表同步到 Route Table。</p>
+</li>
+<li>
+<p>对于 Connect Attachment，与 Connect Attachment 关联的路由表会同步给 VPC 中的第三方虚拟设备。</p>
+</li>
+</ul>
+<h4 id="233-prefix-list-references">2.3.3 Prefix list references</h4>
+<p>Prefix list 是一个网段下的子网的集合，使用 Prefix list 可以将 CIDR 分组，从而简化路由表。</p>
+<h3 id="24-multicast">2.4 Multicast</h3>
+<p>TGW 也支持 Multicast，可以数据包发送给多个 Attachment。</p>
+<h2 id="3-endpoint-与-private-link">3 Endpoint 与 Private Link</h2>
+<p>前面在 Route Table 看到，Route Table 控制将 Subnet 内的流量转发到 AWS 资源。但是 AWS 有着许多的服务，服务类型也不断出现着，特定的 Rule.Target 无法满足增长。</p>
+<p>因此，你可以看到 Rule.Target 有一类 vpc-endpoint-<em>id</em>，这就是表明路由到一个 Endpoint。</p>
+<p><strong><code>Endpoint</code> 就是各式各样的 Service 的连接点的抽象</strong>。通过 Endpoint，Instance 就可以直接使用 Private IP 访问各种 Service 了。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Service Network Interface<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">可以将其理解为 Endpoint 就是 Service 的 &ldquo;Network Interface&rdquo;，有了 Endpoint 就可以将 Subnet 的流量发送给 Service。</div>
+        </div>
+    </div>
+<p>目前，Endpoint 分为三类：</p>
+<ul>
+<li>Gateway Endpoints</li>
+<li>Interface Endpoints</li>
+<li>Gateway Load Balancer Endpoints</li>
+</ul>
+<p>其中，第一种流量会通过公网，而后两种不会通过公网，其实现技术称之为 <strong><code>Private Link</code></strong>。</p>
+<h3 id="31-gateway-endpoint">3.1 Gateway Endpoint</h3>
+<p>使用 <strong><code>Gateway Endpoint</code></strong> <strong>只能连接特定的 AWS 服务：S3 与 DynamoDB</strong>。或者说，当你创建 Endpoint 是连接的是 S3 或者 DynamoDB 服务，可以选择使用 Gateway Endpoint。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud/aws_learning/vpc-and-aws/img3.png"/>
+
+
+</p>
+<p>使用 Gateway Endpoint 的步骤：</p>
+<ol>
+<li>
+<p><strong>创建 Endpoint</strong>，创建时选择目标服务为 Gateway 类型的 DynamoDB 或 S3。</p>
+</li>
+<li>
+<p>配置 Route Table，是流量能够指向对应 Endpoint 的 vpce-<em>id</em>。</p>
+<table>
+<thead>
+<tr>
+<th>Destination</th>
+<th>Target</th>
+<th>Status</th>
+<th>Propagated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pl-6ea54007</td>
+<td>vpc-a2984bc5</td>
+<td>Active</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Instance 通过 Service 域名来访问 Endpoint。</p>
+</li>
+</ol>
+<h3 id="32-interface-endpoint">3.2 Interface Endpoint</h3>
+<p>大多数 AWS Service 可以通过 <strong><code>Interface Endpoint</code></strong> 进行连接。创建 Interface Endpoint 相当于创建一个 Network Interface，有着 Private IP 与 Private DNS。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud/aws_learning/vpc-and-aws/img4.png"/>
+
+
+</p>
+<p>使用 Interface Endpoint 的步骤：</p>
+<ol>
+<li><strong>创建 Endpoint</strong>，创建时选择需要的目标 AWS 服务。</li>
+<li>Instance <strong>通过 Private IP 或者 Private DNS 来访问 Service</strong>。</li>
+</ol>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>支持 S3 与 DynamoDB<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">Interface Endpoint 是支持连接 S3 与 DynamoDB Service 的。</div>
+        </div>
+    </div>
+<h3 id="33-gateway-load-balancer-endpoint">3.3 Gateway Load Balancer Endpoint</h3>
+<p>Gateway Load Balancer Endpoint 能够将流量路由到 Gateway Load Balancer，然后由 Load Balancer 负载均衡到下游的 Service。</p>
+<p>创建 Endpoint 的称为 Service Consumer，下游的 Service 称为 Service Provider。</p>
+<h2 id="4-endpoint-service">4 Endpoint Service</h2>
+<p>你也可以将自己的程序作为一个 <strong><code>Endpoint Service</code></strong>，<strong>使得别人可以通过 Interface Endpoint 来访问你的服务。</strong></p>
+<p>Endpoint Service 的入口是一个 LB：<strong>Network Load Balancer</strong> 或 <strong>Gateway Load Balancer</strong>。
+
+
+
+
+
+
+
+
+    <br><img src="/posts/cloud/aws_learning/vpc-and-aws/img5.png"/>
+
+
+</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://docs.aws.amazon.com/vpc/latest/privatelink/endpoint-services-overview.html" target="_blank" rel="noopener noreffer"><strong>AWS PrivateLink and VPC endpoints</strong></a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/be4372b810cc3256e0030896bbb55fe4f2304a01" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) be4372b810cc3256e0030896bbb55fe4f2304a01: Modify CD">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>be4372b</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/aws_learning/vpc-and-aws/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-aws/" data-title="AWS - VPC 与 Service 通信" data-hashtags="aws"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-aws/" data-hashtag="aws"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-aws/" data-title="AWS - VPC 与 Service 通信"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-aws/" data-title="AWS - VPC 与 Service 通信"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-aws/" data-title="AWS - VPC 与 Service 通信"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-aws/" data-title="AWS - VPC 与 Service 通信"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-aws/" data-title="AWS - VPC 与 Service 通信"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/aws/">aws</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud/aws_learning/vpc-and-internet/" class="prev" rel="prev" title="AWS - VPC 与 Internet 通信"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>AWS - VPC 与 Internet 通信</a>
+            <a href="/posts/cloud/aws_learning/iam/" class="next" rel="next" title="AWS - IAM">AWS - IAM<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightgallery":true,"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

@@ -1,0 +1,31 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Golang 原理 - 标签 - Shiori&#39;s Blog</title>
+        <link>https://KanShiori.github.io/tags/golang-%E5%8E%9F%E7%90%86/</link>
+        <description>Golang 原理 - 标签 - Shiori&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 23 Jan 2021 17:45:55 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/golang-%E5%8E%9F%E7%90%86/" rel="self" type="application/rss+xml" /><item>
+    <title>Go 并发调度总结</title>
+    <link>https://KanShiori.github.io/posts/language/golang/language/goroutine/</link>
+    <pubDate>Sat, 23 Jan 2021 17:45:55 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/language/golang/language/goroutine/</guid>
+    <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 并发调度实现的一个总结，基本内容来源于网络的]]></description>
+</item>
+<item>
+    <title>Go 垃圾收集总结</title>
+    <link>https://KanShiori.github.io/posts/language/golang/language/garbage-collection/</link>
+    <pubDate>Thu, 14 Jan 2021 20:40:47 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/language/golang/language/garbage-collection/</guid>
+    <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 垃圾收集的一个总结，基本内容来源于网络的学习]]></description>
+</item>
+<item>
+    <title>Go 内存管理总结</title>
+    <link>https://KanShiori.github.io/posts/language/golang/language/memory-manager/</link>
+    <pubDate>Tue, 05 Jan 2021 18:28:41 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/language/golang/language/memory-manager/</guid>
+    <description><![CDATA[总结系列的文章是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。 本文是对 Golang 内存模型与内存管理的一个总结，基本内容来源于]]></description>
+</item>
+</channel>
+</rss>
