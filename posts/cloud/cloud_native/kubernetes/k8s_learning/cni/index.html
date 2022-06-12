@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/cni/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-01-25T22:11:28+08:00" />
-<meta property="article:modified_time" content="2022-04-28T12:10:58+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:54:08+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/cni\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3447 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/cni\/","datePublished": "2022-01-25T22:11:28+08:00","dateModified": "2022-04-28T12:10:58+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/cni\/","datePublished": "2022-01-25T22:11:28+08:00","dateModified": "2022-06-12T22:54:08+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -220,37 +220,37 @@
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;k8s-pod-network&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;cniVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;0.3.1&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;plugins&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">    <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;calico&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;datastore_type&#34;</span><span class="p">:</span> <span class="s2">&#34;kubernetes&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;mtu&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;nodename_file_optional&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;log_level&#34;</span><span class="p">:</span> <span class="s2">&#34;Info&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;log_file_path&#34;</span><span class="p">:</span> <span class="s2">&#34;/var/log/calico/cni/cni.log&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;ipam&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;calico-ipam&#34;</span><span class="p">,</span> <span class="nt">&#34;assign_ipv4&#34;</span> <span class="p">:</span> <span class="s2">&#34;true&#34;</span><span class="p">,</span> <span class="nt">&#34;assign_ipv6&#34;</span> <span class="p">:</span> <span class="s2">&#34;false&#34;</span><span class="p">},</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;container_settings&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">          <span class="nt">&#34;allow_ip_forwarding&#34;</span><span class="p">:</span> <span class="kc">false</span>
-</span></span><span class="line"><span class="cl">      <span class="p">},</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;policy&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">          <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;k8s&#34;</span>
-</span></span><span class="line"><span class="cl">      <span class="p">},</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;kubernetes&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">          <span class="nt">&#34;k8s_api_root&#34;</span><span class="p">:</span><span class="s2">&#34;https://10.0.0.1:443&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">          <span class="nt">&#34;kubeconfig&#34;</span><span class="p">:</span> <span class="s2">&#34;/etc/cni/net.d/calico-kubeconfig&#34;</span>
-</span></span><span class="line"><span class="cl">      <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">},</span>
-</span></span><span class="line"><span class="cl">    <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;bandwidth&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;capabilities&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;bandwidth&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">},</span>
-</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;portmap&#34;</span><span class="p">,</span> <span class="nt">&#34;snat&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nt">&#34;capabilities&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;portMappings&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">}}</span>
-</span></span><span class="line"><span class="cl">  <span class="p">]</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;k8s-pod-network&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;cniVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;0.3.1&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;plugins&#34;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;calico&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;datastore_type&#34;</span><span class="p">:</span> <span class="s2">&#34;kubernetes&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;mtu&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&#34;nodename_file_optional&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="nt">&#34;log_level&#34;</span><span class="p">:</span> <span class="s2">&#34;Info&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;log_file_path&#34;</span><span class="p">:</span> <span class="s2">&#34;/var/log/calico/cni/cni.log&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;ipam&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;calico-ipam&#34;</span><span class="p">,</span> <span class="nt">&#34;assign_ipv4&#34;</span> <span class="p">:</span> <span class="s2">&#34;true&#34;</span><span class="p">,</span> <span class="nt">&#34;assign_ipv6&#34;</span> <span class="p">:</span> <span class="s2">&#34;false&#34;</span><span class="p">},</span>
+      <span class="nt">&#34;container_settings&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;allow_ip_forwarding&#34;</span><span class="p">:</span> <span class="kc">false</span>
+      <span class="p">},</span>
+      <span class="nt">&#34;policy&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;k8s&#34;</span>
+      <span class="p">},</span>
+      <span class="nt">&#34;kubernetes&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;k8s_api_root&#34;</span><span class="p">:</span><span class="s2">&#34;https://10.0.0.1:443&#34;</span><span class="p">,</span>
+          <span class="nt">&#34;kubeconfig&#34;</span><span class="p">:</span> <span class="s2">&#34;/etc/cni/net.d/calico-kubeconfig&#34;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;bandwidth&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;capabilities&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;bandwidth&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;portmap&#34;</span><span class="p">,</span> <span class="nt">&#34;snat&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nt">&#34;capabilities&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;portMappings&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">}}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>cniVersion - CNI 的版本</li>
@@ -339,23 +339,23 @@
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">CNI</span> <span class="kd">interface</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nf">AddNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nf">CheckNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span>
-</span></span><span class="line"><span class="cl">	<span class="nf">DelNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span>
-</span></span><span class="line"><span class="cl">	<span class="nf">GetNetworkListCachedResult</span><span class="p">(</span><span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nf">GetNetworkListCachedConfig</span><span class="p">(</span><span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="nf">AddNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nf">CheckNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span>
-</span></span><span class="line"><span class="cl">	<span class="nf">DelNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span>
-</span></span><span class="line"><span class="cl">	<span class="nf">GetNetworkCachedResult</span><span class="p">(</span><span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nf">GetNetworkCachedConfig</span><span class="p">(</span><span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="nf">ValidateNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">)</span> <span class="p">([]</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nf">ValidateNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">)</span> <span class="p">([]</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">CNI</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">AddNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">CheckNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span>
+	<span class="nf">DelNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span>
+	<span class="nf">GetNetworkListCachedResult</span><span class="p">(</span><span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">GetNetworkListCachedConfig</span><span class="p">(</span><span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+	<span class="nf">AddNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">CheckNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span>
+	<span class="nf">DelNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span>
+	<span class="nf">GetNetworkCachedResult</span><span class="p">(</span><span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">GetNetworkCachedConfig</span><span class="p">(</span><span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+	<span class="nf">ValidateNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">)</span> <span class="p">([]</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">ValidateNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">)</span> <span class="p">([]</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -375,12 +375,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">CNIConfig</span> <span class="kd">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">Path</span>     <span class="p">[]</span><span class="kt">string</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">exec</span>     <span class="nx">invoke</span><span class="p">.</span><span class="nx">Exec</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">cacheDir</span> <span class="kt">string</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">CNIConfig</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Path</span>     <span class="p">[]</span><span class="kt">string</span>
+	<span class="nx">exec</span>     <span class="nx">invoke</span><span class="p">.</span><span class="nx">Exec</span>
+	<span class="nx">cacheDir</span> <span class="kt">string</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>Path - 表明 CNI 插件可执行文件的目录，默认为 <code>/etc/cni/net.d</code></li>
@@ -424,38 +424,38 @@
 </span><span class="lnt">31
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// AddNetworkList executes a sequence of plugins with the ADD command
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CNIConfig</span><span class="p">)</span> <span class="nf">AddNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">list</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">err</span> <span class="kt">error</span>
-</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">result</span> <span class="nx">types</span><span class="p">.</span><span class="nx">Result</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 链式执行 CNI 插件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">net</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Plugins</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">result</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">addNetwork</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">CNIVersion</span><span class="p">,</span> <span class="nx">net</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 结构加入到 cache
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">c</span><span class="p">.</span><span class="nf">cacheAdd</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Bytes</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">result</span><span class="p">,</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CNIConfig</span><span class="p">)</span> <span class="nf">addNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">cniVersion</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">prevResult</span> <span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 插件可执行文件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">pluginPath</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">exec</span><span class="p">.</span><span class="nf">FindInPath</span><span class="p">(</span><span class="nx">net</span><span class="p">.</span><span class="nx">Network</span><span class="p">.</span><span class="nx">Type</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">Path</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 参数检查
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">ValidateContainerID</span><span class="p">(</span><span class="nx">rt</span><span class="p">.</span><span class="nx">ContainerID</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">ValidateNetworkName</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">ValidateInterfaceName</span><span class="p">(</span><span class="nx">rt</span><span class="p">.</span><span class="nx">IfName</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 构建传给可执行文件的配置
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">newConf</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">buildOneConfig</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cniVersion</span><span class="p">,</span> <span class="nx">net</span><span class="p">,</span> <span class="nx">prevResult</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 调用可执行文件 plugin 执行 ADD
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nx">invoke</span><span class="p">.</span><span class="nf">ExecPluginWithResult</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">pluginPath</span><span class="p">,</span> <span class="nx">newConf</span><span class="p">.</span><span class="nx">Bytes</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nf">args</span><span class="p">(</span><span class="s">&#34;ADD&#34;</span><span class="p">,</span> <span class="nx">rt</span><span class="p">),</span> <span class="nx">c</span><span class="p">.</span><span class="nx">exec</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// AddNetworkList executes a sequence of plugins with the ADD command
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CNIConfig</span><span class="p">)</span> <span class="nf">AddNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">list</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">err</span> <span class="kt">error</span>
+	<span class="kd">var</span> <span class="nx">result</span> <span class="nx">types</span><span class="p">.</span><span class="nx">Result</span>
+
+	<span class="c1">// 链式执行 CNI 插件
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">net</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Plugins</span> <span class="p">{</span>
+		<span class="nx">result</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">addNetwork</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">CNIVersion</span><span class="p">,</span> <span class="nx">net</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 结构加入到 cache
+</span><span class="c1"></span>	<span class="nx">c</span><span class="p">.</span><span class="nf">cacheAdd</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Bytes</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="nx">result</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CNIConfig</span><span class="p">)</span> <span class="nf">addNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">cniVersion</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">prevResult</span> <span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// 插件可执行文件
+</span><span class="c1"></span>	<span class="nx">pluginPath</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">exec</span><span class="p">.</span><span class="nf">FindInPath</span><span class="p">(</span><span class="nx">net</span><span class="p">.</span><span class="nx">Network</span><span class="p">.</span><span class="nx">Type</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">Path</span><span class="p">)</span>
+
+	<span class="c1">// 参数检查
+</span><span class="c1"></span>	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">ValidateContainerID</span><span class="p">(</span><span class="nx">rt</span><span class="p">.</span><span class="nx">ContainerID</span><span class="p">)</span>
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">ValidateNetworkName</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span>
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">ValidateInterfaceName</span><span class="p">(</span><span class="nx">rt</span><span class="p">.</span><span class="nx">IfName</span><span class="p">)</span>
+
+	<span class="c1">// 构建传给可执行文件的配置
+</span><span class="c1"></span>	<span class="nx">newConf</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">buildOneConfig</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cniVersion</span><span class="p">,</span> <span class="nx">net</span><span class="p">,</span> <span class="nx">prevResult</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
+
+	<span class="c1">// 调用可执行文件 plugin 执行 ADD
+</span><span class="c1"></span>	<span class="k">return</span> <span class="nx">invoke</span><span class="p">.</span><span class="nf">ExecPluginWithResult</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">pluginPath</span><span class="p">,</span> <span class="nx">newConf</span><span class="p">.</span><span class="nx">Bytes</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nf">args</span><span class="p">(</span><span class="s">&#34;ADD&#34;</span><span class="p">,</span> <span class="nx">rt</span><span class="p">),</span> <span class="nx">c</span><span class="p">.</span><span class="nx">exec</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="32-销毁-pod-网络">3.2 销毁 Pod 网络</h3>
 <p><code>DelNetworkList()</code> 与 <code>DelNetwork()</code> 用于销毁 Pod 的网络，以 <code>DelNetworkList()</code> 为例看一下实现：</p>
@@ -493,37 +493,37 @@
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// DelNetworkList executes a sequence of plugins with the DEL command
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CNIConfig</span><span class="p">)</span> <span class="nf">DelNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">list</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">cachedResult</span> <span class="nx">types</span><span class="p">.</span><span class="nx">Result</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 尝试读取 cache 结果（之前的失败的结果）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">cachedResult</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">getCachedResult</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">CNIVersion</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 链式调用 plugin 执行
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">Plugins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">net</span> <span class="o">:=</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Plugins</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">delNetwork</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">CNIVersion</span><span class="p">,</span> <span class="nx">net</span><span class="p">,</span> <span class="nx">cachedResult</span><span class="p">,</span> <span class="nx">rt</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 所有 plugin 执行成功，删除 cache
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">_</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">cacheDel</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CNIConfig</span><span class="p">)</span> <span class="nf">delNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">cniVersion</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">prevResult</span> <span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 插件可执行文件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">pluginPath</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">exec</span><span class="p">.</span><span class="nf">FindInPath</span><span class="p">(</span><span class="nx">net</span><span class="p">.</span><span class="nx">Network</span><span class="p">.</span><span class="nx">Type</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">Path</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 构建传给可执行文件的配置
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">newConf</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">buildOneConfig</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cniVersion</span><span class="p">,</span> <span class="nx">net</span><span class="p">,</span> <span class="nx">prevResult</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 调用可执行文件 plugin 执行 DEL
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nx">invoke</span><span class="p">.</span><span class="nf">ExecPluginWithoutResult</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">pluginPath</span><span class="p">,</span> <span class="nx">newConf</span><span class="p">.</span><span class="nx">Bytes</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nf">args</span><span class="p">(</span><span class="s">&#34;DEL&#34;</span><span class="p">,</span> <span class="nx">rt</span><span class="p">),</span> <span class="nx">c</span><span class="p">.</span><span class="nx">exec</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// DelNetworkList executes a sequence of plugins with the DEL command
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CNIConfig</span><span class="p">)</span> <span class="nf">DelNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">list</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">cachedResult</span> <span class="nx">types</span><span class="p">.</span><span class="nx">Result</span>
+
+	<span class="c1">// 尝试读取 cache 结果（之前的失败的结果）
+</span><span class="c1"></span>	<span class="nx">cachedResult</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">getCachedResult</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">CNIVersion</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
+
+	<span class="c1">// 链式调用 plugin 执行
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">Plugins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span> <span class="p">{</span>
+		<span class="nx">net</span> <span class="o">:=</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Plugins</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">delNetwork</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">CNIVersion</span><span class="p">,</span> <span class="nx">net</span><span class="p">,</span> <span class="nx">cachedResult</span><span class="p">,</span> <span class="nx">rt</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">err</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 所有 plugin 执行成功，删除 cache
+</span><span class="c1"></span>	<span class="nx">_</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">cacheDel</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CNIConfig</span><span class="p">)</span> <span class="nf">delNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">cniVersion</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">prevResult</span> <span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c1">// 插件可执行文件
+</span><span class="c1"></span>	<span class="nx">pluginPath</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">exec</span><span class="p">.</span><span class="nf">FindInPath</span><span class="p">(</span><span class="nx">net</span><span class="p">.</span><span class="nx">Network</span><span class="p">.</span><span class="nx">Type</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">Path</span><span class="p">)</span>
+
+	<span class="c1">// 构建传给可执行文件的配置
+</span><span class="c1"></span>	<span class="nx">newConf</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">buildOneConfig</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cniVersion</span><span class="p">,</span> <span class="nx">net</span><span class="p">,</span> <span class="nx">prevResult</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
+
+	<span class="c1">// 调用可执行文件 plugin 执行 DEL
+</span><span class="c1"></span>	<span class="k">return</span> <span class="nx">invoke</span><span class="p">.</span><span class="nf">ExecPluginWithoutResult</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">pluginPath</span><span class="p">,</span> <span class="nx">newConf</span><span class="p">.</span><span class="nx">Bytes</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nf">args</span><span class="p">(</span><span class="s">&#34;DEL&#34;</span><span class="p">,</span> <span class="nx">rt</span><span class="p">),</span> <span class="nx">c</span><span class="p">.</span><span class="nx">exec</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="33-检查-pod-网络">3.3 检查 Pod 网络</h3>
 <p><code>CheckNetworkList()</code> 与 <code>CheckNetwork()</code> 用于检查 Pod 的网络是否正常，以 <code>CheckNetworkList()</code> 为例看一下实现：</p>
@@ -558,34 +558,34 @@
 </span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CNIConfig</span><span class="p">)</span> <span class="nf">CheckNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">list</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">list</span><span class="p">.</span><span class="nx">DisableCheck</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 读取缓存结果（上一次检查结果）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">cachedResult</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">getCachedResult</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">CNIVersion</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 链式调用 plugin 执行
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">net</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Plugins</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">checkNetwork</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">CNIVersion</span><span class="p">,</span> <span class="nx">net</span><span class="p">,</span> <span class="nx">cachedResult</span><span class="p">,</span> <span class="nx">rt</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CNIConfig</span><span class="p">)</span> <span class="nf">checkNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">cniVersion</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">prevResult</span> <span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 插件可执行文件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">pluginPath</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">exec</span><span class="p">.</span><span class="nf">FindInPath</span><span class="p">(</span><span class="nx">net</span><span class="p">.</span><span class="nx">Network</span><span class="p">.</span><span class="nx">Type</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">Path</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 构建传给可执行文件的配置
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">newConf</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">buildOneConfig</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cniVersion</span><span class="p">,</span> <span class="nx">net</span><span class="p">,</span> <span class="nx">prevResult</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 调用可执行文件 plugin 执行 CHECK
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nx">invoke</span><span class="p">.</span><span class="nf">ExecPluginWithoutResult</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">pluginPath</span><span class="p">,</span> <span class="nx">newConf</span><span class="p">.</span><span class="nx">Bytes</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nf">args</span><span class="p">(</span><span class="s">&#34;CHECK&#34;</span><span class="p">,</span> <span class="nx">rt</span><span class="p">),</span> <span class="nx">c</span><span class="p">.</span><span class="nx">exec</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CNIConfig</span><span class="p">)</span> <span class="nf">CheckNetworkList</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">list</span> <span class="o">*</span><span class="nx">NetworkConfigList</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">list</span><span class="p">.</span><span class="nx">DisableCheck</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 读取缓存结果（上一次检查结果）
+</span><span class="c1"></span>	<span class="nx">cachedResult</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">getCachedResult</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">CNIVersion</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
+
+	<span class="c1">// 链式调用 plugin 执行
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">net</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Plugins</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">checkNetwork</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">CNIVersion</span><span class="p">,</span> <span class="nx">net</span><span class="p">,</span> <span class="nx">cachedResult</span><span class="p">,</span> <span class="nx">rt</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">err</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CNIConfig</span><span class="p">)</span> <span class="nf">checkNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">cniVersion</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">net</span> <span class="o">*</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">prevResult</span> <span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="nx">rt</span> <span class="o">*</span><span class="nx">RuntimeConf</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c1">// 插件可执行文件
+</span><span class="c1"></span>	<span class="nx">pluginPath</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">exec</span><span class="p">.</span><span class="nf">FindInPath</span><span class="p">(</span><span class="nx">net</span><span class="p">.</span><span class="nx">Network</span><span class="p">.</span><span class="nx">Type</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">Path</span><span class="p">)</span>
+
+	<span class="c1">// 构建传给可执行文件的配置
+</span><span class="c1"></span>	<span class="nx">newConf</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">buildOneConfig</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cniVersion</span><span class="p">,</span> <span class="nx">net</span><span class="p">,</span> <span class="nx">prevResult</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
+
+	<span class="c1">// 调用可执行文件 plugin 执行 CHECK
+</span><span class="c1"></span>	<span class="k">return</span> <span class="nx">invoke</span><span class="p">.</span><span class="nf">ExecPluginWithoutResult</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">pluginPath</span><span class="p">,</span> <span class="nx">newConf</span><span class="p">.</span><span class="nx">Bytes</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nf">args</span><span class="p">(</span><span class="s">&#34;CHECK&#34;</span><span class="p">,</span> <span class="nx">rt</span><span class="p">),</span> <span class="nx">c</span><span class="p">.</span><span class="nx">exec</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="4-kubelet-如何调用-cni">4 kubelet 如何调用 CNI</h2>
 <h3 id="41-node-网络状态维护">4.1 Node 网络状态维护</h3>
@@ -681,81 +681,81 @@
 </span><span class="lnt">74
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">ds</span> <span class="o">*</span><span class="nx">dockerService</span><span class="p">)</span> <span class="nf">RunPodSandbox</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">r</span> <span class="o">*</span><span class="nx">runtimeapi</span><span class="p">.</span><span class="nx">RunPodSandboxRequest</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">runtimeapi</span><span class="p">.</span><span class="nx">RunPodSandboxResponse</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">config</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">GetConfig</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 1. 拉取 sandbox 的image, 默认为 &#34;k8s.gcr.io/pause:3.1&#34;
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">ensureSandboxImageExists</span><span class="p">(</span><span class="nx">ds</span><span class="p">.</span><span class="nx">client</span><span class="p">,</span> <span class="nx">image</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 2. 创建 sandbox container, 即 pause 容器
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">createResp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nf">CreateContainer</span><span class="p">(</span><span class="o">*</span><span class="nx">createConfig</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">createResp</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nf">recoverFromCreationConflictIfNeeded</span><span class="p">(</span><span class="nx">ds</span><span class="p">.</span><span class="nx">client</span><span class="p">,</span> <span class="o">*</span><span class="nx">createConfig</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">||</span> <span class="nx">createResp</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to create a sandbox for pod %q: %v&#34;</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">Metadata</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">resp</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">runtimeapi</span><span class="p">.</span><span class="nx">RunPodSandboxResponse</span><span class="p">{</span><span class="nx">PodSandboxId</span><span class="p">:</span> <span class="nx">createResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 3. 创建 sandbox checkpoint
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">checkpointManager</span><span class="p">.</span><span class="nf">CreateCheckpoint</span><span class="p">(</span><span class="nx">createResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nf">constructPodSandboxCheckpoint</span><span class="p">(</span><span class="nx">config</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 4. 启动 Sandbox Container
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">err</span> <span class="p">=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nf">StartContainer</span><span class="p">(</span><span class="nx">createResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to start sandbox container for pod %q: %v&#34;</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">Metadata</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 覆盖 container的 resolve.conf 文件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">dnsConfig</span> <span class="o">:=</span> <span class="nx">config</span><span class="p">.</span><span class="nf">GetDnsConfig</span><span class="p">();</span> <span class="nx">dnsConfig</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">containerInfo</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nf">InspectContainer</span><span class="p">(</span><span class="nx">createResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to inspect sandbox container for pod %q: %v&#34;</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">Metadata</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">rewriteResolvFile</span><span class="p">(</span><span class="nx">containerInfo</span><span class="p">.</span><span class="nx">ResolvConfPath</span><span class="p">,</span> <span class="nx">dnsConfig</span><span class="p">.</span><span class="nx">Servers</span><span class="p">,</span> <span class="nx">dnsConfig</span><span class="p">.</span><span class="nx">Searches</span><span class="p">,</span> <span class="nx">dnsConfig</span><span class="p">.</span><span class="nx">Options</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;rewrite resolv.conf failed for pod %q: %v&#34;</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">Metadata</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 后续 network 相关操作, 如果是 host network, 可以直接退出了
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">config</span><span class="p">.</span><span class="nf">GetLinux</span><span class="p">().</span><span class="nf">GetSecurityContext</span><span class="p">().</span><span class="nf">GetNamespaceOptions</span><span class="p">().</span><span class="nf">GetNetwork</span><span class="p">()</span> <span class="o">==</span> <span class="nx">runtimeapi</span><span class="p">.</span><span class="nx">NamespaceMode_NODE</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">resp</span><span class="p">,</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 5. 通过 CNI 插件配置 sandbox 的 network
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">cID</span> <span class="o">:=</span> <span class="nx">kubecontainer</span><span class="p">.</span><span class="nf">BuildContainerID</span><span class="p">(</span><span class="nx">runtimeName</span><span class="p">,</span> <span class="nx">createResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">networkOptions</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">dnsConfig</span> <span class="o">:=</span> <span class="nx">config</span><span class="p">.</span><span class="nf">GetDnsConfig</span><span class="p">();</span> <span class="nx">dnsConfig</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="c1">// Build DNS options.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">dnsOption</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">dnsConfig</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to marshal dns config for pod %q: %v&#34;</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">Metadata</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">networkOptions</span><span class="p">[</span><span class="s">&#34;dns&#34;</span><span class="p">]</span> <span class="p">=</span> <span class="nb">string</span><span class="p">(</span><span class="nx">dnsOption</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 这里就是使用 network plugin 进行网络配置了
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">err</span> <span class="p">=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nf">SetUpPod</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nf">GetMetadata</span><span class="p">().</span><span class="nx">Namespace</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nf">GetMetadata</span><span class="p">().</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">cID</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">Annotations</span><span class="p">,</span> <span class="nx">networkOptions</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="c1">// 网络构建失败，销毁网络并停止容器
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// Ensure network resources are cleaned up even if the plugin
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// succeeded but an error happened between that success and here.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">err</span> <span class="p">=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nf">TearDownPod</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nf">GetMetadata</span><span class="p">().</span><span class="nx">Namespace</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nf">GetMetadata</span><span class="p">().</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">cID</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="nx">err</span> <span class="p">=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nf">StopContainer</span><span class="p">(</span><span class="nx">createResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">defaultSandboxGracePeriod</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">resp</span><span class="p">,</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">ds</span> <span class="o">*</span><span class="nx">dockerService</span><span class="p">)</span> <span class="nf">RunPodSandbox</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span>
+	<span class="nx">r</span> <span class="o">*</span><span class="nx">runtimeapi</span><span class="p">.</span><span class="nx">RunPodSandboxRequest</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">runtimeapi</span><span class="p">.</span><span class="nx">RunPodSandboxResponse</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">config</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">GetConfig</span><span class="p">()</span>
+
+	<span class="c1">// 1. 拉取 sandbox 的image, 默认为 &#34;k8s.gcr.io/pause:3.1&#34;
+</span><span class="c1"></span>	<span class="c1">// ...
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">ensureSandboxImageExists</span><span class="p">(</span><span class="nx">ds</span><span class="p">.</span><span class="nx">client</span><span class="p">,</span> <span class="nx">image</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 2. 创建 sandbox container, 即 pause 容器
+</span><span class="c1"></span>	<span class="c1">// ...
+</span><span class="c1"></span>	<span class="nx">createResp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nf">CreateContainer</span><span class="p">(</span><span class="o">*</span><span class="nx">createConfig</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">createResp</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nf">recoverFromCreationConflictIfNeeded</span><span class="p">(</span><span class="nx">ds</span><span class="p">.</span><span class="nx">client</span><span class="p">,</span> <span class="o">*</span><span class="nx">createConfig</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">||</span> <span class="nx">createResp</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to create a sandbox for pod %q: %v&#34;</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">Metadata</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">resp</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">runtimeapi</span><span class="p">.</span><span class="nx">RunPodSandboxResponse</span><span class="p">{</span><span class="nx">PodSandboxId</span><span class="p">:</span> <span class="nx">createResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">}</span>
+
+	<span class="c1">// 3. 创建 sandbox checkpoint
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">checkpointManager</span><span class="p">.</span><span class="nf">CreateCheckpoint</span><span class="p">(</span><span class="nx">createResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nf">constructPodSandboxCheckpoint</span><span class="p">(</span><span class="nx">config</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 4. 启动 Sandbox Container
+</span><span class="c1"></span>	<span class="nx">err</span> <span class="p">=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nf">StartContainer</span><span class="p">(</span><span class="nx">createResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to start sandbox container for pod %q: %v&#34;</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">Metadata</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 覆盖 container的 resolve.conf 文件
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">dnsConfig</span> <span class="o">:=</span> <span class="nx">config</span><span class="p">.</span><span class="nf">GetDnsConfig</span><span class="p">();</span> <span class="nx">dnsConfig</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">containerInfo</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nf">InspectContainer</span><span class="p">(</span><span class="nx">createResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to inspect sandbox container for pod %q: %v&#34;</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">Metadata</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span>
+
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">rewriteResolvFile</span><span class="p">(</span><span class="nx">containerInfo</span><span class="p">.</span><span class="nx">ResolvConfPath</span><span class="p">,</span> <span class="nx">dnsConfig</span><span class="p">.</span><span class="nx">Servers</span><span class="p">,</span> <span class="nx">dnsConfig</span><span class="p">.</span><span class="nx">Searches</span><span class="p">,</span> <span class="nx">dnsConfig</span><span class="p">.</span><span class="nx">Options</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;rewrite resolv.conf failed for pod %q: %v&#34;</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">Metadata</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 后续 network 相关操作, 如果是 host network, 可以直接退出了
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">config</span><span class="p">.</span><span class="nf">GetLinux</span><span class="p">().</span><span class="nf">GetSecurityContext</span><span class="p">().</span><span class="nf">GetNamespaceOptions</span><span class="p">().</span><span class="nf">GetNetwork</span><span class="p">()</span> <span class="o">==</span> <span class="nx">runtimeapi</span><span class="p">.</span><span class="nx">NamespaceMode_NODE</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">resp</span><span class="p">,</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 5. 通过 CNI 插件配置 sandbox 的 network
+</span><span class="c1"></span>	<span class="nx">cID</span> <span class="o">:=</span> <span class="nx">kubecontainer</span><span class="p">.</span><span class="nf">BuildContainerID</span><span class="p">(</span><span class="nx">runtimeName</span><span class="p">,</span> <span class="nx">createResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+	<span class="nx">networkOptions</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">dnsConfig</span> <span class="o">:=</span> <span class="nx">config</span><span class="p">.</span><span class="nf">GetDnsConfig</span><span class="p">();</span> <span class="nx">dnsConfig</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="c1">// Build DNS options.
+</span><span class="c1"></span>		<span class="nx">dnsOption</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">dnsConfig</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to marshal dns config for pod %q: %v&#34;</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">Metadata</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nx">networkOptions</span><span class="p">[</span><span class="s">&#34;dns&#34;</span><span class="p">]</span> <span class="p">=</span> <span class="nb">string</span><span class="p">(</span><span class="nx">dnsOption</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="c1">// 这里就是使用 network plugin 进行网络配置了
+</span><span class="c1"></span>	<span class="nx">err</span> <span class="p">=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nf">SetUpPod</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nf">GetMetadata</span><span class="p">().</span><span class="nx">Namespace</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nf">GetMetadata</span><span class="p">().</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">cID</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">Annotations</span><span class="p">,</span> <span class="nx">networkOptions</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="c1">// 网络构建失败，销毁网络并停止容器
+</span><span class="c1"></span>		<span class="c1">// Ensure network resources are cleaned up even if the plugin
+</span><span class="c1"></span>		<span class="c1">// succeeded but an error happened between that success and here.
+</span><span class="c1"></span>		<span class="nx">err</span> <span class="p">=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nf">TearDownPod</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nf">GetMetadata</span><span class="p">().</span><span class="nx">Namespace</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nf">GetMetadata</span><span class="p">().</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">cID</span><span class="p">)</span>
+
+		<span class="nx">err</span> <span class="p">=</span> <span class="nx">ds</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nf">StopContainer</span><span class="p">(</span><span class="nx">createResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">defaultSandboxGracePeriod</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">resp</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>该 network plugin 是 dockershim 对调用 CNI 插件的封装，其 <code>SetUpPod()</code> 接口底层才会真正调用 CNI 插件。</p>
 <div class="highlight"><div class="chroma">
@@ -794,39 +794,39 @@
 </span><span class="lnt">32
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// SetUpPod 构建 Pod 的网络
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">plugin</span> <span class="o">*</span><span class="nx">cniNetworkPlugin</span><span class="p">)</span> <span class="nf">SetUpPod</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">id</span> <span class="nx">kubecontainer</span><span class="p">.</span><span class="nx">ContainerID</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">annotations</span><span class="p">,</span> <span class="nx">options</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 检查是否已经初始化
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">plugin</span><span class="p">.</span><span class="nf">checkInitialized</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 通过 &lt;host&gt;.GetNetNS() 得到对应容器的 namespace路径
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">netnsPath</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">plugin</span><span class="p">.</span><span class="nx">host</span><span class="p">.</span><span class="nf">GetNetNS</span><span class="p">(</span><span class="nx">id</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// Windows doesn&#39;t have loNetwork. It comes only with Linux
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">plugin</span><span class="p">.</span><span class="nx">loNetwork</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">plugin</span><span class="p">.</span><span class="nf">addToNetwork</span><span class="p">(</span><span class="nx">cniTimeoutCtx</span><span class="p">,</span> <span class="nx">plugin</span><span class="p">.</span><span class="nx">loNetwork</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">netnsPath</span><span class="p">,</span> <span class="nx">annotations</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">plugin</span><span class="p">.</span><span class="nf">addToNetwork</span><span class="p">(</span><span class="nx">cniTimeoutCtx</span><span class="p">,</span> <span class="nx">plugin</span><span class="p">.</span><span class="nf">getDefaultNetwork</span><span class="p">(),</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">netnsPath</span><span class="p">,</span> <span class="nx">annotations</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">plugin</span> <span class="o">*</span><span class="nx">cniNetworkPlugin</span><span class="p">)</span> <span class="nf">addToNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">network</span> <span class="o">*</span><span class="nx">cniNetwork</span><span class="p">,</span> <span class="nx">podName</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">podNamespace</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">podSandboxID</span> <span class="nx">kubecontainer</span><span class="p">.</span><span class="nx">ContainerID</span><span class="p">,</span> <span class="nx">podNetnsPath</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">annotations</span><span class="p">,</span> <span class="nx">options</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">cnitypes</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 构建 Pod 对应的配置 libcni.RuntimeConf
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">rt</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">plugin</span><span class="p">.</span><span class="nf">buildCNIRuntimeConf</span><span class="p">(</span><span class="nx">podName</span><span class="p">,</span> <span class="nx">podNamespace</span><span class="p">,</span> <span class="nx">podSandboxID</span><span class="p">,</span> <span class="nx">podNetnsPath</span><span class="p">,</span> <span class="nx">annotations</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 调用 CNI.AddNetworkList() 接口
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">netConf</span><span class="p">,</span> <span class="nx">cniNet</span> <span class="o">:=</span> <span class="nx">network</span><span class="p">.</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">network</span><span class="p">.</span><span class="nx">CNIConfig</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cniNet</span><span class="p">.</span><span class="nf">AddNetworkList</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">netConf</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">res</span><span class="p">,</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// SetUpPod 构建 Pod 的网络
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">plugin</span> <span class="o">*</span><span class="nx">cniNetworkPlugin</span><span class="p">)</span> <span class="nf">SetUpPod</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">id</span> <span class="nx">kubecontainer</span><span class="p">.</span><span class="nx">ContainerID</span><span class="p">,</span>
+	<span class="nx">annotations</span><span class="p">,</span> <span class="nx">options</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c1">// 检查是否已经初始化
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">plugin</span><span class="p">.</span><span class="nf">checkInitialized</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">err</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 通过 &lt;host&gt;.GetNetNS() 得到对应容器的 namespace路径
+</span><span class="c1"></span>	<span class="nx">netnsPath</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">plugin</span><span class="p">.</span><span class="nx">host</span><span class="p">.</span><span class="nf">GetNetNS</span><span class="p">(</span><span class="nx">id</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+
+	<span class="c1">// Windows doesn&#39;t have loNetwork. It comes only with Linux
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">plugin</span><span class="p">.</span><span class="nx">loNetwork</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">plugin</span><span class="p">.</span><span class="nf">addToNetwork</span><span class="p">(</span><span class="nx">cniTimeoutCtx</span><span class="p">,</span> <span class="nx">plugin</span><span class="p">.</span><span class="nx">loNetwork</span><span class="p">,</span>
+			<span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">netnsPath</span><span class="p">,</span> <span class="nx">annotations</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">err</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">plugin</span><span class="p">.</span><span class="nf">addToNetwork</span><span class="p">(</span><span class="nx">cniTimeoutCtx</span><span class="p">,</span> <span class="nx">plugin</span><span class="p">.</span><span class="nf">getDefaultNetwork</span><span class="p">(),</span>
+		<span class="nx">name</span><span class="p">,</span> <span class="nx">namespace</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">netnsPath</span><span class="p">,</span> <span class="nx">annotations</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">plugin</span> <span class="o">*</span><span class="nx">cniNetworkPlugin</span><span class="p">)</span> <span class="nf">addToNetwork</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">network</span> <span class="o">*</span><span class="nx">cniNetwork</span><span class="p">,</span> <span class="nx">podName</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">podNamespace</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">podSandboxID</span> <span class="nx">kubecontainer</span><span class="p">.</span><span class="nx">ContainerID</span><span class="p">,</span> <span class="nx">podNetnsPath</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">annotations</span><span class="p">,</span> <span class="nx">options</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">cnitypes</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// 构建 Pod 对应的配置 libcni.RuntimeConf
+</span><span class="c1"></span>	<span class="nx">rt</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">plugin</span><span class="p">.</span><span class="nf">buildCNIRuntimeConf</span><span class="p">(</span><span class="nx">podName</span><span class="p">,</span> <span class="nx">podNamespace</span><span class="p">,</span> <span class="nx">podSandboxID</span><span class="p">,</span> <span class="nx">podNetnsPath</span><span class="p">,</span> <span class="nx">annotations</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
+
+	<span class="c1">// 调用 CNI.AddNetworkList() 接口
+</span><span class="c1"></span>	<span class="nx">netConf</span><span class="p">,</span> <span class="nx">cniNet</span> <span class="o">:=</span> <span class="nx">network</span><span class="p">.</span><span class="nx">NetworkConfig</span><span class="p">,</span> <span class="nx">network</span><span class="p">.</span><span class="nx">CNIConfig</span>
+	<span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cniNet</span><span class="p">.</span><span class="nf">AddNetworkList</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">netConf</span><span class="p">,</span> <span class="nx">rt</span><span class="p">)</span>
+	<span class="k">return</span> <span class="nx">res</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>这里的 <code>network.CNIConfig</code> 就是之前所述的 <code>CNIConfig</code> 对象。</p>
 <h4 id="422-如何管理-cni-插件">4.2.2 如何管理 CNI 插件</h4>
@@ -869,41 +869,41 @@
 </span><span class="lnt">34
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">plugin</span> <span class="o">*</span><span class="nx">cniNetworkPlugin</span><span class="p">)</span> <span class="nf">syncNetworkConfig</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">network</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">getDefaultCNINetwork</span><span class="p">(</span><span class="nx">plugin</span><span class="p">.</span><span class="nx">confDir</span><span class="p">,</span> <span class="nx">plugin</span><span class="p">.</span><span class="nx">binDirs</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">klog</span><span class="p">.</span><span class="nf">InfoS</span><span class="p">(</span><span class="s">&#34;Unable to update cni config&#34;</span><span class="p">,</span> <span class="s">&#34;err&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">plugin</span><span class="p">.</span><span class="nf">setDefaultNetwork</span><span class="p">(</span><span class="nx">network</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">getDefaultCNINetwork</span><span class="p">(</span><span class="nx">confDir</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">binDirs</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">cniNetwork</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 读取网络配置文件，以 .conf/.conflist/.json 结尾的文件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">files</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">libcni</span><span class="p">.</span><span class="nf">ConfFiles</span><span class="p">(</span><span class="nx">confDir</span><span class="p">,</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;.conf&#34;</span><span class="p">,</span> <span class="s">&#34;.conflist&#34;</span><span class="p">,</span> <span class="s">&#34;.json&#34;</span><span class="p">})</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="nx">cniConfig</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">libcni</span><span class="p">.</span><span class="nx">CNIConfig</span><span class="p">{</span><span class="nx">Path</span><span class="p">:</span> <span class="nx">binDirs</span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 遍历所有文件，直到成功解析一个配置文件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">sort</span><span class="p">.</span><span class="nf">Strings</span><span class="p">(</span><span class="nx">files</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">confFile</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">files</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="kd">var</span> <span class="nx">confList</span> <span class="o">*</span><span class="nx">libcni</span><span class="p">.</span><span class="nx">NetworkConfigList</span>
-</span></span><span class="line"><span class="cl">		<span class="c1">// ... 解析为 NetworkConfigList
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl">		<span class="c1">// 调用 CNI.ValidateNetworkList 进行一次检查
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">caps</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cniConfig</span><span class="p">.</span><span class="nf">ValidateNetworkList</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">confList</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="c1">// 读取成功返回
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">return</span> <span class="o">&amp;</span><span class="nx">cniNetwork</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">name</span><span class="p">:</span>          <span class="nx">confList</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">NetworkConfig</span><span class="p">:</span> <span class="nx">confList</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">CNIConfig</span><span class="p">:</span>     <span class="nx">cniConfig</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">Capabilities</span><span class="p">:</span>  <span class="nx">caps</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="p">},</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;no valid networks found in %s&#34;</span><span class="p">,</span> <span class="nx">confDir</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">plugin</span> <span class="o">*</span><span class="nx">cniNetworkPlugin</span><span class="p">)</span> <span class="nf">syncNetworkConfig</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">network</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">getDefaultCNINetwork</span><span class="p">(</span><span class="nx">plugin</span><span class="p">.</span><span class="nx">confDir</span><span class="p">,</span> <span class="nx">plugin</span><span class="p">.</span><span class="nx">binDirs</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">InfoS</span><span class="p">(</span><span class="s">&#34;Unable to update cni config&#34;</span><span class="p">,</span> <span class="s">&#34;err&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="nx">plugin</span><span class="p">.</span><span class="nf">setDefaultNetwork</span><span class="p">(</span><span class="nx">network</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">getDefaultCNINetwork</span><span class="p">(</span><span class="nx">confDir</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">binDirs</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">cniNetwork</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// 读取网络配置文件，以 .conf/.conflist/.json 结尾的文件
+</span><span class="c1"></span>	<span class="nx">files</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">libcni</span><span class="p">.</span><span class="nf">ConfFiles</span><span class="p">(</span><span class="nx">confDir</span><span class="p">,</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;.conf&#34;</span><span class="p">,</span> <span class="s">&#34;.conflist&#34;</span><span class="p">,</span> <span class="s">&#34;.json&#34;</span><span class="p">})</span>
+
+	<span class="nx">cniConfig</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">libcni</span><span class="p">.</span><span class="nx">CNIConfig</span><span class="p">{</span><span class="nx">Path</span><span class="p">:</span> <span class="nx">binDirs</span><span class="p">}</span>
+
+	<span class="c1">// 遍历所有文件，直到成功解析一个配置文件
+</span><span class="c1"></span>	<span class="nx">sort</span><span class="p">.</span><span class="nf">Strings</span><span class="p">(</span><span class="nx">files</span><span class="p">)</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">confFile</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">files</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">confList</span> <span class="o">*</span><span class="nx">libcni</span><span class="p">.</span><span class="nx">NetworkConfigList</span>
+		<span class="c1">// ... 解析为 NetworkConfigList
+</span><span class="c1"></span>
+		<span class="c1">// 调用 CNI.ValidateNetworkList 进行一次检查
+</span><span class="c1"></span>		<span class="nx">caps</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cniConfig</span><span class="p">.</span><span class="nf">ValidateNetworkList</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">confList</span><span class="p">)</span>
+
+		<span class="c1">// 读取成功返回
+</span><span class="c1"></span>		<span class="k">return</span> <span class="o">&amp;</span><span class="nx">cniNetwork</span><span class="p">{</span>
+			<span class="nx">name</span><span class="p">:</span>          <span class="nx">confList</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span>
+			<span class="nx">NetworkConfig</span><span class="p">:</span> <span class="nx">confList</span><span class="p">,</span>
+			<span class="nx">CNIConfig</span><span class="p">:</span>     <span class="nx">cniConfig</span><span class="p">,</span>
+			<span class="nx">Capabilities</span><span class="p">:</span>  <span class="nx">caps</span><span class="p">,</span>
+		<span class="p">},</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;no valid networks found in %s&#34;</span><span class="p">,</span> <span class="nx">confDir</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>可以看到，kubelet 会读取 CNI 的 conf 目录（默认 <code>/etc/cni/net.d</code>）来读取 CNI 的配置，通过 CNI 的 bin 目录（默认 /opt/cni/bin）去调用可执行文件。</p>
 <p>通过创建 <code>libcni.CNIConfig</code> 实现了构建 CNI 的接口，而 <code>CNIConfig</code> 就是前面所述的官方提供的实现。</p>
@@ -912,8 +912,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">cniConfig</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">libcni</span><span class="p">.</span><span class="nx">CNIConfig</span><span class="p">{</span><span class="nx">Path</span><span class="p">:</span> <span class="nx">binDirs</span><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">cniConfig</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">libcni</span><span class="p">.</span><span class="nx">CNIConfig</span><span class="p">{</span><span class="nx">Path</span><span class="p">:</span> <span class="nx">binDirs</span><span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="参考">参考</h2>
 <ul>
@@ -924,8 +924,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-04-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/8e561e2db54193849ec27bd70ac77c07a6bcb783" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 8e561e2db54193849ec27bd70ac77c07a6bcb783: post: kubeconfig">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>8e561e2</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/a9c42b90c745363e24a375bb9fa1559b896ef425" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) a9c42b90c745363e24a375bb9fa1559b896ef425: Add Rlease CD">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>a9c42b9</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -949,7 +949,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

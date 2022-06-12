@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-01-13T11:22:02+08:00" />
-<meta property="article:modified_time" content="2022-04-28T12:10:58+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:54:08+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/update-resource-mechanism\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2356 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/update-resource-mechanism\/","datePublished": "2022-01-13T11:22:02+08:00","dateModified": "2022-04-28T12:10:58+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/update-resource-mechanism\/","datePublished": "2022-01-13T11:22:02+08:00","dateModified": "2022-06-12T22:54:08+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -202,14 +202,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">[</span>
-</span></span><span class="line"><span class="cl">    <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;op&#34;</span><span class="p">:</span> <span class="s2">&#34;replace&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;/spec/template/spec/containers/0/image&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;value&#34;</span><span class="p">:</span> <span class="s2">&#34;app-image:v2&#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">]</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="nt">&#34;op&#34;</span><span class="p">:</span> <span class="s2">&#34;replace&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;/spec/template/spec/containers/0/image&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;value&#34;</span><span class="p">:</span> <span class="s2">&#34;app-image:v2&#34;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>但是在多个同时修改一个对象的情况下，因为没有冲突机制，所以会导致不可预期的结果。例如当该请求发出后，该对象已经修改了数组，那么该 0 编号的元素很可能变化了，从而该请求导致了非期望的修改。</p>
 <h3 id="22-merge-patch">2.2 Merge Patch</h3>
@@ -250,25 +250,25 @@
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;template&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;containers&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">                    <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;app&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                        <span class="nt">&#34;image&#34;</span><span class="p">:</span> <span class="s2">&#34;app-image:v2&#34;</span>
-</span></span><span class="line"><span class="cl">                    <span class="p">},</span>
-</span></span><span class="line"><span class="cl">                    <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;nginx&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                        <span class="nt">&#34;image&#34;</span><span class="p">:</span> <span class="s2">&#34;nginx:alpline&#34;</span>
-</span></span><span class="line"><span class="cl">                    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">                <span class="p">]</span>
-</span></span><span class="line"><span class="cl">            <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;template&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;containers&#34;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;app&#34;</span><span class="p">,</span>
+                        <span class="nt">&#34;image&#34;</span><span class="p">:</span> <span class="s2">&#34;app-image:v2&#34;</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;nginx&#34;</span><span class="p">,</span>
+                        <span class="nt">&#34;image&#34;</span><span class="p">:</span> <span class="s2">&#34;nginx:alpline&#34;</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>可见，Merge Patch 不适合对列表深层的字段做更新。</p>
 <h3 id="23-strategic-merge-patch">2.3 Strategic Merge Patch</h3>
@@ -282,11 +282,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1">// +patchMergeKey=name
-</span></span></span><span class="line"><span class="cl"><span class="c1">// +patchStrategy=merge
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">Containers</span> <span class="p">[]</span><span class="nx">Container</span> <span class="s">`json:&#34;containers&#34; patchStrategy:&#34;merge&#34; patchMergeKey:&#34;name&#34; protobuf:&#34;bytes,2,rep,name=containers&#34;`</span> 
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// ...
+</span><span class="c1">// +patchMergeKey=name
+</span><span class="c1">// +patchStrategy=merge
+</span><span class="c1"></span><span class="nx">Containers</span> <span class="p">[]</span><span class="nx">Container</span> <span class="s">`json:&#34;containers&#34; patchStrategy:&#34;merge&#34; patchMergeKey:&#34;name&#34; protobuf:&#34;bytes,2,rep,name=containers&#34;`</span> 
+</code></pre></td></tr></table>
 </div>
 </div><p>知晓了数组元素的 key 后，可以将数组类似于 map 了，这样就可以在 Merge Patch 基础上更新某个数组中的元素了。</p>
 <p>下面的请求仅仅只会更新 nginx container 配置，而不会影响到对象中已有的 container 配置。</p>
@@ -308,21 +308,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;template&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;containers&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">                    <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;nginx&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                        <span class="nt">&#34;image&#34;</span><span class="p">:</span> <span class="s2">&#34;nginx:mainline&#34;</span>
-</span></span><span class="line"><span class="cl">                    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">                <span class="p">]</span>
-</span></span><span class="line"><span class="cl">            <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;template&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;containers&#34;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;nginx&#34;</span><span class="p">,</span>
+                        <span class="nt">&#34;image&#34;</span><span class="p">:</span> <span class="s2">&#34;nginx:mainline&#34;</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>可以看到，使用 Strategic Merge Patch 方式需要 Kubernetes 知晓其数据结构的注释，<strong>因此只能应用于 Kubernetes 原生的资源对象。对于 Custom Resource 是无法使用的</strong>。</p>
 <h3 id="24-server-side-apply">2.4 Server Side Apply</h3>
@@ -364,28 +364,28 @@
 </span><span class="lnt">21
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">test-cm</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">test-label</span><span class="p">:</span><span class="w"> </span><span class="l">test</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">managedFields</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">manager</span><span class="p">:</span><span class="w"> </span><span class="l">kubectl</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="l">Apply</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">time</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2010-10-10T0:00:00Z&#34;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">fieldsType</span><span class="p">:</span><span class="w"> </span><span class="l">FieldsV1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">fieldsV1</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">f:metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">f:labels</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">f:test-label</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">f:data</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">f:\key</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">some value</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">test-cm</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">test-label</span><span class="p">:</span><span class="w"> </span><span class="l">test</span><span class="w">
+</span><span class="w">  </span><span class="nt">managedFields</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">manager</span><span class="p">:</span><span class="w"> </span><span class="l">kubectl</span><span class="w">
+</span><span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="l">Apply</span><span class="w">
+</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">time</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2010-10-10T0:00:00Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsType</span><span class="p">:</span><span class="w"> </span><span class="l">FieldsV1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsV1</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">f:metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:labels</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">f:test-label</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">      </span><span class="nt">f:data</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:\key</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">some value</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>例如上述字段表明，目前 <code>data.key</code> 和 <code>metadata.labels.test-label</code> 是由 kubectl 管理的，更新字段的操作是 Apply。</p>
 <p>如果多个 Manager 将同一个字段设为相同的值，那么他们共享此字段的所有权，称为 <strong><code>Shared Manager</code></strong>。<strong>后续任何 Manager 尝试改变字段值时都会触发 Conflict</strong>。</p>
@@ -437,8 +437,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-04-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/8e561e2db54193849ec27bd70ac77c07a6bcb783" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 8e561e2db54193849ec27bd70ac77c07a6bcb783: post: kubeconfig">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>8e561e2</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/a9c42b90c745363e24a375bb9fa1559b896ef425" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) a9c42b90c745363e24a375bb9fa1559b896ef425: Add Rlease CD">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>a9c42b9</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -462,7 +462,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

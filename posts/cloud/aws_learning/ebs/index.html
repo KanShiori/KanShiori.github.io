@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>AWS EBS - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="AWS EBS" />
+<meta property="og:description" content="1 概述 AWS Elastic Block Store（简称 EBS） 是 AWS 中的主要存储服务，EBS Volume 可以附加到某个 EC2 Instance 上，在 Instance 上看就是一个未经过格式化的块设备，与其他物理硬盘" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/ebs/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-05-25T21:43:54+08:00" />
+<meta property="article:modified_time" content="2022-06-12T22:54:08+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="AWS EBS"/>
+<meta name="twitter:description" content="1 概述 AWS Elastic Block Store（简称 EBS） 是 AWS 中的主要存储服务，EBS Volume 可以附加到某个 EC2 Instance 上，在 Instance 上看就是一个未经过格式化的块设备，与其他物理硬盘"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/aws_learning/ebs/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_practice/kustomize/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "AWS EBS",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/ebs\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  3347 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/ebs\/","datePublished": "2022-05-25T21:43:54+08:00","dateModified": "2022-06-12T22:54:08+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">AWS EBS</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>AWS 学习</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-05-25">2022-05-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3347 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-概述">1 概述</a></li>
+    <li><a href="#2-ebs-volume-type">2 EBS Volume Type</a>
+      <ul>
+        <li><a href="#21-ssd">2.1 SSD</a></li>
+        <li><a href="#22-hdd">2.2 HDD</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-ebs-使用">3 EBS 使用</a>
+      <ul>
+        <li><a href="#31-volume-state">3.1 Volume State</a></li>
+        <li><a href="#32-attach-volume">3.2 Attach Volume</a></li>
+        <li><a href="#33-multi-attach">3.3 Multi Attach</a></li>
+        <li><a href="#34-detach-volume">3.4 Detach Volume</a></li>
+        <li><a href="#35-delete-volume">3.5 Delete Volume</a></li>
+        <li><a href="#36-restore-root-volume">3.6 Restore Root Volume</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-ebs-监控">4 EBS 监控</a>
+      <ul>
+        <li><a href="#41-状态检查">4.1 状态检查</a></li>
+        <li><a href="#42-volume-事件">4.2 Volume 事件</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-ebs-snapshot">5 EBS Snapshot</a>
+      <ul>
+        <li><a href="#51-原理">5.1 原理</a></li>
+        <li><a href="#52-管理">5.2 管理</a>
+          <ul>
+            <li><a href="#521-使用">5.2.1 使用</a></li>
+          </ul>
+        </li>
+        <li><a href="#522-复制">5.2.2 复制</a></li>
+        <li><a href="#523-归档">5.2.3 归档</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-ebs-功能">6 EBS 功能</a>
+      <ul>
+        <li><a href="#61-modify-volume">6.1 Modify Volume</a></li>
+        <li><a href="#62-ebs-加密">6.2 EBS 加密</a>
+          <ul>
+            <li><a href="#621-原理">6.2.1 原理</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-概述">1 概述</h2>
+<p>AWS Elastic Block Store（简称 EBS） 是 AWS 中的主要存储服务，EBS Volume 可以附加到某个 EC2 Instance 上，在 Instance 上看就是一个未经过格式化的块设备，与其他物理硬盘一样。</p>
+<p>EBS 最大的特性是其生命周期不受到 Instance 的影响。可以将 EBS Volume 从某个 Instance 分离后，再次附加到另一个 Instance，其数据依旧是保留的。更进一步，多个 Instance 也可以同时使用一个 EBS，见 <a href="" rel=""><strong>Multi-Attach</strong></a>。</p>
+<p>EBS Volume 是 AZ 级别的存储，也就是说，EBS 只能由同 AZ 的 Instance 使用。如果需要跨 AZ 使用 EBS，需要先创建 Snapshot，然后从 Snapchat 创建新的 EBS 使用。</p>
+<h2 id="2-ebs-volume-type">2 EBS Volume Type</h2>
+<p>EBS 提供多种类型的 Volume，已提供不同的性能与定价。总体上分为：</p>
+<ul>
+<li>SSD - 主要性能属性为 iops</li>
+<li>HHD - 主要的性能属性为 throughput</li>
+<li>Previous generation - 上一代的 Volume，性能比较低</li>
+</ul>
+<h3 id="21-ssd">2.1 SSD</h3>
+<p>SSD 类型的 EBS 又可以分为几个类别：</p>
+<ul>
+<li>
+<p>General Purpose SSD - 性价比高的类型，大多数 Instance 使用这种类型。具体包括</p>
+<ul>
+<li>
+<p><strong>gp3</strong> - 无论 Volume 的大小，gp3 提供了标准的性能：3000 IOPS 与 125 MiB/s。当然，EBS–optimized Instance 可以提高更高的性能。</p>
+</li>
+<li>
+<p><strong>gp2</strong> - gp2 的性能与使用情况有关，基于令牌桶的实现：</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/ebs/img1.png" title="/posts/cloud/aws_learning/ebs/img1.png" data-thumbnail="/posts/cloud/aws_learning/ebs/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/ebs/img1.png"
+            data-srcset="/posts/cloud/aws_learning/ebs/img1.png, /posts/cloud/aws_learning/ebs/img1.png 1.5x, /posts/cloud/aws_learning/ebs/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/ebs/img1.png" width="297" height="200" />
+    </a>
+<ul>
+<li>其令牌被称为 IO 积分。IO 需要使用 IO 积分。</li>
+<li>当 IO 积分用完（IO 突增情况下），最大的 IOPS 会被限制在基准 IOPS 性能。</li>
+</ul>
+<p>而 gp2 的基准 IOPS 性能与 Volume 大小有关：Volume 越大，基准 IOPS 性能越高，IO 积分的累计也越快。也就是说，Volume 越大，应对高性能 IO 的能力也越好。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Provisioned IOPS SSD - 高性能存储，适用于关键性的负载。具体包括：</p>
+<ul>
+<li>
+<p><strong>io2 Block Express</strong> - 提供最高性能，但是只允许特定的 Instance 使用。</p>
+</li>
+<li>
+<p><strong>io2</strong> - 满足 I/O 密集型工作负载的需要。</p>
+</li>
+<li>
+<p><strong>io1</strong> - 与 io2 类似，区别在于提供了更高的耐用性。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>具体各个类型的的性能比较见文档：<a href="https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ebs-volume-types.html#solid-state-drives" target="_blank" rel="noopener noreffer"><strong>固态硬盘 (SSD)</strong></a>。</p>
+<h3 id="22-hdd">2.2 HDD</h3>
+<p>HDD 提供低成本，大容量的块存储。具体包括：</p>
+<ul>
+<li>
+<p>Throughput Optimized HDD (st1) - 低成本 HDD。</p>
+<p>st1 的性能也是基于令牌桶模型。Volume 大小决定了基准性能，以及 IO 积分累计速率。</p>
+</li>
+<li>
+<p>Cold HDD (sc1) - 最低成本 HDD，性能也最低。</p>
+<p>sc1 的性能也是基于令牌桶模型。Volume 大小决定了基准性能，以及 IO 积分累计速率。</p>
+</li>
+</ul>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">CloudWatch 中提供的 EBS <code>BurstBalance</code> 指标来监控 gp2、st1 和 sc1 卷的突增存储桶水平。</div>
+        </div>
+    </div>
+<h2 id="3-ebs-使用">3 EBS 使用</h2>
+<h3 id="31-volume-state">3.1 Volume State</h3>
+<p>Volume State 描述了 Volume 的可用性，包括：</p>
+<ul>
+<li>Creating - Volume 正在创建中</li>
+<li>Available - Volume 还未被 Attach</li>
+<li>In-use - Volume 已被 Attach</li>
+<li>Deleting - Volume 正在删除中</li>
+<li>Deleted - Volume 已经被删除</li>
+<li>Error - Volume 底层硬件出现错误，并且数据不可恢复</li>
+</ul>
+<h3 id="32-attach-volume">3.2 Attach Volume</h3>
+<p>Attach Volume 到一个 Instance 代表了 Instance 上插入了一个块设备。</p>
+<p>当然，只有处于 Available 状态的 Volume 才能够被使用。并且，Instance 需要与 Volume 处于同一个 AZ。</p>
+<h3 id="33-multi-attach">3.3 Multi Attach</h3>
+<p>Multi Attach 允许将单个 Volume（目前仅仅支持 io1 与 io2 类型）挂载当同一个 AZ 下的多个 Instance。</p>
+<p>Multi Attach 下的每个 Instance 都对 Volume 有着完全的读写权限。因此，可以实现让不同 Instance 的多个应用并发写同一个 Volume。</p>
+<p>不过，Multi Attach 有着许多的 <a href="https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ebs-volumes-multi.html#considerations" target="_blank" rel="noopener noreffer"><strong>注意事项和限制</strong></a>。</p>
+<h3 id="34-detach-volume">3.4 Detach Volume</h3>
+<p>与 Attach Volume 相反，Detach Volume 从 Instance 上分离存储。当然，Instance 操作系统层面需要先进行 umount 块设备。</p>
+<p>如果 Detach 了处于挂载状态的 Volume，那么 Volume Attachment 可能处于 <code>busy</code> 状态。直到 Volume 被 umount。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="s2">&#34;Volumes&#34;</span><span class="err">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="nt">&#34;AvailabilityZone&#34;</span><span class="p">:</span> <span class="s2">&#34;us-west-2b&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;Attachments&#34;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="nt">&#34;AttachTime&#34;</span><span class="p">:</span> <span class="s2">&#34;2016-07-21T23:44:52.000Z&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;InstanceId&#34;</span><span class="p">:</span> <span class="s2">&#34;i-fedc9876&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;VolumeId&#34;</span><span class="p">:</span> <span class="s2">&#34;vol-1234abcd&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;State&#34;</span><span class="p">:</span> <span class="s2">&#34;busy&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;DeleteOnTermination&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="nt">&#34;Device&#34;</span><span class="p">:</span> <span class="s2">&#34;/dev/sdf&#34;</span>
+            <span class="p">}</span>
+        <span class="err">...</span>
+    <span class="err">}</span>
+<span class="p">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果 Volume Attachment 长时间处于 <code>detaching</code> 状态，可以选择使用 <code>Force Detach</code> 强制执行分离操作。这种情况下，Instance 没有机会来回写文件系统 cache 与 metadata，可能会导致出现数据丢失与坏块。因此，下一次使用时必须进行文件系统检查与修复流程。</p>
+<h3 id="35-delete-volume">3.5 Delete Volume</h3>
+<p>Delete Volume 表示完全删除某个 Volume，已经 Volume 的所有数据。该 Volume 再也不能被 Attach。</p>
+<h3 id="36-restore-root-volume">3.6 Restore Root Volume</h3>
+<p>Restore Root Volume 指的是：将 Instance 使用的 Root Volume 还原到初始状态或者特定 Snapshot 状态。</p>
+<p>通过创建一个 Volume Replacement Task 来发起替换。通过 Task 可以监控替换的进度与结果。</p>
+<h2 id="4-ebs-监控">4 EBS 监控</h2>
+<h3 id="41-状态检查">4.1 状态检查</h3>
+<p>EBS 提供周期性的 Volume 状态检查，以探测存储是否损坏。Volume 状态检查是自动执行的，每 5min 运行一次。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/ebs/img2.png" title="/posts/cloud/aws_learning/ebs/img2.png" data-thumbnail="/posts/cloud/aws_learning/ebs/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/ebs/img2.png"
+            data-srcset="/posts/cloud/aws_learning/ebs/img2.png, /posts/cloud/aws_learning/ebs/img2.png 1.5x, /posts/cloud/aws_learning/ebs/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/ebs/img2.png" width="1281" height="250" />
+    </a>
+<ul>
+<li>
+<p><strong>IO 状态</strong> - 每 5min 对 Volume 进行硬件检查。如果发现具有潜在不一致性时，会变为 <code>impaired</code> 状态。</p>
+<p>检查失败后，默认会禁用 Volume 的 IO，并发送一个 IO 禁用事件。当然，用户可以手动立即重新打开 IO。</p>
+<p>如果 Volume 启用了 Auto-Enable IO 功能，那么检查失败也不会禁用 IO，仅仅会发送事件。</p>
+</li>
+<li>
+<p><strong>IO 性能</strong> - 每 1min 还会进行一次 IO 性能检查（CloudWatch 每 5min 收集数据）。如果 Volume 的性能低于预期，那么会提醒用户。</p>
+<blockquote>
+<p>IO 性能检查仅仅对于 <code>io</code>、<code>io2</code> 和 <code>gp3</code> 类型有效。</p>
+</blockquote>
+</li>
+</ul>
+<p>状态检查的结果如下：</p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>IO 状态</th>
+<th>IO 性能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ok</td>
+<td>正常</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>warning</td>
+<td>正常</td>
+<td>低于预期</td>
+</tr>
+<tr>
+<td>impaired</td>
+<td>正常，但是禁用 IO</td>
+<td>停滞</td>
+</tr>
+<tr>
+<td>insufficient-data</td>
+<td>数据不足</td>
+<td>数据不足</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-volume-事件">4.2 Volume 事件</h3>
+<p>上面说到，Volume 出现异常时，就会创建一个 Volume 事件来指明故障的原因。</p>
+<p>一个 Volume 的事件类型包括：</p>
+<ul>
+<li>Awaiting Action: Enable IO - 数据具有潜在一致性问题，IO 被禁用。</li>
+<li>IO Enabled - 用户明确启用 IO</li>
+<li>IO Auto-Enabled - 数据具有潜在一致性问题，因为设置了 Auto-Enable IO 功能，IO 自动启用</li>
+<li>Normal - 性能正常</li>
+<li>Degraded - 性能低于预期</li>
+<li>Severely Degraded - 性能达达低于预期</li>
+<li>Stalled - 性能收到严重影响</li>
+</ul>
+<h2 id="5-ebs-snapshot">5 EBS Snapshot</h2>
+<h3 id="51-原理">5.1 原理</h3>
+<p>同一个 Volume 的多个 Snapshot 之间，使用增量备份的方式保存数据。这意味着，除了第一个 Snapshot 需要复制完整的数据，其他的 Snapshot 都仅仅保存增量数据。</p>
+<p>例如下图，Snap A 保存全量数据，而 Snap B 仅仅保存相对于 Snap A 修改的数据，不变的数据直接引用的 Snap A。相比于全量备份需要 20GiB 数据，Snapshot 仅仅使用了 14GiB 的数据。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/ebs/img3.png" title="/posts/cloud/aws_learning/ebs/img3.png" data-thumbnail="/posts/cloud/aws_learning/ebs/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/ebs/img3.png"
+            data-srcset="/posts/cloud/aws_learning/ebs/img3.png, /posts/cloud/aws_learning/ebs/img3.png 1.5x, /posts/cloud/aws_learning/ebs/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/ebs/img3.png" width="492" height="400" />
+    </a>
+<p>同样，删除 Snapshot 时，仅仅删除只有该 Snapshot 专门使用的数据，被其他 Snapshot 引用的数据不会被删除。</p>
+<p>例如下图，Snap A 被删除时，仅仅只会删除 Snap A 中未被其他 Snap 引用的 4GiB 数据。被引用的 6GiB 数据会被分配给 Snap B。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/ebs/img4.png" title="/posts/cloud/aws_learning/ebs/img4.png" data-thumbnail="/posts/cloud/aws_learning/ebs/img4.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/ebs/img4.png"
+            data-srcset="/posts/cloud/aws_learning/ebs/img4.png, /posts/cloud/aws_learning/ebs/img4.png 1.5x, /posts/cloud/aws_learning/ebs/img4.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/ebs/img4.png" width="797" height="400" />
+    </a>
+<p>所有 Snapshot 的数据都是保存在 S3 上。可以想象到，都是元数据来索引各个不同的 Snapshot 以及不同的数据块。</p>
+<h3 id="52-管理">5.2 管理</h3>
+<h4 id="521-使用">5.2.1 使用</h4>
+<p>与普通的创建 Volume 流程一样，当创建 Volume 时指定 Snapshot ID 就可以基于 Snapshot 创建一个 Volume。</p>
+<p>如果需要跨 AZ 使用 Snapshot，需要先将 Snapshot 复制到另一个 AZ，然后在另一个 AZ 基于 Snapshot 创建 Volume。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>初始化 Volume<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>还原后的 Volume 会在使用时才从 S3 下载真正的存储块并写入。因此，还原后首次访问每个数据库的 IO 会有很大的延迟。</p>
+<p>为了避免性能下降，用户可以在还原后，手动进行一次全盘的读操作。也称为 Volume 初始化。</p>
+</div>
+        </div>
+    </div>
+<h3 id="522-复制">5.2.2 复制</h3>
+<p>复制 Snapshot 指定是将 Snapshot 数据复制到另一个 AZ。复制的 Snapshot 是完整的数据副本，而不是增量数据。</p>
+<p>如果是 Encrypted Snapshot，那么新的 S3 上的数据会使用新的密钥进行加密。S3  在复制期间保护传输中的数据。</p>
+<h3 id="523-归档">5.2.3 归档</h3>
+<p>为了满足不同的需求，Snapshot 的存储分为了两种：</p>
+<ul>
+<li>Standard tier - 默认情况下，创建的 Snapshot 数据都存储在 Standard tier 中，并使用增量备份的方式。</li>
+<li>Archive tier - 选择归档 Snapshot 后，会将完成的数据副本移动到 Archive tier。</li>
+</ul>
+<p>Archive tier 设计用于保存不经常访问，但是需要长时间保存的 Snapshot，其存储成本降低 75%。需要注意，归档不会使用增量备份，所有的 Snapshot 都是完整的数据副本。</p>
+<p>当要使用归档后的 Snapshot 时，需要先将其还原到 Standard tier（最长需要 72h）。在还原时，可以选择是临时还原或者永久还原，区别在于还原后是否删除归档的 Snapshot。</p>
+<h2 id="6-ebs-功能">6 EBS 功能</h2>
+<h3 id="61-modify-volume">6.1 Modify Volume</h3>
+<p>EBS Volume 支持动态修改 Volume Type、Size、IOPS 以及 Throughput，不需要 Umount 文件系统以及 Detach Volume。</p>
+<p>关于修改 Volume Type 的限制条件，参考<a href="https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/modify-volume-requirements.html" target="_blank" rel="noopener noreffer"><strong>官方文档</strong></a>。</p>
+<p>修改 Volume Type 的大致流程如下：</p>
+<ol>
+<li>
+<p>发起 Modify Volume 请求，指定需要修改的 Volume type、Size 等参数。</p>
+</li>
+<li>
+<p>发起后，Volume 将会依次进入 <code>modifying</code> -&gt; <code>optimizing</code> -&gt; <code>completed </code> 状态。</p>
+<p><code>optimizing</code> 状态表示 Volume 正在修改参数的过程中。Size 的修改往往只需要几秒钟，IOPS 的修改可能需要几分钟或者几小时。</p>
+<p>通过 API 或 CloudWatch，都可以观测到修改的进度。以 AWS CLI 为例，通过 <code>aws ec2 describe-volumes-modifications</code> 命令可以观察到修改的进度：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="c1">// aws ec2 describe-volumes-modifications --volume-ids vol-11111111111111111 vol-22222222222222222
+</span><span class="c1"></span><span class="p">{</span>
+   <span class="nt">&#34;VolumesModifications&#34;</span><span class="p">:</span> <span class="p">[</span>
+       <span class="p">{</span>
+           <span class="nt">&#34;TargetSize&#34;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+           <span class="nt">&#34;TargetVolumeType&#34;</span><span class="p">:</span> <span class="s2">&#34;io1&#34;</span><span class="p">,</span>
+           <span class="nt">&#34;ModificationState&#34;</span><span class="p">:</span> <span class="s2">&#34;modifying&#34;</span><span class="p">,</span>
+           <span class="nt">&#34;VolumeId&#34;</span><span class="p">:</span> <span class="s2">&#34;vol-11111111111111111&#34;</span><span class="p">,</span>
+           <span class="nt">&#34;TargetIops&#34;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+           <span class="nt">&#34;StartTime&#34;</span><span class="p">:</span> <span class="s2">&#34;2017-01-19T22:21:02.959Z&#34;</span><span class="p">,</span>
+           <span class="nt">&#34;Progress&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+           <span class="nt">&#34;OriginalVolumeType&#34;</span><span class="p">:</span> <span class="s2">&#34;gp2&#34;</span><span class="p">,</span>
+           <span class="nt">&#34;OriginalIops&#34;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+           <span class="nt">&#34;OriginalSize&#34;</span><span class="p">:</span> <span class="mi">100</span>
+       <span class="p">},</span>
+       <span class="p">{</span>
+           <span class="nt">&#34;TargetSize&#34;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
+           <span class="nt">&#34;TargetVolumeType&#34;</span><span class="p">:</span> <span class="s2">&#34;sc1&#34;</span><span class="p">,</span>
+           <span class="nt">&#34;ModificationState&#34;</span><span class="p">:</span> <span class="s2">&#34;modifying&#34;</span><span class="p">,</span>
+           <span class="nt">&#34;VolumeId&#34;</span><span class="p">:</span> <span class="s2">&#34;vol-22222222222222222&#34;</span><span class="p">,</span>
+           <span class="nt">&#34;StartTime&#34;</span><span class="p">:</span> <span class="s2">&#34;2017-01-19T22:23:22.158Z&#34;</span><span class="p">,</span>
+           <span class="nt">&#34;Progress&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+           <span class="nt">&#34;OriginalVolumeType&#34;</span><span class="p">:</span> <span class="s2">&#34;gp2&#34;</span><span class="p">,</span>
+           <span class="nt">&#34;OriginalIops&#34;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+           <span class="nt">&#34;OriginalSize&#34;</span><span class="p">:</span> <span class="mi">1000</span>
+       <span class="p">}</span>
+   <span class="p">]</span>
+ <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中，<code>Progress</code> 以百分比的形式展示出修改的进度。</p>
+</li>
+<li>
+<p>AWS 仅仅负责修改 Volume 底层的参数。当修改 Volume Size 后（变为 <code>optimizing</code> 状态），用户必须手动扩容文件系统的大小。</p>
+<p>不同的文件系统有着不同的扩容命令，例如 ext 文件系统使用 <code>resize2fs</code> 命令来进行扩容。</p>
+</li>
+</ol>
+<h3 id="62-ebs-加密">6.2 EBS 加密</h3>
+<p>EBS 加密使用 <a href="../kms/" rel=""><strong>KMS</strong></a> 服务来对保存的数据进行加密，所有数据都会在加密后才保存到硬件上。并且，相关的 Snapshot 以及数据复制都会在加密后才会传输或保存。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">为了能够调用 KMS 服务，相关 EC2 Instance 必须授予 KMS 相关的权限。</div>
+        </div>
+    </div>
+<p>加密和解密对于用户都是透明的：数据写入时会加密并保存到磁盘，读取数据时会先解密后读取。</p>
+<h4 id="621-原理">6.2.1 原理</h4>
+<p>EC2 使用信封加密的方式来加密数据：使用 KMS Key 来加解密 Data Key，加密后的 Data Key 会与加密后的数据一起保存到磁盘上。</p>
+<p>EBS 使用 KMS 的大致原理如下：</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/ebs/img6.png" title="/posts/cloud/aws_learning/ebs/img6.png" data-thumbnail="/posts/cloud/aws_learning/ebs/img6.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/ebs/img6.png"
+            data-srcset="/posts/cloud/aws_learning/ebs/img6.png, /posts/cloud/aws_learning/ebs/img6.png 1.5x, /posts/cloud/aws_learning/ebs/img6.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/ebs/img6.png" width="1231" height="270" />
+    </a>
+<h2 id="参考">参考</h2>
+<ul>
+<li>官方文档：<a href="https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/AmazonEBS.html" target="_blank" rel="noopener noreffer"><strong>Amazon Elastic Block Store</strong></a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/a9c42b90c745363e24a375bb9fa1559b896ef425" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) a9c42b90c745363e24a375bb9fa1559b896ef425: Add Rlease CD">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>a9c42b9</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/aws_learning/ebs/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/ebs/" data-title="AWS EBS" data-hashtags="aws"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/ebs/" data-hashtag="aws"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/ebs/" data-title="AWS EBS"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/ebs/" data-title="AWS EBS"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/ebs/" data-title="AWS EBS"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/ebs/" data-title="AWS EBS"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/aws_learning/ebs/" data-title="AWS EBS"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/aws/">aws</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud/cloud_practice/kustomize/" class="prev" rel="prev" title="Kustomize"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Kustomize</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightgallery":true,"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

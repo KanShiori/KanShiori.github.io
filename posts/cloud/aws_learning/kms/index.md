@@ -278,13 +278,7 @@ $ aws kms generate-data-key \
 
 #### 6.1.1 EBS
 
-EBS 可以 KMS Key 来加密存储的数据。加密和解密对于用户都是透明的：数据写入时会加密并保存到磁盘，读取数据时会先解密后读取。当然，前提是 EC2 有着 KMS Key 相关的加解密访问权限。
-
-EC2 使用信封加密的方式来加密数据：使用 KMS Key 来加解密 Data Key，加密后的 Data Key 会与加密后的数据一起保存到磁盘上。
-
-EBS 使用 KMS 的大致原理如下：
-
-{{< image src="img6.png" height=270 >}}
+见 [**EBS 加密**](../ebs/#62-ebs-加密)。
 
 #### 6.1.2 S3
 

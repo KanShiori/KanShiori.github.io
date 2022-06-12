@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/container-network-summary/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2020-11-06T20:40:51+08:00" />
-<meta property="article:modified_time" content="2022-03-30T22:11:22+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:54:08+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/docker\/how_docker_work\/container-network-summary\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "docker, container","wordcount":  5492 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/docker\/how_docker_work\/container-network-summary\/","datePublished": "2020-11-06T20:40:51+08:00","dateModified": "2022-03-30T22:11:22+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "docker, container","wordcount":  5486 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/docker\/how_docker_work\/container-network-summary\/","datePublished": "2020-11-06T20:40:51+08:00","dateModified": "2022-06-12T22:54:08+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">容器网络总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/docker-%E5%8E%9F%E7%90%86%E6%80%BB%E7%BB%93/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Docker 原理总结</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-11-06">2020-11-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 5492 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-11-06">2020-11-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 5486 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 11 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -207,35 +207,35 @@
 </span><span class="lnt">28
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">$docker</span> version
-</span></span><span class="line"><span class="cl">Client:
-</span></span><span class="line"><span class="cl"> Version:           19.03.8
-</span></span><span class="line"><span class="cl"> API version:       1.40
-</span></span><span class="line"><span class="cl"> Go version:        go1.13.8
-</span></span><span class="line"><span class="cl"> Git commit:        afacb8b7f0
-</span></span><span class="line"><span class="cl"> Built:             Wed Oct <span class="m">14</span> 19:43:43 <span class="m">2020</span>
-</span></span><span class="line"><span class="cl"> OS/Arch:           linux/amd64
-</span></span><span class="line"><span class="cl"> Experimental:      <span class="nb">false</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Server:
-</span></span><span class="line"><span class="cl"> Engine:
-</span></span><span class="line"><span class="cl">  Version:          19.03.8
-</span></span><span class="line"><span class="cl">  API version:      1.40 <span class="o">(</span>minimum version 1.12<span class="o">)</span>
-</span></span><span class="line"><span class="cl">  Go version:       go1.13.8
-</span></span><span class="line"><span class="cl">  Git commit:       afacb8b7f0
-</span></span><span class="line"><span class="cl">  Built:            Wed Oct <span class="m">14</span> 16:41:21 <span class="m">2020</span>
-</span></span><span class="line"><span class="cl">  OS/Arch:          linux/amd64
-</span></span><span class="line"><span class="cl">  Experimental:     <span class="nb">false</span>
-</span></span><span class="line"><span class="cl"> containerd:
-</span></span><span class="line"><span class="cl">  Version:          1.3.3-0ubuntu2
-</span></span><span class="line"><span class="cl">  GitCommit:
-</span></span><span class="line"><span class="cl"> runc:
-</span></span><span class="line"><span class="cl">  Version:          spec: 1.0.1-dev
-</span></span><span class="line"><span class="cl">  GitCommit:
-</span></span><span class="line"><span class="cl"> docker-init:
-</span></span><span class="line"><span class="cl">  Version:          0.18.0
-</span></span><span class="line"><span class="cl">  GitCommit:
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">$docker</span> version
+Client:
+ Version:           19.03.8
+ API version:       1.40
+ Go version:        go1.13.8
+ Git commit:        afacb8b7f0
+ Built:             Wed Oct <span class="m">14</span> 19:43:43 <span class="m">2020</span>
+ OS/Arch:           linux/amd64
+ Experimental:      <span class="nb">false</span>
+
+Server:
+ Engine:
+  Version:          19.03.8
+  API version:      1.40 <span class="o">(</span>minimum version 1.12<span class="o">)</span>
+  Go version:       go1.13.8
+  Git commit:       afacb8b7f0
+  Built:            Wed Oct <span class="m">14</span> 16:41:21 <span class="m">2020</span>
+  OS/Arch:          linux/amd64
+  Experimental:     <span class="nb">false</span>
+ containerd:
+  Version:          1.3.3-0ubuntu2
+  GitCommit:
+ runc:
+  Version:          spec: 1.0.1-dev
+  GitCommit:
+ docker-init:
+  Version:          0.18.0
+  GitCommit:
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="2-背景知识">2 背景知识</h2>
 <h3 id="21-cgroup-与-namespace">2.1 cgroup 与 namespace</h3>
@@ -252,10 +252,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ mount
-</span></span><span class="line"><span class="cl">…
-</span></span><span class="line"><span class="cl">nsfs on /run/docker/netns/9779108cb6b0 <span class="nb">type</span> nsfs <span class="o">(</span>rw<span class="o">)</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ mount
+…
+nsfs on /run/docker/netns/9779108cb6b0 <span class="nb">type</span> nsfs <span class="o">(</span>rw<span class="o">)</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>该文件就是对应 net namespace 的挂载，通过对比容器进程的 netns inode 与 文件 inode 可以证明：</p>
 <div class="highlight"><div class="chroma">
@@ -272,17 +272,17 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker top br0_container
-</span></span><span class="line"><span class="cl">UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
-</span></span><span class="line"><span class="cl">root                <span class="m">92658</span>               <span class="m">92640</span>               <span class="m">0</span>                   Nov06               pts/0               00:00:00            /bin/bash
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ ls -lhi  /proc/92658/ns/net
-</span></span><span class="line"><span class="cl"><span class="m">474863</span> lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Nov  <span class="m">7</span> 12:42 /proc/92658/ns/net -&gt; <span class="s1">&#39;net:[4026532287]&#39;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 文件 inode 与进程 net 指向 inode 相同</span>
-</span></span><span class="line"><span class="cl">$ ls -lhi /run/docker/netns/9779108cb6b0
-</span></span><span class="line"><span class="cl"><span class="m">4026532287</span> -r--r--r-- <span class="m">1</span> root root <span class="m">0</span> Nov  <span class="m">6</span> 19:47 /run/docker/netns/9779108cb6b0
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker top br0_container
+UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
+root                <span class="m">92658</span>               <span class="m">92640</span>               <span class="m">0</span>                   Nov06               pts/0               00:00:00            /bin/bash
+
+$ ls -lhi  /proc/92658/ns/net
+<span class="m">474863</span> lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Nov  <span class="m">7</span> 12:42 /proc/92658/ns/net -&gt; <span class="s1">&#39;net:[4026532287]&#39;</span>
+
+<span class="c1"># 文件 inode 与进程 net 指向 inode 相同</span>
+$ ls -lhi /run/docker/netns/9779108cb6b0
+<span class="m">4026532287</span> -r--r--r-- <span class="m">1</span> root root <span class="m">0</span> Nov  <span class="m">6</span> 19:47 /run/docker/netns/9779108cb6b0
+</code></pre></td></tr></table>
 </div>
 </div><p>在容器被删除后，对应  net namespace 就会被销毁。</p>
 <p>而各个网络模式最大的不同，就是在于 namespace 创建后，对应的 &ldquo;构建网络&rdquo; 的操作了。</p>
@@ -327,14 +327,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker network create --driver<span class="o">=</span>bridge <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--subnet<span class="o">=</span>192.168.100.0/24 <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--ip-range<span class="o">=</span>192.168.100.0/26 <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--gateway<span class="o">=</span>192.168.100.1 <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--opt com.docker.network.bridge.name<span class="o">=</span>mybr0 <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>	mybridge0
-</span></span><span class="line"><span class="cl">2e61a7dc333c1bc61d9cb86503ce4cd5a7435977ea2f9b7cc97fc71ae0e2bb93
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker network create --driver<span class="o">=</span>bridge <span class="se">\
+</span><span class="se"></span>	--subnet<span class="o">=</span>192.168.100.0/24 <span class="se">\
+</span><span class="se"></span>	--ip-range<span class="o">=</span>192.168.100.0/26 <span class="se">\
+</span><span class="se"></span>	--gateway<span class="o">=</span>192.168.100.1 <span class="se">\
+</span><span class="se"></span>	--opt com.docker.network.bridge.name<span class="o">=</span>mybr0 <span class="se">\
+</span><span class="se"></span>	mybridge0
+2e61a7dc333c1bc61d9cb86503ce4cd5a7435977ea2f9b7cc97fc71ae0e2bb93
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li><code>--driver=bridge</code> 指定创建的网络 driver；</li>
@@ -363,21 +363,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ifconfig
-</span></span><span class="line"><span class="cl">…
-</span></span><span class="line"><span class="cl">mybr0: <span class="nv">flags</span><span class="o">=</span>4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu <span class="m">1500</span>
-</span></span><span class="line"><span class="cl">        inet 192.168.100.1  netmask 255.255.255.0  broadcast 192.168.100.255
-</span></span><span class="line"><span class="cl">        ether 02:42:46:8a:cf:34  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        RX packets <span class="m">0</span>  bytes <span class="m">0</span> <span class="o">(</span>0.0 B<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        RX errors <span class="m">0</span>  dropped <span class="m">0</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
-</span></span><span class="line"><span class="cl">        TX packets <span class="m">0</span>  bytes <span class="m">0</span> <span class="o">(</span>0.0 B<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
-</span></span><span class="line"><span class="cl">…
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ brctl show
-</span></span><span class="line"><span class="cl">bridge name     bridge id               STP enabled     interfaces
-</span></span><span class="line"><span class="cl">mybr0           8000.0242efdb0984       no
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ ifconfig
+…
+mybr0: <span class="nv">flags</span><span class="o">=</span>4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu <span class="m">1500</span>
+        inet 192.168.100.1  netmask 255.255.255.0  broadcast 192.168.100.255
+        ether 02:42:46:8a:cf:34  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
+        RX packets <span class="m">0</span>  bytes <span class="m">0</span> <span class="o">(</span>0.0 B<span class="o">)</span>
+        RX errors <span class="m">0</span>  dropped <span class="m">0</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
+        TX packets <span class="m">0</span>  bytes <span class="m">0</span> <span class="o">(</span>0.0 B<span class="o">)</span>
+        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
+…
+
+$ brctl show
+bridge name     bridge id               STP enabled     interfaces
+mybr0           8000.0242efdb0984       no
+</code></pre></td></tr></table>
 </div>
 </div><p>但是与虚拟机网络中的 bridge 网卡不同，该 bridge 不会连接任何的物理网卡，仅仅是作为内网的 &lsquo;交换机&rsquo; 使用。但是，毕竟内网是虚拟的，没有实际与物理网络连接，如何访问外网呢？</p>
 <p>答案是，<strong>通过内核 iptables 进行 NAT，然后将包从实际的物理网卡上发送与接受</strong>。因此还有一部分的改变在于 iptables，主要会建立的是 nat 与 filter 表的规则。</p>
@@ -405,26 +405,26 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$  iptables -t nat -L  -nv
-</span></span><span class="line"><span class="cl">Chain PREROUTING <span class="o">(</span>policy ACCEPT <span class="m">2</span> packets, <span class="m">88</span> bytes<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">DOCKER     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ADDRTYPE match dst-type LOCAL
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain INPUT <span class="o">(</span>policy ACCEPT <span class="m">2</span> packets, <span class="m">88</span> bytes<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain OUTPUT <span class="o">(</span>policy ACCEPT <span class="m">124</span> packets, <span class="m">8797</span> bytes<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">DOCKER     all  --  *      *       0.0.0.0/0           !127.0.0.0/8          ADDRTYPE match dst-type LOCAL
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain POSTROUTING <span class="o">(</span>policy ACCEPT <span class="m">124</span> packets, <span class="m">8797</span> bytes<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target                prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">MASQUERADE  all     --   *      !mybr0  192.168.100.0/24     0.0.0.0/0
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain DOCKER <span class="o">(</span><span class="m">2</span> references<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target       prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">RETURN     all  --  mybr0  *       0.0.0.0/0            0.0.0.0/0
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$  iptables -t nat -L  -nv
+Chain PREROUTING <span class="o">(</span>policy ACCEPT <span class="m">2</span> packets, <span class="m">88</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DOCKER     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ADDRTYPE match dst-type LOCAL
+
+Chain INPUT <span class="o">(</span>policy ACCEPT <span class="m">2</span> packets, <span class="m">88</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+
+Chain OUTPUT <span class="o">(</span>policy ACCEPT <span class="m">124</span> packets, <span class="m">8797</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DOCKER     all  --  *      *       0.0.0.0/0           !127.0.0.0/8          ADDRTYPE match dst-type LOCAL
+
+Chain POSTROUTING <span class="o">(</span>policy ACCEPT <span class="m">124</span> packets, <span class="m">8797</span> bytes<span class="o">)</span>
+target                prot opt in     out     <span class="nb">source</span>               destination
+MASQUERADE  all     --   *      !mybr0  192.168.100.0/24     0.0.0.0/0
+
+Chain DOCKER <span class="o">(</span><span class="m">2</span> references<span class="o">)</span>
+target       prot opt in     out     <span class="nb">source</span>               destination
+RETURN     all  --  mybr0  *       0.0.0.0/0            0.0.0.0/0
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>
@@ -471,38 +471,38 @@
 </span><span class="lnt">31
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ iptables -t filter -L  -nv
-</span></span><span class="line"><span class="cl">Chain INPUT <span class="o">(</span>policy ACCEPT <span class="m">61774</span> packets, 79M bytes<span class="o">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain FORWARD <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">DOCKER-USER  all  --  *      *       0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">DOCKER-ISOLATION-STAGE-1  all  --  *      *       0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">ACCEPT     all  --  *      mybr0   0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
-</span></span><span class="line"><span class="cl">DOCKER     all  --  *      mybr0   0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">ACCEPT     all  --  mybr0  !mybr0  0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">ACCEPT     all  --  mybr0  mybr0   0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain OUTPUT <span class="o">(</span>policy ACCEPT <span class="m">42290</span> packets, 55M bytes<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain DOCKER <span class="o">(</span><span class="m">2</span> references<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain DOCKER-ISOLATION-STAGE-1 <span class="o">(</span><span class="m">1</span> references<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">DOCKER-ISOLATION-STAGE-2  all  --  mybr0  !mybr0  0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain DOCKER-ISOLATION-STAGE-2 <span class="o">(</span><span class="m">2</span> references<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">DROP       all  --  *      mybr0   0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain DOCKER-USER <span class="o">(</span><span class="m">1</span> references<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ iptables -t filter -L  -nv
+Chain INPUT <span class="o">(</span>policy ACCEPT <span class="m">61774</span> packets, 79M bytes<span class="o">)</span>
+
+Chain FORWARD <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DOCKER-USER  all  --  *      *       0.0.0.0/0            0.0.0.0/0
+DOCKER-ISOLATION-STAGE-1  all  --  *      *       0.0.0.0/0            0.0.0.0/0
+ACCEPT     all  --  *      mybr0   0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+DOCKER     all  --  *      mybr0   0.0.0.0/0            0.0.0.0/0
+ACCEPT     all  --  mybr0  !mybr0  0.0.0.0/0            0.0.0.0/0
+ACCEPT     all  --  mybr0  mybr0   0.0.0.0/0            0.0.0.0/0
+
+Chain OUTPUT <span class="o">(</span>policy ACCEPT <span class="m">42290</span> packets, 55M bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+
+Chain DOCKER <span class="o">(</span><span class="m">2</span> references<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+
+Chain DOCKER-ISOLATION-STAGE-1 <span class="o">(</span><span class="m">1</span> references<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DOCKER-ISOLATION-STAGE-2  all  --  mybr0  !mybr0  0.0.0.0/0            0.0.0.0/0
+RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0
+
+Chain DOCKER-ISOLATION-STAGE-2 <span class="o">(</span><span class="m">2</span> references<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DROP       all  --  *      mybr0   0.0.0.0/0            0.0.0.0/0
+RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0
+
+Chain DOCKER-USER <span class="o">(</span><span class="m">1</span> references<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>FORWARD -&gt; DOCKER-ISOLATION-STAGE-1 -&gt; DOCKER-ISOLATION-STAGE-2 表明允许包从 mybr0 进入并转发（即容器可以向外正常发包）；</li>
@@ -516,9 +516,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker network remove 5a17670afb6f
-</span></span><span class="line"><span class="cl">5a17670afb6f
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker network remove 5a17670afb6f
+5a17670afb6f
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="32-启动容器后的网络">3.2 启动容器后的网络</h3>
 <p>下面看下容器启停后，带来的网络变化。先启动最简单的一个容器，指定使用网络为上面创建的 mybridge0。</p>
@@ -550,31 +550,31 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker run -dt --rm --network<span class="o">=</span>mybridge0 --name br0_container ubuntu
-</span></span><span class="line"><span class="cl">676f7f9eab12a20fb3a975fa99cc2c92433a9581b5774ea58e63d447d86aa5ad
-</span></span><span class="line"><span class="cl">$ docker inspect 676f7f9eab12
-</span></span><span class="line"><span class="cl">…
-</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Networks&#34;</span>: <span class="o">{</span>
-</span></span><span class="line"><span class="cl">                <span class="s2">&#34;mybridge0&#34;</span>: <span class="o">{</span>
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;IPAMConfig&#34;</span>: null,
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;Links&#34;</span>: null,
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;Aliases&#34;</span>: <span class="o">[</span>
-</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;882cac3e472f&#34;</span>
-</span></span><span class="line"><span class="cl">                    <span class="o">]</span>,
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;NetworkID&#34;</span>: <span class="s2">&#34;af1dbf619ac62be1ad8a6b63696d3e6edff77cceab6cd0ee78de4b51e0d33683&#34;</span>,
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;EndpointID&#34;</span>: <span class="s2">&#34;56cd85c5121d7d14146fcacc75599f6c56034e758e81f405a51437276ac6ac9f&#34;</span>,
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;Gateway&#34;</span>: <span class="s2">&#34;192.168.100.1&#34;</span>,
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;IPAddress&#34;</span>: <span class="s2">&#34;192.168.100.2&#34;</span>,
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;IPPrefixLen&#34;</span>: 24,
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;IPv6Gateway&#34;</span>: <span class="s2">&#34;&#34;</span>,
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;GlobalIPv6Address&#34;</span>: <span class="s2">&#34;&#34;</span>,
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;GlobalIPv6PrefixLen&#34;</span>: 0,
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;MacAddress&#34;</span>: <span class="s2">&#34;02:42:c0:a8:64:02&#34;</span>,
-</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;DriverOpts&#34;</span>: null
-</span></span><span class="line"><span class="cl">                <span class="o">}</span>
-</span></span><span class="line"><span class="cl">            <span class="o">}</span>
-</span></span><span class="line"><span class="cl">…
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker run -dt --rm --network<span class="o">=</span>mybridge0 --name br0_container ubuntu
+676f7f9eab12a20fb3a975fa99cc2c92433a9581b5774ea58e63d447d86aa5ad
+$ docker inspect 676f7f9eab12
+…
+        <span class="s2">&#34;Networks&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;mybridge0&#34;</span>: <span class="o">{</span>
+                    <span class="s2">&#34;IPAMConfig&#34;</span>: null,
+                    <span class="s2">&#34;Links&#34;</span>: null,
+                    <span class="s2">&#34;Aliases&#34;</span>: <span class="o">[</span>
+                        <span class="s2">&#34;882cac3e472f&#34;</span>
+                    <span class="o">]</span>,
+                    <span class="s2">&#34;NetworkID&#34;</span>: <span class="s2">&#34;af1dbf619ac62be1ad8a6b63696d3e6edff77cceab6cd0ee78de4b51e0d33683&#34;</span>,
+                    <span class="s2">&#34;EndpointID&#34;</span>: <span class="s2">&#34;56cd85c5121d7d14146fcacc75599f6c56034e758e81f405a51437276ac6ac9f&#34;</span>,
+                    <span class="s2">&#34;Gateway&#34;</span>: <span class="s2">&#34;192.168.100.1&#34;</span>,
+                    <span class="s2">&#34;IPAddress&#34;</span>: <span class="s2">&#34;192.168.100.2&#34;</span>,
+                    <span class="s2">&#34;IPPrefixLen&#34;</span>: 24,
+                    <span class="s2">&#34;IPv6Gateway&#34;</span>: <span class="s2">&#34;&#34;</span>,
+                    <span class="s2">&#34;GlobalIPv6Address&#34;</span>: <span class="s2">&#34;&#34;</span>,
+                    <span class="s2">&#34;GlobalIPv6PrefixLen&#34;</span>: 0,
+                    <span class="s2">&#34;MacAddress&#34;</span>: <span class="s2">&#34;02:42:c0:a8:64:02&#34;</span>,
+                    <span class="s2">&#34;DriverOpts&#34;</span>: null
+                <span class="o">}</span>
+            <span class="o">}</span>
+…
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li><code>--network=mybridge0</code> 表明以 mybridge0 网络启动容器；</li>
@@ -599,21 +599,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ifconfig
-</span></span><span class="line"><span class="cl">…
-</span></span><span class="line"><span class="cl">vethef6b174: <span class="nv">flags</span><span class="o">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">1500</span>
-</span></span><span class="line"><span class="cl">        inet6 fe80::e8ad:86ff:fefe:14ca  prefixlen <span class="m">64</span>  scopeid 0x20&lt;link&gt;
-</span></span><span class="line"><span class="cl">        ether ea:ad:86:fe:14:ca  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        RX packets <span class="m">0</span>  bytes <span class="m">0</span> <span class="o">(</span>0.0 B<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        RX errors <span class="m">0</span>  dropped <span class="m">0</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
-</span></span><span class="line"><span class="cl">        TX packets <span class="m">23</span>  bytes <span class="m">1882</span> <span class="o">(</span>1.8 KB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
-</span></span><span class="line"><span class="cl">…
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ brctl show
-</span></span><span class="line"><span class="cl">bridge name     bridge id               STP enabled     interfaces
-</span></span><span class="line"><span class="cl">mybr0           8000.0242efdb0984       no              vethef6b174
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ ifconfig
+…
+vethef6b174: <span class="nv">flags</span><span class="o">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">1500</span>
+        inet6 fe80::e8ad:86ff:fefe:14ca  prefixlen <span class="m">64</span>  scopeid 0x20&lt;link&gt;
+        ether ea:ad:86:fe:14:ca  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
+        RX packets <span class="m">0</span>  bytes <span class="m">0</span> <span class="o">(</span>0.0 B<span class="o">)</span>
+        RX errors <span class="m">0</span>  dropped <span class="m">0</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
+        TX packets <span class="m">23</span>  bytes <span class="m">1882</span> <span class="o">(</span>1.8 KB<span class="o">)</span>
+        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
+…
+
+$ brctl show
+bridge name     bridge id               STP enabled     interfaces
+mybr0           8000.0242efdb0984       no              vethef6b174
+</code></pre></td></tr></table>
 </div>
 </div><p>veth-pair 都是成对出现的，可以简单被看做一个通道，一端发入的包会从另一端发出，并进入内核协议栈。不过，在 bridge 网络环境下，veth5b480f8 连接到 mybr0，所以所有从 veth5b480f8 发出的包都会被 mybr0 接手转发（相当于就是一根网线插入了交换机）。</p>
 <p>可以进入容器 namespace，看一下容器内的 veth 设备。</p>
@@ -645,31 +645,31 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> -it br0_container bash
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 以下在容器 namesapce 环境执行</span>
-</span></span><span class="line"><span class="cl">root@676f7f9eab12:/# ifconfig
-</span></span><span class="line"><span class="cl">eth0: <span class="nv">flags</span><span class="o">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">1500</span>
-</span></span><span class="line"><span class="cl">        inet 192.168.100.2  netmask 255.255.255.0  broadcast 192.168.100.255
-</span></span><span class="line"><span class="cl">        ether 02:42:c0:a8:64:02  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        RX packets <span class="m">1928</span>  bytes <span class="m">21609413</span> <span class="o">(</span>21.6 MB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        RX errors <span class="m">0</span>  dropped <span class="m">0</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
-</span></span><span class="line"><span class="cl">        TX packets <span class="m">1817</span>  bytes <span class="m">102779</span> <span class="o">(</span>102.7 KB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
-</span></span><span class="line"><span class="cl">root@676f7f9eab12:/sys/class/net/eth0# ethtool -i eth0
-</span></span><span class="line"><span class="cl">driver: veth
-</span></span><span class="line"><span class="cl">version: 1.0
-</span></span><span class="line"><span class="cl">firmware-version:
-</span></span><span class="line"><span class="cl">expansion-rom-version:
-</span></span><span class="line"><span class="cl">bus-info:
-</span></span><span class="line"><span class="cl">supports-statistics: yes
-</span></span><span class="line"><span class="cl">supports-test: no
-</span></span><span class="line"><span class="cl">supports-eeprom-access: no
-</span></span><span class="line"><span class="cl">supports-register-dump: no
-</span></span><span class="line"><span class="cl">supports-priv-flags: no
-</span></span><span class="line"><span class="cl">root@676f7f9eab12:~# cat /sys/class/net/eth0/iflink
-</span></span><span class="line"><span class="cl"><span class="m">15</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker <span class="nb">exec</span> -it br0_container bash
+
+<span class="c1"># 以下在容器 namesapce 环境执行</span>
+root@676f7f9eab12:/# ifconfig
+eth0: <span class="nv">flags</span><span class="o">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">1500</span>
+        inet 192.168.100.2  netmask 255.255.255.0  broadcast 192.168.100.255
+        ether 02:42:c0:a8:64:02  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
+        RX packets <span class="m">1928</span>  bytes <span class="m">21609413</span> <span class="o">(</span>21.6 MB<span class="o">)</span>
+        RX errors <span class="m">0</span>  dropped <span class="m">0</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
+        TX packets <span class="m">1817</span>  bytes <span class="m">102779</span> <span class="o">(</span>102.7 KB<span class="o">)</span>
+        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
+root@676f7f9eab12:/sys/class/net/eth0# ethtool -i eth0
+driver: veth
+version: 1.0
+firmware-version:
+expansion-rom-version:
+bus-info:
+supports-statistics: yes
+supports-test: no
+supports-eeprom-access: no
+supports-register-dump: no
+supports-priv-flags: no
+root@676f7f9eab12:~# cat /sys/class/net/eth0/iflink
+<span class="m">15</span>
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>在容器内的仅仅有一个 eth0 网卡，ip 设置为了容器的 ip。但是其实这个网卡就是 veth 设备改了名字；</li>
@@ -684,11 +684,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker run -dt --rm <span class="se">\ </span>
-</span></span><span class="line"><span class="cl">    --network<span class="o">=</span>mybridge0 --publish 12211:8080 <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --name br0_container ubuntu
-</span></span><span class="line"><span class="cl">2502f7397a37e2ab482f8a9152d1ed968dd2e2825c71eb2a6737e4900f7236c1
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker run -dt --rm <span class="se">\ </span>
+    --network<span class="o">=</span>mybridge0 --publish 12211:8080 <span class="se">\
+</span><span class="se"></span>    --name br0_container ubuntu
+2502f7397a37e2ab482f8a9152d1ed968dd2e2825c71eb2a6737e4900f7236c1
+</code></pre></td></tr></table>
 </div>
 </div><p>而这个端口映射，就是将宿主机的 12211 端口映射给容器的 8080，所以所有发往宿主机的 12211 端口的包，都会被修改端口并转发到容器内部。这也是通过 iptables 实现的：</p>
 <div class="highlight"><div class="chroma">
@@ -716,34 +716,34 @@
 </span><span class="lnt">21
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">iptables -t nat -L  -nv
-</span></span><span class="line"><span class="cl">Chain PREROUTING <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">DOCKER     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ADDRTYPE match dst-type LOCAL
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain INPUT <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain OUTPUT <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
-</span></span><span class="line"><span class="cl">target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">DOCKER     all  --  *      *       0.0.0.0/0           !127.0.0.0/8          ADDRTYPE match dst-type LOCAL
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain POSTROUTING <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
-</span></span><span class="line"><span class="cl"> pkts bytes target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">   <span class="m">10</span>   <span class="m">617</span> MASQUERADE  all  --  *      !mybr0  192.168.100.0/24     0.0.0.0/0
-</span></span><span class="line"><span class="cl">    <span class="m">0</span>     <span class="m">0</span> MASQUERADE  tcp  --  *      *       192.168.100.2        192.168.100.2        tcp dpt:8080
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain DOCKER <span class="o">(</span><span class="m">2</span> references<span class="o">)</span>
-</span></span><span class="line"><span class="cl"> pkts bytes target     prot opt in     out     <span class="nb">source</span>               destination
-</span></span><span class="line"><span class="cl">    <span class="m">0</span>     <span class="m">0</span> RETURN     all  --  mybr0  *       0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">    <span class="m">0</span>     <span class="m">0</span> DNAT       tcp  --  !mybr0 *       0.0.0.0/0            0.0.0.0/0            tcp dpt:12211 to:192.168.100.2:8080
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">iptables -t nat -L  -nv
+Chain PREROUTING <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DOCKER     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ADDRTYPE match dst-type LOCAL
+
+Chain INPUT <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+
+Chain OUTPUT <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
+target     prot opt in     out     <span class="nb">source</span>               destination
+DOCKER     all  --  *      *       0.0.0.0/0           !127.0.0.0/8          ADDRTYPE match dst-type LOCAL
+
+Chain POSTROUTING <span class="o">(</span>policy ACCEPT <span class="m">0</span> packets, <span class="m">0</span> bytes<span class="o">)</span>
+ pkts bytes target     prot opt in     out     <span class="nb">source</span>               destination
+   <span class="m">10</span>   <span class="m">617</span> MASQUERADE  all  --  *      !mybr0  192.168.100.0/24     0.0.0.0/0
+    <span class="m">0</span>     <span class="m">0</span> MASQUERADE  tcp  --  *      *       192.168.100.2        192.168.100.2        tcp dpt:8080
+
+Chain DOCKER <span class="o">(</span><span class="m">2</span> references<span class="o">)</span>
+ pkts bytes target     prot opt in     out     <span class="nb">source</span>               destination
+    <span class="m">0</span>     <span class="m">0</span> RETURN     all  --  mybr0  *       0.0.0.0/0            0.0.0.0/0
+    <span class="m">0</span>     <span class="m">0</span> DNAT       tcp  --  !mybr0 *       0.0.0.0/0            0.0.0.0/0            tcp dpt:12211 to:192.168.100.2:8080
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>PREROUTING  -&gt; DOCKER 链中，所有不是从 mybr0 进入的包，并且发往 tcp 12211 端口的包，都会被 <strong>DNAT</strong> 为发往 192.168.100.2:8080。这样就实现了端口映射的功能。</li>
 </ul>
 <h3 id="33-bridge-网络总结">3.3 bridge 网络总结</h3>
-<p>中心思想：bridge 网络使用 bridge 网卡创建了一个本地的内网，而 bridge 网卡 + iptables 规则成为了这个内网的 &lsquo;<strong>路由器</strong>&rsquo;。其中：</p>
+<p>中心思想：bridge 网络使用 bridge 网卡创建了一个本地的内网，而 bridge 网卡 + iptables 规则成为了这个内网的 &lsquo;<strong>路由器</strong>'。其中：</p>
 <ul>
 <li>bridge 网卡作为二层的交换机，bridge 网卡 ip 作为路由器的网关 ip。</li>
 <li>iptables 规则实现了 brdige 网卡与物理网络的连接</li>
@@ -777,9 +777,9 @@ bridge 网卡收到的包，经过 iptables 的 MASQUERADE 将包进行地址转
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker run -dt --rm --network<span class="o">=</span>host  --name host_container ubuntu
-</span></span><span class="line"><span class="cl">da1c426a7c7501b329258b12cb475ff42669837ca686d6e946511632461cc946
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker run -dt --rm --network<span class="o">=</span>host  --name host_container ubuntu
+da1c426a7c7501b329258b12cb475ff42669837ca686d6e946511632461cc946
+</code></pre></td></tr></table>
 </div>
 </div><p>观察 mount，可以看到对应还是有 net namespace 的文件挂载，文件名为 default：</p>
 <div class="highlight"><div class="chroma">
@@ -789,10 +789,10 @@ bridge 网卡收到的包，经过 iptables 的 MASQUERADE 将包进行地址转
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ mount
-</span></span><span class="line"><span class="cl">…
-</span></span><span class="line"><span class="cl">nsfs on /run/docker/netns/default <span class="nb">type</span> nsfs <span class="o">(</span>rw<span class="o">)</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ mount
+…
+nsfs on /run/docker/netns/default <span class="nb">type</span> nsfs <span class="o">(</span>rw<span class="o">)</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>文件 inode 对比当前宿主机 net namespace inode，是一致的：</p>
 <div class="highlight"><div class="chroma">
@@ -803,11 +803,11 @@ bridge 网卡收到的包，经过 iptables 的 MASQUERADE 将包进行地址转
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ls -lh /proc/self/ns/net
-</span></span><span class="line"><span class="cl">lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Nov  <span class="m">7</span> 14:47 /proc/self/ns/net -&gt; <span class="s1">&#39;net:[4026531992]&#39;</span>
-</span></span><span class="line"><span class="cl">$ ls -lhi  /run/docker/netns/default
-</span></span><span class="line"><span class="cl"><span class="m">4026531992</span> -r--r--r-- <span class="m">1</span> root root <span class="m">0</span> Oct <span class="m">30</span> 16:50 /run/docker/netns/default
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ ls -lh /proc/self/ns/net
+lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Nov  <span class="m">7</span> 14:47 /proc/self/ns/net -&gt; <span class="s1">&#39;net:[4026531992]&#39;</span>
+$ ls -lhi  /run/docker/netns/default
+<span class="m">4026531992</span> -r--r--r-- <span class="m">1</span> root root <span class="m">0</span> Oct <span class="m">30</span> 16:50 /run/docker/netns/default
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="5-macvlan-网络">5 macvlan 网络</h2>
 <p>macvlan 网络使用 macvlan 虚拟网络设备，将容器 net namespace 网络暴露在与当前宿主机同级的局域网内，相当于容器就是当前网络内的一台 &ldquo;主机&rdquo;。</p>
@@ -823,11 +823,11 @@ bridge 网卡收到的包，经过 iptables 的 MASQUERADE 将包进行地址转
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker network create -d macvlan <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --subnet<span class="o">=</span>192.168.67.130/24 --gateway<span class="o">=</span>192.168.67.1 <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -o <span class="nv">parent</span><span class="o">=</span>eth0 mymacvlan0
-</span></span><span class="line"><span class="cl">633aae3d4f430352e5439e2650c02fe9c2092b99b5b8252f8141fa5d62ec7e70
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker network create -d macvlan <span class="se">\
+</span><span class="se"></span>    --subnet<span class="o">=</span>192.168.67.130/24 --gateway<span class="o">=</span>192.168.67.1 <span class="se">\
+</span><span class="se"></span>    -o <span class="nv">parent</span><span class="o">=</span>eth0 mymacvlan0
+633aae3d4f430352e5439e2650c02fe9c2092b99b5b8252f8141fa5d62ec7e70
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li><code>-d macvlan</code>，指定 macvlan 网络</li>
@@ -846,12 +846,12 @@ bridge 网卡收到的包，经过 iptables 的 MASQUERADE 将包进行地址转
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker run --net<span class="o">=</span>mymacvlan0 <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -dt --rm --name macvlan_container <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --ip<span class="o">=</span>192.168.67.139  --privileged  <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    centos_ctr  bash
-</span></span><span class="line"><span class="cl">2eff4835733734b6819c7f97ae41585985d95c1ea4c66a6a478a43e71b60b6d6
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker run --net<span class="o">=</span>mymacvlan0 <span class="se">\
+</span><span class="se"></span>    -dt --rm --name macvlan_container <span class="se">\
+</span><span class="se"></span>    --ip<span class="o">=</span>192.168.67.139  --privileged  <span class="se">\
+</span><span class="se"></span>    centos_ctr  bash
+2eff4835733734b6819c7f97ae41585985d95c1ea4c66a6a478a43e71b60b6d6
+</code></pre></td></tr></table>
 </div>
 </div><p>启动容器，如果不指定 IP，Docker 会在配置的网段里分配一个。
 <div class="details admonition tip open">
@@ -883,23 +883,23 @@ bridge 网卡收到的包，经过 iptables 的 MASQUERADE 将包进行地址转
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker <span class="nb">exec</span> -it  macvlan_container bash
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 以下是容器中命令</span>
-</span></span><span class="line"><span class="cl"><span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># ifconfig</span>
-</span></span><span class="line"><span class="cl">eth0: <span class="nv">flags</span><span class="o">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">1500</span>
-</span></span><span class="line"><span class="cl">        inet 192.168.67.139  netmask 255.255.255.0  broadcast 192.168.67.255
-</span></span><span class="line"><span class="cl">        ether 02:42:c0:a8:43:8b  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        RX packets <span class="m">433282</span>  bytes <span class="m">27463954</span> <span class="o">(</span>26.1 MiB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        RX errors <span class="m">0</span>  dropped <span class="m">26809</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
-</span></span><span class="line"><span class="cl">        TX packets <span class="m">91342</span>  bytes <span class="m">6649728</span> <span class="o">(</span>6.3 MiB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># ping 192.168.67.1</span>
-</span></span><span class="line"><span class="cl">PING 192.168.67.1 <span class="o">(</span>192.168.67.1<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
-</span></span><span class="line"><span class="cl">From 192.168.67.139 <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> Destination Host Unreachable
-</span></span><span class="line"><span class="cl">From 192.168.67.139 <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> Destination Host Unreachable
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker <span class="nb">exec</span> -it  macvlan_container bash
+
+<span class="c1"># 以下是容器中命令</span>
+<span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># ifconfig</span>
+eth0: <span class="nv">flags</span><span class="o">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">1500</span>
+        inet 192.168.67.139  netmask 255.255.255.0  broadcast 192.168.67.255
+        ether 02:42:c0:a8:43:8b  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
+        RX packets <span class="m">433282</span>  bytes <span class="m">27463954</span> <span class="o">(</span>26.1 MiB<span class="o">)</span>
+        RX errors <span class="m">0</span>  dropped <span class="m">26809</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
+        TX packets <span class="m">91342</span>  bytes <span class="m">6649728</span> <span class="o">(</span>6.3 MiB<span class="o">)</span>
+        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
+
+<span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># ping 192.168.67.1</span>
+PING 192.168.67.1 <span class="o">(</span>192.168.67.1<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+From 192.168.67.139 <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> Destination Host Unreachable
+From 192.168.67.139 <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> Destination Host Unreachable
+</code></pre></td></tr></table>
 </div>
 </div><p>因此，换个思路，静态 IP 不行，就通过 DHCP 获取一个 IP 尝试是否能够连通网络。</p>
 <p>在删除静态 IP 之后，调用 <code>dhclient</code> 从上层路由器获取一个 IP。</p>
@@ -952,52 +952,52 @@ bridge 网卡收到的包，经过 iptables 的 MASQUERADE 将包进行地址转
 </span><span class="lnt">45
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 删除 eth0 网卡 IP</span>
-</span></span><span class="line"><span class="cl"><span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># ip address del 192.168.67.139 dev eth0</span>
-</span></span><span class="line"><span class="cl">Warning: Executing wildcard deletion to stay compatible with old scripts.
-</span></span><span class="line"><span class="cl">         Explicitly specify the prefix length <span class="o">(</span>192.168.67.139/32<span class="o">)</span> to avoid this warning.
-</span></span><span class="line"><span class="cl">         This special behaviour is likely to disappear in further releases,
-</span></span><span class="line"><span class="cl">         fix your scripts!
-</span></span><span class="line"><span class="cl"><span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># ifconfig</span>
-</span></span><span class="line"><span class="cl">eth0: <span class="nv">flags</span><span class="o">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">1500</span>
-</span></span><span class="line"><span class="cl">        ether 02:42:c0:a8:43:8b  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        RX packets <span class="m">435540</span>  bytes <span class="m">27608133</span> <span class="o">(</span>26.3 MiB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        RX errors <span class="m">0</span>  dropped <span class="m">26983</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
-</span></span><span class="line"><span class="cl">        TX packets <span class="m">91763</span>  bytes <span class="m">6678670</span> <span class="o">(</span>6.3 MiB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 调用 dhclient 获取新的 IP</span>
-</span></span><span class="line"><span class="cl"><span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># dhclient -r &amp;&amp; dhclient -v</span>
-</span></span><span class="line"><span class="cl">Removed stale PID file
-</span></span><span class="line"><span class="cl">Internet Systems Consortium DHCP Client 4.3.6
-</span></span><span class="line"><span class="cl">Copyright 2004-2017 Internet Systems Consortium.
-</span></span><span class="line"><span class="cl">All rights reserved.
-</span></span><span class="line"><span class="cl">For info, please visit https://www.isc.org/software/dhcp/
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Listening on LPF/eth0/02:42:c0:a8:43:8b
-</span></span><span class="line"><span class="cl">Sending on   LPF/eth0/02:42:c0:a8:43:8b
-</span></span><span class="line"><span class="cl">Sending on   Socket/fallback
-</span></span><span class="line"><span class="cl">DHCPDISCOVER on eth0 to 255.255.255.255 port <span class="m">67</span> interval <span class="m">3</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0xdf4e0e25<span class="o">)</span>
-</span></span><span class="line"><span class="cl">DHCPREQUEST on eth0 to 255.255.255.255 port <span class="m">67</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0xdf4e0e25<span class="o">)</span>
-</span></span><span class="line"><span class="cl">DHCPOFFER from 192.168.9.253
-</span></span><span class="line"><span class="cl">DHCPACK from 192.168.9.253 <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0xdf4e0e25<span class="o">)</span>
-</span></span><span class="line"><span class="cl">System has not been booted with systemd as init system <span class="o">(</span>PID 1<span class="o">)</span>. Can<span class="err">&#39;</span>t operate.
-</span></span><span class="line"><span class="cl">Failed to create bus connection: Host is down
-</span></span><span class="line"><span class="cl">bound to 192.168.9.235 -- renewal in <span class="m">38783</span> seconds.
-</span></span><span class="line"><span class="cl"><span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># ifconfig</span>
-</span></span><span class="line"><span class="cl">eth0: <span class="nv">flags</span><span class="o">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">1500</span>
-</span></span><span class="line"><span class="cl">        inet 192.168.9.235  netmask 255.255.255.0  broadcast 192.168.9.255
-</span></span><span class="line"><span class="cl">        ether 02:42:c0:a8:43:8b  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        RX packets <span class="m">435635</span>  bytes <span class="m">27614880</span> <span class="o">(</span>26.3 MiB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        RX errors <span class="m">0</span>  dropped <span class="m">27001</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
-</span></span><span class="line"><span class="cl">        TX packets <span class="m">91767</span>  bytes <span class="m">6679438</span> <span class="o">(</span>6.3 MiB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
-</span></span><span class="line"><span class="cl"><span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># route -n</span>
-</span></span><span class="line"><span class="cl">Kernel IP routing table
-</span></span><span class="line"><span class="cl">Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-</span></span><span class="line"><span class="cl">0.0.0.0         192.168.9.253   0.0.0.0         UG    <span class="m">0</span>      <span class="m">0</span>        <span class="m">0</span> eth0
-</span></span><span class="line"><span class="cl">192.168.9.0     0.0.0.0         255.255.255.0   U     <span class="m">0</span>      <span class="m">0</span>        <span class="m">0</span> eth0
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 删除 eth0 网卡 IP</span>
+<span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># ip address del 192.168.67.139 dev eth0</span>
+Warning: Executing wildcard deletion to stay compatible with old scripts.
+         Explicitly specify the prefix length <span class="o">(</span>192.168.67.139/32<span class="o">)</span> to avoid this warning.
+         This special behaviour is likely to disappear in further releases,
+         fix your scripts!
+<span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># ifconfig</span>
+eth0: <span class="nv">flags</span><span class="o">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">1500</span>
+        ether 02:42:c0:a8:43:8b  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
+        RX packets <span class="m">435540</span>  bytes <span class="m">27608133</span> <span class="o">(</span>26.3 MiB<span class="o">)</span>
+        RX errors <span class="m">0</span>  dropped <span class="m">26983</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
+        TX packets <span class="m">91763</span>  bytes <span class="m">6678670</span> <span class="o">(</span>6.3 MiB<span class="o">)</span>
+        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
+
+<span class="c1"># 调用 dhclient 获取新的 IP</span>
+<span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># dhclient -r &amp;&amp; dhclient -v</span>
+Removed stale PID file
+Internet Systems Consortium DHCP Client 4.3.6
+Copyright 2004-2017 Internet Systems Consortium.
+All rights reserved.
+For info, please visit https://www.isc.org/software/dhcp/
+
+Listening on LPF/eth0/02:42:c0:a8:43:8b
+Sending on   LPF/eth0/02:42:c0:a8:43:8b
+Sending on   Socket/fallback
+DHCPDISCOVER on eth0 to 255.255.255.255 port <span class="m">67</span> interval <span class="m">3</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0xdf4e0e25<span class="o">)</span>
+DHCPREQUEST on eth0 to 255.255.255.255 port <span class="m">67</span> <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0xdf4e0e25<span class="o">)</span>
+DHCPOFFER from 192.168.9.253
+DHCPACK from 192.168.9.253 <span class="o">(</span><span class="nv">xid</span><span class="o">=</span>0xdf4e0e25<span class="o">)</span>
+System has not been booted with systemd as init system <span class="o">(</span>PID 1<span class="o">)</span>. Can<span class="err">&#39;</span>t operate.
+Failed to create bus connection: Host is down
+bound to 192.168.9.235 -- renewal in <span class="m">38783</span> seconds.
+<span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># ifconfig</span>
+eth0: <span class="nv">flags</span><span class="o">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class="m">1500</span>
+        inet 192.168.9.235  netmask 255.255.255.0  broadcast 192.168.9.255
+        ether 02:42:c0:a8:43:8b  txqueuelen <span class="m">0</span>  <span class="o">(</span>Ethernet<span class="o">)</span>
+        RX packets <span class="m">435635</span>  bytes <span class="m">27614880</span> <span class="o">(</span>26.3 MiB<span class="o">)</span>
+        RX errors <span class="m">0</span>  dropped <span class="m">27001</span>  overruns <span class="m">0</span>  frame <span class="m">0</span>
+        TX packets <span class="m">91767</span>  bytes <span class="m">6679438</span> <span class="o">(</span>6.3 MiB<span class="o">)</span>
+        TX errors <span class="m">0</span>  dropped <span class="m">0</span> overruns <span class="m">0</span>  carrier <span class="m">0</span>  collisions <span class="m">0</span>
+<span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># route -n</span>
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         192.168.9.253   0.0.0.0         UG    <span class="m">0</span>      <span class="m">0</span>        <span class="m">0</span> eth0
+192.168.9.0     0.0.0.0         255.255.255.0   U     <span class="m">0</span>      <span class="m">0</span>        <span class="m">0</span> eth0
+</code></pre></td></tr></table>
 </div>
 </div><p>可以看到，DHCP 获得的 IP 与宿主机都不是同一个网段的，并且网关地址也不是同一个，因此上层连着交换机有多个网段（这块不太理解了）。</p>
 <p>但是，测试后是可以 ping 通网关，并且可以访问外网的：</p>
@@ -1009,11 +1009,11 @@ bridge 网卡收到的包，经过 iptables 的 MASQUERADE 将包进行地址转
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># ping 192.168.9.253</span>
-</span></span><span class="line"><span class="cl">PING 192.168.9.253 <span class="o">(</span>192.168.9.253<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
-</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 192.168.9.253: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span>0.637 ms
-</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 192.168.9.253: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span>0.250 ms
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>root@2eff48357337 /<span class="o">]</span><span class="c1"># ping 192.168.9.253</span>
+PING 192.168.9.253 <span class="o">(</span>192.168.9.253<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+<span class="m">64</span> bytes from 192.168.9.253: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span>0.637 ms
+<span class="m">64</span> bytes from 192.168.9.253: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span>0.250 ms
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="53-总结">5.3 总结</h3>
 <p>中心思想：将 macvlan 网络启动容器看做一个与宿主机同级的网络，其获取 IP 方式都与正常的机器相同。</p>
@@ -1027,8 +1027,8 @@ bridge 网卡收到的包，经过 iptables 的 MASQUERADE 将包进行地址转
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-03-30&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/ee5b110adeb58b4f0653b0ca449ed8edee066aa5" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) ee5b110adeb58b4f0653b0ca449ed8edee066aa5: fix">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>ee5b110</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/a9c42b90c745363e24a375bb9fa1559b896ef425" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) a9c42b90c745363e24a375bb9fa1559b896ef425: Add Rlease CD">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>a9c42b9</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -1052,7 +1052,7 @@ bridge 网卡收到的包，经过 iptables 的 MASQUERADE 将包进行地址转
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
