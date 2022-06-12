@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/docker/how_docker_work/container-start-stop-summary/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2020-11-13T15:45:03+08:00" />
-<meta property="article:modified_time" content="2022-04-13T21:14:47+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:47:57+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/docker\/how_docker_work\/container-start-stop-summary\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "docker, container","wordcount":  2973 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/docker\/how_docker_work\/container-start-stop-summary\/","datePublished": "2020-11-13T15:45:03+08:00","dateModified": "2022-04-13T21:14:47+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/docker\/how_docker_work\/container-start-stop-summary\/","datePublished": "2020-11-13T15:45:03+08:00","dateModified": "2022-06-12T22:47:57+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -226,26 +226,26 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker create --rm -t ubuntu
-</span></span><span class="line"><span class="cl">361c520da78f848d639d65f042fcf5d448c13cbc4ce8c251dcba2250162b48fe
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># inspect 可以看到对应的读写层的目录：</span>
-</span></span><span class="line"><span class="cl">$ docker inspect 361c520da78f
-</span></span><span class="line"><span class="cl"><span class="c1"># …</span>
-</span></span><span class="line"><span class="cl">        <span class="s2">&#34;GraphDriver&#34;</span>: <span class="o">{</span>
-</span></span><span class="line"><span class="cl">            <span class="s2">&#34;Data&#34;</span>: <span class="o">{</span>
-</span></span><span class="line"><span class="cl">                <span class="s2">&#34;LowerDir&#34;</span>: <span class="s2">&#34;/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c-init/diff:/var/lib/docker/overlay2/0336c489d40e65588748265a95f18328ddb1f5bcb9ebf10909fbf3f5f35b9496/diff:/var/lib/docker/overlay2/77d3ac91877751678bfec0576dab39ccd4b73666f8040aef387ef47ff30b4cf1/diff:/var/lib/docker/overlay2/ec8326178c990b52970a65371fd375737fdf256db597aa821a2b0f7d79bcc6f3/diff:/var/lib/docker/overlay2/385038374d3d369e98724926d0e1c240dcb74e31b1663ec1cb434c43ca2826f1/diff&#34;</span>,
-</span></span><span class="line"><span class="cl">                <span class="s2">&#34;MergedDir&#34;</span>: <span class="s2">&#34;/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/merged&#34;</span>,
-</span></span><span class="line"><span class="cl">                <span class="s2">&#34;UpperDir&#34;</span>: <span class="s2">&#34;/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/diff&#34;</span>,
-</span></span><span class="line"><span class="cl">                <span class="s2">&#34;WorkDir&#34;</span>: <span class="s2">&#34;/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/work&#34;</span>
-</span></span><span class="line"><span class="cl">            <span class="o">}</span>,
-</span></span><span class="line"><span class="cl">            <span class="s2">&#34;Name&#34;</span>: <span class="s2">&#34;overlay2&#34;</span>
-</span></span><span class="line"><span class="cl">        <span class="o">}</span>,
-</span></span><span class="line"><span class="cl"><span class="c1"># …</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ ls /var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/ 
-</span></span><span class="line"><span class="cl">diff  link  lower  work
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker create --rm -t ubuntu
+361c520da78f848d639d65f042fcf5d448c13cbc4ce8c251dcba2250162b48fe
+
+<span class="c1"># inspect 可以看到对应的读写层的目录：</span>
+$ docker inspect 361c520da78f
+<span class="c1"># …</span>
+        <span class="s2">&#34;GraphDriver&#34;</span>: <span class="o">{</span>
+            <span class="s2">&#34;Data&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;LowerDir&#34;</span>: <span class="s2">&#34;/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c-init/diff:/var/lib/docker/overlay2/0336c489d40e65588748265a95f18328ddb1f5bcb9ebf10909fbf3f5f35b9496/diff:/var/lib/docker/overlay2/77d3ac91877751678bfec0576dab39ccd4b73666f8040aef387ef47ff30b4cf1/diff:/var/lib/docker/overlay2/ec8326178c990b52970a65371fd375737fdf256db597aa821a2b0f7d79bcc6f3/diff:/var/lib/docker/overlay2/385038374d3d369e98724926d0e1c240dcb74e31b1663ec1cb434c43ca2826f1/diff&#34;</span>,
+                <span class="s2">&#34;MergedDir&#34;</span>: <span class="s2">&#34;/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/merged&#34;</span>,
+                <span class="s2">&#34;UpperDir&#34;</span>: <span class="s2">&#34;/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/diff&#34;</span>,
+                <span class="s2">&#34;WorkDir&#34;</span>: <span class="s2">&#34;/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/work&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Name&#34;</span>: <span class="s2">&#34;overlay2&#34;</span>
+        <span class="o">}</span>,
+<span class="c1"># …</span>
+
+$ ls /var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/ 
+diff  link  lower  work
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>所有的层（包含容器、镜像）都位于 <em>/var/lib/docker/[driver]</em> 目录下，不过不同的 driver 有着不同的目录结构；</li>
@@ -270,21 +270,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ls /var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c-init
-</span></span><span class="line"><span class="cl">committed  diff  link  lower  work
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ tree /var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c-init/diff
-</span></span><span class="line"><span class="cl">/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c-init/diff
-</span></span><span class="line"><span class="cl"><span class="p">|</span>-- dev
-</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="p">|</span>-- console
-</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="p">|</span>-- pts
-</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="sb">`</span>-- shm
-</span></span><span class="line"><span class="cl"><span class="sb">`</span>-- etc
-</span></span><span class="line"><span class="cl">    <span class="p">|</span>-- hostname
-</span></span><span class="line"><span class="cl">    <span class="p">|</span>-- hosts
-</span></span><span class="line"><span class="cl">    <span class="p">|</span>-- mtab -&gt; /proc/mounts
-</span></span><span class="line"><span class="cl">    <span class="sb">`</span>-- resolv.conf
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ ls /var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c-init
+committed  diff  link  lower  work
+
+$ tree /var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c-init/diff
+/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c-init/diff
+<span class="p">|</span>-- dev
+<span class="p">|</span>   <span class="p">|</span>-- console
+<span class="p">|</span>   <span class="p">|</span>-- pts
+<span class="p">|</span>   <span class="sb">`</span>-- shm
+<span class="sb">`</span>-- etc
+    <span class="p">|</span>-- hostname
+    <span class="p">|</span>-- hosts
+    <span class="p">|</span>-- mtab -&gt; /proc/mounts
+    <span class="sb">`</span>-- resolv.conf
+</code></pre></td></tr></table>
 </div>
 </div><p>但是这两个目录仅仅是被创建，如果执行 <code>mount</code> 命令可以看到，这些目录是没有被挂载的。</p>
 <h4 id="3-元信息的记录">(3) 元信息的记录</h4>
@@ -299,12 +299,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ <span class="nb">cd</span> /var/lib/docker/containers <span class="o">&amp;&amp;</span> ls
-</span></span><span class="line"><span class="cl">361c520da78f848d639d65f042fcf5d448c13cbc4ce8c251dcba2250162b48fe
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ ls 361c520da78f848d639d65f042fcf5d448c13cbc4ce8c251dcba2250162b48fe
-</span></span><span class="line"><span class="cl">checkpoints  config.v2.json  hostconfig.json
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ <span class="nb">cd</span> /var/lib/docker/containers <span class="o">&amp;&amp;</span> ls
+361c520da78f848d639d65f042fcf5d448c13cbc4ce8c251dcba2250162b48fe
+
+$ ls 361c520da78f848d639d65f042fcf5d448c13cbc4ce8c251dcba2250162b48fe
+checkpoints  config.v2.json  hostconfig.json
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li><em>config.v2.json</em> 保存的就是对应的容器配置信息；</li>
@@ -334,9 +334,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker start 361c520da78f
-</span></span><span class="line"><span class="cl">361c520da78f
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker start 361c520da78f
+361c520da78f
+</code></pre></td></tr></table>
 </div>
 </div><p>通过 <code>mount</code> 命令，可以看到对应容器的 union mount 已经出现：</p>
 <div class="highlight"><div class="chroma">
@@ -350,14 +350,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ mount
-</span></span><span class="line"><span class="cl"><span class="c1"># …</span>
-</span></span><span class="line"><span class="cl">overlay on /var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/merged <span class="nb">type</span> overlay <span class="o">(</span>rw,relatime,lowerdir<span class="o">=</span>/var/lib/docker/overlay2/l/O2TO66S3K4MTADSAAX6VXGTWSJ:/var/lib/docker/overlay2/l/UHTTQ5AJKPR23Y3V7J4ZLOIFDR:/var/lib/docker/overlay2/l/VWIFLRAQOPMH7LBAQQ5DDGIYVM:/var/lib/docker/overlay2/l/LQBRTVETGGWVU2OHWC42443K7X:/var/lib/docker/overlay2/l/5PDNI5HSOH6UMUDNWF4VMR46TS,upperdir<span class="o">=</span>/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/diff,workdir<span class="o">=</span>/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/work,xino<span class="o">=</span>off<span class="o">)</span>
-</span></span><span class="line"><span class="cl">nsfs on /run/docker/netns/4500ea4f0025 <span class="nb">type</span> nsfs <span class="o">(</span>rw<span class="o">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ ls -lh /var/lib/docker/overlay2/l/O2TO66S3K4MTADSAAX6VXGTWSJ
-</span></span><span class="line"><span class="cl">lrwxrwxrwx <span class="m">1</span> root root <span class="m">77</span> Nov <span class="m">14</span> 15:51 /var/lib/docker/overlay2/l/O2TO66S3K4MTADSAAX6VXGTWSJ -&gt; ../d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c-init/diff
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ mount
+<span class="c1"># …</span>
+overlay on /var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/merged <span class="nb">type</span> overlay <span class="o">(</span>rw,relatime,lowerdir<span class="o">=</span>/var/lib/docker/overlay2/l/O2TO66S3K4MTADSAAX6VXGTWSJ:/var/lib/docker/overlay2/l/UHTTQ5AJKPR23Y3V7J4ZLOIFDR:/var/lib/docker/overlay2/l/VWIFLRAQOPMH7LBAQQ5DDGIYVM:/var/lib/docker/overlay2/l/LQBRTVETGGWVU2OHWC42443K7X:/var/lib/docker/overlay2/l/5PDNI5HSOH6UMUDNWF4VMR46TS,upperdir<span class="o">=</span>/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/diff,workdir<span class="o">=</span>/var/lib/docker/overlay2/d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c/work,xino<span class="o">=</span>off<span class="o">)</span>
+nsfs on /run/docker/netns/4500ea4f0025 <span class="nb">type</span> nsfs <span class="o">(</span>rw<span class="o">)</span>
+
+$ ls -lh /var/lib/docker/overlay2/l/O2TO66S3K4MTADSAAX6VXGTWSJ
+lrwxrwxrwx <span class="m">1</span> root root <span class="m">77</span> Nov <span class="m">14</span> 15:51 /var/lib/docker/overlay2/l/O2TO66S3K4MTADSAAX6VXGTWSJ -&gt; ../d063d1d9c81d0c72d7384ea999dbd77b33d04b942ef94a5aabc6fb6cf984194c-init/diff
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>第一个挂载信息看出，将 init 层与镜像层的目录挂载到了读写的 <em>merged</em> 目录；</li>
@@ -383,11 +383,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ mount
-</span></span><span class="line"><span class="cl"><span class="c1"># …</span>
-</span></span><span class="line"><span class="cl">nsfs on /run/docker/netns/4500ea4f0025 <span class="nb">type</span> nsfs <span class="o">(</span>rw<span class="o">)</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># …</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ mount
+<span class="c1"># …</span>
+nsfs on /run/docker/netns/4500ea4f0025 <span class="nb">type</span> nsfs <span class="o">(</span>rw<span class="o">)</span>
+<span class="c1"># …</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>当然，上面说的 &ldquo;构建网络&rdquo;，&ldquo;挂载文件&rdquo;，包括 &ldquo;namespace 文件如何映射到对应的容器&rdquo; 这些行为与信息，都是由 <code>libnetwork</code> 库中负责的。</p>
 <div class="details admonition tip open">
@@ -440,12 +440,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker ps
-</span></span><span class="line"><span class="cl">CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-</span></span><span class="line"><span class="cl">f4b92a61851a        ubuntu              <span class="s2">&#34;/bin/bash&#34;</span>         <span class="m">2</span> seconds ago       Up <span class="m">1</span> second                             host_container
-</span></span><span class="line"><span class="cl">$ cat /sys/fs/cgroup/freezer/docker/f4b92a61851a7f5f85569318c830722c275796b36d34a506eae05b547b31cb7c/freezer.state
-</span></span><span class="line"><span class="cl">THAWED
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+f4b92a61851a        ubuntu              <span class="s2">&#34;/bin/bash&#34;</span>         <span class="m">2</span> seconds ago       Up <span class="m">1</span> second                             host_container
+$ cat /sys/fs/cgroup/freezer/docker/f4b92a61851a7f5f85569318c830722c275796b36d34a506eae05b547b31cb7c/freezer.state
+THAWED
+</code></pre></td></tr></table>
 </div>
 </div><p>执行 <code>docker pause</code> 后，看到对应的 freezer.state 变为 FROZEN，表明被冻结了。</p>
 <div class="highlight"><div class="chroma">
@@ -456,11 +456,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker pause host_container
-</span></span><span class="line"><span class="cl">host_container
-</span></span><span class="line"><span class="cl">$ cat /sys/fs/cgroup/freezer/docker/f4b92a61851a7f5f85569318c830722c275796b36d34a506eae05b547b31cb7c/freezer.state
-</span></span><span class="line"><span class="cl">FROZEN
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker pause host_container
+host_container
+$ cat /sys/fs/cgroup/freezer/docker/f4b92a61851a7f5f85569318c830722c275796b36d34a506eae05b547b31cb7c/freezer.state
+FROZEN
+</code></pre></td></tr></table>
 </div>
 </div><p>执行 <code>docker unpause</code> 恢复运行后，对应状态又变为了 THAWED：</p>
 <div class="highlight"><div class="chroma">
@@ -470,18 +470,18 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker unpause host_container
-</span></span><span class="line"><span class="cl">$ cat /sys/fs/cgroup/freezer/docker/f4b92a61851a7f5f85569318c830722c275796b36d34a506eae05b547b31cb7c/freezer.state
-</span></span><span class="line"><span class="cl">THAWED
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ docker unpause host_container
+$ cat /sys/fs/cgroup/freezer/docker/f4b92a61851a7f5f85569318c830722c275796b36d34a506eae05b547b31cb7c/freezer.state
+THAWED
+</code></pre></td></tr></table>
 </div>
 </div><p>而这个状态的变化，其实就是通过 <code>echo &quot;&lt;state&gt;&quot; &gt; freezer.state</code> 实现的。</p>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-04-13&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/fd791b9bb7576b4878fb404c63091067e409e0f2" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) fd791b9bb7576b4878fb404c63091067e409e0f2: optimize">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>fd791b9</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bdcecc6dbc9f0ccaeed88ba66ca5edb4241df74c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bdcecc6dbc9f0ccaeed88ba66ca5edb4241df74c: fix">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bdcecc6</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -505,7 +505,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-04-06T21:58:22+08:00" />
-<meta property="article:modified_time" content="2022-04-15T17:25:52+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:47:57+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/use-pulumi\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "云计算","wordcount":  7586 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/use-pulumi\/","datePublished": "2022-04-06T21:58:22+08:00","dateModified": "2022-04-15T17:25:52+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/use-pulumi\/","datePublished": "2022-04-06T21:58:22+08:00","dateModified": "2022-06-12T22:47:57+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -271,10 +271,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">webserver</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="l">nodejs</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l">Basic example of an AWS web server accessible over HTTP.</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">webserver</span><span class="w">
+</span><span class="w"></span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="l">nodejs</span><span class="w">
+</span><span class="w"></span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l">Basic example of an AWS web server accessible over HTTP.</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -293,11 +293,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">myTask</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">cloud</span><span class="p">.</span><span class="nx">Task</span><span class="p">(</span><span class="s2">&#34;myTask&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">build</span><span class="o">:</span> <span class="s2">&#34;./app&#34;</span><span class="p">,</span> <span class="c1">// subfolder of working directory
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">...</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kr">const</span> <span class="nx">myTask</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">cloud</span><span class="p">.</span><span class="nx">Task</span><span class="p">(</span><span class="s2">&#34;myTask&#34;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">build</span><span class="o">:</span> <span class="s2">&#34;./app&#34;</span><span class="p">,</span> <span class="c1">// subfolder of working directory
+</span><span class="c1"></span>    <span class="p">...</span>
+<span class="p">});</span>
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="3-stack">3 Stack</h2>
 <p>Stack 代表一个独立的环境，Pulumi 会跟踪每个 Stack 的当前状态，在部署 Program 到一个 Stack 时，对比期望状态（Program 编写的）和当前状态（Stack 状态）来进行声明式的部署。</p>
@@ -328,9 +328,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pulumi stack init prod
-</span></span><span class="line"><span class="cl">Created stack <span class="s1">&#39;prod&#39;</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ pulumi stack init prod
+Created stack <span class="s1">&#39;prod&#39;</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>执行 <code>pulumi up</code> 将 Program 部署到 Active Stack，之后 Pulumi 会使用当前 Stack 的配置文件来进行计算，并展示部署计划。</p>
 <div class="highlight"><div class="chroma">
@@ -350,20 +350,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pulumi up
-</span></span><span class="line"><span class="cl">Previewing update <span class="o">(</span>dev<span class="o">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">View Live: https://xxx
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">     Type                              Name            Plan
-</span></span><span class="line"><span class="cl"> +   pulumi:pulumi:Stack               quickstart-dev  create
-</span></span><span class="line"><span class="cl"> +   ├─ kubernetes:apps/v1:Deployment  nginx           create
-</span></span><span class="line"><span class="cl"> +   └─ kubernetes:core/v1:Service     nginx           create
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Resources:
-</span></span><span class="line"><span class="cl">    + <span class="m">3</span> to create
-</span></span><span class="line"><span class="cl">...
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ pulumi up
+Previewing update <span class="o">(</span>dev<span class="o">)</span>
+
+View Live: https://xxx
+
+     Type                              Name            Plan
+ +   pulumi:pulumi:Stack               quickstart-dev  create
+ +   ├─ kubernetes:apps/v1:Deployment  nginx           create
+ +   └─ kubernetes:core/v1:Service     nginx           create
+
+Resources:
+    + <span class="m">3</span> to create
+...
+</code></pre></td></tr></table>
 </div>
 </div><p>使用 <code>pulumi stack ls</code> 查看当前 Project 的 Stack，并可以使用 <code>pulumi stack select</code> 来切换 Active Stack。</p>
 <div class="highlight"><div class="chroma">
@@ -376,13 +376,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pulumi stack ls
-</span></span><span class="line"><span class="cl">NAME   LAST UPDATE    RESOURCE COUNT  URL
-</span></span><span class="line"><span class="cl">dev    <span class="m">8</span> minutes ago  <span class="m">4</span>               https://app.pulumi.com/KanShiori/quickstart/dev
-</span></span><span class="line"><span class="cl">prod*  n/a            n/a             https://app.pulumi.com/KanShiori/quickstart/prod
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ pulumi stack <span class="k">select</span> dev
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ pulumi stack ls
+NAME   LAST UPDATE    RESOURCE COUNT  URL
+dev    <span class="m">8</span> minutes ago  <span class="m">4</span>               https://app.pulumi.com/KanShiori/quickstart/dev
+prod*  n/a            n/a             https://app.pulumi.com/KanShiori/quickstart/prod
+
+$ pulumi stack <span class="k">select</span> dev
+</code></pre></td></tr></table>
 </div>
 </div><p>删除 Stack 分为两步：先需要使用 <code>pulumi destroy</code> 销毁 Stack 中的所有资源，才能使用 <code>pulumi stack rm</code> 删除 Stack。删除 Stack 意味着对应的配置文件以及所有的元信息都会被删除。</p>
 <div class="highlight"><div class="chroma">
@@ -411,29 +411,29 @@
 </span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pulumi destroy
-</span></span><span class="line"><span class="cl">Previewing destroy <span class="o">(</span>dev<span class="o">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">View Live: https://app.pulumi.com/KanShiori/quickstart/dev/previews/a4d21b5f-a0b6-4631-b4dd-2c1ac49b9e14
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">     Type                              Name            Plan
-</span></span><span class="line"><span class="cl"> -   pulumi:pulumi:Stack               quickstart-dev  delete                                                                                                              -   ├─ kubernetes:core/v1:Service     nginx           delete
-</span></span><span class="line"><span class="cl"> -   └─ kubernetes:apps/v1:Deployment  nginx           delete
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Outputs:
-</span></span><span class="line"><span class="cl">  - ip: <span class="s2">&#34;10.96.122.118&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Resources:
-</span></span><span class="line"><span class="cl">    - <span class="m">3</span> to delete
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Do you want to perform this destroy? yes
-</span></span><span class="line"><span class="cl">...
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ pulumi stack rm dev
-</span></span><span class="line"><span class="cl">This will permanently remove the <span class="s1">&#39;dev&#39;</span> stack!
-</span></span><span class="line"><span class="cl">Please confirm that this is what you<span class="s1">&#39;d like to do by typing (&#34;dev&#34;): dev
-</span></span></span><span class="line"><span class="cl"><span class="s1">Stack &#39;</span>dev<span class="err">&#39;</span> has been removed!
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ pulumi destroy
+Previewing destroy <span class="o">(</span>dev<span class="o">)</span>
+
+View Live: https://app.pulumi.com/KanShiori/quickstart/dev/previews/a4d21b5f-a0b6-4631-b4dd-2c1ac49b9e14
+
+     Type                              Name            Plan
+ -   pulumi:pulumi:Stack               quickstart-dev  delete                                                                                                              -   ├─ kubernetes:core/v1:Service     nginx           delete
+ -   └─ kubernetes:apps/v1:Deployment  nginx           delete
+
+Outputs:
+  - ip: <span class="s2">&#34;10.96.122.118&#34;</span>
+
+Resources:
+    - <span class="m">3</span> to delete
+
+Do you want to perform this destroy? yes
+...
+
+$ pulumi stack rm dev
+This will permanently remove the <span class="s1">&#39;dev&#39;</span> stack!
+Please confirm that this is what you<span class="s1">&#39;d like to do by typing (&#34;dev&#34;): dev
+</span><span class="s1">Stack &#39;</span>dev<span class="err">&#39;</span> has been removed!
+</code></pre></td></tr></table>
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -461,18 +461,18 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pulumi stack tag ls
-</span></span><span class="line"><span class="cl">Please choose a stack: prod
-</span></span><span class="line"><span class="cl">NAME                VALUE
-</span></span><span class="line"><span class="cl">gitHub:owner        KanShiori
-</span></span><span class="line"><span class="cl">gitHub:repo         Example
-</span></span><span class="line"><span class="cl">pulumi:description  A minimal Kubernetes TypeScript Pulumi program
-</span></span><span class="line"><span class="cl">pulumi:project      quickstart
-</span></span><span class="line"><span class="cl">pulumi:runtime      nodejs
-</span></span><span class="line"><span class="cl">vcs:kind            github.com
-</span></span><span class="line"><span class="cl">vcs:owner           KanShiori
-</span></span><span class="line"><span class="cl">vcs:repo            Example
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ pulumi stack tag ls
+Please choose a stack: prod
+NAME                VALUE
+gitHub:owner        KanShiori
+gitHub:repo         Example
+pulumi:description  A minimal Kubernetes TypeScript Pulumi program
+pulumi:project      quickstart
+pulumi:runtime      nodejs
+vcs:kind            github.com
+vcs:owner           KanShiori
+vcs:repo            Example
+</code></pre></td></tr></table>
 </div>
 </div><p>当然，你也可以使用 <code>pulumi stack tag set &lt;name&gt; &lt;value&gt;</code> 来添加自定义 tag。约定俗成地，pulumi: gitHub: vcs: 前缀是内置使用的 Key，避免使用。</p>
 <div class="highlight"><div class="chroma">
@@ -480,8 +480,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pulumi stack tag <span class="nb">set</span> myname shiori
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ pulumi stack tag <span class="nb">set</span> myname shiori
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="33-stack-output">3.3 Stack Output</h3>
 <p>Program 中可以定义一些 Output 来导出 Resource 的信息，Stack 元信息中会包含定义的 Output 信息。用户可以用来导出一些重要信息，或者导出信息来让 Program 使用。</p>
@@ -491,8 +491,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">let</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">url</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kr">export</span> <span class="kd">let</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">url</span><span class="p">;</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>Stack Output 本质上是一个 JSON：</p>
 <div class="highlight"><div class="chroma">
@@ -506,14 +506,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="err">$</span> <span class="err">pulumi</span> <span class="err">stack</span> <span class="err">output</span> <span class="err">--json</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;x&#34;</span><span class="p">:</span> <span class="s2">&#34;hello&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;o&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nt">&#34;num&#34;</span><span class="p">:</span> <span class="mi">42</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="err">$</span> <span class="err">pulumi</span> <span class="err">stack</span> <span class="err">output</span> <span class="err">--json</span>
+<span class="p">{</span>
+  <span class="nt">&#34;x&#34;</span><span class="p">:</span> <span class="s2">&#34;hello&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;o&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;num&#34;</span><span class="p">:</span> <span class="mi">42</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -532,10 +532,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">pulumi</span> <span class="kr">from</span> <span class="s2">&#34;@pulumi/pulumi&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">other</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">StackReference</span><span class="p">(</span><span class="s2">&#34;acmecorp/infra/other&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">otherOutput</span> <span class="o">=</span> <span class="nx">other</span><span class="p">.</span><span class="nx">getOutput</span><span class="p">(</span><span class="s2">&#34;x&#34;</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">pulumi</span> <span class="kr">from</span> <span class="s2">&#34;@pulumi/pulumi&#34;</span><span class="p">;</span>
+<span class="kr">const</span> <span class="nx">other</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">StackReference</span><span class="p">(</span><span class="s2">&#34;acmecorp/infra/other&#34;</span><span class="p">);</span>
+<span class="kr">const</span> <span class="nx">otherOutput</span> <span class="o">=</span> <span class="nx">other</span><span class="p">.</span><span class="nx">getOutput</span><span class="p">(</span><span class="s2">&#34;x&#34;</span><span class="p">);</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>举一个适用场景：你的一些 Kubernetes 使用其他 Stack 进行部署，你在某个 Stack 想要在该 Kubernetes 中部署资源，那么你可以使用 <code>StackReference</code> 来引用目标 Kubernetes 的 kubeconfig。</p>
 <div class="highlight"><div class="chroma">
@@ -548,13 +548,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">k8s</span> <span class="kr">from</span> <span class="s2">&#34;@pulumi/kubernetes&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">pulumi</span> <span class="kr">from</span> <span class="s2">&#34;@pulumi/pulumi&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">env</span> <span class="o">=</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">getStack</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">infra</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">StackReference</span><span class="p">(</span><span class="sb">`mycompany/infra/</span><span class="si">${</span><span class="nx">env</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>  <span class="c1">// 引用另一个 Stack
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">provider</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">k8s</span><span class="p">.</span><span class="nx">Provider</span><span class="p">(</span><span class="s2">&#34;k8s&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">kubeconfig</span>: <span class="kt">infra.getOutput</span><span class="p">(</span><span class="s2">&#34;kubeConfig&#34;</span><span class="p">)</span> <span class="p">});</span> <span class="c1">// 从 Output 中得到 kubeconfig
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">service</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">k8s</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Service</span><span class="p">(...,</span> <span class="p">{</span> <span class="nx">provider</span>: <span class="kt">provider</span> <span class="p">});</span>  <span class="c1">// 设置 Provider 以部署资源到目标 Kubernetes 中
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">k8s</span> <span class="kr">from</span> <span class="s2">&#34;@pulumi/kubernetes&#34;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">pulumi</span> <span class="kr">from</span> <span class="s2">&#34;@pulumi/pulumi&#34;</span><span class="p">;</span>
+<span class="kr">const</span> <span class="nx">env</span> <span class="o">=</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">getStack</span><span class="p">();</span>
+<span class="kr">const</span> <span class="nx">infra</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">StackReference</span><span class="p">(</span><span class="sb">`mycompany/infra/</span><span class="si">${</span><span class="nx">env</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>  <span class="c1">// 引用另一个 Stack
+</span><span class="c1"></span><span class="kr">const</span> <span class="nx">provider</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">k8s</span><span class="p">.</span><span class="nx">Provider</span><span class="p">(</span><span class="s2">&#34;k8s&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">kubeconfig</span>: <span class="kt">infra.getOutput</span><span class="p">(</span><span class="s2">&#34;kubeConfig&#34;</span><span class="p">)</span> <span class="p">});</span> <span class="c1">// 从 Output 中得到 kubeconfig
+</span><span class="c1"></span><span class="kr">const</span> <span class="nx">service</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">k8s</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Service</span><span class="p">(...,</span> <span class="p">{</span> <span class="nx">provider</span>: <span class="kt">provider</span> <span class="p">});</span>  <span class="c1">// 设置 Provider 以部署资源到目标 Kubernetes 中
+</span></code></pre></td></tr></table>
 </div>
 </div><h3 id="35-stack-的导入导出">3.5 Stack 的导入导出</h3>
 <p>Stack 支持使用原始数据的导入与导出，这适用于某些情况你必须手动修改 Stack 相关信息。</p>
@@ -565,10 +565,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pulumi stack <span class="nb">export</span> --file stack.json
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ pulumi stack import --file stack.json
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ pulumi stack <span class="nb">export</span> --file stack.json
+
+$ pulumi stack import --file stack.json
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="36-stack-配置文件">3.6 Stack 配置文件</h3>
 <p>每个 Stack 有着独立的配置文件 <code>Pulumi.&lt;stack&gt;.yaml</code>，用于在同一个 Program 中能够方便的差异化不同的 Stack。配置文件中以 yaml 格式保存 K/V 对，Program 中可以加载配置并使用相关的参数。</p>
@@ -593,11 +593,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pulumi config <span class="nb">set</span> aws:region us-west-2
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ pulumi config get aws:region
-</span></span><span class="line"><span class="cl">us-west-2
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ pulumi config <span class="nb">set</span> aws:region us-west-2
+
+$ pulumi config get aws:region
+us-west-2
+</code></pre></td></tr></table>
 </div>
 </div><p>默认传入的是 Key 的字符串，通过 <code>--path</code> 参数，可以配置结构化的数据：</p>
 <div class="highlight"><div class="chroma">
@@ -610,13 +610,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># pulumi config set &#39;data.enable&#39; true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># pulumi config set --path &#39;data.active&#39; true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">config</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">quickstart:data</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">active</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">quickstart:data.enable</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;true&#34;</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># pulumi config set &#39;data.enable&#39; true</span><span class="w">
+</span><span class="w"></span><span class="c"># pulumi config set --path &#39;data.active&#39; true</span><span class="w">
+</span><span class="w"></span><span class="nt">config</span><span class="p">:</span><span class="w">
+</span><span class="w"></span><span class="nt">quickstart:data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">active</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w"></span><span class="nt">quickstart:data.enable</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;true&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div></li>
 <li>
@@ -630,11 +630,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">config</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">Config</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="kr">require</span><span class="p">(</span><span class="s2">&#34;name&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">lucky</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">getNumber</span><span class="p">(</span><span class="s2">&#34;lucky&#34;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">42</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Hello, </span><span class="si">${</span><span class="nx">name</span><span class="si">}</span><span class="sb"> -- I see your lucky number is </span><span class="si">${</span><span class="nx">lucky</span><span class="si">}</span><span class="sb">!`</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kd">let</span> <span class="nx">config</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">Config</span><span class="p">();</span>
+<span class="kd">let</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="kr">require</span><span class="p">(</span><span class="s2">&#34;name&#34;</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">lucky</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">getNumber</span><span class="p">(</span><span class="s2">&#34;lucky&#34;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">42</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Hello, </span><span class="si">${</span><span class="nx">name</span><span class="si">}</span><span class="sb"> -- I see your lucky number is </span><span class="si">${</span><span class="nx">lucky</span><span class="si">}</span><span class="sb">!`</span><span class="p">);</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>使用结构化配置时，需要使用 <code>requireObject</code> 方法来解析对应的结构：</p>
 <div class="highlight"><div class="chroma">
@@ -649,15 +649,15 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">Data</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">active</span>: <span class="kt">boolean</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">nums</span>: <span class="kt">number</span><span class="p">[];</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">config</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">Config</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">requireObject</span><span class="p">&lt;</span><span class="nt">Data</span><span class="p">&gt;(</span><span class="s2">&#34;data&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Active: </span><span class="si">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">active</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kr">interface</span> <span class="nx">Data</span> <span class="p">{</span>
+  <span class="nx">active</span>: <span class="kt">boolean</span><span class="p">;</span>
+  <span class="nx">nums</span>: <span class="kt">number</span><span class="p">[];</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">config</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">Config</span><span class="p">();</span>
+<span class="kd">let</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">requireObject</span><span class="p">&lt;</span><span class="nt">Data</span><span class="p">&gt;(</span><span class="s2">&#34;data&#34;</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Active: </span><span class="si">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">active</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</code></pre></td></tr></table>
 </div>
 </div></li>
 </ul>
@@ -669,10 +669,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># pulumi config set isMinikube false</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">config</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">quickstart:isMinikube</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;false&#34;</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># pulumi config set isMinikube false</span><span class="w">
+</span><span class="w"></span><span class="nt">config</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">quickstart:isMinikube</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;false&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><h2 id="4-backend">4 Backend</h2>
 <p>Pulumi 本质上是对比期望状态（Program 中定义）与实际状态（Stack 资源信息），来进行声明式的构建资源。Stack 元信息也被称为 Stack State，由 Backend 负责存储。</p>
@@ -696,8 +696,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pulumi login &lt;backend-url&gt;
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ pulumi login &lt;backend-url&gt;
+</code></pre></td></tr></table>
 </div>
 </div><p>Login 成功后，Pulumi CLI 会将凭证信息保存在 ~/.pulumi/credentials.json 文件中。</p>
 <div class="details admonition note open">
@@ -744,8 +744,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">res</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Resource</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">args</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kd">let</span> <span class="nx">res</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Resource</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">args</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>
@@ -772,8 +772,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">role</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Role</span><span class="p">(</span><span class="s2">&#34;my-role&#34;</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kd">let</span> <span class="nx">role</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Role</span><span class="p">(</span><span class="s2">&#34;my-role&#34;</span><span class="p">);</span>
+</code></pre></td></tr></table>
 </div>
 </div><h4 id="511-physical-name-生成规则">5.1.1 Physical Name 生成规则</h4>
 <p>默认下，Provider 会使用 Logical Name 作为前缀，后增加随机字符串来生成 Physical Name。随机字符串的意义在于：</p>
@@ -789,10 +789,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">role</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Role</span><span class="p">(</span><span class="s2">&#34;my-role&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;my-role-001&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kd">let</span> <span class="nx">role</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Role</span><span class="p">(</span><span class="s2">&#34;my-role&#34;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;my-role-001&#34;</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></td></tr></table>
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -810,10 +810,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">role</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Role</span><span class="p">(</span><span class="s2">&#34;my-role&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">name</span><span class="o">:</span> <span class="sb">`my-role-</span><span class="si">${</span><span class="nx">pulumi</span><span class="p">.</span><span class="nx">getProject</span><span class="p">()</span><span class="si">}</span><span class="sb">-</span><span class="si">${</span><span class="nx">pulumi</span><span class="p">.</span><span class="nx">getStack</span><span class="p">()</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="p">{</span> <span class="nx">deleteBeforeReplace</span>: <span class="kt">true</span> <span class="p">});</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kd">let</span> <span class="nx">role</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Role</span><span class="p">(</span><span class="s2">&#34;my-role&#34;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span><span class="o">:</span> <span class="sb">`my-role-</span><span class="si">${</span><span class="nx">pulumi</span><span class="p">.</span><span class="nx">getProject</span><span class="p">()</span><span class="si">}</span><span class="sb">-</span><span class="si">${</span><span class="nx">pulumi</span><span class="p">.</span><span class="nx">getStack</span><span class="p">()</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+<span class="p">},</span> <span class="p">{</span> <span class="nx">deleteBeforeReplace</span>: <span class="kt">true</span> <span class="p">});</span>
+</code></pre></td></tr></table>
 </div>
 </div><h4 id="512-resource-urn">5.1.2 Resource URN</h4>
 <p>每个 Resource 有着全局唯一的名字，称为 Uniform Resource Name（URN）。不过大多数情况下，用户不会直接看到 URN。</p>
@@ -825,10 +825,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">urn:pulumi:production::acmecorp-website::custom:resources:Resource$aws:s3/bucket:Bucket::my-bucket
-</span></span><span class="line"><span class="cl">           ^^^^^^^^^^  ^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^
-</span></span><span class="line"><span class="cl">           &lt;stack-name&gt; &lt;project-name&gt;   &lt;parent-type&gt;             &lt;resource-type&gt;       &lt;resource-name&gt;
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">urn:pulumi:production::acmecorp-website::custom:resources:Resource$aws:s3/bucket:Bucket::my-bucket
+           ^^^^^^^^^^  ^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^
+           &lt;stack-name&gt; &lt;project-name&gt;   &lt;parent-type&gt;             &lt;resource-type&gt;       &lt;resource-name&gt;
+</code></pre></td></tr></table>
 </div>
 </div><p>不同 URN 的 Resource 之间是被认为没有任何关联的。例如当你改变了某个资源导致 URN 发生变化时，Pulumi 的行为是删除旧 URN 的资源，创建新 URN 的资源。这意味着，Pulumi 调用的是 create 和 delete 操作，而不是 update 和 replace 操作。</p>
 <a class="lightgallery" href="/posts/cloud/cloud_practice/use-pulumi/img4.png" title="/posts/cloud/cloud_practice/use-pulumi/img4.png" data-thumbnail="/posts/cloud/cloud_practice/use-pulumi/img4.png">
@@ -894,31 +894,31 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">aws</span> <span class="o">=</span> <span class="kr">require</span><span class="p">(</span><span class="s2">&#34;@pulumi/aws&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">pulumi</span> <span class="o">=</span> <span class="kr">require</span><span class="p">(</span><span class="s2">&#34;@pulumi/pulumi&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Define a component for serving a static website on S3
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">class</span> <span class="nx">S3Folder</span> <span class="kr">extends</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">ComponentResource</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="kr">constructor</span><span class="p">(</span><span class="nx">bucketName</span><span class="p">,</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="c1">// Register this component with name examples:S3Folder
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kr">super</span><span class="p">(</span><span class="s2">&#34;examples:S3Folder&#34;</span><span class="p">,</span> <span class="nx">bucketName</span><span class="p">,</span> <span class="p">{},</span> <span class="nx">opts</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Path where files would be uploaded: </span><span class="si">${</span><span class="nx">path</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="c1">// Create a bucket and expose a website index document
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kd">let</span> <span class="nx">siteBucket</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">s3</span><span class="p">.</span><span class="nx">Bucket</span><span class="p">(</span><span class="nx">bucketName</span><span class="p">,</span> <span class="p">{},</span>
-</span></span><span class="line"><span class="cl">            <span class="p">{</span> <span class="nx">parent</span>: <span class="kt">this</span> <span class="p">}</span> <span class="p">);</span> <span class="c1">// specify resource parent
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl">        <span class="c1">// Create a property for the bucket name that was created
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">this</span><span class="p">.</span><span class="nx">bucketName</span> <span class="o">=</span> <span class="nx">siteBucket</span><span class="p">.</span><span class="nx">bucket</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="c1">// Register that we are done constructing the component
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">this</span><span class="p">.</span><span class="nx">registerOutputs</span><span class="p">({</span><span class="nx">bucketDnsName</span>: <span class="kt">bucket.bucketDomainName</span><span class="p">});</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kr">module</span><span class="nx">.exports.S3Folder</span> <span class="o">=</span> <span class="nx">S3Folder</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kr">const</span> <span class="nx">aws</span> <span class="o">=</span> <span class="kr">require</span><span class="p">(</span><span class="s2">&#34;@pulumi/aws&#34;</span><span class="p">);</span>
+<span class="kr">const</span> <span class="nx">pulumi</span> <span class="o">=</span> <span class="kr">require</span><span class="p">(</span><span class="s2">&#34;@pulumi/pulumi&#34;</span><span class="p">);</span>
+
+<span class="c1">// Define a component for serving a static website on S3
+</span><span class="c1"></span><span class="kr">class</span> <span class="nx">S3Folder</span> <span class="kr">extends</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">ComponentResource</span> <span class="p">{</span>
+
+    <span class="kr">constructor</span><span class="p">(</span><span class="nx">bucketName</span><span class="p">,</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Register this component with name examples:S3Folder
+</span><span class="c1"></span>        <span class="kr">super</span><span class="p">(</span><span class="s2">&#34;examples:S3Folder&#34;</span><span class="p">,</span> <span class="nx">bucketName</span><span class="p">,</span> <span class="p">{},</span> <span class="nx">opts</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Path where files would be uploaded: </span><span class="si">${</span><span class="nx">path</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+
+        <span class="c1">// Create a bucket and expose a website index document
+</span><span class="c1"></span>        <span class="kd">let</span> <span class="nx">siteBucket</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">s3</span><span class="p">.</span><span class="nx">Bucket</span><span class="p">(</span><span class="nx">bucketName</span><span class="p">,</span> <span class="p">{},</span>
+            <span class="p">{</span> <span class="nx">parent</span>: <span class="kt">this</span> <span class="p">}</span> <span class="p">);</span> <span class="c1">// specify resource parent
+</span><span class="c1"></span>
+        <span class="c1">// Create a property for the bucket name that was created
+</span><span class="c1"></span>        <span class="k">this</span><span class="p">.</span><span class="nx">bucketName</span> <span class="o">=</span> <span class="nx">siteBucket</span><span class="p">.</span><span class="nx">bucket</span><span class="p">,</span>
+
+        <span class="c1">// Register that we are done constructing the component
+</span><span class="c1"></span>        <span class="k">this</span><span class="p">.</span><span class="nx">registerOutputs</span><span class="p">({</span><span class="nx">bucketDnsName</span>: <span class="kt">bucket.bucketDomainName</span><span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kr">module</span><span class="nx">.exports.S3Folder</span> <span class="o">=</span> <span class="nx">S3Folder</span><span class="p">;</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>创建 ComponentResource 对象时，支持一个特殊的参数 <code>providers</code>。因为 ComponentResource 可以包含多个 Resource，因此会使用多种 Provider 来构建。<code>providers</code> 参数就是用于指定 ComponentResource 使用的 Provider。</p>
 <p>例如，下面示例中指定了 ComponentResource 使用的 AWS 与 Kubernetes 资源对应的 Provider。</p>
@@ -932,13 +932,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">component</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MyComponent</span><span class="p">(</span><span class="s2">&#34;...&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">providers</span><span class="o">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">aws</span>: <span class="kt">useast1</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">kubernetes</span>: <span class="kt">myk8s</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="p">},</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kd">let</span> <span class="nx">component</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MyComponent</span><span class="p">(</span><span class="s2">&#34;...&#34;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">providers</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">aws</span>: <span class="kt">useast1</span><span class="p">,</span>
+        <span class="nx">kubernetes</span>: <span class="kt">myk8s</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">});</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>ComponentResource 中所有的 Child Resource 都默认会继承 Provider，除非创建时指定。</p>
 <h3 id="54-resource-provider">5.4 Resource Provider</h3>
@@ -953,8 +953,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pulumi config <span class="nb">set</span> aws:region us-west-2
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ pulumi config <span class="nb">set</span> aws:region us-west-2
+</code></pre></td></tr></table>
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -971,12 +971,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pulumi config <span class="nb">set</span> --path <span class="s1">&#39;pulumi:disable-default-providers[0]&#39;</span> aws
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ pulumi config <span class="nb">set</span> --path <span class="s1">&#39;pulumi:disable-default-providers[1]&#39;</span> kubernetes
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ pulumi config <span class="nb">set</span> --path <span class="s1">&#39;pulumi:disable-default-providers[0]&#39;</span> <span class="s1">&#39;*&#39;</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ pulumi config <span class="nb">set</span> --path <span class="s1">&#39;pulumi:disable-default-providers[0]&#39;</span> aws
+
+$ pulumi config <span class="nb">set</span> --path <span class="s1">&#39;pulumi:disable-default-providers[1]&#39;</span> kubernetes
+
+$ pulumi config <span class="nb">set</span> --path <span class="s1">&#39;pulumi:disable-default-providers[0]&#39;</span> <span class="s1">&#39;*&#39;</span>
+</code></pre></td></tr></table>
 </div>
 </div></div>
         </div>
@@ -1010,31 +1010,31 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">pulumi</span> <span class="o">=</span> <span class="kr">require</span><span class="p">(</span><span class="s2">&#34;@pulumi/pulumi&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">aws</span> <span class="o">=</span> <span class="kr">require</span><span class="p">(</span><span class="s2">&#34;@pulumi/aws&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Create an AWS provider for the us-east-1 region.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">useast1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">Provider</span><span class="p">(</span><span class="s2">&#34;useast1&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">region</span><span class="o">:</span> <span class="s2">&#34;us-east-1&#34;</span> <span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Create an ACM certificate in us-east-1.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">cert</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">acm</span><span class="p">.</span><span class="nx">Certificate</span><span class="p">(</span><span class="s2">&#34;cert&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">domainName</span><span class="o">:</span> <span class="s2">&#34;foo.com&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">validationMethod</span><span class="o">:</span> <span class="s2">&#34;EMAIL&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="p">{</span> <span class="nx">provider</span>: <span class="kt">useast1</span> <span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Create an ALB listener in the default region that references the ACM certificate created above.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">listener</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">lb</span><span class="p">.</span><span class="nx">Listener</span><span class="p">(</span><span class="s2">&#34;listener&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">loadBalancerArn</span>: <span class="kt">loadBalancerArn</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">port</span>: <span class="kt">443</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">protocol</span><span class="o">:</span> <span class="s2">&#34;HTTPS&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">sslPolicy</span><span class="o">:</span> <span class="s2">&#34;ELBSecurityPolicy-2016-08&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">certificateArn</span>: <span class="kt">cert.arn</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">defaultAction</span><span class="o">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">targetGroupArn</span>: <span class="kt">targetGroupArn</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">        <span class="kr">type</span><span class="o">:</span> <span class="s2">&#34;forward&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="p">},</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kd">let</span> <span class="nx">pulumi</span> <span class="o">=</span> <span class="kr">require</span><span class="p">(</span><span class="s2">&#34;@pulumi/pulumi&#34;</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">aws</span> <span class="o">=</span> <span class="kr">require</span><span class="p">(</span><span class="s2">&#34;@pulumi/aws&#34;</span><span class="p">);</span>
+
+<span class="c1">// Create an AWS provider for the us-east-1 region.
+</span><span class="c1"></span><span class="kd">let</span> <span class="nx">useast1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">Provider</span><span class="p">(</span><span class="s2">&#34;useast1&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">region</span><span class="o">:</span> <span class="s2">&#34;us-east-1&#34;</span> <span class="p">});</span>
+
+<span class="c1">// Create an ACM certificate in us-east-1.
+</span><span class="c1"></span><span class="kd">let</span> <span class="nx">cert</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">acm</span><span class="p">.</span><span class="nx">Certificate</span><span class="p">(</span><span class="s2">&#34;cert&#34;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">domainName</span><span class="o">:</span> <span class="s2">&#34;foo.com&#34;</span><span class="p">,</span>
+    <span class="nx">validationMethod</span><span class="o">:</span> <span class="s2">&#34;EMAIL&#34;</span><span class="p">,</span>
+<span class="p">},</span> <span class="p">{</span> <span class="nx">provider</span>: <span class="kt">useast1</span> <span class="p">});</span>
+
+<span class="c1">// Create an ALB listener in the default region that references the ACM certificate created above.
+</span><span class="c1"></span><span class="kd">let</span> <span class="nx">listener</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">lb</span><span class="p">.</span><span class="nx">Listener</span><span class="p">(</span><span class="s2">&#34;listener&#34;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">loadBalancerArn</span>: <span class="kt">loadBalancerArn</span><span class="p">,</span>
+    <span class="nx">port</span>: <span class="kt">443</span><span class="p">,</span>
+    <span class="nx">protocol</span><span class="o">:</span> <span class="s2">&#34;HTTPS&#34;</span><span class="p">,</span>
+    <span class="nx">sslPolicy</span><span class="o">:</span> <span class="s2">&#34;ELBSecurityPolicy-2016-08&#34;</span><span class="p">,</span>
+    <span class="nx">certificateArn</span>: <span class="kt">cert.arn</span><span class="p">,</span>
+    <span class="nx">defaultAction</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">targetGroupArn</span>: <span class="kt">targetGroupArn</span><span class="p">,</span>
+        <span class="kr">type</span><span class="o">:</span> <span class="s2">&#34;forward&#34;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">});</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>如 <a href="#componentresource" rel=""><strong>ComponentResource</strong></a> 所说，通过 <code>providers</code> 参数来设置 ComponentResource 子资源使用的 Provider。</p>
 <div class="highlight"><div class="chroma">
@@ -1051,17 +1051,17 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">MyResource</span> <span class="kr">extends</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">ComponentResource</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kr">constructor</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nx">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">ec2</span><span class="p">.</span><span class="nx">Instance</span><span class="p">(</span><span class="s2">&#34;instance&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">parent</span>: <span class="kt">this</span> <span class="p">});</span>
-</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nx">pod</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">kubernetes</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">(</span><span class="s2">&#34;pod&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">parent</span>: <span class="kt">this</span> <span class="p">});</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">useast1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">Provider</span><span class="p">(</span><span class="s2">&#34;useast1&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">region</span><span class="o">:</span> <span class="s2">&#34;us-east-1&#34;</span> <span class="p">});</span>
-</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">myk8s</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">kubernetes</span><span class="p">.</span><span class="nx">Provider</span><span class="p">(</span><span class="s2">&#34;myk8s&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">context</span><span class="o">:</span> <span class="s2">&#34;test-ci&#34;</span> <span class="p">});</span>
-</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">myResource</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MyResource</span><span class="p">(</span><span class="s2">&#34;myResource&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">providers</span><span class="o">:</span> <span class="p">{</span> <span class="nx">aws</span>: <span class="kt">useast1</span><span class="p">,</span> <span class="nx">kubernetes</span>: <span class="kt">myk8s</span> <span class="p">}</span> <span class="p">});</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kr">class</span> <span class="nx">MyResource</span> <span class="kr">extends</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">ComponentResource</span> <span class="p">{</span>
+    <span class="kr">constructor</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">ec2</span><span class="p">.</span><span class="nx">Instance</span><span class="p">(</span><span class="s2">&#34;instance&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">parent</span>: <span class="kt">this</span> <span class="p">});</span>
+        <span class="kd">let</span> <span class="nx">pod</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">kubernetes</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">(</span><span class="s2">&#34;pod&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">parent</span>: <span class="kt">this</span> <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">useast1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">Provider</span><span class="p">(</span><span class="s2">&#34;useast1&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">region</span><span class="o">:</span> <span class="s2">&#34;us-east-1&#34;</span> <span class="p">});</span>
+<span class="kd">let</span> <span class="nx">myk8s</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">kubernetes</span><span class="p">.</span><span class="nx">Provider</span><span class="p">(</span><span class="s2">&#34;myk8s&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">context</span><span class="o">:</span> <span class="s2">&#34;test-ci&#34;</span> <span class="p">});</span>
+<span class="kd">let</span> <span class="nx">myResource</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MyResource</span><span class="p">(</span><span class="s2">&#34;myResource&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">providers</span><span class="o">:</span> <span class="p">{</span> <span class="nx">aws</span>: <span class="kt">useast1</span><span class="p">,</span> <span class="nx">kubernetes</span>: <span class="kt">myk8s</span> <span class="p">}</span> <span class="p">});</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="55-dynamic-providers">5.5 Dynamic Providers</h3>
 <p>Dynamic Providers 指的是用户自行编写的 Provider，类似于原生的 AWS Provider 与 Kubernetes Provider 等，可以通过 Dynamic Provider 来管理用户自定义的资源。</p>
@@ -1082,16 +1082,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">aws</span> <span class="kr">from</span> <span class="s2">&#34;@pulumi/aws&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">group</span> <span class="o">=</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">ec2</span><span class="p">.</span><span class="nx">SecurityGroup</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;group&#34;</span><span class="p">,</span> <span class="s2">&#34;sg-0dfd33cdac25b1ec9&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">ec2</span><span class="p">.</span><span class="nx">Instance</span><span class="p">(</span><span class="s2">&#34;web-server&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">ami</span><span class="o">:</span> <span class="s2">&#34;ami-6869aa05&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">instanceType</span><span class="o">:</span> <span class="s2">&#34;t2.micro&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">securityGroups</span><span class="o">:</span> <span class="p">[</span> <span class="nx">group</span><span class="p">.</span><span class="nx">name</span> <span class="p">],</span> <span class="c1">// reference the security group resource above
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">});</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">aws</span> <span class="kr">from</span> <span class="s2">&#34;@pulumi/aws&#34;</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">group</span> <span class="o">=</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">ec2</span><span class="p">.</span><span class="nx">SecurityGroup</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;group&#34;</span><span class="p">,</span> <span class="s2">&#34;sg-0dfd33cdac25b1ec9&#34;</span><span class="p">);</span>
+
+<span class="kd">let</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">ec2</span><span class="p">.</span><span class="nx">Instance</span><span class="p">(</span><span class="s2">&#34;web-server&#34;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">ami</span><span class="o">:</span> <span class="s2">&#34;ami-6869aa05&#34;</span><span class="p">,</span>
+    <span class="nx">instanceType</span><span class="o">:</span> <span class="s2">&#34;t2.micro&#34;</span><span class="p">,</span>
+    <span class="nx">securityGroups</span><span class="o">:</span> <span class="p">[</span> <span class="nx">group</span><span class="p">.</span><span class="nx">name</span> <span class="p">],</span> <span class="c1">// reference the security group resource above
+</span><span class="c1"></span><span class="p">});</span>
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="6-input-和-output">6 Input 和 Output</h2>
 <p>Program 中定义的 Resource 是异步构建的，为了能够处理 Resource 之间的依赖关系，Pulumi 设计出了 Input 与 Output 类型来描述 Resource 之间的依赖关系。</p>
@@ -1119,8 +1119,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">virtualmachine</span><span class="p">.</span><span class="nx">dnsName</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">dnsName</span> <span class="o">=&gt;</span> <span class="s2">&#34;https://&#34;</span> <span class="o">+</span> <span class="nx">dnsName</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kd">let</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">virtualmachine</span><span class="p">.</span><span class="nx">dnsName</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">dnsName</span> <span class="o">=&gt;</span> <span class="s2">&#34;https://&#34;</span> <span class="o">+</span> <span class="nx">dnsName</span><span class="p">);</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>上述示例中，<code>url</code> 也是一个 Output，并且依赖于 <code>dnsName</code> Output。也就是说，只有当 <code>dnsName</code> 的值可用后，才会计算出 <code>url</code> 的值。</p>
 <p>如果需要从多个 Output 处理后派生出一个 Output，可以使用 <code>all</code> 函数。新的 Output 将会等待所有依赖的 Output 值可用后才计算出。</p>
@@ -1132,11 +1132,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">pulumi</span> <span class="kr">from</span> <span class="s2">&#34;@pulumi/pulumi&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">connectionString</span> <span class="o">=</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span><span class="nx">sqlServer</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">database</span><span class="p">.</span><span class="nx">name</span><span class="p">])</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">apply</span><span class="p">(([</span><span class="nx">server</span><span class="p">,</span> <span class="nx">db</span><span class="p">])</span> <span class="o">=&gt;</span> <span class="sb">`Server=tcp:</span><span class="si">${</span><span class="nx">server</span><span class="si">}</span><span class="sb">.database.windows.net;initial catalog=</span><span class="si">${</span><span class="nx">db</span><span class="si">}</span><span class="sb">...`</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">pulumi</span> <span class="kr">from</span> <span class="s2">&#34;@pulumi/pulumi&#34;</span><span class="p">;</span>
+<span class="c1">// ...
+</span><span class="c1"></span><span class="kd">let</span> <span class="nx">connectionString</span> <span class="o">=</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span><span class="nx">sqlServer</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">database</span><span class="p">.</span><span class="nx">name</span><span class="p">])</span>
+    <span class="p">.</span><span class="nx">apply</span><span class="p">(([</span><span class="nx">server</span><span class="p">,</span> <span class="nx">db</span><span class="p">])</span> <span class="o">=&gt;</span> <span class="sb">`Server=tcp:</span><span class="si">${</span><span class="nx">server</span><span class="si">}</span><span class="sb">.database.windows.net;initial catalog=</span><span class="si">${</span><span class="nx">db</span><span class="si">}</span><span class="sb">...`</span><span class="p">);</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="62-lifting">6.2 Lifting</h3>
 <p>当你将某个 Resource 的属性传递给其他 Resource 用于初始化时，该属性会被 Lift 为一个 Output。也就是说，Resource 会自动依赖与另一个 Resource。</p>
@@ -1153,16 +1153,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">certCertificate</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">acm</span><span class="p">.</span><span class="nx">Certificate</span><span class="p">(</span><span class="s2">&#34;cert&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">domainName</span><span class="o">:</span> <span class="s2">&#34;example.com&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">validationMethod</span><span class="o">:</span> <span class="s2">&#34;DNS&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">certValidation</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">route53</span><span class="p">.</span><span class="nx">Record</span><span class="p">(</span><span class="s2">&#34;cert_validation&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">records</span><span class="o">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">certCertificate</span><span class="p">.</span><span class="nx">domainValidationOptions</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">resourceRecordValue</span>
-</span></span><span class="line"><span class="cl">    <span class="p">],</span>
-</span></span><span class="line"><span class="cl"><span class="p">...</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kd">let</span> <span class="nx">certCertificate</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">acm</span><span class="p">.</span><span class="nx">Certificate</span><span class="p">(</span><span class="s2">&#34;cert&#34;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">domainName</span><span class="o">:</span> <span class="s2">&#34;example.com&#34;</span><span class="p">,</span>
+    <span class="nx">validationMethod</span><span class="o">:</span> <span class="s2">&#34;DNS&#34;</span><span class="p">,</span>
+<span class="p">});</span>
+<span class="kd">let</span> <span class="nx">certValidation</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">route53</span><span class="p">.</span><span class="nx">Record</span><span class="p">(</span><span class="s2">&#34;cert_validation&#34;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">records</span><span class="o">:</span> <span class="p">[</span>
+        <span class="nx">certCertificate</span><span class="p">.</span><span class="nx">domainValidationOptions</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">resourceRecordValue</span>
+    <span class="p">],</span>
+<span class="p">...</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>在 JavaScript 与 TypeScript 环境下，如果访问的 Resource 属性是计算后是未定义的，那么会认为值为 undefined，而不是报错。</p>
 <h3 id="63-interpolation">6.3 Interpolation</h3>
@@ -1182,18 +1182,18 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">hostname</span>: <span class="kt">Output</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;;</span>
-</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">port</span>: <span class="kt">Output</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// 直接使用 apply 函数
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span><span class="nx">hostname</span><span class="p">,</span> <span class="nx">port</span><span class="p">]).</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">apply</span><span class="p">(([</span><span class="nx">hostname</span><span class="p">,</span> <span class="nx">port</span><span class="p">])</span> <span class="o">=&gt;</span> <span class="sb">`http://</span><span class="si">${</span><span class="nx">hostname</span><span class="si">}</span><span class="sb">:</span><span class="si">${</span><span class="nx">port</span><span class="si">}</span><span class="sb">/`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// 使用 concat 函数
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">url1</span>: <span class="kt">Output</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;</span> <span class="o">=</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="s2">&#34;http://&#34;</span><span class="p">,</span> <span class="nx">hostname</span><span class="p">,</span> <span class="s2">&#34;:&#34;</span><span class="p">,</span> <span class="nx">port</span><span class="p">,</span> <span class="s2">&#34;/&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="c1">// 使用 interpolate 函数
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">url2</span>: <span class="kt">Output</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;</span> <span class="o">=</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">interpolate</span> <span class="sb">`http://</span><span class="si">${</span><span class="nx">hostname</span><span class="si">}</span><span class="sb">:</span><span class="si">${</span><span class="nx">port</span><span class="si">}</span><span class="sb">/`</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kd">let</span> <span class="nx">hostname</span>: <span class="kt">Output</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;;</span>
+<span class="kd">let</span> <span class="nx">port</span>: <span class="kt">Output</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;;</span>
+
+<span class="c1">// 直接使用 apply 函数
+</span><span class="c1"></span><span class="kd">let</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span><span class="nx">hostname</span><span class="p">,</span> <span class="nx">port</span><span class="p">]).</span>
+    <span class="nx">apply</span><span class="p">(([</span><span class="nx">hostname</span><span class="p">,</span> <span class="nx">port</span><span class="p">])</span> <span class="o">=&gt;</span> <span class="sb">`http://</span><span class="si">${</span><span class="nx">hostname</span><span class="si">}</span><span class="sb">:</span><span class="si">${</span><span class="nx">port</span><span class="si">}</span><span class="sb">/`</span><span class="p">);</span>
+
+<span class="c1">// 使用 concat 函数
+</span><span class="c1"></span><span class="kr">const</span> <span class="nx">url1</span>: <span class="kt">Output</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;</span> <span class="o">=</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="s2">&#34;http://&#34;</span><span class="p">,</span> <span class="nx">hostname</span><span class="p">,</span> <span class="s2">&#34;:&#34;</span><span class="p">,</span> <span class="nx">port</span><span class="p">,</span> <span class="s2">&#34;/&#34;</span><span class="p">);</span>
+<span class="c1">// 使用 interpolate 函数
+</span><span class="c1"></span><span class="kr">const</span> <span class="nx">url2</span>: <span class="kt">Output</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;</span> <span class="o">=</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">interpolate</span> <span class="sb">`http://</span><span class="si">${</span><span class="nx">hostname</span><span class="si">}</span><span class="sb">:</span><span class="si">${</span><span class="nx">port</span><span class="si">}</span><span class="sb">/`</span><span class="p">;</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="64-input-转换为-output">6.4 Input 转换为 Output</h3>
 <p>Input 也可以转换为 Output，以便进一步处理它。使用 <code>output</code> 函数来转换 Input。</p>
@@ -1205,11 +1205,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">split</span><span class="p">(</span><span class="nx">input</span>: <span class="kt">pulumi.Input</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;)</span><span class="o">:</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">Output</span><span class="p">&lt;</span><span class="nt">string</span><span class="err">[]</span><span class="p">&gt;</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nx">output</span> <span class="o">=</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">output</span><span class="p">(</span><span class="nx">input</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">output</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">split</span><span class="p">());</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kd">function</span> <span class="nx">split</span><span class="p">(</span><span class="nx">input</span>: <span class="kt">pulumi.Input</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;)</span><span class="o">:</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">Output</span><span class="p">&lt;</span><span class="nt">string</span><span class="err">[]</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">output</span> <span class="o">=</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">output</span><span class="p">(</span><span class="nx">input</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">output</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">split</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="7-secret">7 Secret</h2>
 <p>Output 与配置文件默认都是不加密的保存的。如果需要保存一些敏感信息，可以使用 Secret。</p>
@@ -1224,12 +1224,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># pulumi config set --secret &#39;token&#39; 123</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">config</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">quickstart:token</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># 加密后内容</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">secure</span><span class="p">:</span><span class="w"> </span><span class="l">AAABAH31XbQSigUOA10PKZOWPzLMnPIbrdu58QulEeWVED4=</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># pulumi config set --secret &#39;token&#39; 123</span><span class="w">
+</span><span class="w"></span><span class="nt">config</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">quickstart:token</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="c"># 加密后内容</span><span class="w">
+</span><span class="w">    </span><span class="nt">secure</span><span class="p">:</span><span class="w"> </span><span class="l">AAABAH31XbQSigUOA10PKZOWPzLMnPIbrdu58QulEeWVED4=</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>在 Program 中，有三种使用 Secret 的方式：</p>
 <ul>
@@ -1244,12 +1244,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">cfg</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">Config</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">param</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">Parameter</span><span class="p">(</span><span class="s2">&#34;a-secret-param&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kr">type</span><span class="o">:</span> <span class="s2">&#34;SecureString&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">value</span>: <span class="kt">cfg.requireSecret</span><span class="p">(</span><span class="s2">&#34;my-secret-value&#34;</span><span class="p">),</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kr">const</span> <span class="nx">cfg</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">pulumi</span><span class="p">.</span><span class="nx">Config</span><span class="p">()</span>
+<span class="kr">const</span> <span class="nx">param</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">Parameter</span><span class="p">(</span><span class="s2">&#34;a-secret-param&#34;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="kr">type</span><span class="o">:</span> <span class="s2">&#34;SecureString&#34;</span><span class="p">,</span>
+    <span class="nx">value</span>: <span class="kt">cfg.requireSecret</span><span class="p">(</span><span class="s2">&#34;my-secret-value&#34;</span><span class="p">),</span>
+<span class="p">});</span>
+</code></pre></td></tr></table>
 </div>
 </div></li>
 <li>
@@ -1269,8 +1269,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pulumi stack init &lt;name&gt; --secrets-provider<span class="o">=</span><span class="s2">&#34;&lt;provider&gt;://&lt;provider-settings&gt;&#34;</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">pulumi stack init &lt;name&gt; --secrets-provider<span class="o">=</span><span class="s2">&#34;&lt;provider&gt;://&lt;provider-settings&gt;&#34;</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>关于 <code>&quot;&lt;provider&gt;://&lt;provider-settings&gt;&quot;</code> 的具体内容，参考 <a href="https://www.pulumi.com/docs/intro/concepts/secrets/#available-encryption-providers" target="_blank" rel="noopener noreffer"><strong>Available Encryption Providers</strong></a>。</p>
 <p>如果要更改当前 Stack 的 Secret Provider，可以使用 <code>stack change-secret-provider</code> 命令。这只会影响后续新的 Secret Output 或配置。</p>
@@ -1279,8 +1279,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pulumi stack change-secrets-provider <span class="s2">&#34;&lt;secrets-provider&gt;&#34;</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">pulumi stack change-secrets-provider <span class="s2">&#34;&lt;secrets-provider&gt;&#34;</span>
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="8-function-serialization">8 Function Serialization</h2>
 <p>Pulumi 支持使用 TypeScript 或者 JavaScript 直接编写函数计算的 Function。</p>
@@ -1297,15 +1297,15 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">aws</span> <span class="kr">from</span> <span class="s2">&#34;@pulumi/aws&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">lambda</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">lambda</span><span class="p">.</span><span class="nx">CallbackFunction</span><span class="p">(</span><span class="s2">&#34;mylambda&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">callback</span>: <span class="kt">async</span> <span class="nx">e</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// your code here ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="nx">someOutput</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">aws</span> <span class="kr">from</span> <span class="s2">&#34;@pulumi/aws&#34;</span><span class="p">;</span>
+
+<span class="kr">const</span> <span class="nx">lambda</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">lambda</span><span class="p">.</span><span class="nx">CallbackFunction</span><span class="p">(</span><span class="s2">&#34;mylambda&#34;</span><span class="p">,</span> <span class="p">{</span>
+  <span class="nx">callback</span>: <span class="kt">async</span> <span class="nx">e</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// your code here ...
+</span><span class="c1"></span>    <span class="k">return</span> <span class="nx">someOutput</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>甚至，可以直接设置 Lambda 函数的触发器：</p>
 <div class="highlight"><div class="chroma">
@@ -1324,19 +1324,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">bucket</span><span class="p">.</span><span class="nx">onObjectCreated</span><span class="p">(</span>
-</span></span><span class="line"><span class="cl">  <span class="s2">&#34;mytrigger&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">lambda</span><span class="p">.</span><span class="nx">CallbackFunction</span><span class="p">(</span><span class="s2">&#34;mylambda&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">callback</span>: <span class="kt">async</span> <span class="nx">eventInfo</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">record</span> <span class="k">of</span> <span class="nx">eventInfo</span><span class="p">.</span><span class="nx">Records</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="c1">// process each record we&#39;re notified about.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">},</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// Only let this Lambda run for a minute before forcefully terminating it.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">timeout</span>: <span class="kt">60</span>
-</span></span><span class="line"><span class="cl">  <span class="p">})</span>
-</span></span><span class="line"><span class="cl"><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="nx">bucket</span><span class="p">.</span><span class="nx">onObjectCreated</span><span class="p">(</span>
+  <span class="s2">&#34;mytrigger&#34;</span><span class="p">,</span>
+  <span class="k">new</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">lambda</span><span class="p">.</span><span class="nx">CallbackFunction</span><span class="p">(</span><span class="s2">&#34;mylambda&#34;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">callback</span>: <span class="kt">async</span> <span class="nx">eventInfo</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">record</span> <span class="k">of</span> <span class="nx">eventInfo</span><span class="p">.</span><span class="nx">Records</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// process each record we&#39;re notified about.
+</span><span class="c1"></span>      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="c1">// Only let this Lambda run for a minute before forcefully terminating it.
+</span><span class="c1"></span>    <span class="nx">timeout</span>: <span class="kt">60</span>
+  <span class="p">})</span>
+<span class="p">);</span>
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="参考">参考</h2>
 <ul>
@@ -1347,8 +1347,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-04-15&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/09268198a0aaed59bc816a6e7e1577bbadf0cf10" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 09268198a0aaed59bc816a6e7e1577bbadf0cf10: post: crossplane">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>0926819</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bdcecc6dbc9f0ccaeed88ba66ca5edb4241df74c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bdcecc6dbc9f0ccaeed88ba66ca5edb4241df74c: fix">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bdcecc6</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -1372,7 +1372,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

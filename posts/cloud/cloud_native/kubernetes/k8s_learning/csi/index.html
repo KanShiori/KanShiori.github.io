@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/csi/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-11-20T08:22:28+00:00" />
-<meta property="article:modified_time" content="2022-04-28T12:10:58+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:47:57+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/csi\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  4753 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/csi\/","datePublished": "2021-11-20T08:22:28+00:00","dateModified": "2022-04-28T12:10:58+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  4754 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/csi\/","datePublished": "2021-11-20T08:22:28+00:00","dateModified": "2022-06-12T22:47:57+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kubernetes - CSI 概念与实现</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-11-20">2021-11-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4753 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-11-20">2021-11-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4754 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 10 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -275,18 +275,18 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="line"><span class="cl"><span class="kd">service</span> <span class="n">Identity</span> <span class="p">{</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 返回插件的 name 与 version
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">GetPluginInfo</span><span class="p">(</span><span class="n">GetPluginInfoRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">GetPluginInfoResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 得到插件拥有的功能
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">GetPluginCapabilities</span><span class="p">(</span><span class="n">GetPluginCapabilitiesRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">GetPluginCapabilitiesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 查询插件是否正在运行中
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">Probe</span> <span class="p">(</span><span class="n">ProbeRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ProbeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="p">}</span><span class="err">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="kd">service</span> <span class="n">Identity</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 返回插件的 name 与 version
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">GetPluginInfo</span><span class="p">(</span><span class="n">GetPluginInfoRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">GetPluginInfoResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 得到插件拥有的功能
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">GetPluginCapabilities</span><span class="p">(</span><span class="n">GetPluginCapabilitiesRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">GetPluginCapabilitiesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 查询插件是否正在运行中
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">Probe</span> <span class="p">(</span><span class="n">ProbeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ProbeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span><span class="p">}</span><span class="err">
+</span></code></pre></td></tr></table>
 </div>
 </div><h4 id="122-csi-controller">1.2.2 CSI Controller</h4>
 <p><strong><code>CSI Controller</code></strong> 服务<strong>定义了对 Volume 的管理接口</strong>，包括：Provision/Delete、Attach/Detach、Snapshot 等操作。这些操作都是属于 Controller 的操作，在 Master 节点上执行。</p>
@@ -337,50 +337,50 @@
 </span><span class="lnt">43
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="line"><span class="cl"><span class="kd">service</span> <span class="n">Controller</span> <span class="p">{</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 创建一个 Volume
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">CreateVolume</span> <span class="p">(</span><span class="n">CreateVolumeRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">CreateVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 删除一个 Volume
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">DeleteVolume</span> <span class="p">(</span><span class="n">DeleteVolumeRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">DeleteVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// Attach Volume 到指定的 Node
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerPublishVolume</span> <span class="p">(</span><span class="n">ControllerPublishVolumeRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerPublishVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// Detach Volume
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerUnpublishVolume</span> <span class="p">(</span><span class="n">ControllerUnpublishVolumeRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerUnpublishVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 检查一个 Volume 的能力
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ValidateVolumeCapabilities</span> <span class="p">(</span><span class="n">ValidateVolumeCapabilitiesRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ValidateVolumeCapabilitiesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 查询已经创建的所有的 Volume
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ListVolumes</span> <span class="p">(</span><span class="n">ListVolumesRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ListVolumesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 查询存储池的容量
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">GetCapacity</span> <span class="p">(</span><span class="n">GetCapacityRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">GetCapacityResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 查询 Controller 支持的功能
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerGetCapabilities</span> <span class="p">(</span><span class="n">ControllerGetCapabilitiesRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerGetCapabilitiesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 创建一个 Snapshot
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">CreateSnapshot</span> <span class="p">(</span><span class="n">CreateSnapshotRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">CreateSnapshotResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 删除一个 Snapshot
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">DeleteSnapshot</span> <span class="p">(</span><span class="n">DeleteSnapshotRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">DeleteSnapshotResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 查询所有创建的 Snapshot
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ListSnapshots</span> <span class="p">(</span><span class="n">ListSnapshotsRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ListSnapshotsResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 扩容一个 Volume
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerExpandVolume</span> <span class="p">(</span><span class="n">ControllerExpandVolumeRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerExpandVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 查询一个 Volume
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerGetVolume</span> <span class="p">(</span><span class="n">ControllerGetVolumeRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerGetVolumeResponse</span><span class="p">)</span> <span class="p">{</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>        <span class="k">option</span> <span class="p">(</span><span class="n">alpha_method</span><span class="p">)</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="p">}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="p">}</span><span class="err">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="kd">service</span> <span class="n">Controller</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 创建一个 Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">CreateVolume</span> <span class="p">(</span><span class="n">CreateVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">CreateVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 删除一个 Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">DeleteVolume</span> <span class="p">(</span><span class="n">DeleteVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">DeleteVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// Attach Volume 到指定的 Node
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerPublishVolume</span> <span class="p">(</span><span class="n">ControllerPublishVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerPublishVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// Detach Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerUnpublishVolume</span> <span class="p">(</span><span class="n">ControllerUnpublishVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerUnpublishVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 检查一个 Volume 的能力
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ValidateVolumeCapabilities</span> <span class="p">(</span><span class="n">ValidateVolumeCapabilitiesRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ValidateVolumeCapabilitiesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 查询已经创建的所有的 Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ListVolumes</span> <span class="p">(</span><span class="n">ListVolumesRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ListVolumesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 查询存储池的容量
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">GetCapacity</span> <span class="p">(</span><span class="n">GetCapacityRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">GetCapacityResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 查询 Controller 支持的功能
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerGetCapabilities</span> <span class="p">(</span><span class="n">ControllerGetCapabilitiesRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerGetCapabilitiesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 创建一个 Snapshot
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">CreateSnapshot</span> <span class="p">(</span><span class="n">CreateSnapshotRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">CreateSnapshotResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 删除一个 Snapshot
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">DeleteSnapshot</span> <span class="p">(</span><span class="n">DeleteSnapshotRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">DeleteSnapshotResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 查询所有创建的 Snapshot
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ListSnapshots</span> <span class="p">(</span><span class="n">ListSnapshotsRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ListSnapshotsResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 扩容一个 Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerExpandVolume</span> <span class="p">(</span><span class="n">ControllerExpandVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerExpandVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 查询一个 Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerGetVolume</span> <span class="p">(</span><span class="n">ControllerGetVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerGetVolumeResponse</span><span class="p">)</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>        <span class="k">option</span> <span class="p">(</span><span class="n">alpha_method</span><span class="p">)</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span><span class="err">
+</span><span class="err"></span>    <span class="p">}</span><span class="err">
+</span><span class="err"></span><span class="p">}</span><span class="err">
+</span></code></pre></td></tr></table>
 </div>
 </div><h4 id="123-csi-node">1.2.3 CSI Node</h4>
 <p><strong><code>CSI Node</code></strong> 提供<strong>在 Node 上的操作</strong>，包括 MountDevice 与 Setup 等操作。</p>
@@ -414,33 +414,33 @@
 </span><span class="lnt">26
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="line"><span class="cl"><span class="kd">service</span> <span class="n">Node</span> <span class="p">{</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 将 Volume 挂载到一个全局目录，即 MountDevice 操作
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeStageVolume</span> <span class="p">(</span><span class="n">NodeStageVolumeRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeStageVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 将 Volume 取消挂载全局目录
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeUnstageVolume</span> <span class="p">(</span><span class="n">NodeUnstageVolumeRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeUnstageVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 将 Volume 挂载到 Pod 目录，即 Setup 操作
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodePublishVolume</span> <span class="p">(</span><span class="n">NodePublishVolumeRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodePublishVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 将 Volume 取消挂载 Pod 目录
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeUnpublishVolume</span> <span class="p">(</span><span class="n">NodeUnpublishVolumeRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeUnpublishVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 返回 Volume 信息
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeGetVolumeStats</span> <span class="p">(</span><span class="n">NodeGetVolumeStatsRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeGetVolumeStatsResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 扩容 Volume
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeExpandVolume</span><span class="p">(</span><span class="n">NodeExpandVolumeRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeExpandVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 返回 Node 插件功能，例如是否只是 stage/unstage
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeGetCapabilities</span> <span class="p">(</span><span class="n">NodeGetCapabilitiesRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeGetCapabilitiesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="c1">// 返回插件对应的节点信息
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeGetInfo</span> <span class="p">(</span><span class="n">NodeGetInfoRequest</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeGetInfoResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="p">}</span><span class="err">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="kd">service</span> <span class="n">Node</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 将 Volume 挂载到一个全局目录，即 MountDevice 操作
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeStageVolume</span> <span class="p">(</span><span class="n">NodeStageVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeStageVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 将 Volume 取消挂载全局目录
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeUnstageVolume</span> <span class="p">(</span><span class="n">NodeUnstageVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeUnstageVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 将 Volume 挂载到 Pod 目录，即 Setup 操作
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodePublishVolume</span> <span class="p">(</span><span class="n">NodePublishVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodePublishVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 将 Volume 取消挂载 Pod 目录
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeUnpublishVolume</span> <span class="p">(</span><span class="n">NodeUnpublishVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeUnpublishVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 返回 Volume 信息
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeGetVolumeStats</span> <span class="p">(</span><span class="n">NodeGetVolumeStatsRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeGetVolumeStatsResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 扩容 Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeExpandVolume</span><span class="p">(</span><span class="n">NodeExpandVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeExpandVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 返回 Node 插件功能，例如是否只是 stage/unstage
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeGetCapabilities</span> <span class="p">(</span><span class="n">NodeGetCapabilitiesRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeGetCapabilitiesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 返回插件对应的节点信息
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeGetInfo</span> <span class="p">(</span><span class="n">NodeGetInfoRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeGetInfoResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span><span class="p">}</span><span class="err">
+</span></code></pre></td></tr></table>
 </div>
 </div><h2 id="2-csi-相关资源对象">2 CSI 相关资源对象</h2>
 <h3 id="21-csidriver">2.1 CSIDriver</h3>
@@ -465,23 +465,23 @@
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage.k8s.io/v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CSIDriver</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mycsidriver.example.com</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">attachRequired</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">podInfoOnMount</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">fsGroupPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">File</span><span class="w"> </span><span class="c"># added in Kubernetes 1.19, this field is GA as of Kubernetes 1.23</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">volumeLifecycleModes</span><span class="p">:</span><span class="w"> </span><span class="c"># added in Kubernetes 1.16, this field is beta</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="l">Persistent</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="l">Ephemeral</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">tokenRequests</span><span class="p">:</span><span class="w"> </span><span class="c"># added in Kubernetes 1.20. See status at https://kubernetes-csi.github.io/docs/token-requests.html#status</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">audience</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;gcp&#34;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">audience</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&#34;</span><span class="w"> </span><span class="c"># empty string means defaulting to the `--api-audiences` of kube-apiserver</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">expirationSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">3600</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">requiresRepublish</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="c"># added in Kubernetes 1.20. See status at https://kubernetes-csi.github.io/docs/token-requests.html#status</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage.k8s.io/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CSIDriver</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mycsidriver.example.com</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">attachRequired</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">podInfoOnMount</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">fsGroupPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">File</span><span class="w"> </span><span class="c"># added in Kubernetes 1.19, this field is GA as of Kubernetes 1.23</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumeLifecycleModes</span><span class="p">:</span><span class="w"> </span><span class="c"># added in Kubernetes 1.16, this field is beta</span><span class="w">
+</span><span class="w">    </span>- <span class="l">Persistent</span><span class="w">
+</span><span class="w">    </span>- <span class="l">Ephemeral</span><span class="w">
+</span><span class="w">  </span><span class="nt">tokenRequests</span><span class="p">:</span><span class="w"> </span><span class="c"># added in Kubernetes 1.20. See status at https://kubernetes-csi.github.io/docs/token-requests.html#status</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">audience</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;gcp&#34;</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">audience</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&#34;</span><span class="w"> </span><span class="c"># empty string means defaulting to the `--api-audiences` of kube-apiserver</span><span class="w">
+</span><span class="w">      </span><span class="nt">expirationSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">3600</span><span class="w">
+</span><span class="w">  </span><span class="nt">requiresRepublish</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="c"># added in Kubernetes 1.20. See status at https://kubernetes-csi.github.io/docs/token-requests.html#status</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>相关字段含义如下：</p>
 <ul>
@@ -513,21 +513,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CSINode</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kube-node-5</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ownerReferences</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Node</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kube-node-5</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l">f442c38a-f0f3-4a79-8153-3e5bcd7c91a4</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">drivers</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">hostpath.csi.k8s.io</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">nodeID</span><span class="p">:</span><span class="w"> </span><span class="l">kube-node-5</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">topologyKeys</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="l">topology.hostpath.csi/node</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CSINode</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kube-node-5</span><span class="w">
+</span><span class="w">  </span><span class="nt">ownerReferences</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Node</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kube-node-5</span><span class="w">
+</span><span class="w">    </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l">f442c38a-f0f3-4a79-8153-3e5bcd7c91a4</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">drivers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">hostpath.csi.k8s.io</span><span class="w">
+</span><span class="w">    </span><span class="nt">nodeID</span><span class="p">:</span><span class="w"> </span><span class="l">kube-node-5</span><span class="w">
+</span><span class="w">    </span><span class="nt">topologyKeys</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">topology.hostpath.csi/node</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>drivers - 该 Node 上运行的所有 CSI Driver
@@ -562,24 +562,24 @@
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PersistentVolume</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pv0003</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># ...</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">csi</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l">hostpath.csi.k8s.io</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumeHandle</span><span class="p">:</span><span class="w"> </span><span class="l">5a760aab-d579-11eb-ba5c-fa03df0e077d</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">readonly</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">fsType</span><span class="p">:</span><span class="w"> </span><span class="l">Filesystem</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumeAttributes</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">standard</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">storage.kubernetes.io/csiProvisionerIdentity</span><span class="p">:</span><span class="w"> </span><span class="m">1624246373313-8081</span>-<span class="l">hostpath.csi.k8s.io-kube-node-5</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># controllerPublishSecretRef: []</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># nodeStageSecretRef: []</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># nodePublishSecretRef: []</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PersistentVolume</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pv0003</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">csi</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l">hostpath.csi.k8s.io</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumeHandle</span><span class="p">:</span><span class="w"> </span><span class="l">5a760aab-d579-11eb-ba5c-fa03df0e077d</span><span class="w">
+</span><span class="w">    </span><span class="nt">readonly</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="w">    </span><span class="nt">fsType</span><span class="p">:</span><span class="w"> </span><span class="l">Filesystem</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumeAttributes</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">standard</span><span class="w">
+</span><span class="w">      </span><span class="nt">storage.kubernetes.io/csiProvisionerIdentity</span><span class="p">:</span><span class="w"> </span><span class="m">1624246373313-8081</span>-<span class="l">hostpath.csi.k8s.io-kube-node-5</span><span class="w">
+</span><span class="w">    </span><span class="c"># controllerPublishSecretRef: []</span><span class="w">
+</span><span class="w">    </span><span class="c"># nodeStageSecretRef: []</span><span class="w">
+</span><span class="w">    </span><span class="c"># nodePublishSecretRef: []</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>driver - CSI Driver 的名字</li>
@@ -617,27 +617,27 @@
 </span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage/v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">VolumeAttachment</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pv0003</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">attacher</span><span class="p">:</span><span class="w"> </span><span class="l">www.example.csi.com</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">nodeName</span><span class="p">:</span><span class="w"> </span><span class="l">node-1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">persistentVolumeName</span><span class="p">:</span><span class="w"> </span><span class="l">pvc0003</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">inlineVolumeSpec</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c"># pvc spec</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">attached</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">attachmentMetadata</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">#   attachError:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">#     time:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">#     message:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">#   detachError:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">#     time:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">#     message:</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">VolumeAttachment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pv0003</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">attacher</span><span class="p">:</span><span class="w"> </span><span class="l">www.example.csi.com</span><span class="w">
+</span><span class="w">  </span><span class="nt">nodeName</span><span class="p">:</span><span class="w"> </span><span class="l">node-1</span><span class="w">
+</span><span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">persistentVolumeName</span><span class="p">:</span><span class="w"> </span><span class="l">pvc0003</span><span class="w">
+</span><span class="w">    </span><span class="nt">inlineVolumeSpec</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="c"># pvc spec</span><span class="w">
+</span><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">attached</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">attachmentMetadata</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w"></span><span class="c">#   attachError:</span><span class="w">
+</span><span class="w"></span><span class="c">#     time:</span><span class="w">
+</span><span class="w"></span><span class="c">#     message:</span><span class="w">
+</span><span class="w"></span><span class="c">#   detachError:</span><span class="w">
+</span><span class="w"></span><span class="c">#     time:</span><span class="w">
+</span><span class="w"></span><span class="c">#     message:</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>spec
@@ -685,21 +685,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">csiPlugin</span> <span class="kd">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">host</span>                      <span class="nx">volume</span><span class="p">.</span><span class="nx">VolumeHost</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">csiDriverLister</span>           <span class="nx">storagelisters</span><span class="p">.</span><span class="nx">CSIDriverLister</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">serviceAccountTokenGetter</span> <span class="kd">func</span><span class="p">(</span><span class="nx">namespace</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">tr</span> <span class="o">*</span><span class="nx">authenticationv1</span><span class="p">.</span><span class="nx">TokenRequest</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">authenticationv1</span><span class="p">.</span><span class="nx">TokenRequest</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">volumeAttachmentLister</span>    <span class="nx">storagelisters</span><span class="p">.</span><span class="nx">VolumeAttachmentLister</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// ProbeVolumePlugins returns implemented plugins
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">ProbeVolumePlugins</span><span class="p">()</span> <span class="p">[]</span><span class="nx">volume</span><span class="p">.</span><span class="nx">VolumePlugin</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">p</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">csiPlugin</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">host</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="p">[]</span><span class="nx">volume</span><span class="p">.</span><span class="nx">VolumePlugin</span><span class="p">{</span><span class="nx">p</span><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">csiPlugin</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">host</span>                      <span class="nx">volume</span><span class="p">.</span><span class="nx">VolumeHost</span>
+	<span class="nx">csiDriverLister</span>           <span class="nx">storagelisters</span><span class="p">.</span><span class="nx">CSIDriverLister</span>
+	<span class="nx">serviceAccountTokenGetter</span> <span class="kd">func</span><span class="p">(</span><span class="nx">namespace</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">tr</span> <span class="o">*</span><span class="nx">authenticationv1</span><span class="p">.</span><span class="nx">TokenRequest</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">authenticationv1</span><span class="p">.</span><span class="nx">TokenRequest</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nx">volumeAttachmentLister</span>    <span class="nx">storagelisters</span><span class="p">.</span><span class="nx">VolumeAttachmentLister</span>
+<span class="p">}</span>
+
+<span class="c1">// ProbeVolumePlugins returns implemented plugins
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">ProbeVolumePlugins</span><span class="p">()</span> <span class="p">[]</span><span class="nx">volume</span><span class="p">.</span><span class="nx">VolumePlugin</span> <span class="p">{</span>
+	<span class="nx">p</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">csiPlugin</span><span class="p">{</span>
+		<span class="nx">host</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="p">[]</span><span class="nx">volume</span><span class="p">.</span><span class="nx">VolumePlugin</span><span class="p">{</span><span class="nx">p</span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h4 id="311-attacher">3.1.1 Attacher</h4>
 <p>csiPlugin 实现了 <code>CanAttach()</code> 接口，用于让 Kubernetes 知晓是否需要执行 Attach 操作。</p>
@@ -758,58 +758,58 @@
 </span><span class="lnt">51
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// CanAttach 判断 Volume 是否需要 Attach
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">csiPlugin</span><span class="p">)</span> <span class="nf">CanAttach</span><span class="p">(</span><span class="nx">spec</span> <span class="o">*</span><span class="nx">volume</span><span class="p">.</span><span class="nx">Spec</span><span class="p">)</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// inline Volume 不支持
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">inlineEnabled</span> <span class="o">:=</span> <span class="nx">utilfeature</span><span class="p">.</span><span class="nx">DefaultFeatureGate</span><span class="p">.</span><span class="nf">Enabled</span><span class="p">(</span><span class="nx">features</span><span class="p">.</span><span class="nx">CSIInlineVolume</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">inlineEnabled</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">volumeLifecycleMode</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nf">getVolumeLifecycleMode</span><span class="p">(</span><span class="nx">spec</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">volumeLifecycleMode</span> <span class="o">==</span> <span class="nx">storage</span><span class="p">.</span><span class="nx">VolumeLifecycleEphemeral</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span><span class="nf">Info</span><span class="p">(</span><span class="nf">log</span><span class="p">(</span><span class="s">&#34;plugin.CanAttach = false, ephemeral mode detected for spec %v&#34;</span><span class="p">,</span> <span class="nx">spec</span><span class="p">.</span><span class="nf">Name</span><span class="p">()))</span>
-</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 取得 PV 定义与 CSI Driver name
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">pvSrc</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">getCSISourceFromSpec</span><span class="p">(</span><span class="nx">spec</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="nx">driverName</span> <span class="o">:=</span> <span class="nx">pvSrc</span><span class="p">.</span><span class="nx">Driver</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 检查该 CSI Driver 是否需要 Attach
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">skipAttach</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nf">skipAttach</span><span class="p">(</span><span class="nx">driverName</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="p">!</span><span class="nx">skipAttach</span><span class="p">,</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">csiPlugin</span><span class="p">)</span> <span class="nf">skipAttach</span><span class="p">(</span><span class="nx">driver</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 得到对应的 CSIDriver 资源
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">csiDriver</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">csiDriverLister</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">driver</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">apierrors</span><span class="p">.</span><span class="nf">IsNotFound</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="c1">// CSIDriver 对象不存在，默认为需要 Attach
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 通过 spec.attachRequired 判断是否需要 Attach
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">csiDriver</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">AttachRequired</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="o">*</span><span class="nx">csiDriver</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">AttachRequired</span> <span class="o">==</span> <span class="kc">false</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// CanAttach 判断 Volume 是否需要 Attach
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">csiPlugin</span><span class="p">)</span> <span class="nf">CanAttach</span><span class="p">(</span><span class="nx">spec</span> <span class="o">*</span><span class="nx">volume</span><span class="p">.</span><span class="nx">Spec</span><span class="p">)</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// inline Volume 不支持
+</span><span class="c1"></span>    <span class="nx">inlineEnabled</span> <span class="o">:=</span> <span class="nx">utilfeature</span><span class="p">.</span><span class="nx">DefaultFeatureGate</span><span class="p">.</span><span class="nf">Enabled</span><span class="p">(</span><span class="nx">features</span><span class="p">.</span><span class="nx">CSIInlineVolume</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">inlineEnabled</span> <span class="p">{</span>
+		<span class="nx">volumeLifecycleMode</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nf">getVolumeLifecycleMode</span><span class="p">(</span><span class="nx">spec</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
+		<span class="p">}</span>
+
+		<span class="k">if</span> <span class="nx">volumeLifecycleMode</span> <span class="o">==</span> <span class="nx">storage</span><span class="p">.</span><span class="nx">VolumeLifecycleEphemeral</span> <span class="p">{</span>
+			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span><span class="nf">Info</span><span class="p">(</span><span class="nf">log</span><span class="p">(</span><span class="s">&#34;plugin.CanAttach = false, ephemeral mode detected for spec %v&#34;</span><span class="p">,</span> <span class="nx">spec</span><span class="p">.</span><span class="nf">Name</span><span class="p">()))</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">nil</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 取得 PV 定义与 CSI Driver name
+</span><span class="c1"></span>	<span class="nx">pvSrc</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">getCSISourceFromSpec</span><span class="p">(</span><span class="nx">spec</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+
+	<span class="nx">driverName</span> <span class="o">:=</span> <span class="nx">pvSrc</span><span class="p">.</span><span class="nx">Driver</span>
+
+	<span class="c1">// 检查该 CSI Driver 是否需要 Attach
+</span><span class="c1"></span>	<span class="nx">skipAttach</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nf">skipAttach</span><span class="p">(</span><span class="nx">driverName</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="p">!</span><span class="nx">skipAttach</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">csiPlugin</span><span class="p">)</span> <span class="nf">skipAttach</span><span class="p">(</span><span class="nx">driver</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// ...
+</span><span class="c1"></span>
+	<span class="c1">// 得到对应的 CSIDriver 资源
+</span><span class="c1"></span>	<span class="nx">csiDriver</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">csiDriverLister</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">driver</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">apierrors</span><span class="p">.</span><span class="nf">IsNotFound</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+			<span class="c1">// CSIDriver 对象不存在，默认为需要 Attach
+</span><span class="c1"></span>			<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">nil</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="c1">// 通过 spec.attachRequired 判断是否需要 Attach
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">csiDriver</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">AttachRequired</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="o">*</span><span class="nx">csiDriver</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">AttachRequired</span> <span class="o">==</span> <span class="kc">false</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="32-kubelet-层的实现">3.2 Kubelet 层的实现</h3>
 <h4 id="321-plugin-watcher---注册插件">3.2.1 Plugin Watcher - 注册插件</h4>
@@ -834,14 +834,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Watcher 监控 Plugin 的注册
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">Watcher</span> <span class="kd">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">path</span>                <span class="kt">string</span>            <span class="c1">// 根目录
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">fs</span>                  <span class="nx">utilfs</span><span class="p">.</span><span class="nx">Filesystem</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">fsWatcher</span>           <span class="o">*</span><span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Watcher</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">desiredStateOfWorld</span> <span class="nx">cache</span><span class="p">.</span><span class="nx">DesiredStateOfWorld</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Watcher 监控 Plugin 的注册
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Watcher</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">path</span>                <span class="kt">string</span>            <span class="c1">// 根目录
+</span><span class="c1"></span>	<span class="nx">fs</span>                  <span class="nx">utilfs</span><span class="p">.</span><span class="nx">Filesystem</span>
+	<span class="nx">fsWatcher</span>           <span class="o">*</span><span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Watcher</span>
+	<span class="nx">desiredStateOfWorld</span> <span class="nx">cache</span><span class="p">.</span><span class="nx">DesiredStateOfWorld</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>Watcher.Start() 经过初始的扫描与处理后，会启动一个 Goroutine 监控文件系统事件，并处理。</p>
 <div class="highlight"><div class="chroma">
@@ -925,84 +925,84 @@
 </span><span class="lnt">77
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="o">*</span><span class="nx">Watcher</span><span class="p">)</span> <span class="nf">Start</span><span class="p">(</span><span class="nx">stopCh</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 创建根目录
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nf">init</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 创建 fs watcher
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">fsWatcher</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">fsnotify</span><span class="p">.</span><span class="nf">NewWatcher</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to start plugin fsWatcher, err: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">w</span><span class="p">.</span><span class="nx">fsWatcher</span> <span class="p">=</span> <span class="nx">fsWatcher</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 扫描当前根目录
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nf">traversePluginDir</span><span class="p">(</span><span class="nx">w</span><span class="p">.</span><span class="nx">path</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">klog</span><span class="p">.</span><span class="nf">ErrorS</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;Failed to traverse plugin socket path&#34;</span><span class="p">,</span> <span class="s">&#34;path&#34;</span><span class="p">,</span> <span class="nx">w</span><span class="p">.</span><span class="nx">path</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 启动监控文件系统的 Groutine
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">fsWatcher</span> <span class="o">*</span><span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Watcher</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">select</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">case</span> <span class="nx">event</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">fsWatcher</span><span class="p">.</span><span class="nx">Events</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Op</span><span class="o">&amp;</span><span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Create</span> <span class="o">==</span> <span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Create</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">					<span class="c1">// 处理文件创建事件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					<span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nf">handleCreateEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">				<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Op</span><span class="o">&amp;</span><span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Remove</span> <span class="o">==</span> <span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Remove</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">					<span class="c1">// 处理文件删除事件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					<span class="nx">w</span><span class="p">.</span><span class="nf">handleDeleteEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">				<span class="p">}</span>
-</span></span><span class="line"><span class="cl">				<span class="k">continue</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">			<span class="k">case</span> <span class="nx">err</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">fsWatcher</span><span class="p">.</span><span class="nx">Errors</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">					<span class="nx">klog</span><span class="p">.</span><span class="nf">ErrorS</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;FsWatcher received error&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">				<span class="p">}</span>
-</span></span><span class="line"><span class="cl">				<span class="k">continue</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">			<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">stopCh</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">				<span class="nx">w</span><span class="p">.</span><span class="nx">fsWatcher</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">				<span class="k">return</span>
-</span></span><span class="line"><span class="cl">			<span class="p">}</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}(</span><span class="nx">fsWatcher</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="o">*</span><span class="nx">Watcher</span><span class="p">)</span> <span class="nf">traversePluginDir</span><span class="p">(</span><span class="nx">dir</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 添加根目录的监控
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nx">fsWatcher</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="nx">dir</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// 遍历根目录处理
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nx">w</span><span class="p">.</span><span class="nx">fs</span><span class="p">.</span><span class="nf">Walk</span><span class="p">(</span><span class="nx">dir</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">path</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">info</span> <span class="nx">os</span><span class="p">.</span><span class="nx">FileInfo</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl">		<span class="c1">// do not call fsWatcher.Add twice on the root dir to avoid potential problems.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span> <span class="nx">path</span> <span class="o">==</span> <span class="nx">dir</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="k">switch</span> <span class="nx">mode</span> <span class="o">:=</span> <span class="nx">info</span><span class="p">.</span><span class="nf">Mode</span><span class="p">();</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nx">mode</span><span class="p">.</span><span class="nf">IsDir</span><span class="p">():</span>
-</span></span><span class="line"><span class="cl">			<span class="c1">// 根目录下的子目录页加入监控
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nx">fsWatcher</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nx">mode</span><span class="o">&amp;</span><span class="nx">os</span><span class="p">.</span><span class="nx">ModeSocket</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">			<span class="c1">// socket 文件进行处理
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="nx">event</span> <span class="o">:=</span> <span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Event</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">				<span class="nx">Name</span><span class="p">:</span> <span class="nx">path</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">				<span class="nx">Op</span><span class="p">:</span>   <span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Create</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">			<span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="nx">w</span><span class="p">.</span><span class="nf">handleCreateEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl">	<span class="p">})</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="o">*</span><span class="nx">Watcher</span><span class="p">)</span> <span class="nf">Start</span><span class="p">(</span><span class="nx">stopCh</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c1">// 创建根目录
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nf">init</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">err</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 创建 fs watcher
+</span><span class="c1"></span>	<span class="nx">fsWatcher</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">fsnotify</span><span class="p">.</span><span class="nf">NewWatcher</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to start plugin fsWatcher, err: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">w</span><span class="p">.</span><span class="nx">fsWatcher</span> <span class="p">=</span> <span class="nx">fsWatcher</span>
+
+	<span class="c1">// 扫描当前根目录
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nf">traversePluginDir</span><span class="p">(</span><span class="nx">w</span><span class="p">.</span><span class="nx">path</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">ErrorS</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;Failed to traverse plugin socket path&#34;</span><span class="p">,</span> <span class="s">&#34;path&#34;</span><span class="p">,</span> <span class="nx">w</span><span class="p">.</span><span class="nx">path</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 启动监控文件系统的 Groutine
+</span><span class="c1"></span>	<span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">fsWatcher</span> <span class="o">*</span><span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Watcher</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">{</span>
+			<span class="k">select</span> <span class="p">{</span>
+			<span class="k">case</span> <span class="nx">event</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">fsWatcher</span><span class="p">.</span><span class="nx">Events</span><span class="p">:</span>
+				<span class="k">if</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Op</span><span class="o">&amp;</span><span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Create</span> <span class="o">==</span> <span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Create</span> <span class="p">{</span>
+					<span class="c1">// 处理文件创建事件
+</span><span class="c1"></span>					<span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nf">handleCreateEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Op</span><span class="o">&amp;</span><span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Remove</span> <span class="o">==</span> <span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Remove</span> <span class="p">{</span>
+					<span class="c1">// 处理文件删除事件
+</span><span class="c1"></span>					<span class="nx">w</span><span class="p">.</span><span class="nf">handleDeleteEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
+				<span class="p">}</span>
+				<span class="k">continue</span>
+
+			<span class="k">case</span> <span class="nx">err</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">fsWatcher</span><span class="p">.</span><span class="nx">Errors</span><span class="p">:</span>
+				<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+					<span class="nx">klog</span><span class="p">.</span><span class="nf">ErrorS</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;FsWatcher received error&#34;</span><span class="p">)</span>
+				<span class="p">}</span>
+				<span class="k">continue</span>
+
+			<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">stopCh</span><span class="p">:</span>
+				<span class="nx">w</span><span class="p">.</span><span class="nx">fsWatcher</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+				<span class="k">return</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}(</span><span class="nx">fsWatcher</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="o">*</span><span class="nx">Watcher</span><span class="p">)</span> <span class="nf">traversePluginDir</span><span class="p">(</span><span class="nx">dir</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c1">// 添加根目录的监控
+</span><span class="c1"></span>	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nx">fsWatcher</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="nx">dir</span><span class="p">)</span>
+
+<span class="c1">// 遍历根目录处理
+</span><span class="c1"></span>	<span class="k">return</span> <span class="nx">w</span><span class="p">.</span><span class="nx">fs</span><span class="p">.</span><span class="nf">Walk</span><span class="p">(</span><span class="nx">dir</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">path</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">info</span> <span class="nx">os</span><span class="p">.</span><span class="nx">FileInfo</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span>
+		<span class="c1">// do not call fsWatcher.Add twice on the root dir to avoid potential problems.
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">path</span> <span class="o">==</span> <span class="nx">dir</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span>
+		<span class="p">}</span>
+
+		<span class="k">switch</span> <span class="nx">mode</span> <span class="o">:=</span> <span class="nx">info</span><span class="p">.</span><span class="nf">Mode</span><span class="p">();</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="nx">mode</span><span class="p">.</span><span class="nf">IsDir</span><span class="p">():</span>
+			<span class="c1">// 根目录下的子目录页加入监控
+</span><span class="c1"></span>			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nx">fsWatcher</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span>
+		<span class="k">case</span> <span class="nx">mode</span><span class="o">&amp;</span><span class="nx">os</span><span class="p">.</span><span class="nx">ModeSocket</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+			<span class="c1">// socket 文件进行处理
+</span><span class="c1"></span>			<span class="nx">event</span> <span class="o">:=</span> <span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Event</span><span class="p">{</span>
+				<span class="nx">Name</span><span class="p">:</span> <span class="nx">path</span><span class="p">,</span>
+				<span class="nx">Op</span><span class="p">:</span>   <span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Create</span><span class="p">,</span>
+			<span class="p">}</span>
+      <span class="nx">w</span><span class="p">.</span><span class="nf">handleCreateEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
+		<span class="p">}</span>
+
+		<span class="k">return</span> <span class="kc">nil</span>
+	<span class="p">})</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><p><code>handleCreateEvent()</code> 与 <code>handleDeleteEvent()</code> 就是将 socket 文件路径 添加/移除 到 desiredStateOfWorld。</p>
 <div class="highlight"><div class="chroma">
@@ -1043,41 +1043,41 @@
 </span><span class="lnt">34
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="o">*</span><span class="nx">Watcher</span><span class="p">)</span> <span class="nf">handleCreateEvent</span><span class="p">(</span><span class="nx">event</span> <span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Event</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// stat file
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">fi</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Stat</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Name</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	
-</span></span><span class="line"><span class="cl">  <span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">!</span><span class="nx">fi</span><span class="p">.</span><span class="nf">IsDir</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">isSocket</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">util</span><span class="p">.</span><span class="nf">IsUnixDomainSocket</span><span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nf">NormalizePath</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Name</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="c1">// 忽略其他类型文件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span> <span class="p">!</span><span class="nx">isSocket</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// 如果是 socket 文件，注册到 desiredStateOfWorld
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">return</span> <span class="nx">w</span><span class="p">.</span><span class="nf">handlePluginRegistration</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Name</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 如果是子目录，继续监控与处理
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nx">w</span><span class="p">.</span><span class="nf">traversePluginDir</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Name</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="o">*</span><span class="nx">Watcher</span><span class="p">)</span> <span class="nf">handlePluginRegistration</span><span class="p">(</span><span class="nx">socketPath</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nx">desiredStateOfWorld</span><span class="p">.</span><span class="nf">AddOrUpdatePlugin</span><span class="p">(</span><span class="nx">socketPath</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;error adding socket path %s or updating timestamp to desired state cache: %v&#34;</span><span class="p">,</span> <span class="nx">socketPath</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="o">*</span><span class="nx">Watcher</span><span class="p">)</span> <span class="nf">handleDeleteEvent</span><span class="p">(</span><span class="nx">event</span> <span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Event</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">socketPath</span> <span class="o">:=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Name</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">w</span><span class="p">.</span><span class="nx">desiredStateOfWorld</span><span class="p">.</span><span class="nf">RemovePlugin</span><span class="p">(</span><span class="nx">socketPath</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="o">*</span><span class="nx">Watcher</span><span class="p">)</span> <span class="nf">handleCreateEvent</span><span class="p">(</span><span class="nx">event</span> <span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Event</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c1">// stat file
+</span><span class="c1"></span>	<span class="nx">fi</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Stat</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Name</span><span class="p">)</span>
+	
+  <span class="c1">// ...
+</span><span class="c1"></span>
+	<span class="k">if</span> <span class="p">!</span><span class="nx">fi</span><span class="p">.</span><span class="nf">IsDir</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">isSocket</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">util</span><span class="p">.</span><span class="nf">IsUnixDomainSocket</span><span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nf">NormalizePath</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Name</span><span class="p">))</span>
+
+		<span class="c1">// 忽略其他类型文件
+</span><span class="c1"></span>		<span class="k">if</span> <span class="p">!</span><span class="nx">isSocket</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span>
+		<span class="p">}</span>
+
+    <span class="c1">// 如果是 socket 文件，注册到 desiredStateOfWorld
+</span><span class="c1"></span>		<span class="k">return</span> <span class="nx">w</span><span class="p">.</span><span class="nf">handlePluginRegistration</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Name</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 如果是子目录，继续监控与处理
+</span><span class="c1"></span>	<span class="k">return</span> <span class="nx">w</span><span class="p">.</span><span class="nf">traversePluginDir</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Name</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="o">*</span><span class="nx">Watcher</span><span class="p">)</span> <span class="nf">handlePluginRegistration</span><span class="p">(</span><span class="nx">socketPath</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.</span><span class="nx">desiredStateOfWorld</span><span class="p">.</span><span class="nf">AddOrUpdatePlugin</span><span class="p">(</span><span class="nx">socketPath</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;error adding socket path %s or updating timestamp to desired state cache: %v&#34;</span><span class="p">,</span> <span class="nx">socketPath</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="o">*</span><span class="nx">Watcher</span><span class="p">)</span> <span class="nf">handleDeleteEvent</span><span class="p">(</span><span class="nx">event</span> <span class="nx">fsnotify</span><span class="p">.</span><span class="nx">Event</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">socketPath</span> <span class="o">:=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Name</span>
+	<span class="nx">w</span><span class="p">.</span><span class="nx">desiredStateOfWorld</span><span class="p">.</span><span class="nf">RemovePlugin</span><span class="p">(</span><span class="nx">socketPath</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h4 id="322-plugin-manager---插件管理">3.2.2 Plugin Manager - 插件管理</h4>
 <p>Kubelet 中实现了 Plugin Manager 进行插件的记录与管理，其还是依靠 actualStateOfWorld 与 desiredStateOfWorld 协调，根据 Add/Remove 事件调用注册的 RegisterPlugin() 与 DeRegisterPlugin() 回调。</p>
@@ -1105,26 +1105,26 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Reconciler runs a periodic loop to reconcile the desired state of the world
-</span></span></span><span class="line"><span class="cl"><span class="c1">// with the actual state of the world by triggering register and unregister
-</span></span></span><span class="line"><span class="cl"><span class="c1">// operations. Also provides a means to add a handler for a plugin type.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">Reconciler</span> <span class="kd">interface</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="c1">// 运行 Reconciler
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">Run</span><span class="p">(</span><span class="nx">stopCh</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="c1">// 注册 Plugin 事件的回调
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">AddHandler</span><span class="p">(</span><span class="nx">pluginType</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">pluginHandler</span> <span class="nx">cache</span><span class="p">.</span><span class="nx">PluginHandler</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">reconciler</span> <span class="kd">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">operationExecutor</span>   <span class="nx">operationexecutor</span><span class="p">.</span><span class="nx">OperationExecutor</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">loopSleepDuration</span>   <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">desiredStateOfWorld</span> <span class="nx">cache</span><span class="p">.</span><span class="nx">DesiredStateOfWorld</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">actualStateOfWorld</span>  <span class="nx">cache</span><span class="p">.</span><span class="nx">ActualStateOfWorld</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">handlers</span>            <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">cache</span><span class="p">.</span><span class="nx">PluginHandler</span>  <span class="c1">// Plugin 事件回调
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Reconciler runs a periodic loop to reconcile the desired state of the world
+</span><span class="c1">// with the actual state of the world by triggering register and unregister
+</span><span class="c1">// operations. Also provides a means to add a handler for a plugin type.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Reconciler</span> <span class="kd">interface</span> <span class="p">{</span>
+  <span class="c1">// 运行 Reconciler
+</span><span class="c1"></span>	<span class="nf">Run</span><span class="p">(</span><span class="nx">stopCh</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+
+  <span class="c1">// 注册 Plugin 事件的回调
+</span><span class="c1"></span>	<span class="nf">AddHandler</span><span class="p">(</span><span class="nx">pluginType</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">pluginHandler</span> <span class="nx">cache</span><span class="p">.</span><span class="nx">PluginHandler</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">reconciler</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">operationExecutor</span>   <span class="nx">operationexecutor</span><span class="p">.</span><span class="nx">OperationExecutor</span>
+	<span class="nx">loopSleepDuration</span>   <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span>
+	<span class="nx">desiredStateOfWorld</span> <span class="nx">cache</span><span class="p">.</span><span class="nx">DesiredStateOfWorld</span>
+	<span class="nx">actualStateOfWorld</span>  <span class="nx">cache</span><span class="p">.</span><span class="nx">ActualStateOfWorld</span>
+	<span class="nx">handlers</span>            <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">cache</span><span class="p">.</span><span class="nx">PluginHandler</span>  <span class="c1">// Plugin 事件回调
+</span><span class="c1"></span>	<span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>周期性的协调流程依旧是对比 actualStateOfWorld 与 desiredStateOfWorld 进行处理，并调用对应注册的 PluginHandler。</p>
 <div class="highlight"><div class="chroma">
@@ -1162,38 +1162,38 @@
 </span><span class="lnt">31
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">rc</span> <span class="o">*</span><span class="nx">reconciler</span><span class="p">)</span> <span class="nf">reconcile</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="c1">// 遍历 actualStateOfWorld
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">registeredPlugin</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">actualStateOfWorld</span><span class="p">.</span><span class="nf">GetRegisteredPlugins</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// 判断插件还是否存在
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">unregisterPlugin</span> <span class="o">:=</span> <span class="kc">false</span>
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">!</span><span class="nx">rc</span><span class="p">.</span><span class="nx">desiredStateOfWorld</span><span class="p">.</span><span class="nf">PluginExists</span><span class="p">(</span><span class="nx">registeredPlugin</span><span class="p">.</span><span class="nx">SocketPath</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">unregisterPlugin</span> <span class="p">=</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">dswPlugin</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">desiredStateOfWorld</span><span class="p">.</span><span class="nf">GetPluginsToRegister</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="nx">dswPlugin</span><span class="p">.</span><span class="nx">SocketPath</span> <span class="o">==</span> <span class="nx">registeredPlugin</span><span class="p">.</span><span class="nx">SocketPath</span> <span class="o">&amp;&amp;</span> <span class="nx">dswPlugin</span><span class="p">.</span><span class="nx">Timestamp</span> <span class="o">!=</span> <span class="nx">registeredPlugin</span><span class="p">.</span><span class="nx">Timestamp</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">					<span class="nx">unregisterPlugin</span> <span class="p">=</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl">					<span class="k">break</span>
-</span></span><span class="line"><span class="cl">				<span class="p">}</span>
-</span></span><span class="line"><span class="cl">			<span class="p">}</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// 取消插件注册，底层调用注册的 rc.handlers[xx].DeRegisterPlugin()
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span> <span class="nx">unregisterPlugin</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">operationExecutor</span><span class="p">.</span><span class="nf">UnregisterPlugin</span><span class="p">(</span><span class="nx">registeredPlugin</span><span class="p">,</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">actualStateOfWorld</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="c1">// 遍历 desiredStateOfWorld
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">pluginToRegister</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">desiredStateOfWorld</span><span class="p">.</span><span class="nf">GetPluginsToRegister</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">!</span><span class="nx">rc</span><span class="p">.</span><span class="nx">actualStateOfWorld</span><span class="p">.</span><span class="nf">PluginExistsWithCorrectTimestamp</span><span class="p">(</span><span class="nx">pluginToRegister</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="c1">// 注册插件，底层调用注册的 rc.handlers[xx].RegisterPlugin()
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">operationExecutor</span><span class="p">.</span><span class="nf">RegisterPlugin</span><span class="p">(</span><span class="nx">pluginToRegister</span><span class="p">.</span><span class="nx">SocketPath</span><span class="p">,</span> <span class="nx">pluginToRegister</span><span class="p">.</span><span class="nx">Timestamp</span><span class="p">,</span> <span class="nx">rc</span><span class="p">.</span><span class="nf">getHandlers</span><span class="p">(),</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">actualStateOfWorld</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">rc</span> <span class="o">*</span><span class="nx">reconciler</span><span class="p">)</span> <span class="nf">reconcile</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// 遍历 actualStateOfWorld
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">registeredPlugin</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">actualStateOfWorld</span><span class="p">.</span><span class="nf">GetRegisteredPlugins</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="c1">// 判断插件还是否存在
+</span><span class="c1"></span>		<span class="nx">unregisterPlugin</span> <span class="o">:=</span> <span class="kc">false</span>
+		<span class="k">if</span> <span class="p">!</span><span class="nx">rc</span><span class="p">.</span><span class="nx">desiredStateOfWorld</span><span class="p">.</span><span class="nf">PluginExists</span><span class="p">(</span><span class="nx">registeredPlugin</span><span class="p">.</span><span class="nx">SocketPath</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">unregisterPlugin</span> <span class="p">=</span> <span class="kc">true</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">dswPlugin</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">desiredStateOfWorld</span><span class="p">.</span><span class="nf">GetPluginsToRegister</span><span class="p">()</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="nx">dswPlugin</span><span class="p">.</span><span class="nx">SocketPath</span> <span class="o">==</span> <span class="nx">registeredPlugin</span><span class="p">.</span><span class="nx">SocketPath</span> <span class="o">&amp;&amp;</span> <span class="nx">dswPlugin</span><span class="p">.</span><span class="nx">Timestamp</span> <span class="o">!=</span> <span class="nx">registeredPlugin</span><span class="p">.</span><span class="nx">Timestamp</span> <span class="p">{</span>
+					<span class="nx">unregisterPlugin</span> <span class="p">=</span> <span class="kc">true</span>
+					<span class="k">break</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+
+    <span class="c1">// 取消插件注册，底层调用注册的 rc.handlers[xx].DeRegisterPlugin()
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">unregisterPlugin</span> <span class="p">{</span>
+			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">operationExecutor</span><span class="p">.</span><span class="nf">UnregisterPlugin</span><span class="p">(</span><span class="nx">registeredPlugin</span><span class="p">,</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">actualStateOfWorld</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+  <span class="c1">// 遍历 desiredStateOfWorld
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">pluginToRegister</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">desiredStateOfWorld</span><span class="p">.</span><span class="nf">GetPluginsToRegister</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">!</span><span class="nx">rc</span><span class="p">.</span><span class="nx">actualStateOfWorld</span><span class="p">.</span><span class="nf">PluginExistsWithCorrectTimestamp</span><span class="p">(</span><span class="nx">pluginToRegister</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// 注册插件，底层调用注册的 rc.handlers[xx].RegisterPlugin()
+</span><span class="c1"></span>			<span class="nx">err</span> <span class="o">:=</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">operationExecutor</span><span class="p">.</span><span class="nf">RegisterPlugin</span><span class="p">(</span><span class="nx">pluginToRegister</span><span class="p">.</span><span class="nx">SocketPath</span><span class="p">,</span> <span class="nx">pluginToRegister</span><span class="p">.</span><span class="nx">Timestamp</span><span class="p">,</span> <span class="nx">rc</span><span class="p">.</span><span class="nf">getHandlers</span><span class="p">(),</span> <span class="nx">rc</span><span class="p">.</span><span class="nx">actualStateOfWorld</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h4 id="323-kubelet-与-plugin-的交互">3.2.3 Kubelet 与 Plugin 的交互</h4>
 <p>在最底层，我们可以看到核心的 Kubelet 与 Plugin 插件交互进行注册的逻辑。</p>
@@ -1253,59 +1253,59 @@
 </span><span class="lnt">52
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">og</span> <span class="o">*</span><span class="nx">operationGenerator</span><span class="p">)</span> <span class="nf">GenerateRegisterPluginFunc</span><span class="p">(</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">socketPath</span> <span class="kt">string</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">timestamp</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">pluginHandlers</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">cache</span><span class="p">.</span><span class="nx">PluginHandler</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">actualStateOfWorldUpdater</span> <span class="nx">ActualStateOfWorldUpdater</span><span class="p">)</span> <span class="kd">func</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// registerPluginFunc 注册一个 CSI Plugin
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">registerPluginFunc</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="c1">// gRPC 连接 socket 文件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">client</span><span class="p">,</span> <span class="nx">conn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">dial</span><span class="p">(</span><span class="nx">socketPath</span><span class="p">,</span> <span class="nx">dialTimeoutDuration</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;RegisterPlugin error -- dial failed at socket %s, err: %v&#34;</span><span class="p">,</span> <span class="nx">socketPath</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">		<span class="k">defer</span> <span class="nx">conn</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="nx">ctx</span><span class="p">,</span> <span class="nx">cancel</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithTimeout</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="k">defer</span> <span class="nf">cancel</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="c1">// 调用 GetInfo 接口的插件的信息，包括
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">//  + Type: CSI 或者 Device
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">//	+ Name: 插件名字
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">//  + Endpoint: 插件接口访问地址
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">infoResp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">GetInfo</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">registerapi</span><span class="p">.</span><span class="nx">InfoRequest</span><span class="p">{})</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="c1">// 插件对应类型的 Handler
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">handler</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">pluginHandlers</span><span class="p">[</span><span class="nx">infoResp</span><span class="p">.</span><span class="nx">Type</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">infoResp</span><span class="p">.</span><span class="nx">Endpoint</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">infoResp</span><span class="p">.</span><span class="nx">Endpoint</span> <span class="p">=</span> <span class="nx">socketPath</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="c1">// 调用 Handler 回调注册，也保存到 plugin manager
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">handler</span><span class="p">.</span><span class="nf">ValidatePlugin</span><span class="p">(</span><span class="nx">infoResp</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">infoResp</span><span class="p">.</span><span class="nx">Endpoint</span><span class="p">,</span> <span class="nx">infoResp</span><span class="p">.</span><span class="nx">SupportedVersions</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="nx">err</span> <span class="p">=</span> <span class="nx">actualStateOfWorldUpdater</span><span class="p">.</span><span class="nf">AddPlugin</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">PluginInfo</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">SocketPath</span><span class="p">:</span> <span class="nx">socketPath</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">Timestamp</span><span class="p">:</span>  <span class="nx">timestamp</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">Handler</span><span class="p">:</span>    <span class="nx">handler</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">Name</span><span class="p">:</span>       <span class="nx">infoResp</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="p">})</span>
-</span></span><span class="line"><span class="cl">		
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">handler</span><span class="p">.</span><span class="nf">RegisterPlugin</span><span class="p">(</span><span class="nx">infoResp</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">infoResp</span><span class="p">.</span><span class="nx">Endpoint</span><span class="p">,</span> <span class="nx">infoResp</span><span class="p">.</span><span class="nx">SupportedVersions</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">og</span><span class="p">.</span><span class="nf">notifyPlugin</span><span class="p">(</span><span class="nx">client</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;RegisterPlugin error -- plugin registration failed with err: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="c1">// 回调通知插件注册状态
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">og</span><span class="p">.</span><span class="nf">notifyPlugin</span><span class="p">(</span><span class="nx">client</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">registerPluginFunc</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">og</span> <span class="o">*</span><span class="nx">operationGenerator</span><span class="p">)</span> <span class="nf">GenerateRegisterPluginFunc</span><span class="p">(</span>
+	<span class="nx">socketPath</span> <span class="kt">string</span><span class="p">,</span>
+	<span class="nx">timestamp</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span>
+	<span class="nx">pluginHandlers</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">cache</span><span class="p">.</span><span class="nx">PluginHandler</span><span class="p">,</span>
+	<span class="nx">actualStateOfWorldUpdater</span> <span class="nx">ActualStateOfWorldUpdater</span><span class="p">)</span> <span class="kd">func</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+
+	<span class="c1">// registerPluginFunc 注册一个 CSI Plugin
+</span><span class="c1"></span>	<span class="nx">registerPluginFunc</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+		<span class="c1">// gRPC 连接 socket 文件
+</span><span class="c1"></span>		<span class="nx">client</span><span class="p">,</span> <span class="nx">conn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">dial</span><span class="p">(</span><span class="nx">socketPath</span><span class="p">,</span> <span class="nx">dialTimeoutDuration</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;RegisterPlugin error -- dial failed at socket %s, err: %v&#34;</span><span class="p">,</span> <span class="nx">socketPath</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="k">defer</span> <span class="nx">conn</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+
+		<span class="nx">ctx</span><span class="p">,</span> <span class="nx">cancel</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithTimeout</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+		<span class="k">defer</span> <span class="nf">cancel</span><span class="p">()</span>
+
+		<span class="c1">// 调用 GetInfo 接口的插件的信息，包括
+</span><span class="c1"></span>		<span class="c1">//  + Type: CSI 或者 Device
+</span><span class="c1"></span>		<span class="c1">//	+ Name: 插件名字
+</span><span class="c1"></span>		<span class="c1">//  + Endpoint: 插件接口访问地址
+</span><span class="c1"></span>		<span class="nx">infoResp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">GetInfo</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">registerapi</span><span class="p">.</span><span class="nx">InfoRequest</span><span class="p">{})</span>
+
+		<span class="c1">// 插件对应类型的 Handler
+</span><span class="c1"></span>		<span class="nx">handler</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">pluginHandlers</span><span class="p">[</span><span class="nx">infoResp</span><span class="p">.</span><span class="nx">Type</span><span class="p">]</span>
+
+		<span class="k">if</span> <span class="nx">infoResp</span><span class="p">.</span><span class="nx">Endpoint</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+			<span class="nx">infoResp</span><span class="p">.</span><span class="nx">Endpoint</span> <span class="p">=</span> <span class="nx">socketPath</span>
+		<span class="p">}</span>
+
+		<span class="c1">// 调用 Handler 回调注册，也保存到 plugin manager
+</span><span class="c1"></span>		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">handler</span><span class="p">.</span><span class="nf">ValidatePlugin</span><span class="p">(</span><span class="nx">infoResp</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">infoResp</span><span class="p">.</span><span class="nx">Endpoint</span><span class="p">,</span> <span class="nx">infoResp</span><span class="p">.</span><span class="nx">SupportedVersions</span><span class="p">)</span>
+
+		<span class="nx">err</span> <span class="p">=</span> <span class="nx">actualStateOfWorldUpdater</span><span class="p">.</span><span class="nf">AddPlugin</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">PluginInfo</span><span class="p">{</span>
+			<span class="nx">SocketPath</span><span class="p">:</span> <span class="nx">socketPath</span><span class="p">,</span>
+			<span class="nx">Timestamp</span><span class="p">:</span>  <span class="nx">timestamp</span><span class="p">,</span>
+			<span class="nx">Handler</span><span class="p">:</span>    <span class="nx">handler</span><span class="p">,</span>
+			<span class="nx">Name</span><span class="p">:</span>       <span class="nx">infoResp</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span>
+		<span class="p">})</span>
+		
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">handler</span><span class="p">.</span><span class="nf">RegisterPlugin</span><span class="p">(</span><span class="nx">infoResp</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">infoResp</span><span class="p">.</span><span class="nx">Endpoint</span><span class="p">,</span> <span class="nx">infoResp</span><span class="p">.</span><span class="nx">SupportedVersions</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">og</span><span class="p">.</span><span class="nf">notifyPlugin</span><span class="p">(</span><span class="nx">client</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;RegisterPlugin error -- plugin registration failed with err: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">))</span>
+		<span class="p">}</span>
+
+		<span class="c1">// 回调通知插件注册状态
+</span><span class="c1"></span>		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">og</span><span class="p">.</span><span class="nf">notifyPlugin</span><span class="p">(</span><span class="nx">client</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
+
+		<span class="k">return</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">registerPluginFunc</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -1388,75 +1388,77 @@
 </span><span class="lnt">64
 </span><span class="lnt">65
 </span><span class="lnt">66
+</span><span class="lnt">67
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">csiPlugin</span> <span class="kd">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">host</span>                      <span class="nx">volume</span><span class="p">.</span><span class="nx">VolumeHost</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">csiDriverLister</span>           <span class="nx">storagelisters</span><span class="p">.</span><span class="nx">CSIDriverLister</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">serviceAccountTokenGetter</span> <span class="kd">func</span><span class="p">(</span><span class="nx">namespace</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">tr</span> <span class="o">*</span><span class="nx">authenticationv1</span><span class="p">.</span><span class="nx">TokenRequest</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">authenticationv1</span><span class="p">.</span><span class="nx">TokenRequest</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">volumeAttachmentLister</span>    <span class="nx">storagelisters</span><span class="p">.</span><span class="nx">VolumeAttachmentLister</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">csiMountMgr</span><span class="p">)</span> <span class="nf">SetUpAt</span><span class="p">(</span><span class="nx">dir</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">mounterArgs</span> <span class="nx">volume</span><span class="p">.</span><span class="nx">MounterArgs</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 得到 CSI Node
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">csi</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">csiClientGetter</span><span class="p">.</span><span class="nf">Get</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">	
-</span></span><span class="line"><span class="cl">	<span class="c1">// 解析 Volume 配置
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 创建 Pod 的目录
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">parentDir</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Dir</span><span class="p">(</span><span class="nx">dir</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">MkdirAll</span><span class="p">(</span><span class="nx">parentDir</span><span class="p">,</span> <span class="mo">0750</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nf">log</span><span class="p">(</span><span class="s">&#34;mounter.SetUpAt failed to create dir %#v:  %v&#34;</span><span class="p">,</span> <span class="nx">parentDir</span><span class="p">,</span> <span class="nx">err</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 读取 Secret
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">nodePublishSecrets</span> <span class="p">=</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">{}</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">secretRef</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">nodePublishSecrets</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nf">getCredentialsFromSecret</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">k8s</span><span class="p">,</span> <span class="nx">secretRef</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// CSI Driver 的 `podInfoOnMount` 功能实现
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">podInfoEnabled</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">plugin</span><span class="p">.</span><span class="nf">podInfoEnabled</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">driverName</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">podInfoEnabled</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">volAttribs</span> <span class="p">=</span> <span class="nf">mergeMap</span><span class="p">(</span><span class="nx">volAttribs</span><span class="p">,</span> <span class="nf">getPodInfoAttrs</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">pod</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">volumeLifecycleMode</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// CSI Driver 的 `tokenRequest` 功能实现
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">serviceAccountTokenAttrs</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">podServiceAccountTokenAttrs</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">volAttribs</span> <span class="p">=</span> <span class="nf">mergeMap</span><span class="p">(</span><span class="nx">volAttribs</span><span class="p">,</span> <span class="nx">serviceAccountTokenAttrs</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// CSI Driver 的 `fsGroupPolicy` 功能实现
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">driverSupportsCSIVolumeMountGroup</span> <span class="o">:=</span> <span class="kc">false</span>
-</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">nodePublishFSGroupArg</span> <span class="o">*</span><span class="kt">int64</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">utilfeature</span><span class="p">.</span><span class="nx">DefaultFeatureGate</span><span class="p">.</span><span class="nf">Enabled</span><span class="p">(</span><span class="nx">features</span><span class="p">.</span><span class="nx">DelegateFSGroupToCSIDriver</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">driverSupportsCSIVolumeMountGroup</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">csi</span><span class="p">.</span><span class="nf">NodeSupportsVolumeMountGroup</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">driverSupportsCSIVolumeMountGroup</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="nx">nodePublishFSGroupArg</span> <span class="p">=</span> <span class="nx">mounterArgs</span><span class="p">.</span><span class="nx">FsGroup</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// 调用 CSI Node 接口
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">err</span> <span class="p">=</span> <span class="nx">csi</span><span class="p">.</span><span class="nf">NodePublishVolume</span><span class="p">(</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">ctx</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">volumeHandle</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">readOnly</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">deviceMountPath</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">dir</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">accessMode</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">publishContext</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">volAttribs</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">nodePublishSecrets</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">fsType</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">mountOptions</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">nodePublishFSGroupArg</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">	<span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">csiPlugin</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">host</span>                      <span class="nx">volume</span><span class="p">.</span><span class="nx">VolumeHost</span>
+	<span class="nx">csiDriverLister</span>           <span class="nx">storagelisters</span><span class="p">.</span><span class="nx">CSIDriverLister</span>
+	<span class="nx">serviceAccountTokenGetter</span> <span class="kd">func</span><span class="p">(</span><span class="nx">namespace</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">tr</span> <span class="o">*</span><span class="nx">authenticationv1</span><span class="p">.</span><span class="nx">TokenRequest</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">authenticationv1</span><span class="p">.</span><span class="nx">TokenRequest</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nx">volumeAttachmentLister</span>    <span class="nx">storagelisters</span><span class="p">.</span><span class="nx">VolumeAttachmentLister</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">csiMountMgr</span><span class="p">)</span> <span class="nf">SetUpAt</span><span class="p">(</span><span class="nx">dir</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">mounterArgs</span> <span class="nx">volume</span><span class="p">.</span><span class="nx">MounterArgs</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c1">// 得到 CSI Node
+</span><span class="c1"></span>	<span class="nx">csi</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">csiClientGetter</span><span class="p">.</span><span class="nf">Get</span><span class="p">()</span>
+	
+	<span class="c1">// 解析 Volume 配置
+</span><span class="c1"></span>
+	<span class="c1">// 创建 Pod 的目录
+</span><span class="c1"></span>	<span class="nx">parentDir</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Dir</span><span class="p">(</span><span class="nx">dir</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">MkdirAll</span><span class="p">(</span><span class="nx">parentDir</span><span class="p">,</span> <span class="mo">0750</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nf">log</span><span class="p">(</span><span class="s">&#34;mounter.SetUpAt failed to create dir %#v:  %v&#34;</span><span class="p">,</span> <span class="nx">parentDir</span><span class="p">,</span> <span class="nx">err</span><span class="p">))</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 读取 Secret
+</span><span class="c1"></span>	<span class="nx">nodePublishSecrets</span> <span class="p">=</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">{}</span>
+	<span class="k">if</span> <span class="nx">secretRef</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">nodePublishSecrets</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nf">getCredentialsFromSecret</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">k8s</span><span class="p">,</span> <span class="nx">secretRef</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c1">// CSI Driver 的 `podInfoOnMount` 功能实现
+</span><span class="c1"></span>	<span class="nx">podInfoEnabled</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">plugin</span><span class="p">.</span><span class="nf">podInfoEnabled</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">driverName</span><span class="p">))</span>
+	<span class="k">if</span> <span class="nx">podInfoEnabled</span> <span class="p">{</span>
+		<span class="nx">volAttribs</span> <span class="p">=</span> <span class="nf">mergeMap</span><span class="p">(</span><span class="nx">volAttribs</span><span class="p">,</span> <span class="nf">getPodInfoAttrs</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">pod</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">volumeLifecycleMode</span><span class="p">))</span>
+	<span class="p">}</span>
+
+	<span class="c1">// CSI Driver 的 `tokenRequest` 功能实现
+</span><span class="c1"></span>	<span class="nx">serviceAccountTokenAttrs</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">podServiceAccountTokenAttrs</span><span class="p">()</span>
+	<span class="nx">volAttribs</span> <span class="p">=</span> <span class="nf">mergeMap</span><span class="p">(</span><span class="nx">volAttribs</span><span class="p">,</span> <span class="nx">serviceAccountTokenAttrs</span><span class="p">)</span>
+
+	<span class="c1">// CSI Driver 的 `fsGroupPolicy` 功能实现
+</span><span class="c1"></span>	<span class="nx">driverSupportsCSIVolumeMountGroup</span> <span class="o">:=</span> <span class="kc">false</span>
+	<span class="kd">var</span> <span class="nx">nodePublishFSGroupArg</span> <span class="o">*</span><span class="kt">int64</span>
+	<span class="k">if</span> <span class="nx">utilfeature</span><span class="p">.</span><span class="nx">DefaultFeatureGate</span><span class="p">.</span><span class="nf">Enabled</span><span class="p">(</span><span class="nx">features</span><span class="p">.</span><span class="nx">DelegateFSGroupToCSIDriver</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">driverSupportsCSIVolumeMountGroup</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">csi</span><span class="p">.</span><span class="nf">NodeSupportsVolumeMountGroup</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="nx">driverSupportsCSIVolumeMountGroup</span> <span class="p">{</span>
+			<span class="nx">nodePublishFSGroupArg</span> <span class="p">=</span> <span class="nx">mounterArgs</span><span class="p">.</span><span class="nx">FsGroup</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 调用 CSI Node 接口
+</span><span class="c1"></span>	<span class="nx">err</span> <span class="p">=</span> <span class="nx">csi</span><span class="p">.</span><span class="nf">NodePublishVolume</span><span class="p">(</span>
+		<span class="nx">ctx</span><span class="p">,</span>
+		<span class="nx">volumeHandle</span><span class="p">,</span>
+		<span class="nx">readOnly</span><span class="p">,</span>
+		<span class="nx">deviceMountPath</span><span class="p">,</span>
+		<span class="nx">dir</span><span class="p">,</span>
+		<span class="nx">accessMode</span><span class="p">,</span>
+		<span class="nx">publishContext</span><span class="p">,</span>
+		<span class="nx">volAttribs</span><span class="p">,</span>
+		<span class="nx">nodePublishSecrets</span><span class="p">,</span>
+		<span class="nx">fsType</span><span class="p">,</span>
+		<span class="nx">mountOptions</span><span class="p">,</span>
+		<span class="nx">nodePublishFSGroupArg</span><span class="p">,</span>
+	<span class="p">)</span>
+
+	<span class="c1">// ...
+</span><span class="c1"></span>
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
 </div>
 </div><p>那最后的问题就是，CSI Plugin 是如何注册到 CSI VolumePlugin 中的？CSI VolumePlugin 实现了前面所说的 PluginHandler 接口，并在 Kubelet 启动时注册到了 Plugin Manager 中。</p>
 <p>因此当新的 CSI Plugin 创建 socket 文件后，Kubelet 的 Plugin Manager 监听到创建事件，然后回调 CSI VolumePlugin 的 RegisterPlugin() 的接口，记录下来。</p>
@@ -1476,19 +1478,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// RegisterPlugin is called when a plugin can be registered
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">h</span> <span class="o">*</span><span class="nx">RegistrationHandler</span><span class="p">)</span> <span class="nf">RegisterPlugin</span><span class="p">(</span><span class="nx">pluginName</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">endpoint</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">versions</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// 记录下 CSI Plugin
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">csiDrivers</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="nx">pluginName</span><span class="p">,</span> <span class="nx">Driver</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">endpoint</span><span class="p">:</span>                <span class="nx">endpoint</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">highestSupportedVersion</span><span class="p">:</span> <span class="nx">highestSupportedVersion</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">	<span class="p">})</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// RegisterPlugin is called when a plugin can be registered
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">h</span> <span class="o">*</span><span class="nx">RegistrationHandler</span><span class="p">)</span> <span class="nf">RegisterPlugin</span><span class="p">(</span><span class="nx">pluginName</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">endpoint</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">versions</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c1">// 记录下 CSI Plugin
+</span><span class="c1"></span>	<span class="nx">csiDrivers</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="nx">pluginName</span><span class="p">,</span> <span class="nx">Driver</span><span class="p">{</span>
+		<span class="nx">endpoint</span><span class="p">:</span>                <span class="nx">endpoint</span><span class="p">,</span>
+		<span class="nx">highestSupportedVersion</span><span class="p">:</span> <span class="nx">highestSupportedVersion</span><span class="p">,</span>
+	<span class="p">})</span>
+
+	<span class="c1">// ...
+</span><span class="c1"></span>
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="34-总结">3.4 总结</h3>
 
@@ -1513,8 +1515,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-04-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/8e561e2db54193849ec27bd70ac77c07a6bcb783" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 8e561e2db54193849ec27bd70ac77c07a6bcb783: post: kubeconfig">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>8e561e2</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bdcecc6dbc9f0ccaeed88ba66ca5edb4241df74c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bdcecc6dbc9f0ccaeed88ba66ca5edb4241df74c: fix">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bdcecc6</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -1538,7 +1540,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

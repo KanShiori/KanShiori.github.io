@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_practice/across-kubernetes/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-09-30T07:25:32+00:00" />
-<meta property="article:modified_time" content="2022-04-15T17:28:32+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:47:57+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/across-kubernetes\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  4733 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/across-kubernetes\/","datePublished": "2021-09-30T07:25:32+00:00","dateModified": "2022-04-15T17:28:32+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  4732 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/across-kubernetes\/","datePublished": "2021-09-30T07:25:32+00:00","dateModified": "2022-06-12T22:47:57+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kubernetes 跨集群网络联通</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/cloud-practice/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Cloud Practice</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-09-30">2021-09-30</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4733 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-09-30">2021-09-30</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4732 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 10 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -290,28 +290,28 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">coredns</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">kube-system</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
-</span></span></span><span class="line"><span class="cl"><span class="sd">    .:53 {
-</span></span></span><span class="line"><span class="cl"><span class="sd">        # default..
-</span></span></span><span class="line"><span class="cl"><span class="sd">    }
-</span></span></span><span class="line"><span class="cl"><span class="sd">    &lt;target-cluster-domain&gt;:53 {  # &lt;-- 指向对端的 Kubernetes Cluster Domain
-</span></span></span><span class="line"><span class="cl"><span class="sd">        errors
-</span></span></span><span class="line"><span class="cl"><span class="sd">        cache 30
-</span></span></span><span class="line"><span class="cl"><span class="sd">        forward . &lt;target-coredns-ip&gt;
-</span></span></span><span class="line"><span class="cl"><span class="sd">    }</span><span class="w">    
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">coredns</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">kube-system</span><span class="w">
+</span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">    .:53 {
+</span><span class="sd">        # default..
+</span><span class="sd">    }
+</span><span class="sd">    &lt;target-cluster-domain&gt;:53 {  # &lt;-- 指向对端的 Kubernetes Cluster Domain
+</span><span class="sd">        errors
+</span><span class="sd">        cache 30
+</span><span class="sd">        forward . &lt;target-coredns-ip&gt;
+</span><span class="sd">    }</span><span class="w">    
+</span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>除了自己集群的域名解析外，对于 &ldquo;&lt;target-cluster-domain&gt;&rdquo; 的域名解析都转发给了对应集群的 CoreDNS。</li>
 </ul>
 <p>改变 Kubernetes 集群的 Cluster Domain 方式：部署 Cluster 时，通过 kubelet 参数 <code>-cluster-domain=&lt;default-local-domain&gt;</code> 配置。</p>
-<p>不过，改变 Cluster Domain 方式需要在部署 Cluster 时配置，如果你已经部署了 Cluster，这可能就不太方便了。这种情况下，Multi Kubernetes Cluster Domain 都是 &ldquo;cluster.local&rdquo;，所以我们<strong>要在更前面的域上来区分，自然是 &ldquo;&lt;namespace&gt;&rdquo;</strong>。</p>
+<p>不过，改变 Cluster Domain 方式需要在部署 Cluster 时配置，如果你已经部署了 Cluster，这可能就不太方便了。这种情况下，Multi Kubernetes Cluster Domain 都是 &ldquo;cluster.local&rdquo;，所以我们<strong>要在更前面的域上来区分，自然是 &ldquo;&lt;namespace&gt;&quot;</strong>。</p>
 <p>例如，你的 Pod 要访问另一个 Cluster 的 Pod：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -332,22 +332,22 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">coredns</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">kube-system</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
-</span></span></span><span class="line"><span class="cl"><span class="sd">    .:53 {
-</span></span></span><span class="line"><span class="cl"><span class="sd">        # default..
-</span></span></span><span class="line"><span class="cl"><span class="sd">    }
-</span></span></span><span class="line"><span class="cl"><span class="sd">    &lt;target-namespace&gt;.svc.cluster.local:53 {  # &lt;-- 指向对端 Kubernetes 服务的 namespace
-</span></span></span><span class="line"><span class="cl"><span class="sd">        errors
-</span></span></span><span class="line"><span class="cl"><span class="sd">        cache 30
-</span></span></span><span class="line"><span class="cl"><span class="sd">        forward . &lt;target-coredns-ip&gt;
-</span></span></span><span class="line"><span class="cl"><span class="sd">    }</span><span class="w">    
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">coredns</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">kube-system</span><span class="w">
+</span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">    .:53 {
+</span><span class="sd">        # default..
+</span><span class="sd">    }
+</span><span class="sd">    &lt;target-namespace&gt;.svc.cluster.local:53 {  # &lt;-- 指向对端 Kubernetes 服务的 namespace
+</span><span class="sd">        errors
+</span><span class="sd">        cache 30
+</span><span class="sd">        forward . &lt;target-coredns-ip&gt;
+</span><span class="sd">    }</span><span class="w">    
+</span></code></pre></td></tr></table>
 </div>
 </div><p>可以想到，这种访问匹配的范围更小，更重要的是，这使得 Multi Cluster 之间的 namespace 不应该重复。</p>
 <h2 id="4-aws-上的实践">4 AWS 上的实践</h2>
@@ -360,10 +360,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ eksctl create cluster --name test-cluster --with-oidc --ssh-access --managed --region us-west-2 --instance-types m5.xlarge --nodes <span class="m">3</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ eksctl create cluster --name test-cluster-2 --with-oidc --ssh-access --managed --region us-west-2 --instance-types m5.xlarge --nodes <span class="m">3</span> --vpc-cidr 10.0.0.0/16
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ eksctl create cluster --name test-cluster --with-oidc --ssh-access --managed --region us-west-2 --instance-types m5.xlarge --nodes <span class="m">3</span>
+
+$ eksctl create cluster --name test-cluster-2 --with-oidc --ssh-access --managed --region us-west-2 --instance-types m5.xlarge --nodes <span class="m">3</span> --vpc-cidr 10.0.0.0/16
+</code></pre></td></tr></table>
 </div>
 </div><p>查询下两个 EKS 集群信息，后面需要用到：</p>
 <div class="highlight"><div class="chroma">
@@ -377,14 +377,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ eksctl get cluster test-cluster
-</span></span><span class="line"><span class="cl">NAME            VERSION STATUS  CREATED                 VPC                     SUBNETS                                                                      SECURITYGROUPS
-</span></span><span class="line"><span class="cl">test-cluster    1.20    ACTIVE  2021-09-30T11:53:19Z    vpc-0409bd99d5e2b6f5b   subnet-00d1a0abdaf60021b,subnet-0a9fca73d25257d90,subnet-0aee90db41909f538,subnet-0c81d647b53fe567a,subnet-0dcd3f3da03b5e767,subnet-0f80939acbdda6357 sg-00985dc11204cfeda
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ eksctl get cluster test-cluster-2
-</span></span><span class="line"><span class="cl">NAME            VERSION STATUS  CREATED                 VPC                     SUBNETS                                                                      SECURITYGROUPS
-</span></span><span class="line"><span class="cl">test-cluster-2  1.20    ACTIVE  2021-09-30T12:19:39Z    vpc-0e35ec388cb70e7fc   subnet-012fa5481e326aafc,subnet-0586d236d85ed6893,subnet-0d5695aa8970fea2d,subnet-0d61b543c82d94d14,subnet-0d740e2366cf2778f,subnet-0def1a48342d72d32 sg-0d914515ffd1173b5
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ eksctl get cluster test-cluster
+NAME            VERSION STATUS  CREATED                 VPC                     SUBNETS                                                                      SECURITYGROUPS
+test-cluster    1.20    ACTIVE  2021-09-30T11:53:19Z    vpc-0409bd99d5e2b6f5b   subnet-00d1a0abdaf60021b,subnet-0a9fca73d25257d90,subnet-0aee90db41909f538,subnet-0c81d647b53fe567a,subnet-0dcd3f3da03b5e767,subnet-0f80939acbdda6357 sg-00985dc11204cfeda
+
+$ eksctl get cluster test-cluster-2
+NAME            VERSION STATUS  CREATED                 VPC                     SUBNETS                                                                      SECURITYGROUPS
+test-cluster-2  1.20    ACTIVE  2021-09-30T12:19:39Z    vpc-0e35ec388cb70e7fc   subnet-012fa5481e326aafc,subnet-0586d236d85ed6893,subnet-0d5695aa8970fea2d,subnet-0d61b543c82d94d14,subnet-0d740e2366cf2778f,subnet-0def1a48342d72d32 sg-0d914515ffd1173b5
+</code></pre></td></tr></table>
 </div>
 </div><p>我们创建了同 Region 下不同 VPC 两个 EKS 集群，不同 Region 下后续操作也是一样的。</p>
 <p>后续操作中，各个资源的 1、2 分别代表对应集群的资源。k1 与 k2 分别代表对应集群的 kubectl 操作（通过 &ndash;kubeconfig 参数）。</p>
@@ -446,42 +446,42 @@
 </span><span class="lnt">35
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="err">$</span> <span class="err">aws</span> <span class="err">ec</span><span class="mi">2</span> <span class="err">create-vpc-peering-connection</span> <span class="err">\</span>
-</span></span><span class="line"><span class="cl">    <span class="err">--vpc-id</span> <span class="err">vpc</span><span class="mi">-0409</span><span class="err">bd</span><span class="mi">99</span><span class="err">d</span><span class="mf">5e2</span><span class="err">b</span><span class="mi">6</span><span class="err">f</span><span class="mi">5</span><span class="err">b</span> <span class="err">\</span>
-</span></span><span class="line"><span class="cl">    <span class="err">--peer-vpc-id</span> <span class="err">vpc</span><span class="mf">-0e35</span><span class="err">ec</span><span class="mi">388</span><span class="err">cb</span><span class="mf">70e7</span><span class="err">fc</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;VpcPeeringConnection&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;AccepterVpcInfo&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;OwnerId&#34;</span><span class="p">:</span> <span class="s2">&#34;385595570414&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;VpcId&#34;</span><span class="p">:</span> <span class="s2">&#34;vpc-0e35ec388cb70e7fc&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Region&#34;</span><span class="p">:</span> <span class="s2">&#34;us-west-2&#34;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">},</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;ExpirationTime&#34;</span><span class="p">:</span> <span class="s2">&#34;2021-10-07T12:53:36+00:00&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;RequesterVpcInfo&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;CidrBlock&#34;</span><span class="p">:</span> <span class="s2">&#34;192.168.0.0/16&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;CidrBlockSet&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">                <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                    <span class="nt">&#34;CidrBlock&#34;</span><span class="p">:</span> <span class="s2">&#34;192.168.0.0/16&#34;</span>
-</span></span><span class="line"><span class="cl">                <span class="p">}</span>
-</span></span><span class="line"><span class="cl">            <span class="p">],</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;OwnerId&#34;</span><span class="p">:</span> <span class="s2">&#34;385595570414&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;PeeringOptions&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;AllowDnsResolutionFromRemoteVpc&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;AllowEgressFromLocalClassicLinkToRemoteVpc&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;AllowEgressFromLocalVpcToRemoteClassicLink&#34;</span><span class="p">:</span> <span class="kc">false</span>
-</span></span><span class="line"><span class="cl">            <span class="p">},</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;VpcId&#34;</span><span class="p">:</span> <span class="s2">&#34;vpc-0409bd99d5e2b6f5b&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Region&#34;</span><span class="p">:</span> <span class="s2">&#34;us-west-2&#34;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">},</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;Status&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Code&#34;</span><span class="p">:</span> <span class="s2">&#34;pending-acceptance&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Message&#34;</span><span class="p">:</span> <span class="s2">&#34;Pending Acceptance by 385595570414&#34;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">},</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;Tags&#34;</span><span class="p">:</span> <span class="p">[],</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;VpcPeeringConnectionId&#34;</span><span class="p">:</span> <span class="s2">&#34;pcx-094a1149b32ef0c05&#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="err">$</span> <span class="err">aws</span> <span class="err">ec</span><span class="mi">2</span> <span class="err">create-vpc-peering-connection</span> <span class="err">\</span>
+    <span class="err">--vpc-id</span> <span class="err">vpc</span><span class="mi">-0409</span><span class="err">bd</span><span class="mi">99</span><span class="err">d</span><span class="mf">5e2</span><span class="err">b</span><span class="mi">6</span><span class="err">f</span><span class="mi">5</span><span class="err">b</span> <span class="err">\</span>
+    <span class="err">--peer-vpc-id</span> <span class="err">vpc</span><span class="mf">-0e35</span><span class="err">ec</span><span class="mi">388</span><span class="err">cb</span><span class="mf">70e7</span><span class="err">fc</span>
+<span class="p">{</span>
+    <span class="nt">&#34;VpcPeeringConnection&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;AccepterVpcInfo&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;OwnerId&#34;</span><span class="p">:</span> <span class="s2">&#34;385595570414&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;VpcId&#34;</span><span class="p">:</span> <span class="s2">&#34;vpc-0e35ec388cb70e7fc&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Region&#34;</span><span class="p">:</span> <span class="s2">&#34;us-west-2&#34;</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;ExpirationTime&#34;</span><span class="p">:</span> <span class="s2">&#34;2021-10-07T12:53:36+00:00&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;RequesterVpcInfo&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;CidrBlock&#34;</span><span class="p">:</span> <span class="s2">&#34;192.168.0.0/16&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;CidrBlockSet&#34;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="nt">&#34;CidrBlock&#34;</span><span class="p">:</span> <span class="s2">&#34;192.168.0.0/16&#34;</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="nt">&#34;OwnerId&#34;</span><span class="p">:</span> <span class="s2">&#34;385595570414&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;PeeringOptions&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;AllowDnsResolutionFromRemoteVpc&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="nt">&#34;AllowEgressFromLocalClassicLinkToRemoteVpc&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="nt">&#34;AllowEgressFromLocalVpcToRemoteClassicLink&#34;</span><span class="p">:</span> <span class="kc">false</span>
+            <span class="p">},</span>
+            <span class="nt">&#34;VpcId&#34;</span><span class="p">:</span> <span class="s2">&#34;vpc-0409bd99d5e2b6f5b&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Region&#34;</span><span class="p">:</span> <span class="s2">&#34;us-west-2&#34;</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;Status&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;Code&#34;</span><span class="p">:</span> <span class="s2">&#34;pending-acceptance&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Message&#34;</span><span class="p">:</span> <span class="s2">&#34;Pending Acceptance by 385595570414&#34;</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;Tags&#34;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="nt">&#34;VpcPeeringConnectionId&#34;</span><span class="p">:</span> <span class="s2">&#34;pcx-094a1149b32ef0c05&#34;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>Accept VPC Peering，完成 VPC Peering 构建。</p>
 <div class="highlight"><div class="chroma">
@@ -532,51 +532,51 @@
 </span><span class="lnt">44
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="err">$</span> <span class="err">aws</span> <span class="err">ec</span><span class="mi">2</span> <span class="err">accept-vpc-peering-connection</span> <span class="err">\</span>
-</span></span><span class="line"><span class="cl">    <span class="err">--vpc-peering-connection-id</span> <span class="err">pcx</span><span class="mi">-094</span><span class="err">a</span><span class="mi">1149</span><span class="err">b</span><span class="mi">32</span><span class="err">ef</span><span class="mi">0</span><span class="err">c</span><span class="mi">05</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;VpcPeeringConnection&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;AccepterVpcInfo&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;CidrBlock&#34;</span><span class="p">:</span> <span class="s2">&#34;10.0.0.0/16&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;CidrBlockSet&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">                <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                    <span class="nt">&#34;CidrBlock&#34;</span><span class="p">:</span> <span class="s2">&#34;10.0.0.0/16&#34;</span>
-</span></span><span class="line"><span class="cl">                <span class="p">}</span>
-</span></span><span class="line"><span class="cl">            <span class="p">],</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;OwnerId&#34;</span><span class="p">:</span> <span class="s2">&#34;385595570414&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;PeeringOptions&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;AllowDnsResolutionFromRemoteVpc&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;AllowEgressFromLocalClassicLinkToRemoteVpc&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;AllowEgressFromLocalVpcToRemoteClassicLink&#34;</span><span class="p">:</span> <span class="kc">false</span>
-</span></span><span class="line"><span class="cl">            <span class="p">},</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;VpcId&#34;</span><span class="p">:</span> <span class="s2">&#34;vpc-0e35ec388cb70e7fc&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Region&#34;</span><span class="p">:</span> <span class="s2">&#34;us-west-2&#34;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">},</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;RequesterVpcInfo&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;CidrBlock&#34;</span><span class="p">:</span> <span class="s2">&#34;192.168.0.0/16&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;CidrBlockSet&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">                <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                    <span class="nt">&#34;CidrBlock&#34;</span><span class="p">:</span> <span class="s2">&#34;192.168.0.0/16&#34;</span>
-</span></span><span class="line"><span class="cl">                <span class="p">}</span>
-</span></span><span class="line"><span class="cl">            <span class="p">],</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;OwnerId&#34;</span><span class="p">:</span> <span class="s2">&#34;385595570414&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;PeeringOptions&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;AllowDnsResolutionFromRemoteVpc&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;AllowEgressFromLocalClassicLinkToRemoteVpc&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;AllowEgressFromLocalVpcToRemoteClassicLink&#34;</span><span class="p">:</span> <span class="kc">false</span>
-</span></span><span class="line"><span class="cl">            <span class="p">},</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;VpcId&#34;</span><span class="p">:</span> <span class="s2">&#34;vpc-0409bd99d5e2b6f5b&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Region&#34;</span><span class="p">:</span> <span class="s2">&#34;us-west-2&#34;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">},</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;Status&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Code&#34;</span><span class="p">:</span> <span class="s2">&#34;provisioning&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;Message&#34;</span><span class="p">:</span> <span class="s2">&#34;Provisioning&#34;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">},</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;Tags&#34;</span><span class="p">:</span> <span class="p">[],</span>
-</span></span><span class="line"><span class="cl">        <span class="nt">&#34;VpcPeeringConnectionId&#34;</span><span class="p">:</span> <span class="s2">&#34;pcx-094a1149b32ef0c05&#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="err">$</span> <span class="err">aws</span> <span class="err">ec</span><span class="mi">2</span> <span class="err">accept-vpc-peering-connection</span> <span class="err">\</span>
+    <span class="err">--vpc-peering-connection-id</span> <span class="err">pcx</span><span class="mi">-094</span><span class="err">a</span><span class="mi">1149</span><span class="err">b</span><span class="mi">32</span><span class="err">ef</span><span class="mi">0</span><span class="err">c</span><span class="mi">05</span>
+<span class="p">{</span>
+    <span class="nt">&#34;VpcPeeringConnection&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;AccepterVpcInfo&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;CidrBlock&#34;</span><span class="p">:</span> <span class="s2">&#34;10.0.0.0/16&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;CidrBlockSet&#34;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="nt">&#34;CidrBlock&#34;</span><span class="p">:</span> <span class="s2">&#34;10.0.0.0/16&#34;</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="nt">&#34;OwnerId&#34;</span><span class="p">:</span> <span class="s2">&#34;385595570414&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;PeeringOptions&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;AllowDnsResolutionFromRemoteVpc&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="nt">&#34;AllowEgressFromLocalClassicLinkToRemoteVpc&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="nt">&#34;AllowEgressFromLocalVpcToRemoteClassicLink&#34;</span><span class="p">:</span> <span class="kc">false</span>
+            <span class="p">},</span>
+            <span class="nt">&#34;VpcId&#34;</span><span class="p">:</span> <span class="s2">&#34;vpc-0e35ec388cb70e7fc&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Region&#34;</span><span class="p">:</span> <span class="s2">&#34;us-west-2&#34;</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;RequesterVpcInfo&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;CidrBlock&#34;</span><span class="p">:</span> <span class="s2">&#34;192.168.0.0/16&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;CidrBlockSet&#34;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="nt">&#34;CidrBlock&#34;</span><span class="p">:</span> <span class="s2">&#34;192.168.0.0/16&#34;</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="nt">&#34;OwnerId&#34;</span><span class="p">:</span> <span class="s2">&#34;385595570414&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;PeeringOptions&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;AllowDnsResolutionFromRemoteVpc&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="nt">&#34;AllowEgressFromLocalClassicLinkToRemoteVpc&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="nt">&#34;AllowEgressFromLocalVpcToRemoteClassicLink&#34;</span><span class="p">:</span> <span class="kc">false</span>
+            <span class="p">},</span>
+            <span class="nt">&#34;VpcId&#34;</span><span class="p">:</span> <span class="s2">&#34;vpc-0409bd99d5e2b6f5b&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Region&#34;</span><span class="p">:</span> <span class="s2">&#34;us-west-2&#34;</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;Status&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;Code&#34;</span><span class="p">:</span> <span class="s2">&#34;provisioning&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Message&#34;</span><span class="p">:</span> <span class="s2">&#34;Provisioning&#34;</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;Tags&#34;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="nt">&#34;VpcPeeringConnectionId&#34;</span><span class="p">:</span> <span class="s2">&#34;pcx-094a1149b32ef0c05&#34;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h4 id="422-route-table-添加-route-项">4.2.2 Route Table 添加 Route 项</h4>
 <p>为了 VPC 之间的连通性，需要向各个 VPC 的 Route Table 添加 Route 项，转发数据包到 VPC Peering。</p>
@@ -588,10 +588,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ aws ec2 describe-route-tables --filters <span class="nv">Name</span><span class="o">=</span>vpc-id,Values<span class="o">=</span>vpc-0409bd99d5e2b6f5b
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ aws ec2 describe-route-tables --filters <span class="nv">Name</span><span class="o">=</span>vpc-id,Values<span class="o">=</span>vpc-0e35ec388cb70e7fc
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ aws ec2 describe-route-tables --filters <span class="nv">Name</span><span class="o">=</span>vpc-id,Values<span class="o">=</span>vpc-0409bd99d5e2b6f5b
+
+$ aws ec2 describe-route-tables --filters <span class="nv">Name</span><span class="o">=</span>vpc-id,Values<span class="o">=</span>vpc-0e35ec388cb70e7fc
+</code></pre></td></tr></table>
 </div>
 </div><p>添加 Route 项，匹配另一个集群网段，路由到 VPC Peering。</p>
 <div class="highlight"><div class="chroma">
@@ -613,22 +613,22 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="err">$</span> <span class="err">aws</span> <span class="err">ec</span><span class="mi">2</span> <span class="err">create-route</span> <span class="err">\</span>
-</span></span><span class="line"><span class="cl">    <span class="err">--route-table-id</span> <span class="err">rtb</span><span class="mi">-058</span><span class="err">ae</span><span class="mi">03476</span><span class="err">f</span><span class="mi">0</span><span class="err">eb</span><span class="mi">62</span><span class="err">d</span> <span class="err">\</span>
-</span></span><span class="line"><span class="cl">    <span class="err">--destination-cidr-block</span> <span class="mf">10.0</span><span class="err">.</span><span class="mf">0.0</span><span class="err">/</span><span class="mi">16</span> <span class="err">\</span>
-</span></span><span class="line"><span class="cl">    <span class="err">--vpc-peering-connection-id</span> <span class="err">pcx</span><span class="mi">-094</span><span class="err">a</span><span class="mi">1149</span><span class="err">b</span><span class="mi">32</span><span class="err">ef</span><span class="mi">0</span><span class="err">c</span><span class="mi">05</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;Return&#34;</span><span class="p">:</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="err">$</span> <span class="err">aws</span> <span class="err">ec</span><span class="mi">2</span> <span class="err">create-route</span> <span class="err">\</span>
-</span></span><span class="line"><span class="cl">    <span class="err">--route-table-id</span> <span class="err">rtb</span><span class="mi">-0</span><span class="mf">3e1023998</span><span class="err">c</span><span class="mi">139</span><span class="err">fea</span> <span class="err">\</span>
-</span></span><span class="line"><span class="cl">    <span class="err">--destination-cidr-block</span> <span class="mf">192.168</span><span class="err">.</span><span class="mf">0.0</span><span class="err">/</span><span class="mi">16</span> <span class="err">\</span>
-</span></span><span class="line"><span class="cl">    <span class="err">--vpc-peering-connection-id</span> <span class="err">pcx</span><span class="mi">-094</span><span class="err">a</span><span class="mi">1149</span><span class="err">b</span><span class="mi">32</span><span class="err">ef</span><span class="mi">0</span><span class="err">c</span><span class="mi">05</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;Return&#34;</span><span class="p">:</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="err">$</span> <span class="err">aws</span> <span class="err">ec</span><span class="mi">2</span> <span class="err">create-route</span> <span class="err">\</span>
+    <span class="err">--route-table-id</span> <span class="err">rtb</span><span class="mi">-058</span><span class="err">ae</span><span class="mi">03476</span><span class="err">f</span><span class="mi">0</span><span class="err">eb</span><span class="mi">62</span><span class="err">d</span> <span class="err">\</span>
+    <span class="err">--destination-cidr-block</span> <span class="mf">10.0</span><span class="err">.</span><span class="mf">0.0</span><span class="err">/</span><span class="mi">16</span> <span class="err">\</span>
+    <span class="err">--vpc-peering-connection-id</span> <span class="err">pcx</span><span class="mi">-094</span><span class="err">a</span><span class="mi">1149</span><span class="err">b</span><span class="mi">32</span><span class="err">ef</span><span class="mi">0</span><span class="err">c</span><span class="mi">05</span>
+<span class="p">{</span>
+    <span class="nt">&#34;Return&#34;</span><span class="p">:</span> <span class="kc">true</span>
+<span class="p">}</span>
+
+<span class="err">$</span> <span class="err">aws</span> <span class="err">ec</span><span class="mi">2</span> <span class="err">create-route</span> <span class="err">\</span>
+    <span class="err">--route-table-id</span> <span class="err">rtb</span><span class="mi">-0</span><span class="mf">3e1023998</span><span class="err">c</span><span class="mi">139</span><span class="err">fea</span> <span class="err">\</span>
+    <span class="err">--destination-cidr-block</span> <span class="mf">192.168</span><span class="err">.</span><span class="mf">0.0</span><span class="err">/</span><span class="mi">16</span> <span class="err">\</span>
+    <span class="err">--vpc-peering-connection-id</span> <span class="err">pcx</span><span class="mi">-094</span><span class="err">a</span><span class="mi">1149</span><span class="err">b</span><span class="mi">32</span><span class="err">ef</span><span class="mi">0</span><span class="err">c</span><span class="mi">05</span>
+<span class="p">{</span>
+    <span class="nt">&#34;Return&#34;</span><span class="p">:</span> <span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><h4 id="423-配置-acl-与-security-group">4.2.3 配置 ACL 与 Security Group</h4>
 <p>接着配置 ACL 与 Security Group，让数据包不被防火墙所拦截。</p>
@@ -648,16 +648,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ aws ec2 authorize-security-group-ingress \
-</span></span><span class="line"><span class="cl">    --group-id sg-01cde04b3896f32df \
-</span></span><span class="line"><span class="cl">    --protocol all \
-</span></span><span class="line"><span class="cl">    --cidr 10.0.0.0/16
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ aws ec2 authorize-security-group-ingress \
-</span></span><span class="line"><span class="cl">    --group-id sg-06cbf88ed5d56bd18 \
-</span></span><span class="line"><span class="cl">    --protocol all \
-</span></span><span class="line"><span class="cl">    --cidr 192.168.0.0/16
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ aws ec2 authorize-security-group-ingress \
+    --group-id sg-01cde04b3896f32df \
+    --protocol all \
+    --cidr 10.0.0.0/16
+
+$ aws ec2 authorize-security-group-ingress \
+    --group-id sg-06cbf88ed5d56bd18 \
+    --protocol all \
+    --cidr 192.168.0.0/16
+</code></pre></td></tr></table>
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -683,16 +683,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ k1 get pods -n kube-system -o wide
-</span></span><span class="line"><span class="cl">NAME                       READY   STATUS    RESTARTS   AGE    IP               NODE                                           NOMINATED NODE   READINESS GATES
-</span></span><span class="line"><span class="cl">coredns-86d9946576-72gcv   1/1     Running   <span class="m">0</span>          112m   192.168.95.166   ip-192-168-85-158.us-west-2.compute.internal   &lt;none&gt;           &lt;none&gt;
-</span></span><span class="line"><span class="cl">coredns-86d9946576-tk9nk   1/1     Running   <span class="m">0</span>          112m   192.168.4.66     ip-192-168-24-153.us-west-2.compute.internal   &lt;none&gt;           &lt;none&gt;
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ k2 get pods -n kube-system -o wide
-</span></span><span class="line"><span class="cl">NAME                       READY   STATUS    RESTARTS   AGE   IP            NODE                                        NOMINATED NODE   READINESS GATES
-</span></span><span class="line"><span class="cl">coredns-86d9946576-79zvs   1/1     Running   <span class="m">0</span>          87m   10.0.76.0     ip-10-0-77-8.us-west-2.compute.internal     &lt;none&gt;           &lt;none&gt;
-</span></span><span class="line"><span class="cl">coredns-86d9946576-tqcbh   1/1     Running   <span class="m">0</span>          87m   10.0.91.141   ip-10-0-77-8.us-west-2.compute.internal     &lt;none&gt;           &lt;none&gt;
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ k1 get pods -n kube-system -o wide
+NAME                       READY   STATUS    RESTARTS   AGE    IP               NODE                                           NOMINATED NODE   READINESS GATES
+coredns-86d9946576-72gcv   1/1     Running   <span class="m">0</span>          112m   192.168.95.166   ip-192-168-85-158.us-west-2.compute.internal   &lt;none&gt;           &lt;none&gt;
+coredns-86d9946576-tk9nk   1/1     Running   <span class="m">0</span>          112m   192.168.4.66     ip-192-168-24-153.us-west-2.compute.internal   &lt;none&gt;           &lt;none&gt;
+
+$ k2 get pods -n kube-system -o wide
+NAME                       READY   STATUS    RESTARTS   AGE   IP            NODE                                        NOMINATED NODE   READINESS GATES
+coredns-86d9946576-79zvs   1/1     Running   <span class="m">0</span>          87m   10.0.76.0     ip-10-0-77-8.us-west-2.compute.internal     &lt;none&gt;           &lt;none&gt;
+coredns-86d9946576-tqcbh   1/1     Running   <span class="m">0</span>          87m   10.0.91.141   ip-10-0-77-8.us-west-2.compute.internal     &lt;none&gt;           &lt;none&gt;
+</code></pre></td></tr></table>
 </div>
 </div><p>接着配置 CoreDNS1 与 CoreDNS2，通过对应的 ConfigMap 来配置 Corefile。配置后，CoreDNS 会自动重新加载配置。</p>
 <div class="highlight"><div class="chroma">
@@ -730,38 +730,38 @@
 </span><span class="lnt">31
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="l">$ k1 edit -n kube-system cm coredns</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># ...</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
-</span></span></span><span class="line"><span class="cl"><span class="sd">    .:53 {
-</span></span></span><span class="line"><span class="cl"><span class="sd">        # default...
-</span></span></span><span class="line"><span class="cl"><span class="sd">    }
-</span></span></span><span class="line"><span class="cl"><span class="sd">    cluster-2.svc.cluster.local:53 {
-</span></span></span><span class="line"><span class="cl"><span class="sd">       log
-</span></span></span><span class="line"><span class="cl"><span class="sd">       errors
-</span></span></span><span class="line"><span class="cl"><span class="sd">       cache 30
-</span></span></span><span class="line"><span class="cl"><span class="sd">       forward . 10.0.76.0 10.0.91.141
-</span></span></span><span class="line"><span class="cl"><span class="sd">    }</span><span class="w">    
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="l">$ k2 edit -n kube-system cm coredns</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># ...</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
-</span></span></span><span class="line"><span class="cl"><span class="sd">    .:53 {
-</span></span></span><span class="line"><span class="cl"><span class="sd">        # default...
-</span></span></span><span class="line"><span class="cl"><span class="sd">    }
-</span></span></span><span class="line"><span class="cl"><span class="sd">    cluster-1.svc.cluster.local:53 {
-</span></span></span><span class="line"><span class="cl"><span class="sd">       log
-</span></span></span><span class="line"><span class="cl"><span class="sd">       errors
-</span></span></span><span class="line"><span class="cl"><span class="sd">       cache 30
-</span></span></span><span class="line"><span class="cl"><span class="sd">       forward . 10.0.76.0 10.0.91.141
-</span></span></span><span class="line"><span class="cl"><span class="sd">    }</span><span class="w">    
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">$ k1 edit -n kube-system cm coredns</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span><span class="w">    </span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">    .:53 {
+</span><span class="sd">        # default...
+</span><span class="sd">    }
+</span><span class="sd">    cluster-2.svc.cluster.local:53 {
+</span><span class="sd">       log
+</span><span class="sd">       errors
+</span><span class="sd">       cache 30
+</span><span class="sd">       forward . 10.0.76.0 10.0.91.141
+</span><span class="sd">    }</span><span class="w">    
+</span><span class="w">
+</span><span class="w"></span><span class="l">$ k2 edit -n kube-system cm coredns</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span><span class="w">    </span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">    .:53 {
+</span><span class="sd">        # default...
+</span><span class="sd">    }
+</span><span class="sd">    cluster-1.svc.cluster.local:53 {
+</span><span class="sd">       log
+</span><span class="sd">       errors
+</span><span class="sd">       cache 30
+</span><span class="sd">       forward . 10.0.76.0 10.0.91.141
+</span><span class="sd">    }</span><span class="w">    
+</span></code></pre></td></tr></table>
 </div>
 </div><p>这配置表明了，在创建服务时部署在 Cluster1 的 &ldquo;cluster-1&rdquo; namespace 与 Cluster2 的 &ldquo;cluster-2&rdquo; namespace 时，域名解析才能正常。</p>
 <h3 id="44-测试">4.4 测试</h3>
@@ -771,8 +771,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ k1 apply -f https://raw.githubusercontent.com/kubernetes/kubernetes/master/hack/testdata/recursive/pod/pod/busybox.yaml
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ k1 apply -f https://raw.githubusercontent.com/kubernetes/kubernetes/master/hack/testdata/recursive/pod/pod/busybox.yaml
+</code></pre></td></tr></table>
 </div>
 </div><p>在 Cluster2 部署一个 Service，Service 将消息转发到百度。需要注意，一定要部署在 &ldquo;cluster-2&rdquo; namespace。</p>
 <div class="highlight"><div class="chroma">
@@ -791,19 +791,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Service</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxy-to-baidu</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">cluster-2</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">baidu</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">8888</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">ExternalName</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">externalName</span><span class="p">:</span><span class="w"> </span><span class="l">www.baidu.com</span><span class="w"> </span><span class="c"># &lt;-- 转发</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Service</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxy-to-baidu</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">cluster-2</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">baidu</span><span class="w">
+</span><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">8888</span><span class="w">
+</span><span class="w">    </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
+</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">ExternalName</span><span class="w">
+</span><span class="w">  </span><span class="nt">externalName</span><span class="p">:</span><span class="w"> </span><span class="l">www.baidu.com</span><span class="w"> </span><span class="c"># &lt;-- 转发</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>测试下域名解析，可以看到域名解析到了百度的域名了，说明跨 Kubernetes 联通了！</p>
 <div class="highlight"><div class="chroma">
@@ -817,14 +817,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ k1 <span class="nb">exec</span> busybox1 -- nslookup proxy-to-baidu.cluster-2.svc.cluster.local
-</span></span><span class="line"><span class="cl">Server:         10.100.0.10
-</span></span><span class="line"><span class="cl">Address:        10.100.0.10:53
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">proxy-to-baidu.cluster-2.svc.cluster.local      canonical <span class="nv">name</span> <span class="o">=</span> www.baidu.com
-</span></span><span class="line"><span class="cl">www.baidu.com   canonical <span class="nv">name</span> <span class="o">=</span> www.a.shifen.com
-</span></span><span class="line"><span class="cl">www.a.shifen.com        canonical <span class="nv">name</span> <span class="o">=</span> www.wshifen.com
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ k1 <span class="nb">exec</span> busybox1 -- nslookup proxy-to-baidu.cluster-2.svc.cluster.local
+Server:         10.100.0.10
+Address:        10.100.0.10:53
+
+proxy-to-baidu.cluster-2.svc.cluster.local      canonical <span class="nv">name</span> <span class="o">=</span> www.baidu.com
+www.baidu.com   canonical <span class="nv">name</span> <span class="o">=</span> www.a.shifen.com
+www.a.shifen.com        canonical <span class="nv">name</span> <span class="o">=</span> www.wshifen.com
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="5-gcp-上的实践">5 GCP 上的实践</h2>
 <h3 id="51-创建-vpc-network">5.1 创建 VPC Network</h3>
@@ -835,8 +835,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ gcloud compute networks create <span class="si">${</span><span class="nv">network_name</span><span class="si">}</span> --subnet-mode<span class="o">=</span>custom
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ gcloud compute networks create <span class="si">${</span><span class="nv">network_name</span><span class="si">}</span> --subnet-mode<span class="o">=</span>custom
+</code></pre></td></tr></table>
 </div>
 </div><p>在新创建的 VPC 网络下创建两个个 Subnet，注意各个 Subnet 的 IP 地址范围不能相互重叠。每个 Subnet 还包含了后续 Kubernetes 要使用的 Pod 与 Service 的 IP 地址范围。</p>
 <div class="highlight"><div class="chroma">
@@ -854,18 +854,18 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ gcloud compute networks subnets create <span class="si">${</span><span class="nv">subnet_1</span><span class="si">}</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --region<span class="o">=</span><span class="si">${</span><span class="nv">region_1</span><span class="si">}</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --network<span class="o">=</span><span class="si">${</span><span class="nv">network_name</span><span class="si">}</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --range<span class="o">=</span>10.0.0.0/16 <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --secondary-range <span class="nv">pods</span><span class="o">=</span>10.10.0.0/16,services<span class="o">=</span>10.100.0.0/16
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ gcloud compute networks subnets create <span class="si">${</span><span class="nv">subnet_1</span><span class="si">}</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --region<span class="o">=</span><span class="si">${</span><span class="nv">region_1</span><span class="si">}</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --network<span class="o">=</span><span class="si">${</span><span class="nv">network_name</span><span class="si">}</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --range<span class="o">=</span>10.2.0.0/16 <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --secondary-range <span class="nv">pods</span><span class="o">=</span>10.12.0.0/16,services<span class="o">=</span>10.102.0.0/16
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ gcloud compute networks subnets create <span class="si">${</span><span class="nv">subnet_1</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>    --region<span class="o">=</span><span class="si">${</span><span class="nv">region_1</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>    --network<span class="o">=</span><span class="si">${</span><span class="nv">network_name</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>    --range<span class="o">=</span>10.0.0.0/16 <span class="se">\
+</span><span class="se"></span>    --secondary-range <span class="nv">pods</span><span class="o">=</span>10.10.0.0/16,services<span class="o">=</span>10.100.0.0/16
+
+$ gcloud compute networks subnets create <span class="si">${</span><span class="nv">subnet_1</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>  --region<span class="o">=</span><span class="si">${</span><span class="nv">region_1</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>  --network<span class="o">=</span><span class="si">${</span><span class="nv">network_name</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>  --range<span class="o">=</span>10.2.0.0/16 <span class="se">\
+</span><span class="se"></span>  --secondary-range <span class="nv">pods</span><span class="o">=</span>10.12.0.0/16,services<span class="o">=</span>10.102.0.0/16
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="52-创建-gke-集群">5.2 创建 GKE 集群</h3>
 <p>创建两个 Region 级别的 GKE 集群：</p>
@@ -888,22 +888,22 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ gcloud beta container clusters create <span class="si">${</span><span class="nv">cluster_1</span><span class="si">}</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --region <span class="si">${</span><span class="nv">region_1</span><span class="si">}</span> --num-nodes <span class="m">1</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --network <span class="si">${</span><span class="nv">network_name</span><span class="si">}</span> --subnetwork <span class="si">${</span><span class="nv">subnet_1</span><span class="si">}</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --cluster-dns clouddns --cluster-dns-scope vpc <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --cluster-dns-domain <span class="si">${</span><span class="nv">cluster_domain_1</span><span class="si">}</span>
-</span></span><span class="line"><span class="cl">    --enable-ip-alias <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --cluster-secondary-range-name<span class="o">=</span>pods --services-secondary-range-name<span class="o">=</span>services
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ gcloud beta container clusters create <span class="si">${</span><span class="nv">cluster_2</span><span class="si">}</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --region <span class="si">${</span><span class="nv">region_2</span><span class="si">}</span> --num-nodes <span class="m">1</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --network <span class="si">${</span><span class="nv">network_name</span><span class="si">}</span> --subnetwork <span class="si">${</span><span class="nv">subnet_2</span><span class="si">}</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --cluster-dns clouddns --cluster-dns-scope vpc <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --cluster-dns-domain <span class="si">${</span><span class="nv">cluster_domain_2</span><span class="si">}</span>
-</span></span><span class="line"><span class="cl">    --enable-ip-alias <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --cluster-secondary-range-name<span class="o">=</span>pods --services-secondary-range-name<span class="o">=</span>services
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ gcloud beta container clusters create <span class="si">${</span><span class="nv">cluster_1</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>    --region <span class="si">${</span><span class="nv">region_1</span><span class="si">}</span> --num-nodes <span class="m">1</span> <span class="se">\
+</span><span class="se"></span>    --network <span class="si">${</span><span class="nv">network_name</span><span class="si">}</span> --subnetwork <span class="si">${</span><span class="nv">subnet_1</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>    --cluster-dns clouddns --cluster-dns-scope vpc <span class="se">\
+</span><span class="se"></span>    --cluster-dns-domain <span class="si">${</span><span class="nv">cluster_domain_1</span><span class="si">}</span>
+    --enable-ip-alias <span class="se">\
+</span><span class="se"></span>    --cluster-secondary-range-name<span class="o">=</span>pods --services-secondary-range-name<span class="o">=</span>services
+
+$ gcloud beta container clusters create <span class="si">${</span><span class="nv">cluster_2</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>    --region <span class="si">${</span><span class="nv">region_2</span><span class="si">}</span> --num-nodes <span class="m">1</span> <span class="se">\
+</span><span class="se"></span>    --network <span class="si">${</span><span class="nv">network_name</span><span class="si">}</span> --subnetwork <span class="si">${</span><span class="nv">subnet_2</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>    --cluster-dns clouddns --cluster-dns-scope vpc <span class="se">\
+</span><span class="se"></span>    --cluster-dns-domain <span class="si">${</span><span class="nv">cluster_domain_2</span><span class="si">}</span>
+    --enable-ip-alias <span class="se">\
+</span><span class="se"></span>    --cluster-secondary-range-name<span class="o">=</span>pods --services-secondary-range-name<span class="o">=</span>services
+</code></pre></td></tr></table>
 </div>
 </div><p>一些重要的参数：</p>
 <ul>
@@ -922,10 +922,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ gcloud compute firewall-rules list --filter<span class="o">=</span><span class="s1">&#39;name~gke-${cluster_1}-.*-all&#39;</span>
-</span></span><span class="line"><span class="cl">NAME                           NETWORK     DIRECTION  PRIORITY  ALLOW                         DENY  DISABLED
-</span></span><span class="line"><span class="cl">gke-<span class="si">${</span><span class="nv">cluster_1</span><span class="si">}</span>-b8b48366-all  <span class="si">${</span><span class="nv">network</span><span class="si">}</span>  INGRESS    <span class="m">1000</span>      tcp,udp,icmp,esp,ah,sctp            False
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ gcloud compute firewall-rules list --filter<span class="o">=</span><span class="s1">&#39;name~gke-${cluster_1}-.*-all&#39;</span>
+NAME                           NETWORK     DIRECTION  PRIORITY  ALLOW                         DENY  DISABLED
+gke-<span class="si">${</span><span class="nv">cluster_1</span><span class="si">}</span>-b8b48366-all  <span class="si">${</span><span class="nv">network</span><span class="si">}</span>  INGRESS    <span class="m">1000</span>      tcp,udp,icmp,esp,ah,sctp            False
+</code></pre></td></tr></table>
 </div>
 </div><p>更新该防火墙规则，设置 source range 为所有集群的 Pod 网络的 IP 地址范围：</p>
 <div class="highlight"><div class="chroma">
@@ -933,8 +933,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ gcloud compute firewall-rules update gke-<span class="si">${</span><span class="nv">cluster_1</span><span class="si">}</span>-b8b48366-all --source-ranges 10.10.0.0/16,10.11.0.0/16
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ gcloud compute firewall-rules update gke-<span class="si">${</span><span class="nv">cluster_1</span><span class="si">}</span>-b8b48366-all --source-ranges 10.10.0.0/16,10.11.0.0/16
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="6-kind-上的实践">6 Kind 上的实践</h2>
 <h3 id="61-创建-kubernetes-集群">6.1 创建 Kubernetes 集群</h3>
@@ -974,38 +974,38 @@
 </span><span class="lnt">31
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="l">$ cat cluster-1.yaml</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Cluster</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kind.x-k8s.io/v1alpha4</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">networking</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">podSubnet</span><span class="p">:</span><span class="w"> </span><span class="m">10.10.0.0</span><span class="l">/16</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">serviceSubnet</span><span class="p">:</span><span class="w"> </span><span class="m">10.40.0.0</span><span class="l">/16</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">nodes</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">control-plane</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kubeadmConfigPatches</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="p">|</span><span class="sd">
-</span></span></span><span class="line"><span class="cl"><span class="sd">    kind: ClusterConfiguration
-</span></span></span><span class="line"><span class="cl"><span class="sd">    networking:
-</span></span></span><span class="line"><span class="cl"><span class="sd">      dnsDomain: &#34;cluster-1.com&#34;</span><span class="w">    
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="l">$ cat cluster-2.yaml</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Cluster</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kind.x-k8s.io/v1alpha4</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">networking</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">podSubnet</span><span class="p">:</span><span class="w"> </span><span class="m">10.20.0.0</span><span class="l">/16</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">serviceSubnet</span><span class="p">:</span><span class="w"> </span><span class="m">10.50.0.0</span><span class="l">/16</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">nodes</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">control-plane</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kubeadmConfigPatches</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="p">|</span><span class="sd">
-</span></span></span><span class="line"><span class="cl"><span class="sd">    kind: ClusterConfiguration
-</span></span></span><span class="line"><span class="cl"><span class="sd">    networking:
-</span></span></span><span class="line"><span class="cl"><span class="sd">      dnsDomain: &#34;cluster-2.com&#34;</span><span class="w">    
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">$ cat cluster-1.yaml</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Cluster</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kind.x-k8s.io/v1alpha4</span><span class="w">
+</span><span class="w"></span><span class="nt">networking</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">podSubnet</span><span class="p">:</span><span class="w"> </span><span class="m">10.10.0.0</span><span class="l">/16</span><span class="w">
+</span><span class="w">  </span><span class="nt">serviceSubnet</span><span class="p">:</span><span class="w"> </span><span class="m">10.40.0.0</span><span class="l">/16</span><span class="w">
+</span><span class="w"></span><span class="nt">nodes</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">control-plane</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w"></span><span class="nt">kubeadmConfigPatches</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="p">|</span><span class="sd">
+</span><span class="sd">    kind: ClusterConfiguration
+</span><span class="sd">    networking:
+</span><span class="sd">      dnsDomain: &#34;cluster-1.com&#34;</span><span class="w">    
+</span><span class="w">
+</span><span class="w"></span><span class="l">$ cat cluster-2.yaml</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Cluster</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kind.x-k8s.io/v1alpha4</span><span class="w">
+</span><span class="w"></span><span class="nt">networking</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">podSubnet</span><span class="p">:</span><span class="w"> </span><span class="m">10.20.0.0</span><span class="l">/16</span><span class="w">
+</span><span class="w">  </span><span class="nt">serviceSubnet</span><span class="p">:</span><span class="w"> </span><span class="m">10.50.0.0</span><span class="l">/16</span><span class="w">
+</span><span class="w"></span><span class="nt">nodes</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">control-plane</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w"></span><span class="nt">kubeadmConfigPatches</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="p">|</span><span class="sd">
+</span><span class="sd">    kind: ClusterConfiguration
+</span><span class="sd">    networking:
+</span><span class="sd">      dnsDomain: &#34;cluster-2.com&#34;</span><span class="w">    
+</span></code></pre></td></tr></table>
 </div>
 </div><p>创建两个集群 cluster-1 cluster-2。</p>
 <div class="highlight"><div class="chroma">
@@ -1014,9 +1014,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kind create cluster --config cluster-1.yaml --name cluster-1
-</span></span><span class="line"><span class="cl">$ kind create cluster --config cluster-2.yaml --name cluster-2
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ kind create cluster --config cluster-1.yaml --name cluster-1
+$ kind create cluster --config cluster-2.yaml --name cluster-2
+</code></pre></td></tr></table>
 </div>
 </div><div class="details admonition warning open">
         <div class="details-summary admonition-title">
@@ -1051,24 +1051,24 @@
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 找到 每个 node 的 IP 与 PodCIDR</span>
-</span></span><span class="line"><span class="cl">$ kubectl --context kind-cluster-1 get node -ojsonpath<span class="o">=</span><span class="s1">&#39;{range .items[*]} {.metadata.name}{&#34;\t&#34;} {.spec.podCIDR}{&#34;\t&#34;} {.status.addresses[0].address}{&#34;\n&#34;} {end}&#39;</span>
-</span></span><span class="line"><span class="cl">cluster-1-control-plane         10.10.0.0/24    172.19.0.2
-</span></span><span class="line"><span class="cl">cluster-1-worker       10.10.2.0/24    172.19.0.4
-</span></span><span class="line"><span class="cl">cluster-1-worker2      10.10.1.0/24    172.19.0.3
-</span></span><span class="line"><span class="cl">$ kubectl --context kind-cluster-2 get node -ojsonpath<span class="o">=</span><span class="s1">&#39;{range .items[*]} {.metadata.name}{&#34;\t&#34;} {.spec.podCIDR}{&#34;\t&#34;} {.status.addresses[0].address}{&#34;\n&#34;} {end}&#39;</span>
-</span></span><span class="line"><span class="cl">cluster-2-control-plane         10.20.0.0/24    172.19.0.7
-</span></span><span class="line"><span class="cl">cluster-2-worker       10.20.2.0/24    172.19.0.5
-</span></span><span class="line"><span class="cl">cluster-2-worker2      10.20.1.0/24    172.19.0.6
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 给节点添加路由项</span>
-</span></span><span class="line"><span class="cl">$ <span class="k">for</span> node in cluster-1-control-plane cluster-1-worker cluster-1-worker2 <span class="p">;</span> <span class="k">do</span> docker <span class="nb">exec</span> <span class="si">${</span><span class="nv">node</span><span class="si">}</span> ip route add 10.20.0.0/24 via 172.19.0.7<span class="p">;</span> <span class="k">done</span>
-</span></span><span class="line"><span class="cl">$ <span class="k">for</span> node in cluster-1-control-plane cluster-1-worker cluster-1-worker2 <span class="p">;</span> <span class="k">do</span> docker <span class="nb">exec</span> <span class="si">${</span><span class="nv">node</span><span class="si">}</span> ip route add 10.20.2.0/24 via 172.19.0.5<span class="p">;</span> <span class="k">done</span>
-</span></span><span class="line"><span class="cl">$ <span class="k">for</span> node in cluster-1-control-plane cluster-1-worker cluster-1-worker2 <span class="p">;</span> <span class="k">do</span> docker <span class="nb">exec</span> <span class="si">${</span><span class="nv">node</span><span class="si">}</span> ip route add 10.20.1.0/24 via 172.19.0.6<span class="p">;</span> <span class="k">done</span>
-</span></span><span class="line"><span class="cl">$ <span class="k">for</span> node in cluster-2-control-plane cluster-2-worker cluster-2-worker2 <span class="p">;</span> <span class="k">do</span> docker <span class="nb">exec</span> <span class="si">${</span><span class="nv">node</span><span class="si">}</span> ip route add 10.10.0.0/24 via 172.19.0.2<span class="p">;</span> <span class="k">done</span>
-</span></span><span class="line"><span class="cl">$ <span class="k">for</span> node in cluster-2-control-plane cluster-2-worker cluster-2-worker2 <span class="p">;</span> <span class="k">do</span> docker <span class="nb">exec</span> <span class="si">${</span><span class="nv">node</span><span class="si">}</span> ip route add 10.10.2.0/24 via 172.19.0.4<span class="p">;</span> <span class="k">done</span>
-</span></span><span class="line"><span class="cl">$ <span class="k">for</span> node in cluster-2-control-plane cluster-2-worker cluster-2-worker2 <span class="p">;</span> <span class="k">do</span> docker <span class="nb">exec</span> <span class="si">${</span><span class="nv">node</span><span class="si">}</span> ip route add 10.10.1.0/24 via 172.19.0.3<span class="p">;</span> <span class="k">done</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 找到 每个 node 的 IP 与 PodCIDR</span>
+$ kubectl --context kind-cluster-1 get node -ojsonpath<span class="o">=</span><span class="s1">&#39;{range .items[*]} {.metadata.name}{&#34;\t&#34;} {.spec.podCIDR}{&#34;\t&#34;} {.status.addresses[0].address}{&#34;\n&#34;} {end}&#39;</span>
+cluster-1-control-plane         10.10.0.0/24    172.19.0.2
+cluster-1-worker       10.10.2.0/24    172.19.0.4
+cluster-1-worker2      10.10.1.0/24    172.19.0.3
+$ kubectl --context kind-cluster-2 get node -ojsonpath<span class="o">=</span><span class="s1">&#39;{range .items[*]} {.metadata.name}{&#34;\t&#34;} {.spec.podCIDR}{&#34;\t&#34;} {.status.addresses[0].address}{&#34;\n&#34;} {end}&#39;</span>
+cluster-2-control-plane         10.20.0.0/24    172.19.0.7
+cluster-2-worker       10.20.2.0/24    172.19.0.5
+cluster-2-worker2      10.20.1.0/24    172.19.0.6
+
+<span class="c1"># 给节点添加路由项</span>
+$ <span class="k">for</span> node in cluster-1-control-plane cluster-1-worker cluster-1-worker2 <span class="p">;</span> <span class="k">do</span> docker <span class="nb">exec</span> <span class="si">${</span><span class="nv">node</span><span class="si">}</span> ip route add 10.20.0.0/24 via 172.19.0.7<span class="p">;</span> <span class="k">done</span>
+$ <span class="k">for</span> node in cluster-1-control-plane cluster-1-worker cluster-1-worker2 <span class="p">;</span> <span class="k">do</span> docker <span class="nb">exec</span> <span class="si">${</span><span class="nv">node</span><span class="si">}</span> ip route add 10.20.2.0/24 via 172.19.0.5<span class="p">;</span> <span class="k">done</span>
+$ <span class="k">for</span> node in cluster-1-control-plane cluster-1-worker cluster-1-worker2 <span class="p">;</span> <span class="k">do</span> docker <span class="nb">exec</span> <span class="si">${</span><span class="nv">node</span><span class="si">}</span> ip route add 10.20.1.0/24 via 172.19.0.6<span class="p">;</span> <span class="k">done</span>
+$ <span class="k">for</span> node in cluster-2-control-plane cluster-2-worker cluster-2-worker2 <span class="p">;</span> <span class="k">do</span> docker <span class="nb">exec</span> <span class="si">${</span><span class="nv">node</span><span class="si">}</span> ip route add 10.10.0.0/24 via 172.19.0.2<span class="p">;</span> <span class="k">done</span>
+$ <span class="k">for</span> node in cluster-2-control-plane cluster-2-worker cluster-2-worker2 <span class="p">;</span> <span class="k">do</span> docker <span class="nb">exec</span> <span class="si">${</span><span class="nv">node</span><span class="si">}</span> ip route add 10.10.2.0/24 via 172.19.0.4<span class="p">;</span> <span class="k">done</span>
+$ <span class="k">for</span> node in cluster-2-control-plane cluster-2-worker cluster-2-worker2 <span class="p">;</span> <span class="k">do</span> docker <span class="nb">exec</span> <span class="si">${</span><span class="nv">node</span><span class="si">}</span> ip route add 10.10.1.0/24 via 172.19.0.3<span class="p">;</span> <span class="k">done</span>
+</code></pre></td></tr></table>
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -1120,16 +1120,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl --context kind-cluster-1 get pods -n kube-system -o wide
-</span></span><span class="line"><span class="cl">NAME                                              READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
-</span></span><span class="line"><span class="cl">coredns-558bd4d5db-7kjdt                          1/1     Running   <span class="m">0</span>          65m   10.10.0.3    cluster-1-control-plane   &lt;none&gt;           &lt;none&gt;
-</span></span><span class="line"><span class="cl">coredns-558bd4d5db-lb46f                          1/1     Running   <span class="m">0</span>          65m   10.10.0.2    cluster-1-control-plane   &lt;none&gt;           &lt;none&gt;
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ kubectl --context kind-cluster-2 get pods -n kube-system -o wide
-</span></span><span class="line"><span class="cl">NAME                                              READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
-</span></span><span class="line"><span class="cl">coredns-558bd4d5db-b8c46                          1/1     Running   <span class="m">0</span>          64m   10.20.0.2    cluster-2-control-plane   &lt;none&gt;           &lt;none&gt;
-</span></span><span class="line"><span class="cl">coredns-558bd4d5db-w9p8g                          1/1     Running   <span class="m">0</span>          64m   10.20.0.3    cluster-2-control-plane   &lt;none&gt;           &lt;none&gt;
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ kubectl --context kind-cluster-1 get pods -n kube-system -o wide
+NAME                                              READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
+coredns-558bd4d5db-7kjdt                          1/1     Running   <span class="m">0</span>          65m   10.10.0.3    cluster-1-control-plane   &lt;none&gt;           &lt;none&gt;
+coredns-558bd4d5db-lb46f                          1/1     Running   <span class="m">0</span>          65m   10.10.0.2    cluster-1-control-plane   &lt;none&gt;           &lt;none&gt;
+
+$ kubectl --context kind-cluster-2 get pods -n kube-system -o wide
+NAME                                              READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
+coredns-558bd4d5db-b8c46                          1/1     Running   <span class="m">0</span>          64m   10.20.0.2    cluster-2-control-plane   &lt;none&gt;           &lt;none&gt;
+coredns-558bd4d5db-w9p8g                          1/1     Running   <span class="m">0</span>          64m   10.20.0.3    cluster-2-control-plane   &lt;none&gt;           &lt;none&gt;
+</code></pre></td></tr></table>
 </div>
 </div><p>接着配置 CoreDNS1 与 CoreDNS2，通过对应的 ConfigMap 来配置 Corefile。配置后，CoreDNS 会自动重新加载配置。</p>
 <div class="highlight"><div class="chroma">
@@ -1165,36 +1165,36 @@
 </span><span class="lnt">29
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="l">$ kubectl --context kind-cluster-1 edit -n kube-system cm coredns</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># ...</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
-</span></span></span><span class="line"><span class="cl"><span class="sd">    .:53 {
-</span></span></span><span class="line"><span class="cl"><span class="sd">        # default...
-</span></span></span><span class="line"><span class="cl"><span class="sd">    }
-</span></span></span><span class="line"><span class="cl"><span class="sd">    cluster-2.com:53 {
-</span></span></span><span class="line"><span class="cl"><span class="sd">      errors
-</span></span></span><span class="line"><span class="cl"><span class="sd">      cache 30
-</span></span></span><span class="line"><span class="cl"><span class="sd">      forward . 10.20.0.2 10.20.0.3 # -&gt; 对方集群的 CoreDNS Pod IP
-</span></span></span><span class="line"><span class="cl"><span class="sd">    } </span><span class="w">    
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="l">$ kubectl --context kind-cluster-2 edit -n kube-system cm coredns</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># ...</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
-</span></span></span><span class="line"><span class="cl"><span class="sd">    .:53 {
-</span></span></span><span class="line"><span class="cl"><span class="sd">        # default...
-</span></span></span><span class="line"><span class="cl"><span class="sd">    }
-</span></span></span><span class="line"><span class="cl"><span class="sd">    cluster-1.com:53 {
-</span></span></span><span class="line"><span class="cl"><span class="sd">       errors
-</span></span></span><span class="line"><span class="cl"><span class="sd">       cache 30
-</span></span></span><span class="line"><span class="cl"><span class="sd">       forward . 10.10.0.2 10.10.0.3  # -&gt; 对方集群的 CoreDNS Pod IP
-</span></span></span><span class="line"><span class="cl"><span class="sd">    }</span><span class="w">    
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">$ kubectl --context kind-cluster-1 edit -n kube-system cm coredns</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span><span class="w">    </span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">    .:53 {
+</span><span class="sd">        # default...
+</span><span class="sd">    }
+</span><span class="sd">    cluster-2.com:53 {
+</span><span class="sd">      errors
+</span><span class="sd">      cache 30
+</span><span class="sd">      forward . 10.20.0.2 10.20.0.3 # -&gt; 对方集群的 CoreDNS Pod IP
+</span><span class="sd">    } </span><span class="w">    
+</span><span class="w">
+</span><span class="w"></span><span class="l">$ kubectl --context kind-cluster-2 edit -n kube-system cm coredns</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span><span class="w">    </span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">    .:53 {
+</span><span class="sd">        # default...
+</span><span class="sd">    }
+</span><span class="sd">    cluster-1.com:53 {
+</span><span class="sd">       errors
+</span><span class="sd">       cache 30
+</span><span class="sd">       forward . 10.10.0.2 10.10.0.3  # -&gt; 对方集群的 CoreDNS Pod IP
+</span><span class="sd">    }</span><span class="w">    
+</span></code></pre></td></tr></table>
 </div>
 </div><h2 id="参考">参考</h2>
 <ul>
@@ -1206,8 +1206,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-04-15&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/da20389037d2373002cb145af96c1ff1b1e43da7" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) da20389037d2373002cb145af96c1ff1b1e43da7: fix">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>da20389</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bdcecc6dbc9f0ccaeed88ba66ca5edb4241df74c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bdcecc6dbc9f0ccaeed88ba66ca5edb4241df74c: fix">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bdcecc6</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -1231,7 +1231,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

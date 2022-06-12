@@ -222,17 +222,17 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ cat /proc/interrupts
-</span></span><span class="line"><span class="cl"><span class="c1"># …</span>
-</span></span><span class="line"><span class="cl">      CPU0
-</span></span><span class="line"><span class="cl">100:  <span class="m">15</span>      IR-PCI-MSI  35651584-edge p2p1-TxRx-0
-</span></span><span class="line"><span class="cl">101:  <span class="m">0</span>       IR-PCI-MSI  35651585-edge p2p1-TxRx-1
-</span></span><span class="line"><span class="cl">102:  <span class="m">0</span>       IR-PCI-MSI  35651586-edge p2p1-TxRx-2
-</span></span><span class="line"><span class="cl">103:  <span class="m">0</span>       IR-PCI-MSI  35651587-edge p2p1-TxRx-3
-</span></span><span class="line"><span class="cl">104:  <span class="m">0</span>       IR-PCI-MSI  35651588-edge p2p1-TxRx-4
-</span></span><span class="line"><span class="cl">105:  <span class="m">0</span>       IR-PCI-MSI  35651589-edge p2p1-TxRx-5
-</span></span><span class="line"><span class="cl">106:  <span class="m">0</span>       IR-PCI-MSI  35651590-edge p2p1-TxRx-6
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ cat /proc/interrupts
+<span class="c1"># …</span>
+      CPU0
+100:  <span class="m">15</span>      IR-PCI-MSI  35651584-edge p2p1-TxRx-0
+101:  <span class="m">0</span>       IR-PCI-MSI  35651585-edge p2p1-TxRx-1
+102:  <span class="m">0</span>       IR-PCI-MSI  35651586-edge p2p1-TxRx-2
+103:  <span class="m">0</span>       IR-PCI-MSI  35651587-edge p2p1-TxRx-3
+104:  <span class="m">0</span>       IR-PCI-MSI  35651588-edge p2p1-TxRx-4
+105:  <span class="m">0</span>       IR-PCI-MSI  35651589-edge p2p1-TxRx-5
+106:  <span class="m">0</span>       IR-PCI-MSI  35651590-edge p2p1-TxRx-6
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>第一行：IRQ 编号；</li>
@@ -333,21 +333,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ethtool -l eth0
-</span></span><span class="line"><span class="cl">Channel parameters <span class="k">for</span> eth0:
-</span></span><span class="line"><span class="cl">Pre-set maximums:
-</span></span><span class="line"><span class="cl">RX:             <span class="m">0</span>
-</span></span><span class="line"><span class="cl">TX:             <span class="m">0</span>
-</span></span><span class="line"><span class="cl">Other:          <span class="m">1</span>
-</span></span><span class="line"><span class="cl">Combined:       <span class="m">8</span>
-</span></span><span class="line"><span class="cl">Current hardware settings:
-</span></span><span class="line"><span class="cl">RX:             <span class="m">0</span>
-</span></span><span class="line"><span class="cl">TX:             <span class="m">0</span>
-</span></span><span class="line"><span class="cl">Other:          <span class="m">1</span>
-</span></span><span class="line"><span class="cl">Combined:       <span class="m">7</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ ethtool -L eth0 combined <span class="m">8</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ ethtool -l eth0
+Channel parameters <span class="k">for</span> eth0:
+Pre-set maximums:
+RX:             <span class="m">0</span>
+TX:             <span class="m">0</span>
+Other:          <span class="m">1</span>
+Combined:       <span class="m">8</span>
+Current hardware settings:
+RX:             <span class="m">0</span>
+TX:             <span class="m">0</span>
+Other:          <span class="m">1</span>
+Combined:       <span class="m">7</span>
+
+$ ethtool -L eth0 combined <span class="m">8</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>设置后，你在 <code>/sys/class/net/&lt;nic&gt;/queues/</code> 可以看到对应的收发队列目录：</p>
 <div class="highlight"><div class="chroma">
@@ -356,9 +356,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ls /sys/class/net/eth0/queues/
-</span></span><span class="line"><span class="cl">rx-0  rx-1  rx-2  rx-3  rx-4  rx-5  rx-6  rx-7  tx-0  tx-1  tx-2  tx-3  tx-4  tx-5  tx-6  tx-7
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ ls /sys/class/net/eth0/queues/
+rx-0  rx-1  rx-2  rx-3  rx-4  rx-5  rx-6  rx-7  tx-0  tx-1  tx-2  tx-3  tx-4  tx-5  tx-6  tx-7
+</code></pre></td></tr></table>
 </div>
 </div><p>在 <code>/proc/interrupts</code> 中也可以看到各个队列对各个 CPU 的中断次数：</p>
 <div class="highlight"><div class="chroma">
@@ -377,19 +377,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ cat /proc/interrupts <span class="p">|</span> grep eth0
-</span></span><span class="line"><span class="cl"><span class="c1"># … 这里只打印了一个 CPU 中断</span>
-</span></span><span class="line"><span class="cl">      CPU0
-</span></span><span class="line"><span class="cl">62:  <span class="m">0</span>     IR-PCI-MSI   524288-edge   eth0
-</span></span><span class="line"><span class="cl">63:  <span class="m">0</span>     IR-PCI-MSI   524289-edge   eth0-TxRx-0
-</span></span><span class="line"><span class="cl">64:  <span class="m">0</span>     IR-PCI-MSI   524290-edge   eth0-TxRx-1
-</span></span><span class="line"><span class="cl">65:  <span class="m">1766</span>  IR-PCI-MSI   524291-edge   eth0-TxRx-2
-</span></span><span class="line"><span class="cl">66:  <span class="m">0</span>     IR-PCI-MSI   524292-edge   eth0-TxRx-3
-</span></span><span class="line"><span class="cl">67:  <span class="m">0</span>     IR-PCI-MSI   524293-edge   eth0-TxRx-4
-</span></span><span class="line"><span class="cl">68:  <span class="m">0</span>     IR-PCI-MSI   524294-edge   eth0-TxRx-5
-</span></span><span class="line"><span class="cl">69:  <span class="m">0</span>     IR-PCI-MSI   524295-edge   eth0-TxRx-6
-</span></span><span class="line"><span class="cl">70:  <span class="m">0</span>     IR-PCI-MSI   524296-edge   eth0-TxRx-7
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ cat /proc/interrupts <span class="p">|</span> grep eth0
+<span class="c1"># … 这里只打印了一个 CPU 中断</span>
+      CPU0
+62:  <span class="m">0</span>     IR-PCI-MSI   524288-edge   eth0
+63:  <span class="m">0</span>     IR-PCI-MSI   524289-edge   eth0-TxRx-0
+64:  <span class="m">0</span>     IR-PCI-MSI   524290-edge   eth0-TxRx-1
+65:  <span class="m">1766</span>  IR-PCI-MSI   524291-edge   eth0-TxRx-2
+66:  <span class="m">0</span>     IR-PCI-MSI   524292-edge   eth0-TxRx-3
+67:  <span class="m">0</span>     IR-PCI-MSI   524293-edge   eth0-TxRx-4
+68:  <span class="m">0</span>     IR-PCI-MSI   524294-edge   eth0-TxRx-5
+69:  <span class="m">0</span>     IR-PCI-MSI   524295-edge   eth0-TxRx-6
+70:  <span class="m">0</span>     IR-PCI-MSI   524296-edge   eth0-TxRx-7
+</code></pre></td></tr></table>
 </div>
 </div><p>通过 <code>ethtool -g/-G &lt;nic&gt;</code> 可以查看与配置 ring buffer 的长度：</p>
 <div class="highlight"><div class="chroma">
@@ -408,19 +408,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ethtool -g eth0
-</span></span><span class="line"><span class="cl">Ring parameters <span class="k">for</span> eth0:
-</span></span><span class="line"><span class="cl">Pre-set maximums:
-</span></span><span class="line"><span class="cl">RX:             <span class="m">4096</span>
-</span></span><span class="line"><span class="cl">RX Mini:        <span class="m">0</span>
-</span></span><span class="line"><span class="cl">RX Jumbo:       <span class="m">0</span>
-</span></span><span class="line"><span class="cl">TX:             <span class="m">4096</span>
-</span></span><span class="line"><span class="cl">Current hardware settings:
-</span></span><span class="line"><span class="cl">RX:             <span class="m">256</span>
-</span></span><span class="line"><span class="cl">RX Mini:        <span class="m">0</span>
-</span></span><span class="line"><span class="cl">RX Jumbo:       <span class="m">0</span>
-</span></span><span class="line"><span class="cl">TX:             <span class="m">256</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ ethtool -g eth0
+Ring parameters <span class="k">for</span> eth0:
+Pre-set maximums:
+RX:             <span class="m">4096</span>
+RX Mini:        <span class="m">0</span>
+RX Jumbo:       <span class="m">0</span>
+TX:             <span class="m">4096</span>
+Current hardware settings:
+RX:             <span class="m">256</span>
+RX Mini:        <span class="m">0</span>
+RX Jumbo:       <span class="m">0</span>
+TX:             <span class="m">256</span>
+</code></pre></td></tr></table>
 </div>
 </div><h4 id="212-配置中断亲和性">2.1.2 配置中断亲和性</h4>
 <p>如果你发现 CPU0 的中断很高，那么就很有可能所有网卡队列的中断都打到了 CPU0 上。可以通过 <code>/proc/irq/&lt;id&gt;/smp_affinity_list</code> 查看指定编号的中断的对应允许的 CPU。</p>
@@ -438,17 +438,17 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ <span class="k">for</span> i in <span class="o">{</span>62..70<span class="o">}</span><span class="p">;</span> <span class="k">do</span> <span class="nb">echo</span> -n <span class="s2">&#34;Interrupt </span><span class="nv">$i</span><span class="s2"> is allowed on CPUs &#34;</span><span class="p">;</span> cat /proc/irq/<span class="nv">$i</span>/smp_affinity_list<span class="p">;</span> <span class="k">done</span>
-</span></span><span class="line"><span class="cl">Interrupt <span class="m">62</span> is allowed on CPUs <span class="m">4</span>
-</span></span><span class="line"><span class="cl">Interrupt <span class="m">63</span> is allowed on CPUs <span class="m">8</span>
-</span></span><span class="line"><span class="cl">Interrupt <span class="m">64</span> is allowed on CPUs <span class="m">13</span>
-</span></span><span class="line"><span class="cl">Interrupt <span class="m">65</span> is allowed on CPUs <span class="m">21</span>
-</span></span><span class="line"><span class="cl">Interrupt <span class="m">66</span> is allowed on CPUs <span class="m">6</span>
-</span></span><span class="line"><span class="cl">Interrupt <span class="m">67</span> is allowed on CPUs <span class="m">31</span>
-</span></span><span class="line"><span class="cl">Interrupt <span class="m">68</span> is allowed on CPUs <span class="m">5</span>
-</span></span><span class="line"><span class="cl">Interrupt <span class="m">69</span> is allowed on CPUs <span class="m">2</span>
-</span></span><span class="line"><span class="cl">Interrupt <span class="m">70</span> is allowed on CPUs <span class="m">31</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ <span class="k">for</span> i in <span class="o">{</span>62..70<span class="o">}</span><span class="p">;</span> <span class="k">do</span> <span class="nb">echo</span> -n <span class="s2">&#34;Interrupt </span><span class="nv">$i</span><span class="s2"> is allowed on CPUs &#34;</span><span class="p">;</span> cat /proc/irq/<span class="nv">$i</span>/smp_affinity_list<span class="p">;</span> <span class="k">done</span>
+Interrupt <span class="m">62</span> is allowed on CPUs <span class="m">4</span>
+Interrupt <span class="m">63</span> is allowed on CPUs <span class="m">8</span>
+Interrupt <span class="m">64</span> is allowed on CPUs <span class="m">13</span>
+Interrupt <span class="m">65</span> is allowed on CPUs <span class="m">21</span>
+Interrupt <span class="m">66</span> is allowed on CPUs <span class="m">6</span>
+Interrupt <span class="m">67</span> is allowed on CPUs <span class="m">31</span>
+Interrupt <span class="m">68</span> is allowed on CPUs <span class="m">5</span>
+Interrupt <span class="m">69</span> is allowed on CPUs <span class="m">2</span>
+Interrupt <span class="m">70</span> is allowed on CPUs <span class="m">31</span>
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>62-70 的网卡队列中断都打到了不同的 CPU 上；</li>
@@ -525,9 +525,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ls /sys/class/net
-</span></span><span class="line"><span class="cl">docker0  enp0s3  enp0s8  lo  lxcbr0  vethea62395
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ ls /sys/class/net
+docker0  enp0s3  enp0s8  lo  lxcbr0  vethea62395
+</code></pre></td></tr></table>
 </div>
 </div><p>net_device 包含了设备相关的所有信息，定义很长， 下面经过简化：</p>
 <div class="highlight"><div class="chroma">
@@ -585,58 +585,58 @@
 </span><span class="lnt">51
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">net_device</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">char</span>			<span class="n">name</span><span class="p">[</span><span class="n">IFNAMSIZ</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">	
-</span></span><span class="line"><span class="cl">	<span class="c1">// IO 相关字段
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">mem_end</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">mem_start</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">base_addr</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">int</span>			        <span class="n">irq</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">long</span>	<span class="n">state</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">dev_list</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="kt">int</span>			<span class="n">ifindex</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	
-</span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="k">struct</span> <span class="n">net_device_ops</span> <span class="o">*</span><span class="n">netdev_ops</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="k">struct</span> <span class="n">ethtool_ops</span> <span class="o">*</span><span class="n">ethtool_ops</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">flags</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">mtu</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">short</span>		<span class="n">type</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">short</span>		<span class="n">hard_header_len</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">char</span>		<span class="n">perm_addr</span><span class="p">[</span><span class="n">MAX_ADDR_LEN</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">char</span>		<span class="n">addr_len</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="cp">#if IS_ENABLED(CONFIG_VLAN_8021Q)
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>	<span class="k">struct</span> <span class="n">vlan_info</span> <span class="n">__rcu</span>	<span class="o">*</span><span class="n">vlan_info</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="cp">#endif
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>	<span class="c1">// … 协议相关的特殊指针
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl">	<span class="cm">/* Interface address info used in eth_type_trans() */</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">char</span>		<span class="o">*</span><span class="n">dev_addr</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">netdev_rx_queue</span>	<span class="o">*</span><span class="n">_rx</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">num_rx_queues</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">real_num_rx_queues</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">bpf_prog</span> <span class="n">__rcu</span>	<span class="o">*</span><span class="n">xdp_prog</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">gro_flush_timeout</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">int</span>			<span class="n">napi_defer_hard_irqs</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="n">rx_handler_func_t</span> <span class="n">__rcu</span>	<span class="o">*</span><span class="n">rx_handler</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">void</span> <span class="n">__rcu</span>		<span class="o">*</span><span class="n">rx_handler_data</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	
-</span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">netdev_queue</span> <span class="n">__rcu</span> <span class="o">*</span><span class="n">ingress_queue</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="n">truct</span> <span class="n">netdev_queue</span>	<span class="o">*</span><span class="n">_tx</span><span class="err">；</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">num_tx_queues</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">real_num_tx_queues</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">Qdisc</span>		<span class="o">*</span><span class="n">qdisc</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">tx_queue_len</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">};</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">net_device</span> <span class="p">{</span>
+	<span class="kt">char</span>			<span class="n">name</span><span class="p">[</span><span class="n">IFNAMSIZ</span><span class="p">];</span>
+	
+	<span class="c1">// IO 相关字段
+</span><span class="c1"></span>	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">mem_end</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">mem_start</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">base_addr</span><span class="p">;</span>
+	<span class="kt">int</span>			        <span class="n">irq</span><span class="p">;</span>
+
+	<span class="kt">unsigned</span> <span class="kt">long</span>	<span class="n">state</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">list_head</span>	<span class="n">dev_list</span><span class="p">;</span>
+
+	<span class="kt">int</span>			<span class="n">ifindex</span><span class="p">;</span>
+	
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">net_device_ops</span> <span class="o">*</span><span class="n">netdev_ops</span><span class="p">;</span>
+	<span class="k">const</span> <span class="k">struct</span> <span class="n">ethtool_ops</span> <span class="o">*</span><span class="n">ethtool_ops</span><span class="p">;</span>
+
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">flags</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">mtu</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">short</span>		<span class="n">type</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">short</span>		<span class="n">hard_header_len</span><span class="p">;</span>
+
+	<span class="kt">unsigned</span> <span class="kt">char</span>		<span class="n">perm_addr</span><span class="p">[</span><span class="n">MAX_ADDR_LEN</span><span class="p">];</span>
+	<span class="kt">unsigned</span> <span class="kt">char</span>		<span class="n">addr_len</span><span class="p">;</span>
+
+<span class="cp">#if IS_ENABLED(CONFIG_VLAN_8021Q)
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="n">vlan_info</span> <span class="n">__rcu</span>	<span class="o">*</span><span class="n">vlan_info</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="cp"></span>	<span class="c1">// … 协议相关的特殊指针
+</span><span class="c1"></span>
+	<span class="cm">/* Interface address info used in eth_type_trans() */</span>
+	<span class="kt">unsigned</span> <span class="kt">char</span>		<span class="o">*</span><span class="n">dev_addr</span><span class="p">;</span>
+
+	<span class="k">struct</span> <span class="n">netdev_rx_queue</span>	<span class="o">*</span><span class="n">_rx</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">num_rx_queues</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">real_num_rx_queues</span><span class="p">;</span>
+
+	<span class="k">struct</span> <span class="n">bpf_prog</span> <span class="n">__rcu</span>	<span class="o">*</span><span class="n">xdp_prog</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">long</span>		<span class="n">gro_flush_timeout</span><span class="p">;</span>
+	<span class="kt">int</span>			<span class="n">napi_defer_hard_irqs</span><span class="p">;</span>
+	<span class="n">rx_handler_func_t</span> <span class="n">__rcu</span>	<span class="o">*</span><span class="n">rx_handler</span><span class="p">;</span>
+	<span class="kt">void</span> <span class="n">__rcu</span>		<span class="o">*</span><span class="n">rx_handler_data</span><span class="p">;</span>
+	
+	<span class="k">struct</span> <span class="n">netdev_queue</span> <span class="n">__rcu</span> <span class="o">*</span><span class="n">ingress_queue</span><span class="p">;</span>
+
+	<span class="n">truct</span> <span class="n">netdev_queue</span>	<span class="o">*</span><span class="n">_tx</span><span class="err">；</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">num_tx_queues</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">real_num_tx_queues</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">Qdisc</span>		<span class="o">*</span><span class="n">qdisc</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span>		<span class="n">tx_queue_len</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>name[IFNAMSIZ] ：设备命名；</li>
@@ -703,12 +703,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 配置该 ringbuffer 使用 CPU0 CPU1 的队列</span>
-</span></span><span class="line"><span class="cl">$ <span class="nb">echo</span> <span class="s2">&#34;0x11&#34;</span> &gt; /sys/class/net/eth0/queues/rx-0/rps_cpus
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 配置每个 CPU 的 input_pkt_queue 的大小</span>
-</span></span><span class="line"><span class="cl">$ sysctl -w net.core.netdev_max_backlog<span class="o">=</span><span class="m">1000</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 配置该 ringbuffer 使用 CPU0 CPU1 的队列</span>
+$ <span class="nb">echo</span> <span class="s2">&#34;0x11&#34;</span> &gt; /sys/class/net/eth0/queues/rx-0/rps_cpus
+
+<span class="c1"># 配置每个 CPU 的 input_pkt_queue 的大小</span>
+$ sysctl -w net.core.netdev_max_backlog<span class="o">=</span><span class="m">1000</span>
+</code></pre></td></tr></table>
 </div>
 </div><h4 id="332-rfs">3.3.2 RFS</h4>
 <p><strong><ruby>RFS<rt>Receive Flow Steering</rt></ruby></strong> 一般和 RPS 配合工作。</p>
@@ -723,12 +723,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 配置系统期望的活跃连接数</span>
-</span></span><span class="line"><span class="cl">$ sysctl -w net.core.rps_sock_flow_entries<span class="o">=</span><span class="m">32768</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 配置每个 rps 队列负责的 flow 最大数量，为 rps_sock_flow_entries / N</span>
-</span></span><span class="line"><span class="cl">$ <span class="nb">echo</span> <span class="m">2048</span> &gt; /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 配置系统期望的活跃连接数</span>
+$ sysctl -w net.core.rps_sock_flow_entries<span class="o">=</span><span class="m">32768</span>
+
+<span class="c1"># 配置每个 rps 队列负责的 flow 最大数量，为 rps_sock_flow_entries / N</span>
+$ <span class="nb">echo</span> <span class="m">2048</span> &gt; /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
+</code></pre></td></tr></table>
 </div>
 </div><h4 id="333-xps">3.3.3 XPS</h4>
 <p><strong><ruby>XPS<rt>Transmit Packet Steering</rt></ruby></strong> 则是发送时的多队列处理。</p>
@@ -824,31 +824,31 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="line"><span class="cl"><span class="c1">// &lt;sk_buff.h&gt;
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl">    <span class="k">union</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">__be16</span>  <span class="n">inner_protocol</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="n">__u8</span>    <span class="n">inner_ipproto</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">};</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">__u16</span>   <span class="n">inner_transport_header</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">__u16</span>   <span class="n">inner_network_header</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">__u16</span>   <span class="n">inner_mac_header</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">__be16</span>  <span class="n">protocol</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">__u16</span>   <span class="n">transport_header</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">__u16</span>   <span class="n">network_header</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">__u16</span>   <span class="n">mac_header</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="cm">/* These elements must be at the end, see alloc_skb() for details.  */</span>
-</span></span><span class="line"><span class="cl">    <span class="n">sk_buff_data_t</span>  <span class="n">tail</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">sk_buff_data_t</span>  <span class="n">end</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">unsigned</span> <span class="kt">char</span>   <span class="o">*</span><span class="n">head</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">        <span class="o">*</span><span class="n">data</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">};</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="c1">// &lt;sk_buff.h&gt;
+</span><span class="c1"></span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="p">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span>
+    <span class="k">union</span> <span class="p">{</span>
+        <span class="n">__be16</span>  <span class="n">inner_protocol</span><span class="p">;</span>
+        <span class="n">__u8</span>    <span class="n">inner_ipproto</span><span class="p">;</span>
+    <span class="p">};</span>
+
+    <span class="n">__u16</span>   <span class="n">inner_transport_header</span><span class="p">;</span>
+    <span class="n">__u16</span>   <span class="n">inner_network_header</span><span class="p">;</span>
+    <span class="n">__u16</span>   <span class="n">inner_mac_header</span><span class="p">;</span>
+
+    <span class="n">__be16</span>  <span class="n">protocol</span><span class="p">;</span>
+    <span class="n">__u16</span>   <span class="n">transport_header</span><span class="p">;</span>
+    <span class="n">__u16</span>   <span class="n">network_header</span><span class="p">;</span>
+    <span class="n">__u16</span>   <span class="n">mac_header</span><span class="p">;</span>
+
+    <span class="cm">/* These elements must be at the end, see alloc_skb() for details.  */</span>
+    <span class="n">sk_buff_data_t</span>  <span class="n">tail</span><span class="p">;</span>
+    <span class="n">sk_buff_data_t</span>  <span class="n">end</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">char</span>   <span class="o">*</span><span class="n">head</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">data</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li><code>head</code>，<code>end</code> 为整个数据包的头尾内存地址；</li>
@@ -882,16 +882,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="line"><span class="cl"><span class="c1">// &lt;sk_buff.h&gt;
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">sk_buff_head</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="cm">/* These two members must be first. */</span>
-</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">sk_buff</span>  <span class="o">*</span><span class="n">next</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">sk_buff</span>  <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">__u32</span>       <span class="n">qlen</span><span class="p">;</span>  <span class="c1">// 链表长度
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">spinlock_t</span>  <span class="n">lock</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">};</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="c1">// &lt;sk_buff.h&gt;
+</span><span class="c1"></span><span class="k">struct</span> <span class="n">sk_buff_head</span> <span class="p">{</span>
+    <span class="cm">/* These two members must be first. */</span>
+    <span class="k">struct</span> <span class="n">sk_buff</span>  <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sk_buff</span>  <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+
+    <span class="n">__u32</span>       <span class="n">qlen</span><span class="p">;</span>  <span class="c1">// 链表长度
+</span><span class="c1"></span>    <span class="n">spinlock_t</span>  <span class="n">lock</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
 </div>
 </div><h3 id="42-netfilter">4.2 netfilter</h3>
 <p>netfilter 是一个在内核框架，位于网络层，可以根据动态的条件过滤或操作分组。
@@ -941,9 +941,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 开启 ip forward</span>
-</span></span><span class="line"><span class="cl">sysctl -w net.ipv4.ip_forward<span class="o">=</span><span class="m">1</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 开启 ip forward</span>
+sysctl -w net.ipv4.ip_forward<span class="o">=</span><span class="m">1</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>看一下路由对数据包的处理：</p>
 <ol>
@@ -994,31 +994,31 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// &lt;sock.h&gt;
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">sock</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// …
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="cp">#define sk_state    __sk_common.skc_state
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>	<span class="c1">// …
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">struct</span> <span class="n">sk_buff_head</span> <span class="n">sk_error_queue</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">sk_buff_head</span> <span class="n">sk_receive_queue</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">sk_buff_head</span> <span class="n">sk_write_queue</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">sk_rcvbuf</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">sk_sndbuf</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	
-</span></span><span class="line"><span class="cl">	<span class="n">u32</span> <span class="n">sk_ack_backlog</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="n">u32</span> <span class="n">sk_max_ack_backlog</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	
-</span></span><span class="line"><span class="cl">	<span class="c1">// 各个回调函数
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">sk_state_change</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">sk_data_ready</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">sk_write_space</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">sk_error_report</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">sk_backlog_rcv</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// …
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="c1">// &lt;sock.h&gt;
+</span><span class="c1"></span><span class="k">struct</span> <span class="n">sock</span> <span class="p">{</span>
+    <span class="c1">// …
+</span><span class="c1"></span>	<span class="cp">#define sk_state    __sk_common.skc_state
+</span><span class="cp"></span>	<span class="c1">// …
+</span><span class="c1"></span>    <span class="k">struct</span> <span class="n">sk_buff_head</span> <span class="n">sk_error_queue</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sk_buff_head</span> <span class="n">sk_receive_queue</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sk_buff_head</span> <span class="n">sk_write_queue</span><span class="p">;</span>
+
+	<span class="kt">int</span> <span class="n">sk_rcvbuf</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">sk_sndbuf</span><span class="p">;</span>
+	
+	<span class="n">u32</span> <span class="n">sk_ack_backlog</span><span class="p">;</span>
+	<span class="n">u32</span> <span class="n">sk_max_ack_backlog</span><span class="p">;</span>
+	
+	<span class="c1">// 各个回调函数
+</span><span class="c1"></span>    <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">sk_state_change</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">);</span>
+    <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">sk_data_ready</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">);</span>
+    <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">sk_write_space</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">);</span>
+    <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">sk_error_report</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">);</span>
+    <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">sk_backlog_rcv</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">,</span>
+                <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+    <span class="c1">// …
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li><code>sk_state</code> ：TCP 的状态；</li>
@@ -1035,10 +1035,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sysctl -w net.ipv4.tcp_rmem<span class="o">=</span><span class="s2">&#34;4096 503827 6291456&#34;</span>
-</span></span><span class="line"><span class="cl">sysctl -w net.ipv4.tcp_wmem<span class="o">=</span><span class="s2">&#34;4096 503827 6291456&#34;</span>
-</span></span><span class="line"><span class="cl">sysctl -w net.ipv4.udp_mem<span class="o">=</span><span class="s2">&#34;377868 503827  755736&#34;</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sysctl -w net.ipv4.tcp_rmem<span class="o">=</span><span class="s2">&#34;4096 503827 6291456&#34;</span>
+sysctl -w net.ipv4.tcp_wmem<span class="o">=</span><span class="s2">&#34;4096 503827 6291456&#34;</span>
+sysctl -w net.ipv4.udp_mem<span class="o">=</span><span class="s2">&#34;377868 503827  755736&#34;</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>每个设置包含三个值，min、default、max。内核会根据当前的可用内存动态调节队列的大小；
 <div class="details admonition tip open">
@@ -1154,7 +1154,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
