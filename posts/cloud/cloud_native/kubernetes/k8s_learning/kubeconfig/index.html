@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/kubeconfig/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-04-27T17:02:24+08:00" />
-<meta property="article:modified_time" content="2022-04-28T12:10:58+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-06-12T22:54:08+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/kubeconfig\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2007 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/kubeconfig\/","datePublished": "2022-04-27T17:02:24+08:00","dateModified": "2022-04-28T12:10:58+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/kubeconfig\/","datePublished": "2022-04-27T17:02:24+08:00","dateModified": "2022-06-12T22:54:08+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -178,40 +178,40 @@
 </span><span class="lnt">33
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Config</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">current-context</span><span class="p">:</span><span class="w"> </span><span class="l">federal-context</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">clusters</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">cluster</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">certificate-authority</span><span class="p">:</span><span class="w"> </span><span class="l">path/to/my/cafile</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l">https://horse.org:4443</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">horse-cluster</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">cluster</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">insecure-skip-tls-verify</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l">https://pig.org:443</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pig-cluster</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">contexts</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">context</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l">horse-cluster</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">chisel-ns</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l">green-user</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">federal-context</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">context</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l">pig-cluster</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">saw-ns</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l">black-user</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">queen-anne-context</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">preferences</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">colors</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">users</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">blue-user</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="l">blue-token</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">green-user</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">client-certificate</span><span class="p">:</span><span class="w"> </span><span class="l">path/to/my/client/cert</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">client-key</span><span class="p">:</span><span class="w"> </span><span class="l">path/to/my/client/key</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Config</span><span class="w">
+</span><span class="w"></span><span class="nt">current-context</span><span class="p">:</span><span class="w"> </span><span class="l">federal-context</span><span class="w">
+</span><span class="w"></span><span class="nt">clusters</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">cluster</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">certificate-authority</span><span class="p">:</span><span class="w"> </span><span class="l">path/to/my/cafile</span><span class="w">
+</span><span class="w">    </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l">https://horse.org:4443</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">horse-cluster</span><span class="w">
+</span><span class="w"></span>- <span class="nt">cluster</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">insecure-skip-tls-verify</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">    </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l">https://pig.org:443</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pig-cluster</span><span class="w">
+</span><span class="w"></span><span class="nt">contexts</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">context</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l">horse-cluster</span><span class="w">
+</span><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">chisel-ns</span><span class="w">
+</span><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l">green-user</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">federal-context</span><span class="w">
+</span><span class="w"></span>- <span class="nt">context</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l">pig-cluster</span><span class="w">
+</span><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">saw-ns</span><span class="w">
+</span><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l">black-user</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">queen-anne-context</span><span class="w">
+</span><span class="w"></span><span class="nt">preferences</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">colors</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w"></span><span class="nt">users</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">blue-user</span><span class="w">
+</span><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="l">blue-token</span><span class="w">
+</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">green-user</span><span class="w">
+</span><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">client-certificate</span><span class="p">:</span><span class="w"> </span><span class="l">path/to/my/client/cert</span><span class="w">
+</span><span class="w">    </span><span class="nt">client-key</span><span class="p">:</span><span class="w"> </span><span class="l">path/to/my/client/key</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>配置文件中主要包含三部分：</p>
 <ul>
@@ -253,25 +253,25 @@
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Cluster contains information about how to communicate with a kubernetes cluster
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">Cluster</span> <span class="kd">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// Server is the address of the kubernetes cluster (https://hostname:port).
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Server</span> <span class="kt">string</span> <span class="s">`json:&#34;server&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// TLSServerName is used to check server certificate. If TLSServerName is empty, the hostname used to contact the server is used.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">TLSServerName</span> <span class="kt">string</span> <span class="s">`json:&#34;tls-server-name,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// InsecureSkipTLSVerify skips the validity check for the server&#39;s certificate. This will make your HTTPS connections insecure.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">InsecureSkipTLSVerify</span> <span class="kt">bool</span> <span class="s">`json:&#34;insecure-skip-tls-verify,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// CertificateAuthority is the path to a cert file for the certificate authority.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">CertificateAuthority</span> <span class="kt">string</span> <span class="s">`json:&#34;certificate-authority,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// CertificateAuthorityData contains PEM-encoded certificate authority certificates. Overrides CertificateAuthority
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">CertificateAuthorityData</span> <span class="p">[]</span><span class="kt">byte</span> <span class="s">`json:&#34;certificate-authority-data,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// ProxyURL is the URL to the proxy to be used for all requests made by this
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// client. URLs with &#34;http&#34;, &#34;https&#34;, and &#34;socks5&#34; schemes are supported.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">ProxyURL</span> <span class="kt">string</span> <span class="s">`json:&#34;proxy-url,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// Extensions holds additional information. This is useful for extenders so that reads and writes don&#39;t clobber unknown fields
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Extensions</span> <span class="p">[]</span><span class="nx">NamedExtension</span> <span class="s">`json:&#34;extensions,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Cluster contains information about how to communicate with a kubernetes cluster
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Cluster</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// Server is the address of the kubernetes cluster (https://hostname:port).
+</span><span class="c1"></span>	<span class="nx">Server</span> <span class="kt">string</span> <span class="s">`json:&#34;server&#34;`</span>
+	<span class="c1">// TLSServerName is used to check server certificate. If TLSServerName is empty, the hostname used to contact the server is used.
+</span><span class="c1"></span>	<span class="nx">TLSServerName</span> <span class="kt">string</span> <span class="s">`json:&#34;tls-server-name,omitempty&#34;`</span>
+	<span class="c1">// InsecureSkipTLSVerify skips the validity check for the server&#39;s certificate. This will make your HTTPS connections insecure.
+</span><span class="c1"></span>	<span class="nx">InsecureSkipTLSVerify</span> <span class="kt">bool</span> <span class="s">`json:&#34;insecure-skip-tls-verify,omitempty&#34;`</span>
+	<span class="c1">// CertificateAuthority is the path to a cert file for the certificate authority.
+</span><span class="c1"></span>	<span class="nx">CertificateAuthority</span> <span class="kt">string</span> <span class="s">`json:&#34;certificate-authority,omitempty&#34;`</span>
+	<span class="c1">// CertificateAuthorityData contains PEM-encoded certificate authority certificates. Overrides CertificateAuthority
+</span><span class="c1"></span>	<span class="nx">CertificateAuthorityData</span> <span class="p">[]</span><span class="kt">byte</span> <span class="s">`json:&#34;certificate-authority-data,omitempty&#34;`</span>
+	<span class="c1">// ProxyURL is the URL to the proxy to be used for all requests made by this
+</span><span class="c1"></span>	<span class="c1">// client. URLs with &#34;http&#34;, &#34;https&#34;, and &#34;socks5&#34; schemes are supported.
+</span><span class="c1"></span>	<span class="nx">ProxyURL</span> <span class="kt">string</span> <span class="s">`json:&#34;proxy-url,omitempty&#34;`</span>
+	<span class="c1">// Extensions holds additional information. This is useful for extenders so that reads and writes don&#39;t clobber unknown fields
+</span><span class="c1"></span>	<span class="nx">Extensions</span> <span class="p">[]</span><span class="nx">NamedExtension</span> <span class="s">`json:&#34;extensions,omitempty&#34;`</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li><code>Server</code> - Kubernetes 集群地址；</li>
@@ -288,12 +288,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">clusters</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">cluster</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">certificate-authority-data</span><span class="p">:</span><span class="w"> </span><span class="l">DATA+OMITTED</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l">https://127.0.0.1:37958</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kind-kind</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">clusters</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">cluster</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">certificate-authority-data</span><span class="p">:</span><span class="w"> </span><span class="l">DATA+OMITTED</span><span class="w">
+</span><span class="w">    </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l">https://127.0.0.1:37958</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kind-kind</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -344,38 +344,38 @@
 </span><span class="lnt">31
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// AuthInfo contains information that describes identity information.  This is use to tell the kubernetes cluster who you are.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">AuthInfo</span> <span class="kd">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// ClientCertificate is the path to a client cert file for TLS.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">ClientCertificate</span> <span class="kt">string</span> <span class="s">`json:&#34;client-certificate,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// ClientCertificateData contains PEM-encoded data from a client cert file for TLS. Overrides ClientCertificate
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">ClientCertificateData</span> <span class="p">[]</span><span class="kt">byte</span> <span class="s">`json:&#34;client-certificate-data,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// ClientKey is the path to a client key file for TLS.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">ClientKey</span> <span class="kt">string</span> <span class="s">`json:&#34;client-key,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// ClientKeyData contains PEM-encoded data from a client key file for TLS. Overrides ClientKey
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">ClientKeyData</span> <span class="p">[]</span><span class="kt">byte</span> <span class="s">`json:&#34;client-key-data,omitempty&#34; datapolicy:&#34;security-key&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// Token is the bearer token for authentication to the kubernetes cluster.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Token</span> <span class="kt">string</span> <span class="s">`json:&#34;token,omitempty&#34; datapolicy:&#34;token&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// TokenFile is a pointer to a file that contains a bearer token (as described above).  If both Token and TokenFile are present, Token takes precedence.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">TokenFile</span> <span class="kt">string</span> <span class="s">`json:&#34;tokenFile,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// Impersonate is the username to imperonate.  The name matches the flag.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Impersonate</span> <span class="kt">string</span> <span class="s">`json:&#34;as,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// ImpersonateGroups is the groups to imperonate.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">ImpersonateGroups</span> <span class="p">[]</span><span class="kt">string</span> <span class="s">`json:&#34;as-groups,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// ImpersonateUserExtra contains additional information for impersonated user.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">ImpersonateUserExtra</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="kt">string</span> <span class="s">`json:&#34;as-user-extra,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// Username is the username for basic authentication to the kubernetes cluster.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Username</span> <span class="kt">string</span> <span class="s">`json:&#34;username,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// Password is the password for basic authentication to the kubernetes cluster.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Password</span> <span class="kt">string</span> <span class="s">`json:&#34;password,omitempty&#34; datapolicy:&#34;password&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// AuthProvider specifies a custom authentication plugin for the kubernetes cluster.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">AuthProvider</span> <span class="o">*</span><span class="nx">AuthProviderConfig</span> <span class="s">`json:&#34;auth-provider,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// Exec specifies a custom exec-based authentication plugin for the kubernetes cluster.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Exec</span> <span class="o">*</span><span class="nx">ExecConfig</span> <span class="s">`json:&#34;exec,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// Extensions holds additional information. This is useful for extenders so that reads and writes don&#39;t clobber unknown fields
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Extensions</span> <span class="p">[]</span><span class="nx">NamedExtension</span> <span class="s">`json:&#34;extensions,omitempty&#34;`</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// AuthInfo contains information that describes identity information.  This is use to tell the kubernetes cluster who you are.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">AuthInfo</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// ClientCertificate is the path to a client cert file for TLS.
+</span><span class="c1"></span>	<span class="nx">ClientCertificate</span> <span class="kt">string</span> <span class="s">`json:&#34;client-certificate,omitempty&#34;`</span>
+	<span class="c1">// ClientCertificateData contains PEM-encoded data from a client cert file for TLS. Overrides ClientCertificate
+</span><span class="c1"></span>	<span class="nx">ClientCertificateData</span> <span class="p">[]</span><span class="kt">byte</span> <span class="s">`json:&#34;client-certificate-data,omitempty&#34;`</span>
+	<span class="c1">// ClientKey is the path to a client key file for TLS.
+</span><span class="c1"></span>	<span class="nx">ClientKey</span> <span class="kt">string</span> <span class="s">`json:&#34;client-key,omitempty&#34;`</span>
+	<span class="c1">// ClientKeyData contains PEM-encoded data from a client key file for TLS. Overrides ClientKey
+</span><span class="c1"></span>	<span class="nx">ClientKeyData</span> <span class="p">[]</span><span class="kt">byte</span> <span class="s">`json:&#34;client-key-data,omitempty&#34; datapolicy:&#34;security-key&#34;`</span>
+	<span class="c1">// Token is the bearer token for authentication to the kubernetes cluster.
+</span><span class="c1"></span>	<span class="nx">Token</span> <span class="kt">string</span> <span class="s">`json:&#34;token,omitempty&#34; datapolicy:&#34;token&#34;`</span>
+	<span class="c1">// TokenFile is a pointer to a file that contains a bearer token (as described above).  If both Token and TokenFile are present, Token takes precedence.
+</span><span class="c1"></span>	<span class="nx">TokenFile</span> <span class="kt">string</span> <span class="s">`json:&#34;tokenFile,omitempty&#34;`</span>
+	<span class="c1">// Impersonate is the username to imperonate.  The name matches the flag.
+</span><span class="c1"></span>	<span class="nx">Impersonate</span> <span class="kt">string</span> <span class="s">`json:&#34;as,omitempty&#34;`</span>
+	<span class="c1">// ImpersonateGroups is the groups to imperonate.
+</span><span class="c1"></span>	<span class="nx">ImpersonateGroups</span> <span class="p">[]</span><span class="kt">string</span> <span class="s">`json:&#34;as-groups,omitempty&#34;`</span>
+	<span class="c1">// ImpersonateUserExtra contains additional information for impersonated user.
+</span><span class="c1"></span>	<span class="nx">ImpersonateUserExtra</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="kt">string</span> <span class="s">`json:&#34;as-user-extra,omitempty&#34;`</span>
+	<span class="c1">// Username is the username for basic authentication to the kubernetes cluster.
+</span><span class="c1"></span>	<span class="nx">Username</span> <span class="kt">string</span> <span class="s">`json:&#34;username,omitempty&#34;`</span>
+	<span class="c1">// Password is the password for basic authentication to the kubernetes cluster.
+</span><span class="c1"></span>	<span class="nx">Password</span> <span class="kt">string</span> <span class="s">`json:&#34;password,omitempty&#34; datapolicy:&#34;password&#34;`</span>
+	<span class="c1">// AuthProvider specifies a custom authentication plugin for the kubernetes cluster.
+</span><span class="c1"></span>	<span class="nx">AuthProvider</span> <span class="o">*</span><span class="nx">AuthProviderConfig</span> <span class="s">`json:&#34;auth-provider,omitempty&#34;`</span>
+	<span class="c1">// Exec specifies a custom exec-based authentication plugin for the kubernetes cluster.
+</span><span class="c1"></span>	<span class="nx">Exec</span> <span class="o">*</span><span class="nx">ExecConfig</span> <span class="s">`json:&#34;exec,omitempty&#34;`</span>
+	<span class="c1">// Extensions holds additional information. This is useful for extenders so that reads and writes don&#39;t clobber unknown fields
+</span><span class="c1"></span>	<span class="nx">Extensions</span> <span class="p">[]</span><span class="nx">NamedExtension</span> <span class="s">`json:&#34;extensions,omitempty&#34;`</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
 </div><p>我们从不同的身份认证方式来看对应的各个字段：</p>
 <ul>
@@ -394,12 +394,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">users</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kind-kind</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">client-certificate-data</span><span class="p">:</span><span class="w"> </span><span class="l">REDACTED</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">client-key-data</span><span class="p">:</span><span class="w"> </span><span class="l">REDACTED</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">users</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kind-kind</span><span class="w">
+</span><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">client-certificate-data</span><span class="p">:</span><span class="w"> </span><span class="l">REDACTED</span><span class="w">
+</span><span class="w">    </span><span class="nt">client-key-data</span><span class="p">:</span><span class="w"> </span><span class="l">REDACTED</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div></li>
 <li>
@@ -415,11 +415,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">users</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kind-kind</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="l">REDACTED</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">users</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kind-kind</span><span class="w">
+</span><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="l">REDACTED</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div></li>
 <li>
@@ -438,12 +438,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">users</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kind-kind</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l">foo</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l">bar</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">users</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kind-kind</span><span class="w">
+</span><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l">foo</span><span class="w">
+</span><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l">bar</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div></li>
 </ul>
@@ -471,21 +471,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl">- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">arn:aws:eks:us-west-2:123123123:cluster/test</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">exec</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">client.authentication.k8s.io/v1alpha1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- --<span class="l">region</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">us-west-2</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">eks</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">get-token</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- --<span class="l">cluster-name</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">staging-seed-us-west-2</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l">aws</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">env</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">provideClusterInfo</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml">- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">arn:aws:eks:us-west-2:123123123:cluster/test</span><span class="w">
+</span><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">exec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">client.authentication.k8s.io/v1alpha1</span><span class="w">
+</span><span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- --<span class="l">region</span><span class="w">
+</span><span class="w">      </span>- <span class="l">us-west-2</span><span class="w">
+</span><span class="w">      </span>- <span class="l">eks</span><span class="w">
+</span><span class="w">      </span>- <span class="l">get-token</span><span class="w">
+</span><span class="w">      </span>- --<span class="l">cluster-name</span><span class="w">
+</span><span class="w">      </span>- <span class="l">staging-seed-us-west-2</span><span class="w">
+</span><span class="w">      </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l">aws</span><span class="w">
+</span><span class="w">      </span><span class="nt">env</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+</span><span class="w">      </span><span class="nt">provideClusterInfo</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div></li>
 <li>
@@ -506,16 +506,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl">- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">gke_test</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">auth-provider</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">config</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">cmd-args</span><span class="p">:</span><span class="w"> </span><span class="l">config config-helper --format=json</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">cmd-path</span><span class="p">:</span><span class="w"> </span><span class="l">/usr/local/google-cloud-sdk/bin/gcloud</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">expiry-key</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;{.credential.token_expiry}&#39;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">token-key</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;{.credential.access_token}&#39;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">gcp</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml">- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">gke_test</span><span class="w">
+</span><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">auth-provider</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">config</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">cmd-args</span><span class="p">:</span><span class="w"> </span><span class="l">config config-helper --format=json</span><span class="w">
+</span><span class="w">        </span><span class="nt">cmd-path</span><span class="p">:</span><span class="w"> </span><span class="l">/usr/local/google-cloud-sdk/bin/gcloud</span><span class="w">
+</span><span class="w">        </span><span class="nt">expiry-key</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;{.credential.token_expiry}&#39;</span><span class="w">
+</span><span class="w">        </span><span class="nt">token-key</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;{.credential.access_token}&#39;</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">gcp</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div></li>
 </ul>
@@ -542,19 +542,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">current-context</span><span class="p">:</span><span class="w"> </span><span class="l">federal-context</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">contexts</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">context</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l">horse-cluster</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">chisel-ns</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l">green-user</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">federal-context</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">context</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l">pig-cluster</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">saw-ns</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l">black-user</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">queen-anne-context</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">current-context</span><span class="p">:</span><span class="w"> </span><span class="l">federal-context</span><span class="w">
+</span><span class="w"></span><span class="nt">contexts</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">context</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l">horse-cluster</span><span class="w">
+</span><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">chisel-ns</span><span class="w">
+</span><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l">green-user</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">federal-context</span><span class="w">
+</span><span class="w"></span>- <span class="nt">context</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l">pig-cluster</span><span class="w">
+</span><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">saw-ns</span><span class="w">
+</span><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l">black-user</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">queen-anne-context</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>Context 可以认为是本地的绑定信息，使用 <code>kubectl config use-context ${context}</code> 可以方便的切换当前使用的 Context。</p>
 <h2 id="2-配置-kubeconfig">2 配置 kubeconfig</h2>
@@ -615,8 +615,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-04-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/8e561e2db54193849ec27bd70ac77c07a6bcb783" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 8e561e2db54193849ec27bd70ac77c07a6bcb783: post: kubeconfig">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>8e561e2</a></span>
+                <span>更新于 2022-06-12&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/a9c42b90c745363e24a375bb9fa1559b896ef425" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) a9c42b90c745363e24a375bb9fa1559b896ef425: Add Rlease CD">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>a9c42b9</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -640,7 +640,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.99.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
