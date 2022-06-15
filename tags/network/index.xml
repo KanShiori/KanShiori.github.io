@@ -1,0 +1,39 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>network - 标签 - Shiori&#39;s Blog</title>
+        <link>https://KanShiori.github.io/tags/network/</link>
+        <description>network - 标签 - Shiori&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 13 Jun 2022 21:29:19 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/network/" rel="self" type="application/rss+xml" /><item>
+    <title>Certificate 总结</title>
+    <link>https://KanShiori.github.io/posts/net/certificate/</link>
+    <pubDate>Mon, 13 Jun 2022 21:29:19 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/net/certificate/</guid>
+    <description><![CDATA[1 基本原理 签发证书本质上是：使用 CA 的私钥给申请的公钥进行签名 从签发证书的角度看，设计到两个对象： CA - 签发证书的机构 root cert - CA 证书（包含 CA 公钥）]]></description>
+</item>
+<item>
+    <title>DNS 域名解析系统</title>
+    <link>https://KanShiori.github.io/posts/net/dns/</link>
+    <pubDate>Thu, 23 Dec 2021 20:55:43 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/net/dns/</guid>
+    <description><![CDATA[主机使用 IP 地址作为通信地址是很难记忆的，用户更愿意使用比较容易记忆的 Hostname。而 Domain Name System（DNS）就是用于将 Domain 转换为 IP 地址。]]></description>
+</item>
+<item>
+    <title>Cache 机制</title>
+    <link>https://KanShiori.github.io/posts/net/cache-mechanism/</link>
+    <pubDate>Mon, 11 Oct 2021 12:45:53 &#43;0000</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/net/cache-mechanism/</guid>
+    <description><![CDATA[文章内容来自于《凤凰架构》，推荐阅读。 1 HTTP 客户端缓存 HTTP 设计之初就是确定客户端与服务端 “无状态” 的交互原则，所以不可避免地导致携带重复数据导致]]></description>
+</item>
+<item>
+    <title>SSL/TLS 总结</title>
+    <link>https://KanShiori.github.io/posts/net/ssl-tls-cert/</link>
+    <pubDate>Sat, 01 May 2021 15:09:13 &#43;0000</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/net/ssl-tls-cert/</guid>
+    <description><![CDATA[1 密码套件 SSL 在握手的第一步就是确认所使用的<strong><ruby>密码套件<rt>Cipher Suite</rt></ruby></strong>，使得首先 client 与 server 使用相同的算法进行通信。其中包含三个组件：]]></description>
+</item>
+</channel>
+</rss>

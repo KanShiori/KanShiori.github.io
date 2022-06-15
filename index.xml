@@ -3,9 +3,17 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 25 May 2022 21:43:54 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 13 Jun 2022 21:29:19 &#43;0800</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Certificate 总结</title>
+    <link>https://KanShiori.github.io/posts/net/certificate/</link>
+    <pubDate>Mon, 13 Jun 2022 21:29:19 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/net/certificate/</guid>
+    <description><![CDATA[1 基本原理 签发证书本质上是：使用 CA 的私钥给申请的公钥进行签名 从签发证书的角度看，设计到两个对象： CA - 签发证书的机构 root cert - CA 证书（包含 CA 公钥）]]></description>
+</item>
+<item>
     <title>AWS EBS</title>
     <link>https://KanShiori.github.io/posts/cloud/aws_learning/ebs/</link>
     <pubDate>Wed, 25 May 2022 21:43:54 &#43;0800</pubDate>
@@ -76,14 +84,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</guid>
     <description><![CDATA[1 Ephemeral Container 可以使用 kubectl debug 来给一个运行中的 Pod 添加一个 Ephemeral Container 运行，并且不需要重启 Pod。 版本要求 Ephemeral Container 需要 Kubernetes 1.23 版本以上，目前还是处于 beta 状态。 1 kubectl debug -it ${pod_name} --image=busybox --target=${container_name}]]></description>
-</item>
-<item>
-    <title>Kubernetes - 认证与鉴权机制</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</link>
-    <pubDate>Thu, 24 Mar 2022 20:05:42 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/authentication-and-authorization/</guid>
-    <description><![CDATA[1 概述 如下图所示，APIServer 在接受到一个 API 请求时，第一阶段就是对请求进行 <strong><ruby>认证<rt>Authentication</rt></ruby></strong> 与 [鉴权]^(Au]]></description>
 </item>
 </channel>
 </rss>
