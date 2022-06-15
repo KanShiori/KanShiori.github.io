@@ -1,12 +1,10 @@
 # SSL/TLS 总结
 
 
-> **总结系列的文章**是自己的学习或使用后，对相关知识的一个总结，用于后续可以快速复习与回顾。
-
-之前一直对 TLS 与证书理解的不清晰，这里尝试进行总结一下。
-
 ## 1 密码套件
+
 SSL 在握手的第一步就是确认所使用的[密码套件]^(Cipher Suite)，使得首先 client 与 server 使用相同的算法进行通信。其中包含三个组件：
+
  * **`非对称加密算法`**：表明传输秘钥使用的非对称加密算法，例如 RSA、DHE_RSA 等；
  * **`对称加密算法`**：加密握手后，传输数据使用的加密算法，例如 AES_128_CBC 等；
  * **`数据摘要算法`**：数据校验使用的算法，例如 SHA256 等；
@@ -14,61 +12,76 @@ SSL 在握手的第一步就是确认所使用的[密码套件]^(Cipher Suite)�
 例如，Server 端传输 *TLS_RSA_WITH_AES_256_CBC_SHA256* 算法套件，表明其询问使用 RSA + AES_256_CBC + SHA256 三个算法组件。
 
 ### 1.1 对称加密算法
-对称加密算法的作用很简单：**使用同一个秘钥，发送端进行数据加密，接收端进行数据解密**。
 
-相比于非对称加密，加解密速度快，所以会用于传输数据的加解密。
+对称加密算法的作用很简单：<important>使用同一个秘钥，发送端进行数据加密，接收端进行数据解密</important>。
+
+{{< image src="img0.png" height=200 >}}
+
+相比于非对称加密，加解密速度快，因此用于**传输数据的加解密**。
 
 但是，对称加密无法解决秘钥传输问题，一旦双方交换秘钥时泄露，那么数据的安全性就无法保障了。
 
 ### 1.2 非对称加密算法
-这里不会说明非对称加密算法的算法原理，而是想弄清楚为什么使用非对称加密算法。
+
+> 这里不会说明非对称加密算法的算法原理，而是想弄清楚为什么使用非对称加密算法。
 
 首先，我们明确非对称加密算法的作用。非对称加密算法包含两个密码：
+
  * **`公钥`**：可以公开的秘钥；
  * **`私钥`**：不可公开，自身持有的秘钥；
  
-作用很简单，**对于非对称加密，用公钥加密的数据只能用私钥解开，用私钥加密的数据只能用公钥解开**。
+作用很简单，<important>对于非对称加密，用公钥加密的数据只能用私钥解开，用私钥加密的数据只能用公钥解开</important>。
+
+{{< image src="img0-1.png" height=200 >}}
 
 这样的作用在哪？因为对于对称加密，交换的秘钥一旦泄露，那么加密的数据就会被破解。而对于非对称加密，需要交换的往往只有公钥，而公钥被泄露后，那么使用公钥加密的数据还是无法被破解的，那么还是能保证了**单向的数据安全性**。
 
-但是，非对称加密算法加解密速度比较慢，所以在 TLS 中仅仅用于交换秘钥。
+但是，非对称加密算法加解密速度比较慢，所以在 TLS 中仅仅用于“交换”对称密钥（实际上是交换生成密钥的参数），传输数据使用对称加密保护。
+
+后面 [**TLS 握手过程**](#22-tls-握手过程)中可以看到，Client 与 Server 各自生成了一些 parameter，然后传输给对方，并根据组合后的 parameter 生成对称密钥。因为单向的数据安全性，Client 传输给 Server 的 parameter 是安全的，进而生成的对称密钥也是安全的。
 
 ### 1.3 摘要算法
+
 摘要算法不是用于数据加密的，而是用于**数据的校验**。无论多大的数据，经过摘要算法最后得到固定长度的数据。而不同的数据得到的摘要结果是不同的。
 
 因此，我们比较两个数据的摘要结果，就可以确定两个数据是否相同，也就是数据检验。
 
-
 ## 2 SSH
+
 在 TLS 之前，先说一下 SSH，github 与 ssh 登录都使用了 SSH 协议。
 
 [SSH]^(Secure Shell) 是建立在应用层上基础上的网络安全协议（注意，其没有使用 TLS 协议）。
 
 SSH 使用非对称加密技术 RSA 加密了所有传输的数据。使用了两种验证方式：
+
  * 基于口令的安全验证：只要知道需要登录的机器的账号与密码，就可以登录。所有传输的数据都会被加密，但是无法防止“中间人”攻击。
+  
  * 基于秘钥的安全验证：提前创建公钥与私钥，把公钥放在服务器上。在客户端要登录服务器时，会发送其本地保存的公钥。服务端在指定目录查找对应公钥是否匹配。
 
 可以看到，**服务器使用公钥来进行客户端的验证**，因此 Github 与 SSH 登录时都需要将本地生成的公钥先提前配置。
- 
 
 ## 2 SSL/TLS
+
 ### 2.1 SSL 与 TLS
+
 [TLS]^(Transport Layer Security) 是 [SSL]^(Secure Sockets Layer) 的升级版，下面是其发展的历史：
-协议 | 创建时间 | RFC
--|-|-
-SSL 1.0 | -    | 
-SSL 2.0 | 1995 | 
-SSL 3.0 | 1996 | RFC 6101
-TLS 1.0 | 1999 | RFC 2246
-TLS 1.1 | 2006 | RFC 4346
-TLS 1.2 | 2008 | RFC 5246
-TLS 1.3 | 2019 | RFC 8446
+
+| 协议    | 创建时间 | RFC      |
+| ------- | -------- | -------- |
+| SSL 1.0 | -        |
+| SSL 2.0 | 1995     |
+| SSL 3.0 | 1996     | RFC 6101 |
+| TLS 1.0 | 1999     | RFC 2246 |
+| TLS 1.1 | 2006     | RFC 4346 |
+| TLS 1.2 | 2008     | RFC 5246 |
+| TLS 1.3 | 2019     | RFC 8446 |
 
 而 HTTPS 就是在 TCP 建立连接后，先进行 TLS 协议握手，然后使用加密传输。
 
 ### 2.2 TLS 握手过程
 看一下具体的握手过程：
-{{< find_img "img1.png" >}}
+
+{{< image src="img1.png" height=350 >}}
 
 1. **`ClientHello`**：客户端**发起建立 TLS 连接请求**（TCP 连接已经建立）
 
@@ -120,23 +133,31 @@ TLS 1.3 | 2019 | RFC 8446
     根据加密套件 + premaster，并且使用 client 随机串 + server 随机串，client server 各独立生成 master 密码，并且是一样的。
 	
     接着 client 与 server 都会使用缓存的校验码，使用 master 密码进行对称加密，然后发送给对方，让对方使用 master 密码进行解密。这样来验证 master 密码双方使用的是一样的。
-	
 
 TLS 完成后，client server 就得到了相同的 master 密码，作为后续对称加密通信的密码。
 
 ### 2.3 为何安全
-在上面的流程中可以看到，首先 client server 使用了非对称加密算法来进行 premaster 的交换（第 8 步使用公钥加密后发送），而最终的 master 密码生成需要使用 premaster 作为一个参数。
+
+在上面的流程中可以看到，Client Server 使用了非对称加密算法来进行 premaster 的交换（第 8 步使用公钥加密后发送），而最终的 master 密码生成需要使用 premaster 作为一个参数。
+
+Client 发送给 Server 的 premaster 是必须使用私钥才能解密得到的。而在整个 TLS 过程中，私钥是完全不会离开 Server 的，因此这个 premaster 是安全的。即使公钥泄漏，仅仅也只能得到 Server 传输给 Client 的 premaster，无法得到最终生成的对称密钥。
 
 可以简单地理解，**双方生成密码的一个重要参数使用了非对称加密算法进行传输，保证了数据的安全，这样最后各自独立生成的 master 密码就不会泄露。**
 
-
 ## 3 证书
+
+在 TLS 过程中，非对称加密保证了密钥交换的安全性，证书用于保证 Server 端的可信性。
+
 ### 3.1 原理
+
 我们从申请证书的过程看：
+
 1. 生成 **`申请（签名）文件`**，**申请文件中包含了要使用的公钥**，以及一些申请者的信息：地点、组织等。
+
 2. 将申请文件通过安全的方式（私下）发送给 **`CA`**。
 
    CA 就是一个用于分发证书的权威机构。
+
 3. CA 使用**自己的私钥，对申请文件进行签名**（加密），得到了证书。
 
 可以看到，最后得到的证书中包含了：
@@ -147,6 +168,7 @@ TLS 完成后，client server 就得到了相同的 master 密码，作为后续
  * 等
 
 **在浏览器与服务器中，会内置世界上所有 CA 的根证书，也就是包含了 CA 的公钥**。通过证书公钥对 server 证书进行解密，并且判断其中的信息，就可以判断出该证书是否是 CA 签署的。
+
 {{< admonition note Note>}}
 xx.crt 是证书文件，xx.crs 是申请文件
 {{< /admonition >}}
@@ -157,37 +179,47 @@ xx.crt 是证书文件，xx.crs 是申请文件
 而后使用私钥给 server 签证书，将根证书内置给 client 使用，就可以进行自签名的 TLS 通信。
 
 下面进行一次自签名的过程：
+
 1. 生成根证书与私钥
-```bash
-openssl genrsa -out root.key 2048
-openssl req -new -x509 -days 3650 -key root.key -out ca.crt
-```
-2. 生成 server 证书与私钥，并使用根证书私钥签名
-```bash
-openssl req -newkey rsa:2048 -nodes -keyout server.key -out server.csr
-openssl x509 -req -extfile <(printf "subjectAltName=DNS:caliper.xycloud.com") -days 3650 -in server.csr -CA root.crt -CAkey root.key -CAcreateserial -out server.crt
-```
-3. （可选）如果需要双向认证，那么要生成 client 的证书，并使用相同的根证书签名。
-```bash
-openssl req -newkey rsa:2048 -nodes -keyout client.key -out client.csr
-openssl x509 -req  -days 3650 -in client.csr -CA root.crt -CAkey root.key -CAcreateserial -out client.crt
-```
+
+   ```bash
+   openssl genrsa -out root.key 2048
+   openssl req -new -x509 -days 3650 -key root.key -out ca.crt
+   ```
+
+1. 生成 server 证书与私钥，并使用根证书私钥签名
+
+   ```bash
+   openssl req -newkey rsa:2048 -nodes -keyout server.key -out server.csr
+   openssl x509 -req -extfile <(printf "subjectAltName=DNS:caliper.xycloud.com") -days 3650 -in server.csr -CA root.crt -CAkey root.key -CAcreateserial -out server.crt
+   ```
+
+1. （可选）如果需要双向认证，那么要生成 client 的证书，并使用相同的根证书签名。
+
+   ```bash
+   openssl req -newkey rsa:2048 -nodes -keyout client.key -out client.csr
+   openssl x509 -req  -days 3650 -in client.csr -CA root.crt -CAkey root.key -CAcreateserial -out client.crt
+   ```
 
 ### 3.2 总结
+
 换个角度看，为了实现自签名，双向 TLS，两边需要的文件
+
 * server 端需要
-  1. server.key - server 端私钥
-  2. server.crt - 通过 server.csr，由 CA 签名后的证书
+  * server.key - server 端私钥
+  * server.crt - 通过 server.csr，由 CA 签名后的证书
+
   ```go
   certfile := filepath.Join(global.ConfDir(), "server.crt")
   keyfile := filepath.Join(global.ConfDir(), "server.key")
 
   err := s.server.ListenAndServeTLS(certfile, keyfile)
   ```
+
 * client 端需要
-  1. client.key - client 端私钥
-  2. client.crt - 通过 client.csr，由 CA 签名后的证书
-  3. ca.crt - CA 证书，因为是自签名
+  * client.key - client 端私钥
+  * client.crt - 通过 client.csr，由 CA 签名后的证书
+  * ca.crt - CA 证书，因为是自签名
 
 {{< admonition note Note>}}
 如果是单向 TLS，那么就不需要 client 私钥与证书，CA 证书还是需要内置。
@@ -197,6 +229,6 @@ openssl x509 -req  -days 3650 -in client.csr -CA root.crt -CAkey root.key -CAcre
 
 所以证书，**其实就是给 server “盖了一个章”，表明其是权威机构认证的**。而 client 内置的根证书使得 client 可以认到这个权威机构。
 
-
 ## 参考
+
 [**Blog：SSL/TLS 及证书概述**](https://segmentfault.com/a/1190000009002353)
