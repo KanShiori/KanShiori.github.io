@@ -3,8 +3,16 @@
         <title>aws - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/aws/</link>
         <description>aws - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 25 May 2022 21:43:54 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/aws/" rel="self" type="application/rss+xml" /><item>
-    <title>AWS EBS</title>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 11 Jul 2022 20:03:39 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/aws/" rel="self" type="application/rss+xml" /><item>
+    <title>AWS - Private Link</title>
+    <link>https://KanShiori.github.io/posts/cloud/aws_learning/private-link/</link>
+    <pubDate>Mon, 11 Jul 2022 20:03:39 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/private-link/</guid>
+    <description><![CDATA[1 概述 在 AWS - VPC 与 Service 通信 中，描述了 VPC 与 Service 通信的几种方式： VPC Peering - 连接两个不同网段的 VPC Transit Gateway - 连接多个不同网段的 VPC Private Link - 通过 Endpoint 来作为 Service 的代理 每种方式]]></description>
+</item>
+<item>
+    <title>AWS - EBS</title>
     <link>https://KanShiori.github.io/posts/cloud/aws_learning/ebs/</link>
     <pubDate>Wed, 25 May 2022 21:43:54 &#43;0800</pubDate>
     <author>Shiori</author>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/aws_learning/vpc/</guid>
     <description><![CDATA[1 VPC 与 Subnet 云上的网络是由 <strong><ruby>VPC<rt>Virtual Private Cloud</rt></ruby></strong> 与 Subnet 组成的： VPC 是针对 Region 级别，其由一个 CIDR Block 来指定 IP 地址范围。 Subnet 是 VPC 网段的子网，AZ 级别资源（无法跨 AZ 覆盖）。 EC2 Instance 启]]></description>
-</item>
-<item>
-    <title>AWS - 地理概念</title>
-    <link>https://KanShiori.github.io/posts/cloud/aws_learning/region-and-az/</link>
-    <pubDate>Wed, 23 Jun 2021 14:13:47 &#43;0000</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/region-and-az/</guid>
-    <description><![CDATA[1 Region 将所有的资源都放在一个 Data Center（简称 DC）不能保证可用性，如果该数据中心出现问题，那么意味所有的应用程序出现问题。 为此，AWS 在世]]></description>
 </item>
 </channel>
 </rss>
