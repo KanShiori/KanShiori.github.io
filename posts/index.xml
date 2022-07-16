@@ -3,7 +3,15 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 13 Jun 2022 21:29:19 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 11 Jul 2022 20:03:39 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>AWS - Private Link</title>
+    <link>https://KanShiori.github.io/posts/cloud/aws_learning/private-link/</link>
+    <pubDate>Mon, 11 Jul 2022 20:03:39 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/private-link/</guid>
+    <description><![CDATA[1 概述 在 AWS - VPC 与 Service 通信 中，描述了 VPC 与 Service 通信的几种方式： VPC Peering - 连接两个不同网段的 VPC Transit Gateway - 连接多个不同网段的 VPC Private Link - 通过 Endpoint 来作为 Service 的代理 每种方式]]></description>
+</item>
+<item>
     <title>Certificate 总结</title>
     <link>https://KanShiori.github.io/posts/net/certificate/</link>
     <pubDate>Mon, 13 Jun 2022 21:29:19 &#43;0800</pubDate>
@@ -12,7 +20,15 @@
     <description><![CDATA[1 基本原理 签发证书本质上是：使用 CA 的私钥给申请的公钥进行签名 从签发证书的角度看，设计到两个对象： CA - 签发证书的机构 root cert - CA 证书（包含 CA 公钥）]]></description>
 </item>
 <item>
-    <title>AWS EBS</title>
+    <title>Kubernetes - 证书相关</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/certificate/</link>
+    <pubDate>Mon, 13 Jun 2022 21:01:06 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/certificate/</guid>
+    <description><![CDATA[1 Kubernetes 中的证书 Kubernetes 所有组件之间的通信都基于 TLS 进行加密，并且都基于 mTLS 进行双向认证。因此，每个组件作为调用者需要配置：client cert + client key + server ca ce]]></description>
+</item>
+<item>
+    <title>AWS - EBS</title>
     <link>https://KanShiori.github.io/posts/cloud/aws_learning/ebs/</link>
     <pubDate>Wed, 25 May 2022 21:43:54 &#43;0800</pubDate>
     <author>Shiori</author>
@@ -66,22 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/use-crossplane/</guid>
     <description><![CDATA[与 Pulumi 一样，Crossplane 也是一个 Iac 的平台。Crossplane 与 Kubernetes 的集成度更高，允许用户通过创建 Kubernetes 资源来创建云资源。 1 基本概念 Crossplane 的一个]]></description>
-</item>
-<item>
-    <title>Pulumi 入门</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/</link>
-    <pubDate>Wed, 06 Apr 2022 21:58:22 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/</guid>
-    <description><![CDATA[内容基本照搬的官方文档：Architecture &amp; Concepts。 Pulumi 是一个支持 IaC 的平台。与其他 IaC 工具最大的不同时，Pulumi 允许使用熟悉]]></description>
-</item>
-<item>
-    <title>Kubernetes 中调试 Pod</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</link>
-    <pubDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</guid>
-    <description><![CDATA[1 Ephemeral Container 可以使用 kubectl debug 来给一个运行中的 Pod 添加一个 Ephemeral Container 运行，并且不需要重启 Pod。 版本要求 Ephemeral Container 需要 Kubernetes 1.23 版本以上，目前还是处于 beta 状态。 1 kubectl debug -it ${pod_name} --image=busybox --target=${container_name}]]></description>
 </item>
 </channel>
 </rss>

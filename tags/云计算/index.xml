@@ -3,7 +3,15 @@
         <title>云计算 - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/</link>
         <description>云计算 - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 23 May 2022 21:30:43 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 13 Jun 2022 21:01:06 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+    <title>Kubernetes - 证书相关</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/certificate/</link>
+    <pubDate>Mon, 13 Jun 2022 21:01:06 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/certificate/</guid>
+    <description><![CDATA[1 Kubernetes 中的证书 Kubernetes 所有组件之间的通信都基于 TLS 进行加密，并且都基于 mTLS 进行双向认证。因此，每个组件作为调用者需要配置：client cert + client key + server ca ce]]></description>
+</item>
+<item>
     <title>Kustomize</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_practice/kustomize/</link>
     <pubDate>Mon, 23 May 2022 21:30:43 &#43;0800</pubDate>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</guid>
     <description><![CDATA[1 Update 机制 Update 机制 指的是通过 HTTP Put 方法 上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
-</item>
-<item>
-    <title>Kubernetes 使用 ExternalDNS 同步 DNS</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/use-external-dns/</link>
-    <pubDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/use-external-dns/</guid>
-    <description><![CDATA[1 概述 ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责]]></description>
 </item>
 </channel>
 </rss>
