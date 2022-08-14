@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>使用 KubeBuilder 编写 Controller - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="使用 KubeBuilder 编写 Controller" />
+<meta property="og:description" content="1 基本框架 执行 kubebuilder init 命令后，KubeBuilder 就会创建 Controller 的基本框架。 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_practice/kubebuilder/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-08-08T21:16:40+08:00" />
+<meta property="article:modified_time" content="2022-08-14T21:33:00+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="使用 KubeBuilder 编写 Controller"/>
+<meta name="twitter:description" content="1 基本框架 执行 kubebuilder init 命令后，KubeBuilder 就会创建 Controller 的基本框架。 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_practice/kubebuilder/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/aws_learning/private-link/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "使用 KubeBuilder 编写 Controller",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/kubebuilder\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2427 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/kubebuilder\/","datePublished": "2022-08-08T21:16:40+08:00","dateModified": "2022-08-14T21:33:00+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">使用 KubeBuilder 编写 Controller</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 编程</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-08-08">2022-08-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2427 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-基本框架">1 基本框架</a>
+      <ul>
+        <li><a href="#11-scheme">1.1 Scheme</a></li>
+        <li><a href="#12-manager">1.2 Manager</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-核心对象">2 核心对象</a>
+      <ul>
+        <li><a href="#21-reconciler">2.1 Reconciler</a></li>
+        <li><a href="#22-controller">2.2 Controller</a></li>
+        <li><a href="#23-manager">2.3 Manager</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-webhook">3 Webhook</a>
+      <ul>
+        <li><a href="#31-mutate">3.1 Mutate</a></li>
+        <li><a href="#32-validate">3.2 Validate</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-controller-gen">4 controller-gen</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-基本框架">1 基本框架</h2>
+<p>执行 <code>kubebuilder init</code> 命令后，KubeBuilder 就会创建 Controller 的基本框架。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="p">(</span>
+	<span class="nx">scheme</span>   <span class="p">=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">NewScheme</span><span class="p">()</span>
+	<span class="nx">setupLog</span> <span class="p">=</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Log</span><span class="p">.</span><span class="nf">WithName</span><span class="p">(</span><span class="s">&#34;setup&#34;</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">utilruntime</span><span class="p">.</span><span class="nf">Must</span><span class="p">(</span><span class="nx">clientgoscheme</span><span class="p">.</span><span class="nf">AddToScheme</span><span class="p">(</span><span class="nx">scheme</span><span class="p">))</span>
+
+	<span class="c1">//+kubebuilder:scaffold:scheme
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 命令行参数绑定
+</span><span class="c1"></span>	<span class="kd">var</span> <span class="nx">metricsAddr</span> <span class="kt">string</span>
+	<span class="kd">var</span> <span class="nx">enableLeaderElection</span> <span class="kt">bool</span>
+	<span class="kd">var</span> <span class="nx">probeAddr</span> <span class="kt">string</span>
+	<span class="nx">flag</span><span class="p">.</span><span class="nf">StringVar</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">metricsAddr</span><span class="p">,</span> <span class="s">&#34;metrics-bind-address&#34;</span><span class="p">,</span> <span class="s">&#34;:8080&#34;</span><span class="p">,</span> <span class="s">&#34;The address the metric endpoint binds to.&#34;</span><span class="p">)</span>
+	<span class="nx">flag</span><span class="p">.</span><span class="nf">StringVar</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">probeAddr</span><span class="p">,</span> <span class="s">&#34;health-probe-bind-address&#34;</span><span class="p">,</span> <span class="s">&#34;:8081&#34;</span><span class="p">,</span> <span class="s">&#34;The address the probe endpoint binds to.&#34;</span><span class="p">)</span>
+	<span class="nx">flag</span><span class="p">.</span><span class="nf">BoolVar</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">enableLeaderElection</span><span class="p">,</span> <span class="s">&#34;leader-elect&#34;</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span>
+		<span class="s">&#34;Enable leader election for controller manager. &#34;</span><span class="o">+</span>
+			<span class="s">&#34;Enabling this will ensure there is only one active controller manager.&#34;</span><span class="p">)</span>
+	<span class="nx">opts</span> <span class="o">:=</span> <span class="nx">zap</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span>
+		<span class="nx">Development</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="nx">opts</span><span class="p">.</span><span class="nf">BindFlags</span><span class="p">(</span><span class="nx">flag</span><span class="p">.</span><span class="nx">CommandLine</span><span class="p">)</span>
+	<span class="nx">flag</span><span class="p">.</span><span class="nf">Parse</span><span class="p">()</span>
+
+	<span class="nx">ctrl</span><span class="p">.</span><span class="nf">SetLogger</span><span class="p">(</span><span class="nx">zap</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">zap</span><span class="p">.</span><span class="nf">UseFlagOptions</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">opts</span><span class="p">)))</span>
+
+    <span class="c1">// 创建一个 Manager
+</span><span class="c1"></span>	<span class="nx">mgr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nf">NewManager</span><span class="p">(</span><span class="nx">ctrl</span><span class="p">.</span><span class="nf">GetConfigOrDie</span><span class="p">(),</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span>
+		<span class="nx">Scheme</span><span class="p">:</span>                 <span class="nx">scheme</span><span class="p">,</span>
+		<span class="nx">MetricsBindAddress</span><span class="p">:</span>     <span class="nx">metricsAddr</span><span class="p">,</span>
+		<span class="nx">Port</span><span class="p">:</span>                   <span class="mi">9443</span><span class="p">,</span>
+		<span class="nx">HealthProbeBindAddress</span><span class="p">:</span> <span class="nx">probeAddr</span><span class="p">,</span>
+		<span class="nx">LeaderElection</span><span class="p">:</span>         <span class="nx">enableLeaderElection</span><span class="p">,</span>
+		<span class="nx">LeaderElectionID</span><span class="p">:</span>       <span class="s">&#34;67295132.shiori.cn&#34;</span><span class="p">,</span>
+	<span class="p">})</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">setupLog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;unable to start manager&#34;</span><span class="p">)</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c1">//+kubebuilder:scaffold:builder
+</span><span class="c1"></span>
+    <span class="c1">// 添加健康检查
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">mgr</span><span class="p">.</span><span class="nf">AddHealthzCheck</span><span class="p">(</span><span class="s">&#34;healthz&#34;</span><span class="p">,</span> <span class="nx">healthz</span><span class="p">.</span><span class="nx">Ping</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">setupLog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;unable to set up health check&#34;</span><span class="p">)</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">mgr</span><span class="p">.</span><span class="nf">AddReadyzCheck</span><span class="p">(</span><span class="s">&#34;readyz&#34;</span><span class="p">,</span> <span class="nx">healthz</span><span class="p">.</span><span class="nx">Ping</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">setupLog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;unable to set up ready check&#34;</span><span class="p">)</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+
+    <span class="c1">// 启动
+</span><span class="c1"></span>	<span class="nx">setupLog</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;starting manager&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">mgr</span><span class="p">.</span><span class="nf">Start</span><span class="p">(</span><span class="nx">ctrl</span><span class="p">.</span><span class="nf">SetupSignalHandler</span><span class="p">());</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">setupLog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;problem running manager&#34;</span><span class="p">)</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="11-scheme">1.1 Scheme</h3>
+<p>Scheme 表示 CRD 的结构，<code>controller-runtime</code> 包的 Client 就是基于 Scheme 来解析消息的。</p>
+<p>因此，我们需要将所有 Client 将用到的资源的 Scheme 注册到生成的 scheme 对象中。</p>
+<p>注册方式很简单，当我们使用 KubeBuilder 或者原始 Kubernetes 方式生成 API Client 后，都会生成对应的 <code>AddToScheme()</code> 函数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="p">(</span>
+    <span class="nx">scheme</span>   <span class="p">=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">NewScheme</span><span class="p">()</span>
+    <span class="nx">setupLog</span> <span class="p">=</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Log</span><span class="p">.</span><span class="nf">WithName</span><span class="p">(</span><span class="s">&#34;setup&#34;</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">utilruntime</span><span class="p">.</span><span class="nf">Must</span><span class="p">(</span><span class="nx">clientgoscheme</span><span class="p">.</span><span class="nf">AddToScheme</span><span class="p">(</span><span class="nx">scheme</span><span class="p">))</span> <span class="c1">// Kubernete 资源
+</span><span class="c1"></span>    <span class="nx">utilruntime</span><span class="p">.</span><span class="nf">Must</span><span class="p">(</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nf">AddToScheme</span><span class="p">(</span><span class="nx">scheme</span><span class="p">))</span> <span class="c1">// 自定义资源
+</span><span class="c1"></span>
+    <span class="c1">//+kubebuilder:scaffold:scheme
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="12-manager">1.2 Manager</h3>
+<p>Manager 包含了各个 Controller 的通用依赖，通过 Manager 来给各个 Controller 共享 Cache 或者 Client。</p>
+<p>初始化后，会创建一个 Manager，后续实现自己的 Controller 后，就会注册到 Manager 中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">    <span class="c1">// ...
+</span><span class="c1"></span>	<span class="nx">mgr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nf">NewManager</span><span class="p">(</span><span class="nx">ctrl</span><span class="p">.</span><span class="nf">GetConfigOrDie</span><span class="p">(),</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span>
+		<span class="nx">Scheme</span><span class="p">:</span>                 <span class="nx">scheme</span><span class="p">,</span>
+		<span class="nx">MetricsBindAddress</span><span class="p">:</span>     <span class="nx">metricsAddr</span><span class="p">,</span>
+		<span class="nx">Port</span><span class="p">:</span>                   <span class="mi">9443</span><span class="p">,</span>
+		<span class="nx">HealthProbeBindAddress</span><span class="p">:</span> <span class="nx">probeAddr</span><span class="p">,</span>
+		<span class="nx">LeaderElection</span><span class="p">:</span>         <span class="nx">enableLeaderElection</span><span class="p">,</span>
+		<span class="nx">LeaderElectionID</span><span class="p">:</span>       <span class="s">&#34;67295132.shiori.cn&#34;</span><span class="p">,</span>
+	<span class="p">})</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">setupLog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;unable to start manager&#34;</span><span class="p">)</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>当所有的 Controller 注册到 Manager 中后，<code>main</code> 函数结尾会启动 Manager，也就是启动了所有的 Controller。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="nx">setupLog</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;starting manager&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">mgr</span><span class="p">.</span><span class="nf">Start</span><span class="p">(</span><span class="nx">ctx</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">setupLog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;problem running manager&#34;</span><span class="p">)</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="2-核心对象">2 核心对象</h2>
+<h3 id="21-reconciler">2.1 Reconciler</h3>
+<p><code>Reconciler</code> 代表着我们自己实现的处理资源的逻辑，其 interface 定义如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Reconciler</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="c1">// Reconciler performs a full reconciliation for the object referred to by the Request.
+</span><span class="c1"></span>	<span class="c1">// The Controller will requeue the Request to be processed again if an error is non-nil or
+</span><span class="c1"></span>	<span class="c1">// Result.Requeue is true, otherwise upon completion it will remove the work from the queue.
+</span><span class="c1"></span>	<span class="nf">Reconcile</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">Request</span><span class="p">)</span> <span class="p">(</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>将 Reconciler 注册到 Controller 后，当监听的资源发生变化就会调用 <code>Reconcile()</code> 函数。</p>
+<p>在我们使用 KubeBuilder 创建 API 资源后，会自动创建对应的 <code>Reconciler</code> 对象：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">ClusterReconciler</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">client</span><span class="p">.</span><span class="nx">Client</span>
+	<span class="nx">Scheme</span> <span class="o">*</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">Scheme</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>Client</code> 提供了 Kubernetes Client，可用于 Get/List/Update/Patch 资源，也包括了 Status 更新接口。</li>
+</ul>
+<p>无论是资源的增删改，都会触发 <code>Reconcile()</code> 函数，并通过 Result 来决定是否需要 requeue。 参数 Request 参数只提供了资源的 Namesapce/Name，我们需要自行通过 <code>Client</code> 来获取对应的资源对象。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">ClusterReconciler</span><span class="p">)</span> <span class="nf">Reconcile</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">req</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">(</span><span class="nx">ctrl</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">cluster</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">Cluster</span>
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">NamespacedName</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">cluster</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="22-controller">2.2 Controller</h3>
+<p>当我们编写了一个 Reconciler 后，需要注入到 <code>Controller</code> 中，Controller 用于定义如何监听资源。Controller 最后注册到 Manager 中，由此来共享 Manager 的 Cache / Client 等资源。</p>
+<p>Controller 的注册函数基本如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="nx">ctrl</span> <span class="s">&#34;sigs.k8s.io/controller-runtime&#34;</span>
+
+<span class="nx">ctrl</span><span class="p">.</span><span class="nf">NewControllerManagedBy</span><span class="p">(</span><span class="nx">mgr</span><span class="p">).</span>
+    <span class="nf">For</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Cluster</span><span class="p">{},</span> <span class="nx">builder</span><span class="p">.</span><span class="nf">WithPredicates</span><span class="p">(</span><span class="nx">pdt</span><span class="p">)).</span>
+    <span class="nf">WithOptions</span><span class="p">(</span><span class="nx">controller</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span><span class="nx">RateLimiter</span><span class="p">:</span> <span class="nx">common</span><span class="p">.</span><span class="nf">DefaultRateLimiter</span><span class="p">()}).</span>
+    <span class="nf">WithEventFilter</span><span class="p">(</span><span class="nx">p</span><span class="p">).</span>
+    <span class="nf">Complete</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>调用 <code>NewControllerManagedBy</code> 基于 Manager 创建 Controller Builder。</li>
+<li>围绕如何触发 Reconcile 来配置 Builder。</li>
+<li>调用 Complete/Build 来完成注册。</li>
+</ol>
+<p>Builder 支持的方法包括：</p>
+<ul>
+<li>
+<p>资源监听</p>
+<ul>
+<li>
+<p>For - 表明监听资源的 create / delete / update 事件。</p>
+</li>
+<li>
+<p>Owns - 表明监听该资源的子资源，当子资源 create / delete / update 时，会触发其 Own 资源的 Reconcile。</p>
+</li>
+<li>
+<p>Watches - 底层的 Watch 函数，自定义监听的事件以及过滤条件。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>配置</p>
+<ul>
+<li>
+<p>WithEventFilter - 根据 Label 等条件过滤事件。</p>
+</li>
+<li>
+<p>WithOptions - 覆盖 Manager 的配置以控制 Reconcile 的行为，例如 Rate Limit 和日志等配置。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>完成 Build</p>
+<ul>
+<li>
+<p>Complete - 注入 Reconciler。</p>
+</li>
+<li>
+<p>Build - 注入 Reconciler 并返回 Controller 对象。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="23-manager">2.3 Manager</h3>
+<p>Manager 用于包含各个 Controller 共享的对象，例如 Cache / Client / Scheme 等对象。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Cluster provides various methods to interact with a cluster.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Cluster</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="c1">// SetFields will set any dependencies on an object for which the object has implemented the inject
+</span><span class="c1"></span>	<span class="c1">// interface - e.g. inject.Client.
+</span><span class="c1"></span>	<span class="c1">// Deprecated: use the equivalent Options field to set a field. This method will be removed in v0.10.
+</span><span class="c1"></span>	<span class="nf">SetFields</span><span class="p">(</span><span class="kd">interface</span><span class="p">{})</span> <span class="kt">error</span>
+
+	<span class="c1">// GetConfig returns an initialized Config
+</span><span class="c1"></span>	<span class="nf">GetConfig</span><span class="p">()</span> <span class="o">*</span><span class="nx">rest</span><span class="p">.</span><span class="nx">Config</span>
+
+	<span class="c1">// GetScheme returns an initialized Scheme
+</span><span class="c1"></span>	<span class="nf">GetScheme</span><span class="p">()</span> <span class="o">*</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">Scheme</span>
+
+	<span class="c1">// GetClient returns a client configured with the Config. This client may
+</span><span class="c1"></span>	<span class="c1">// not be a fully &#34;direct&#34; client -- it may read from a cache, for
+</span><span class="c1"></span>	<span class="c1">// instance.  See Options.NewClient for more information on how the default
+</span><span class="c1"></span>	<span class="c1">// implementation works.
+</span><span class="c1"></span>	<span class="nf">GetClient</span><span class="p">()</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Client</span>
+
+	<span class="c1">// GetFieldIndexer returns a client.FieldIndexer configured with the client
+</span><span class="c1"></span>	<span class="nf">GetFieldIndexer</span><span class="p">()</span> <span class="nx">client</span><span class="p">.</span><span class="nx">FieldIndexer</span>
+
+	<span class="c1">// GetCache returns a cache.Cache
+</span><span class="c1"></span>	<span class="nf">GetCache</span><span class="p">()</span> <span class="nx">cache</span><span class="p">.</span><span class="nx">Cache</span>
+
+	<span class="c1">// GetEventRecorderFor returns a new EventRecorder for the provided name
+</span><span class="c1"></span>	<span class="nf">GetEventRecorderFor</span><span class="p">(</span><span class="nx">name</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">record</span><span class="p">.</span><span class="nx">EventRecorder</span>
+
+	<span class="c1">// GetRESTMapper returns a RESTMapper
+</span><span class="c1"></span>	<span class="nf">GetRESTMapper</span><span class="p">()</span> <span class="nx">meta</span><span class="p">.</span><span class="nx">RESTMapper</span>
+
+	<span class="c1">// GetAPIReader returns a reader that will be configured to use the API server.
+</span><span class="c1"></span>	<span class="c1">// This should be used sparingly and only when the client does not fit your
+</span><span class="c1"></span>	<span class="c1">// use case.
+</span><span class="c1"></span>	<span class="nf">GetAPIReader</span><span class="p">()</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Reader</span>
+
+	<span class="c1">// Start starts the cluster
+</span><span class="c1"></span>	<span class="nf">Start</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+
+<span class="c1">// Manager initializes shared dependencies such as Caches and Clients, and provides them to Runnables.
+</span><span class="c1">// A Manager is required to create Controllers.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Manager</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="c1">// Cluster holds a variety of methods to interact with a cluster.
+</span><span class="c1"></span>	<span class="nx">cluster</span><span class="p">.</span><span class="nx">Cluster</span>
+
+	<span class="c1">// Add will set requested dependencies on the component, and cause the component to be
+</span><span class="c1"></span>	<span class="c1">// started when Start is called.  Add will inject any dependencies for which the argument
+</span><span class="c1"></span>	<span class="c1">// implements the inject interface - e.g. inject.Client.
+</span><span class="c1"></span>	<span class="c1">// Depending on if a Runnable implements LeaderElectionRunnable interface, a Runnable can be run in either
+</span><span class="c1"></span>	<span class="c1">// non-leaderelection mode (always running) or leader election mode (managed by leader election if enabled).
+</span><span class="c1"></span>	<span class="nf">Add</span><span class="p">(</span><span class="nx">Runnable</span><span class="p">)</span> <span class="kt">error</span>
+
+	<span class="c1">// Elected is closed when this manager is elected leader of a group of
+</span><span class="c1"></span>	<span class="c1">// managers, either because it won a leader election or because no leader
+</span><span class="c1"></span>	<span class="c1">// election was configured.
+</span><span class="c1"></span>	<span class="nf">Elected</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span>
+
+	<span class="c1">// AddMetricsExtraHandler adds an extra handler served on path to the http server that serves metrics.
+</span><span class="c1"></span>	<span class="c1">// Might be useful to register some diagnostic endpoints e.g. pprof. Note that these endpoints meant to be
+</span><span class="c1"></span>	<span class="c1">// sensitive and shouldn&#39;t be exposed publicly.
+</span><span class="c1"></span>	<span class="c1">// If the simple path -&gt; handler mapping offered here is not enough, a new http server/listener should be added as
+</span><span class="c1"></span>	<span class="c1">// Runnable to the manager via Add method.
+</span><span class="c1"></span>	<span class="nf">AddMetricsExtraHandler</span><span class="p">(</span><span class="nx">path</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">handler</span> <span class="nx">http</span><span class="p">.</span><span class="nx">Handler</span><span class="p">)</span> <span class="kt">error</span>
+
+	<span class="c1">// AddHealthzCheck allows you to add Healthz checker
+</span><span class="c1"></span>	<span class="nf">AddHealthzCheck</span><span class="p">(</span><span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">check</span> <span class="nx">healthz</span><span class="p">.</span><span class="nx">Checker</span><span class="p">)</span> <span class="kt">error</span>
+
+	<span class="c1">// AddReadyzCheck allows you to add Readyz checker
+</span><span class="c1"></span>	<span class="nf">AddReadyzCheck</span><span class="p">(</span><span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">check</span> <span class="nx">healthz</span><span class="p">.</span><span class="nx">Checker</span><span class="p">)</span> <span class="kt">error</span>
+
+	<span class="c1">// Start starts all registered Controllers and blocks until the context is cancelled.
+</span><span class="c1"></span>	<span class="c1">// Returns an error if there is an error starting any controller.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// If LeaderElection is used, the binary must be exited immediately after this returns,
+</span><span class="c1"></span>	<span class="c1">// otherwise components that need leader election might continue to run after the leader
+</span><span class="c1"></span>	<span class="c1">// lock was lost.
+</span><span class="c1"></span>	<span class="nf">Start</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span>
+
+	<span class="c1">// GetWebhookServer returns a webhook.Server
+</span><span class="c1"></span>	<span class="nf">GetWebhookServer</span><span class="p">()</span> <span class="o">*</span><span class="nx">webhook</span><span class="p">.</span><span class="nx">Server</span>
+
+	<span class="c1">// GetLogger returns this manager&#39;s logger.
+</span><span class="c1"></span>	<span class="nf">GetLogger</span><span class="p">()</span> <span class="nx">logr</span><span class="p">.</span><span class="nx">Logger</span>
+
+	<span class="c1">// GetControllerOptions returns controller global configuration options.
+</span><span class="c1"></span>	<span class="nf">GetControllerOptions</span><span class="p">()</span> <span class="nx">v1alpha1</span><span class="p">.</span><span class="nx">ControllerConfigurationSpec</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>因此，各个 Reconciler 中的 Client 或者 Cache 都可以从 Manager 中获取。</p>
+<p>创建 Manager 时必须传入 kubeconfig，并提供一些参数控制行为。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="nx">mgr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nf">NewManager</span><span class="p">(</span><span class="nx">ctrl</span><span class="p">.</span><span class="nf">GetConfigOrDie</span><span class="p">(),</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span>
+		<span class="nx">Scheme</span><span class="p">:</span>                 <span class="nx">scheme</span><span class="p">,</span>
+		<span class="nx">MetricsBindAddress</span><span class="p">:</span>     <span class="nx">metricsAddr</span><span class="p">,</span>
+		<span class="nx">Port</span><span class="p">:</span>                   <span class="mi">9443</span><span class="p">,</span>
+		<span class="nx">HealthProbeBindAddress</span><span class="p">:</span> <span class="nx">probeAddr</span><span class="p">,</span>
+		<span class="nx">LeaderElection</span><span class="p">:</span>         <span class="nx">enableLeaderElection</span><span class="p">,</span>
+		<span class="nx">LeaderElectionID</span><span class="p">:</span>       <span class="s">&#34;2100d6c4.infra.pingcap.com&#34;</span><span class="p">,</span>
+	<span class="p">})</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>将各个 Controller 注册到 Manager 后，由 Manager 来统一启动与停止。当 Manager 启动后，就会进行 Cache 的第一次填充，并且启动资源的监听。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">mgr</span><span class="p">.</span><span class="nf">Start</span><span class="p">(</span><span class="nx">ctrl</span><span class="p">.</span><span class="nf">SetupSignalHandler</span><span class="p">());</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">setupLog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;problem running manager&#34;</span><span class="p">)</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>具体的启动操作包括：</p>
+<ol>
+<li>启动 Metric 与 Health 接口。</li>
+<li>启动 Webhook。</li>
+<li>填充 Cache。</li>
+<li>获取 leader election，成功后启动各个 Controller 的监听。</li>
+</ol>
+<h2 id="3-webhook">3 Webhook</h2>
+<p>使用 KubeBuilder 可以生成为自定义类型创建 Webhook，通过 <code>kubebuilder create webhook</code> 命令。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">kubebuilder create webhook --group batch --version v1 --kind CronJob --conversion
+</code></pre></td></tr></table>
+</div>
+</div><p>KubeBuilder 会自动为自定义资源创建 Webhook 相关的函数，并且在 <code>main</code> 函数中注册 Webhook。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">CronJob</span><span class="p">)</span> <span class="nf">SetupWebhookWithManager</span><span class="p">(</span><span class="nx">mgr</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Manager</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nf">NewWebhookManagedBy</span><span class="p">(</span><span class="nx">mgr</span><span class="p">).</span>
+        <span class="nf">For</span><span class="p">(</span><span class="nx">r</span><span class="p">).</span>
+        <span class="nf">Complete</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="p">(</span><span class="o">&amp;</span><span class="nx">batchv1</span><span class="p">.</span><span class="nx">CronJob</span><span class="p">{}).</span><span class="nf">SetupWebhookWithManager</span><span class="p">(</span><span class="nx">mgr</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">setupLog</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;unable to create webhook&#34;</span><span class="p">,</span> <span class="s">&#34;webhook&#34;</span><span class="p">,</span> <span class="s">&#34;CronJob&#34;</span><span class="p">)</span>
+        <span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">}</span>
+	<span class="c1">// ...
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="31-mutate">3.1 Mutate</h3>
+<p>KubeBuilder 自动创建的 <code>Default()</code> 函数用于在 CR 写入 ETCD 前为 CR 设定一些默认值，在 Mutating Webhook 阶段被执行。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">CronJob</span><span class="p">)</span> <span class="nf">Default</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">ConcurrencyPolicy</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+        <span class="nx">r</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">ConcurrencyPolicy</span> <span class="p">=</span> <span class="nx">AllowConcurrent</span>
+    <span class="p">}</span>
+	<span class="c1">// ...
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="32-validate">3.2 Validate</h3>
+<p>KubeBuilder 也会自动创建 Validate 相关的函数，可以实现对 Create / Update / Delete 操作的。在 Validate Webhook 阶段被执行。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// ValidateCreate 实现 webhook.Validator 使这类型的 webhook 被成功注册
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">CronJob</span><span class="p">)</span> <span class="nf">ValidateCreate</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">r</span><span class="p">.</span><span class="nf">validateCronJob</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1">// ValidateUpdate 实现 webhook.Validator 使这类型的 webhook 被成功注册
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">CronJob</span><span class="p">)</span> <span class="nf">ValidateUpdate</span><span class="p">(</span><span class="nx">old</span> <span class="nx">runtime</span><span class="p">.</span><span class="nx">Object</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">r</span><span class="p">.</span><span class="nf">validateCronJob</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1">// ValidateDelete 实现 webhook.Validator 使这类型的 webhook 被成功注册
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">CronJob</span><span class="p">)</span> <span class="nf">ValidateDelete</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">ValidateDelete 是在调用 APIServer Delete 接口时触发的，因此是 CR 的 delete stamp 设置之前触发。</div>
+        </div>
+    </div>
+<h2 id="4-controller-gen">4 controller-gen</h2>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://book.kubebuilder.io/introduction.html" target="_blank" rel="noopener noreffer"><strong>KubeBuilder Book</strong></a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-08-14&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/af695f39fa23d1257106a948d13e6e7c6518e538" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) af695f39fa23d1257106a948d13e6e7c6518e538: post: kubebuilder (#6)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>af695f3</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/cloud_practice/kubebuilder/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/kubebuilder/" data-title="使用 KubeBuilder 编写 Controller" data-hashtags="k8s,云计算"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/kubebuilder/" data-hashtag="k8s"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/kubebuilder/" data-title="使用 KubeBuilder 编写 Controller"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/kubebuilder/" data-title="使用 KubeBuilder 编写 Controller"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/kubebuilder/" data-title="使用 KubeBuilder 编写 Controller"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/kubebuilder/" data-title="使用 KubeBuilder 编写 Controller"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/kubebuilder/" data-title="使用 KubeBuilder 编写 Controller"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud/aws_learning/private-link/" class="prev" rel="prev" title="AWS - Private Link"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>AWS - Private Link</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightgallery":true,"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
