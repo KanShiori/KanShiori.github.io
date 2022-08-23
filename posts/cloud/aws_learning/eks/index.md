@@ -381,6 +381,8 @@ aws eks create-nodegroup --cluster-name eks \
 
 IRSA 指的是通过 Kubernetes 的资源 Service Account 来给 Pod 绑定 IAM Role，从而 Pod 可以访问 AWS。
 
+在 [**OAuth2 与 OIDC**](../../../net/oauth2-and-oidc/) 中提到过 OIDC，IRSA 使用的就是 OIDC 的方式。在这个场景中，RP 是 Pod，EU 是 Role。
+
 #### 6.3.1 使用流程
 
 为了将 Service Account 与 IAM Role，需要在集群启动时部署 IAM OIDC Provider，它负责将 Service Account 转换为对应的 IAM Role。
@@ -464,6 +466,8 @@ IRSA 指的是通过 Kubernetes 的资源 Service Account 来给 Pod 绑定 IAM 
 
   * AWS_ROLE_ARN - 关联到 ServiceAccount 的 Role ARN
   * AWS_WEB_IDENTITY_TOKEN_FILE - 执行 `AssumeRoleWithWebIdentity()` 使用的 Token
+
+  这个 Token 也就是 OIDC 概念中的 ID Token。
 
 5. 获取临时凭证，访问 AWS
    

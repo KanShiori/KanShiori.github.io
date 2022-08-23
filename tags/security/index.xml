@@ -12,20 +12,20 @@
     <description><![CDATA[1 基本原理 签发证书本质上是：使用 CA 的私钥给申请的公钥进行签名 从签发证书的角度看，设计到两个对象： CA - 签发证书的机构 root cert - CA 证书（包含 CA 公钥）]]></description>
 </item>
 <item>
-    <title>凭证机制 Credential</title>
+    <title>Cookie-Session 与 JWT</title>
     <link>https://KanShiori.github.io/posts/net/credentials/</link>
     <pubDate>Mon, 25 Oct 2021 13:16:57 &#43;0000</pubDate>
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/net/credentials/</guid>
-    <description><![CDATA[在授权过程中，基本每种授权模式目的就是为了得到一个令牌，令牌就是 <strong><ruby>凭证<rt>Credential</rt></ruby></strong>。目前主流有两种令牌实现方式：Cookie]]></description>
+    <description><![CDATA[在授权过程中，基本每种授权模式目的就是为了得到一个令牌，令牌就是 <strong><ruby>凭证<rt>Credential</rt></ruby></strong>。目前主流有两种令牌实现方式： Cookie-Session JWT 1 Cookie-Session 1.1 基]]></description>
 </item>
 <item>
-    <title>授权机制 Authorization</title>
-    <link>https://KanShiori.github.io/posts/net/authorization/</link>
+    <title>OAuth2 与 OIDC</title>
+    <link>https://KanShiori.github.io/posts/net/oauth2-and-oidc/</link>
     <pubDate>Sun, 24 Oct 2021 09:05:39 &#43;0000</pubDate>
     <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/net/authorization/</guid>
-    <description><![CDATA[认证解决了对用户身份认证的问题，授用于解决用户有着哪些权限的问题。涉及两个独立的问题： 确保授权的过程可靠 - 常用 OAuth2 和 SAML 2.0 确保授权的结果可控 - 常]]></description>
+    <guid>https://KanShiori.github.io/posts/net/oauth2-and-oidc/</guid>
+    <description><![CDATA[1 Why OAuth 2 与 OIDC 都是解决一个问题：解决面向 <strong><ruby>第三方应用<rt>Third-Party Application</rt></ruby></strong> 的认证授权问题。 以一个实际的例子来说：CI 需要访问我的 GitHub 去进]]></description>
 </item>
 <item>
     <title>认证机制 Authentication</title>
