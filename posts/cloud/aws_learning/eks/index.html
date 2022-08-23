@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/eks/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-05-02T22:01:07+08:00" />
-<meta property="article:modified_time" content="2022-08-14T21:33:00+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-08-23T13:55:44+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  4049 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/","datePublished": "2022-05-02T22:01:07+08:00","dateModified": "2022-08-14T21:33:00+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  4116 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/","datePublished": "2022-05-02T22:01:07+08:00","dateModified": "2022-08-23T13:55:44+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">AWS - EKS</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>AWS 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-05-02">2022-05-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4049 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-05-02">2022-05-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4116 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 9 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -687,6 +687,7 @@
 <li>IRSA - IAM Role for Service Account，将 Service Account 与 Role 构建映射关系；</li>
 </ul>
 <p>IRSA 指的是通过 Kubernetes 的资源 Service Account 来给 Pod 绑定 IAM Role，从而 Pod 可以访问 AWS。</p>
+<p>在 <a href="../../../net/oauth2-and-oidc/" rel=""><strong>OAuth2 与 OIDC</strong></a> 中提到过 OIDC，IRSA 使用的就是 OIDC 的方式。在这个场景中，RP 是 Pod，EU 是 Role。</p>
 <h4 id="631-使用流程">6.3.1 使用流程</h4>
 <p>为了将 Service Account 与 IAM Role，需要在集群启动时部署 IAM OIDC Provider，它负责将 Service Account 转换为对应的 IAM Role。</p>
 <p>大致步骤如下：</p>
@@ -831,6 +832,7 @@
 <li>AWS_ROLE_ARN - 关联到 ServiceAccount 的 Role ARN</li>
 <li>AWS_WEB_IDENTITY_TOKEN_FILE - 执行 <code>AssumeRoleWithWebIdentity()</code> 使用的 Token</li>
 </ul>
+<p>这个 Token 也就是 OIDC 概念中的 ID Token。</p>
 <ol start="5">
 <li>
 <p>获取临时凭证，访问 AWS</p>
@@ -1004,8 +1006,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-08-14&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/af695f39fa23d1257106a948d13e6e7c6518e538" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) af695f39fa23d1257106a948d13e6e7c6518e538: post: kubebuilder (#6)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>af695f3</a></span>
+                <span>更新于 2022-08-23&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/2f7e63df718be0e7e4660f98053678e05c78bf2c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 2f7e63df718be0e7e4660f98053678e05c78bf2c: Post: OIDC OAuth2 (#7)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>2f7e63d</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
