@@ -104,7 +104,7 @@ PV 生命周期包括 5 个阶段：
 6. **Deleting** ：删除 PV 并从云存储中删除后段存储；
 
 {{< admonition note Note>}}
-PV 的底层实现见 [**Kubernetes Volume 实现**](../volume-implementation/)。
+PV 的底层实现见 [**Kubernetes - 存储设计**](../volume/)。
 {{< /admonition >}}
 
 ### 1.3 Reclaim Policy

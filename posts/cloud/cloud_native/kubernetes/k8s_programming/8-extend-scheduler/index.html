@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/8-extend-scheduler/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-09-22T12:19:47+00:00" />
-<meta property="article:modified_time" content="2022-08-24T15:40:39+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-08-28T22:30:23+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/8-extend-scheduler\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  4957 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/8-extend-scheduler\/","datePublished": "2021-09-22T12:19:47+00:00","dateModified": "2022-08-24T15:40:39+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/8-extend-scheduler\/","datePublished": "2021-09-22T12:19:47+00:00","dateModified": "2022-08-28T22:30:23+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -145,7 +145,7 @@
           <ul>
             <li><a href="#231-filter">2.3.1 filter</a></li>
             <li><a href="#232-prioritize">2.3.2 prioritize</a></li>
-            <li><a href="#234-preempt">2.3.4 preempt</a></li>
+            <li><a href="#233-preempt">2.3.3 preempt</a></li>
             <li><a href="#234-bind">2.3.4 bind</a></li>
           </ul>
         </li>
@@ -157,11 +157,11 @@
         <li><a href="#32-如何运行-multiple-schedulers">3.2 如何运行 Multiple Schedulers</a></li>
       </ul>
     </li>
-    <li><a href="#5-自定义-plugin">5 自定义 Plugin</a>
+    <li><a href="#4-自定义-plugin">4 自定义 Plugin</a>
       <ul>
-        <li><a href="#51-实现自定义的-plugin">5.1 实现自定义的 Plugin</a></li>
-        <li><a href="#52-注册到-scheduler-framework">5.2 注册到 Scheduler Framework</a></li>
-        <li><a href="#53-配置-scheduler-profile">5.3 配置 Scheduler Profile</a></li>
+        <li><a href="#41-实现自定义的-plugin">4.1 实现自定义的 Plugin</a></li>
+        <li><a href="#42-注册到-scheduler-framework">4.2 注册到 Scheduler Framework</a></li>
+        <li><a href="#43-配置-scheduler-profile">4.3 配置 Scheduler Profile</a></li>
       </ul>
     </li>
     <li><a href="#参考">参考</a></li>
@@ -953,7 +953,7 @@
 </div>
 </div></li>
 </ul>
-<h4 id="234-preempt">2.3.4 preempt</h4>
+<h4 id="233-preempt">2.3.3 preempt</h4>
 <p>preempt webhook 在 Preempt 阶段影响如何选择 Pod 抢占，在所有 Plugin 运行后调用。</p>
 <ul>
 <li>
@@ -1101,9 +1101,9 @@
 <li>(版本 &gt;= 1.19) 可以使用 Scheduling Profiles 配置文件中的 <code>profiles[].schedulerName</code> 给调度器命名，并且支持一个 kube-scheduler 程序运行多个调度器。</li>
 <li>(版本 &lt; 1.22) 可以使用 <code>kube-scheduler --scheduler-name &lt;name&gt;</code> 给调度器命名；</li>
 </ul>
-<h2 id="5-自定义-plugin">5 自定义 Plugin</h2>
+<h2 id="4-自定义-plugin">4 自定义 Plugin</h2>
 <p>以官方示例 <a href="https://github.com/kubernetes-sigs/scheduler-plugins" target="_blank" rel="noopener noreffer"><strong>scheduler-plugins</strong></a> 来看下如何通过自定义 Plugin 的方式来扩展调度器。</p>
-<h3 id="51-实现自定义的-plugin">5.1 实现自定义的 Plugin</h3>
+<h3 id="41-实现自定义的-plugin">4.1 实现自定义的 Plugin</h3>
 <p>所有的 Plugin 都实现了 <code>Plugin</code> 接口，各个扩展点都有着对应的接口。如果要实现自定义的 Plugin，那么实现对应 Plugin interface 即可。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1141,7 +1141,7 @@
 <span class="c1">// ...
 </span></code></pre></td></tr></table>
 </div>
-</div><h3 id="52-注册到-scheduler-framework">5.2 注册到 Scheduler Framework</h3>
+</div><h3 id="42-注册到-scheduler-framework">4.2 注册到 Scheduler Framework</h3>
 <p>定制 Scheduler 时，可以复用 Kubernetes 中的启动命令：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1244,7 +1244,7 @@
 <p>不过 SharedInformerFactory 仅仅包含部分常用资源，如果需要访问 CRD 还是需要自己创建 Informer。</p>
 </li>
 </ul>
-<h3 id="53-配置-scheduler-profile">5.3 配置 Scheduler Profile</h3>
+<h3 id="43-配置-scheduler-profile">4.3 配置 Scheduler Profile</h3>
 <p>最后，将自定义的 Plugin 在 Scheduler Profile 中打开：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1334,8 +1334,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-08-24&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/8e5e327ed4746087dfbcc96fe55d833c376e4c06" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 8e5e327ed4746087dfbcc96fe55d833c376e4c06: Post: Extend scheduler (#8)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>8e5e327</a></span>
+                <span>更新于 2022-08-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/273d7bc6b5abd3d73855ca21561da75bc2c0d833" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 273d7bc6b5abd3d73855ca21561da75bc2c0d833: CI: Add pre build (#13)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>273d7bc</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
