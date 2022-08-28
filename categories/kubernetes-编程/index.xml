@@ -3,7 +3,15 @@
         <title>Kubernetes 编程 - 分类 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/categories/kubernetes-%E7%BC%96%E7%A8%8B/</link>
         <description>Kubernetes 编程 - 分类 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 22 Sep 2021 12:19:47 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E7%BC%96%E7%A8%8B/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E7%BC%96%E7%A8%8B/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 实现 - Volume 实现</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/volume-implementation/</link>
+    <pubDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/volume-implementation/</guid>
+    <description><![CDATA[介绍 Kubernetes 源码中 Volume 相关的实现（不包含 CSI 相关实现）。 Volume 的基本概念见 Kubernetes - 存储设计。 1 Base Interface 在 Kubernetes - 存储设计 中看到，各个存储插件都围绕这 Volume Plugin 的概念展开。这]]></description>
+</item>
+<item>
     <title>K8s 编程 - 8 - Custom Scheduler</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/8-extend-scheduler/</link>
     <pubDate>Wed, 22 Sep 2021 12:19:47 &#43;0000</pubDate>

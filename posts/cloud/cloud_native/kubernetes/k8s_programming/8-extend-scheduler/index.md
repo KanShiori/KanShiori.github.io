@@ -519,7 +519,7 @@ prioritize webhook 在 Prioritize 阶段影响 Node 的打分，在所有 Plugin
   }
   ```
 
-#### 2.3.4 preempt
+#### 2.3.3 preempt
 
 preempt webhook 在 Preempt 阶段影响如何选择 Pod 抢占，在所有 Plugin 运行后调用。
 
@@ -620,11 +620,11 @@ Multiple Schedulers 是基于配置 Scheduler 的基础上实现的，我们可�
 * (版本 >= 1.19) 可以使用 Scheduling Profiles 配置文件中的 `profiles[].schedulerName` 给调度器命名，并且支持一个 kube-scheduler 程序运行多个调度器。
 * (版本 < 1.22) 可以使用 `kube-scheduler --scheduler-name <name>` 给调度器命名；
 
-## 5 自定义 Plugin
+## 4 自定义 Plugin
 
 以官方示例 [**scheduler-plugins**](https://github.com/kubernetes-sigs/scheduler-plugins) 来看下如何通过自定义 Plugin 的方式来扩展调度器。
 
-### 5.1 实现自定义的 Plugin
+### 4.1 实现自定义的 Plugin
 
 所有的 Plugin 都实现了 `Plugin` 接口，各个扩展点都有着对应的接口。如果要实现自定义的 Plugin，那么实现对应 Plugin interface 即可。
 
@@ -646,7 +646,7 @@ type PreFilterPlugin interface {
 // ...
 ```
 
-### 5.2 注册到 Scheduler Framework
+### 4.2 注册到 Scheduler Framework
 
 定制 Scheduler 时，可以复用 Kubernetes 中的启动命令：
 
@@ -705,7 +705,7 @@ func New(obj runtime.Object, handle framework.Handle) (framework.Plugin, error) 
   
   不过 SharedInformerFactory 仅仅包含部分常用资源，如果需要访问 CRD 还是需要自己创建 Informer。
 
-### 5.3 配置 Scheduler Profile
+### 4.3 配置 Scheduler Profile
 
 最后，将自定义的 Plugin 在 Scheduler Profile 中打开：
 
