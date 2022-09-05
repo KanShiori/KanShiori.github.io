@@ -3,7 +3,15 @@
         <title>k8s - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/k8s/</link>
         <description>k8s - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 08 Aug 2022 21:16:40 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 31 Aug 2022 20:22:14 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+    <title>Kubernetes - 网络设计</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/container-network/</link>
+    <pubDate>Wed, 31 Aug 2022 20:22:14 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/container-network/</guid>
+    <description><![CDATA[1 网络模型 Kubernetes 集群中的网络是虚拟扁平的大网络，Service 与 Pod 的网络有着各自独立的一个网段，每个 Service 与 Pod 占用网段中的一个 IP。Pod 之间可以通]]></description>
+</item>
+<item>
     <title>使用 KubeBuilder 编写 Controller</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_practice/kubebuilder/</link>
     <pubDate>Mon, 08 Aug 2022 21:16:40 &#43;0800</pubDate>
@@ -65,7 +73,7 @@
     <pubDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</pubDate>
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/cni/</guid>
-    <description><![CDATA[1 CNI 基本概念 CNI 全称 Container Network Interface，是 Kubernetes 中的网络接口。Kubectl 会依据 CNI 标准的 API 来调用不同的网络插件接口。 CNI 插件实际上是一个主机上]]></description>
+    <description><![CDATA[1 基本概念 CNI Plugin 负责了 Kubernetes 基础网络的构建。为此，CNI Plugin 需要实现： 构建 Node 网络 构建 Pod 网络 CNI 全称 Container Network Interface，描述了网络插件的标准 API。]]></description>
 </item>
 <item>
     <title>Kubernetes - 资源更新机制与 CLI 实现</title>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/update-resource-mechanism/</guid>
     <description><![CDATA[1 Update 机制 Update 机制 指的是通过 HTTP Put 方法 上传完整的资源对象，而 Kubernetes 使用完整的资源对象更新原来的资源对象。在更新对象时，Kubernetes 通过 resourceVersion 来检查]]></description>
-</item>
-<item>
-    <title>Kubernetes 使用 ExternalDNS 同步 DNS</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/use-external-dns/</link>
-    <pubDate>Wed, 22 Dec 2021 22:03:24 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/use-external-dns/</guid>
-    <description><![CDATA[1 概述 ExternalDNS 用于将 Kubernetes 集群中的 Service/Ingress 暴露的服务同步给外部的 DNS 服务商，例如 AWS Route53、GCP CloudDNS 等。 ExternalDNS 本身并不是一个 DNS Nameserver，而是负责]]></description>
 </item>
 </channel>
 </rss>
