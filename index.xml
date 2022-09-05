@@ -3,9 +3,17 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 08 Aug 2022 21:16:40 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 31 Aug 2022 20:22:14 &#43;0800</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Kubernetes - 网络设计</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/container-network/</link>
+    <pubDate>Wed, 31 Aug 2022 20:22:14 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/container-network/</guid>
+    <description><![CDATA[1 网络模型 Kubernetes 集群中的网络是虚拟扁平的大网络，Service 与 Pod 的网络有着各自独立的一个网段，每个 Service 与 Pod 占用网段中的一个 IP。Pod 之间可以通]]></description>
+</item>
+<item>
     <title>使用 KubeBuilder 编写 Controller</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_practice/kubebuilder/</link>
     <pubDate>Mon, 08 Aug 2022 21:16:40 &#43;0800</pubDate>
@@ -76,14 +84,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/aws_learning/eks/</guid>
     <description><![CDATA[1 集群管理 EKS 集群包含两个层面： EKS Control Plane 控制面包含 Kubernetes 的核心组件，例如 ETCD 和 APIServer。控制面完全是由 AWS 托管的，也就是说用户不需要维护控制面]]></description>
-</item>
-<item>
-    <title>Kubernetes - 理解 kubeconfig</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/kubeconfig/</link>
-    <pubDate>Wed, 27 Apr 2022 17:02:24 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/kubeconfig/</guid>
-    <description><![CDATA[1 基本概念 kubeconfig 文件是 kubectl 用以查找访问集群的配置。 kubeconfig 文件的结构如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 apiVersion:v1kind:Configcurrent-context:federal-contextclusters:- cluster:certificate-authority:path/to/my/cafileserver:https://horse.org:4443name:horse-cluster- cluster:insecure-skip-tls-verify:trueserver:https://pig.org:443name:pig-clustercontexts:- context:cluster:horse-clusternamespace:chisel-nsuser:green-username:federal-context- context:cluster:pig-clusternamespace:saw-nsuser:black-username:queen-anne-contextpreferences:colors:trueusers:- name:blue-useruser:token:blue-token-]]></description>
 </item>
 </channel>
 </rss>

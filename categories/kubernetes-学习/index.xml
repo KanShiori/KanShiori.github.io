@@ -3,7 +3,15 @@
         <title>Kubernetes 学习 - 分类 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/</link>
         <description>Kubernetes 学习 - 分类 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 13 Jun 2022 21:01:06 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 31 Aug 2022 20:22:14 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml" /><item>
+    <title>Kubernetes - 网络设计</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/container-network/</link>
+    <pubDate>Wed, 31 Aug 2022 20:22:14 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/container-network/</guid>
+    <description><![CDATA[1 网络模型 Kubernetes 集群中的网络是虚拟扁平的大网络，Service 与 Pod 的网络有着各自独立的一个网段，每个 Service 与 Pod 占用网段中的一个 IP。Pod 之间可以通]]></description>
+</item>
+<item>
     <title>Kubernetes - 证书相关</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/certificate/</link>
     <pubDate>Mon, 13 Jun 2022 21:01:06 &#43;0800</pubDate>
@@ -41,7 +49,7 @@
     <pubDate>Tue, 25 Jan 2022 22:11:28 &#43;0800</pubDate>
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/cni/</guid>
-    <description><![CDATA[1 CNI 基本概念 CNI 全称 Container Network Interface，是 Kubernetes 中的网络接口。Kubectl 会依据 CNI 标准的 API 来调用不同的网络插件接口。 CNI 插件实际上是一个主机上]]></description>
+    <description><![CDATA[1 基本概念 CNI Plugin 负责了 Kubernetes 基础网络的构建。为此，CNI Plugin 需要实现： 构建 Node 网络 构建 Pod 网络 CNI 全称 Container Network Interface，描述了网络插件的标准 API。]]></description>
 </item>
 <item>
     <title>Kubernetes - 资源更新机制与 CLI 实现</title>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/schedule-preemption-eviction/</guid>
     <description><![CDATA[1 概述 无论是基本的副本控制器，还是自定义资源，其控制的底层 Pod 的调度都是都通过 Scheduler 完成的。 2 Schedule 2.1 nodeSelector Pod 的 spec.nodeSelector 可以用于控制 Pod 能被调度到哪些节点上。其内]]></description>
-</item>
-<item>
-    <title>Kubernetes - Object 与 API 规则</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/object-and-api/</link>
-    <pubDate>Sat, 12 Jun 2021 07:32:36 &#43;0000</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/object-and-api/</guid>
-    <description><![CDATA[1 概述 1.1 组织对象的方式 Kubernetes 中组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用以]]></description>
 </item>
 </channel>
 </rss>

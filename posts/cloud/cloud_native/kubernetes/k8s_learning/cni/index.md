@@ -1,14 +1,22 @@
 # Kubernetes - CNI 概念与实现
 
 
-## 1 CNI 基本概念
+## 1 基本概念
 
-CNI 全称 Container Network Interface，是 Kubernetes 中的网络接口。Kubectl 会依据 CNI 标准的 API 来调用不同的网络插件接口。
+CNI Plugin 负责了 Kubernetes 基础网络的构建。为此，CNI Plugin 需要实现：
 
-CNI 插件实际上是一个主机上的可执行文件，Kubernetes 会在操作 Pod 网络时根据 Network Configuration 去调用各个插件的可执行文件，同时通过 Stdin 与 Env 传入所必须的信息。执行结束后，通过 Stdout 读取执行的结果。
+* 构建 Node 网络
+* 构建 Pod 网络
 
-其整体的架构如下：
-{{< find_img "img1.png" >}}
+CNI 全称 Container Network Interface，描述了网络插件的标准 API。
+
+实际上，CNI Plugin 仅仅是一个 Node 上的可执行文件，Kubelet 启动 Pause 容器后，会调用 CNI Plugin 来构建 Pod 网络。
+
+调用 CNI 的具体架构如下：
+
+{{< image src="img1.png" height=350 >}}
+
+Kubelet 根据 Network Configuration 中定义的插件，顺序调用各个 CNI Plugin 的执行文件。通过 Stdin 与 Env 传入参数，从 Stdout 读取执行的结果。
 
 ## 2 CNI Spec
 
