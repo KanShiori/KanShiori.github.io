@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Thinking in Operator - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="Thinking in Operator" />
+<meta property="og:description" content="下面是作为 Operator 初学者自己总结的一些经验，纯属个人随意总结，没有任何正确性可言。 如何使用 Status 传递过程式操作状态 过程式操作指的是 Upgrade Scale 这样的操作，也就" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-09-13T20:09:34+08:00" />
+<meta property="article:modified_time" content="2022-09-18T21:19:38+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="Thinking in Operator"/>
+<meta name="twitter:description" content="下面是作为 Operator 初学者自己总结的一些经验，纯属个人随意总结，没有任何正确性可言。 如何使用 Status 传递过程式操作状态 过程式操作指的是 Upgrade Scale 这样的操作，也就"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/container-network/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Thinking in Operator",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/thinking-in-opeator\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1253 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/thinking-in-opeator\/","datePublished": "2022-09-13T20:09:34+08:00","dateModified": "2022-09-18T21:19:38+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Thinking in Operator</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 编程</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-09-13">2022-09-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1253 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#如何使用-status-传递过程式操作状态">如何使用 Status 传递过程式操作状态</a></li>
+    <li><a href="#如何使用标志位互斥">如何使用标志位互斥</a></li>
+    <li><a href="#read-与-write-分离">Read 与 Write 分离</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><blockquote>
+<p>下面是作为 Operator 初学者自己总结的一些经验，纯属个人随意总结，没有任何正确性可言。</p>
+</blockquote>
+<h2 id="如何使用-status-传递过程式操作状态">如何使用 Status 传递过程式操作状态</h2>
+<p>过程式操作指的是 Upgrade Scale 这样的操作，也就是触发后需要 Operator 进行持续性的操作。</p>
+<p>过程式操作对于 Operator 就是：根据当前的状态，进行操作，以逐步变为期望状态。我们把更新的 Spec 中配置称为 Desired Config，当前已经存在的资源配置称为 Current Config。</p>
+<p>因此在操作过程中，就涉及了 Current Config -&gt; Desired Config 的逐步转移，所以往往会有以下字段：</p>
+<ul>
+<li><code>Spec.DesiredConfig</code></li>
+<li><code>Status.CurrentConfig</code></li>
+<li><code>Status.DesiredConfig</code></li>
+<li><code>Status.CurrentConfigCount</code></li>
+<li><code>Status.DesiredConfigCount</code></li>
+<li><strong>(optional)</strong> <code>Spec.Generation</code></li>
+<li><strong>(optional)</strong> <code>Status.ObservedGeneration</code></li>
+</ul>
+<p>通过这些字段，我们可以判断出操作所处的阶段：</p>
+<ul>
+<li>
+<p>判断操作是否完全完成：Spec.DesiredConfig == Status.CurrentConfig</p>
+</li>
+<li>
+<p>判断操作是否进行中：Status.CurrentConfig == Status.DesiredConfig</p>
+</li>
+<li>
+<p>判断操作的进度：Status.CurrentConfigCount || Status.DesiredConfigCount</p>
+</li>
+<li>
+<p>如果需要区别出 DesiredConfig A -&gt; DesiredConfig B -&gt; DesiredConfig A 这种回滚的情况，需要一个完全增量的 Generation 来进行判断。</p>
+</li>
+</ul>
+<p>我们会以 StatefulSet 为例，来看看 StatefulSet 对于 Upgrade 的状态是如何暴露的。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">为了理解 Upgrade 的状态字段含义，你需要先理解 StatefulSet 是如何进行 Upgrade 的，见 <a href="../../k8s_learning/rolling-upgrade" rel=""><strong>Kubernetes - Update 与 Rollback</strong></a></div>
+        </div>
+    </div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">currentReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">updatedReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">currentRevision</span><span class="p">:</span><span class="w"> </span><span class="l">main-cluster-pd-6584676774</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateRevision</span><span class="p">:</span><span class="w"> </span><span class="l">main-cluster-pd-6584676774</span><span class="w">
+</span><span class="w">  </span><span class="nt">observedGeneration</span><span class="p">:</span><span class="w"> </span><span class="m">4</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>显而易见地，这些字段对应着上面所说的字段。一些区别在于，Sts 中使用生成的 Revision，而没有存在 <code>Spec.DesiredConfig</code> 的配置。对应地，Sts 中使用 Generation 来判断操作是否已经完全完成：</p>
+<ul>
+<li>observedGeneration == generation &amp;&amp; currentRevision == &amp;&amp; updateRevision</li>
+</ul>
+<p>潜在的含义是：当 Sts Spec 更新后，generation 就自动增长了，如果 observedGeneration 与 generation 相等，就表明 Sts Controller 处理过了最新的 Spec，那么就可以用 Revision 来判断操作是进行中还是完成。</p>
+<p>因此，如果 <code>Spec.DesiredConfig</code> 是一个内部的概念，那么需要使用 Generation。</p>
+<h2 id="如何使用标志位互斥">如何使用标志位互斥</h2>
+<p>在复杂的 Operator 编写时，往往有一些操作是需要互斥的，例如 Initialize 过程中不允许执行 Scale 或者 Upgrade 操作，或者 Scale 与 Upgrade 也是不能同时进行的。</p>
+<p>互斥操作实现很简单，先获取 “锁”，在 Kubernetes 资源中，需要通过 Status 中的某个字段来实现锁。</p>
+<p>代码示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">flagSeted</span> <span class="o">:=</span> <span class="nf">ReadFlagFromStatus</span><span class="p">(</span><span class="nx">cluster</span><span class="p">)</span>
+<span class="nx">shouldOperate</span> <span class="o">:=</span> <span class="nf">ShouldOpearte</span><span class="p">(</span><span class="nx">cluster</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="p">!</span><span class="nx">shouldOperate</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">flagSeted</span> <span class="p">{</span>
+        <span class="c1">// unset flag and end operation
+</span><span class="c1"></span>        <span class="k">return</span> <span class="nf">UnsetFlag</span><span class="p">(</span><span class="nx">cluster</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1">// done
+</span><span class="c1"></span>    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">!</span><span class="nx">flagSeted</span> <span class="p">{</span>
+    <span class="c1">// set flag and begin operatiron
+</span><span class="c1"></span>    <span class="k">return</span> <span class="nf">SetFlag</span><span class="p">(</span><span class="nx">cluster</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// operate
+</span><span class="c1"></span><span class="k">return</span> <span class="nf">Operate</span><span class="p">(</span><span class="nx">cluster</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到，上面通过 Flag 作为操作前的必要条件，并且分离的条件判断与操作。</p>
+<h2 id="read-与-write-分离">Read 与 Write 分离</h2>
+<p>Operator 编写中，往往需要先获取一些资源，然后根据资源进行操作。Read 与 Write 分离指的就是：&ldquo;读取资源&rdquo; 与 &ldquo;进行操作&rdquo; 的分离。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// observe all resource
+</span><span class="c1"></span><span class="nx">resources</span> <span class="o">:=</span> <span class="nf">Observe</span><span class="p">(</span><span class="nx">cluster</span><span class="p">)</span>
+
+<span class="c1">// optional progress
+</span><span class="c1"></span>
+<span class="c1">// operate
+</span><span class="c1"></span><span class="nf">OperateA</span><span class="p">(</span><span class="nx">resources</span><span class="p">)</span>
+
+<span class="c1">// operate
+</span><span class="c1"></span><span class="nf">OperateB</span><span class="p">(</span><span class="nx">resources</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Read 与 Write 分离的最大好处是：Resource 只需要获取一次，后面各个 Operate 都可以复用这一个 Resource，并且所有操作是看到的都是同一个份 Resource，不会有 Resource 差异导致不同行为的问题。</p>
+<p>不仅仅是 &ldquo;读取资源&rdquo; 与 &ldquo;进行操作&rdquo; 的分离，在 Operate 时，可以实现 &ldquo;判断&rdquo; 与 &ldquo;操作&rdquo; 分离。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Operate</span><span class="p">(</span><span class="nx">resources</span> <span class="p">[]</span><span class="nx">Resources</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">shouldOperate</span> <span class="o">:=</span> <span class="nf">ShouldOperate</span><span class="p">(</span><span class="nx">resources</span><span class="p">)</span>
+    <span class="nx">couldOperate</span> <span class="o">:=</span> <span class="nf">CouldOperate</span><span class="p">(</span><span class="nx">resources</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">!</span><span class="nx">shouldOperate</span> <span class="p">{</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">!</span><span class="nx">couldOperate</span> <span class="p">{</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
+
+    <span class="c1">// operate
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>&ldquo;判断&rdquo; 与 &ldquo;操作&rdquo; 分离使得整体的 Operate 分为了清晰的步骤，更容易阅读与扩展。如果 Operate 之间互斥，可以使用 <a href="#%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8%e6%a0%87%e5%bf%97%e4%bd%8d%e4%ba%92%e6%96%a5" rel=""><strong>如何使用标志位互斥</strong></a> 中描述的代码。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-09-18&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/01b5e027c390286911febc234984142d39f55b9f" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 01b5e027c390286911febc234984142d39f55b9f: Post(Operator): new post (#16)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>01b5e02</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/" data-title="Thinking in Operator" data-hashtags="k8s,云计算"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/" data-hashtag="k8s"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/" data-title="Thinking in Operator"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/" data-title="Thinking in Operator"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/" data-title="Thinking in Operator"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/" data-title="Thinking in Operator"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/" data-title="Thinking in Operator"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/container-network/" class="prev" rel="prev" title="Kubernetes - 网络设计"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Kubernetes - 网络设计</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightgallery":true,"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
