@@ -3,7 +3,15 @@
         <title>aws - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/aws/</link>
         <description>aws - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 11 Jul 2022 20:03:39 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/aws/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 25 Oct 2022 13:54:10 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/aws/" rel="self" type="application/rss+xml" /><item>
+    <title>跨云访问资源</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/</link>
+    <pubDate>Tue, 25 Oct 2022 13:54:10 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/</guid>
+    <description><![CDATA[跨云访问指的是：在一个云厂商的环境中，访问另一个云厂商的服务。最简单的方式就是将静态密钥（AWS AK/SK 与 GCP ServiceAccount Key）注入到应用中，但是显而易见这]]></description>
+</item>
+<item>
     <title>AWS - Private Link</title>
     <link>https://KanShiori.github.io/posts/cloud/aws_learning/private-link/</link>
     <pubDate>Mon, 11 Jul 2022 20:03:39 &#43;0800</pubDate>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-internet/</guid>
     <description><![CDATA[1 Internet Gateway Internet Gateway 用于将 VPC 的流量转发给外网，并将外网的主动访问转发给指定的 Instance。 使用 Internet Gateway 的必要操作： 创建 Internet Gateway 并关联到 VPC 上。 Instance 拥有公网 IP 地]]></description>
-</item>
-<item>
-    <title>AWS - VPC 基本概念</title>
-    <link>https://KanShiori.github.io/posts/cloud/aws_learning/vpc/</link>
-    <pubDate>Fri, 25 Jun 2021 14:13:47 &#43;0000</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/vpc/</guid>
-    <description><![CDATA[1 VPC 与 Subnet 云上的网络是由 <strong><ruby>VPC<rt>Virtual Private Cloud</rt></ruby></strong> 与 Subnet 组成的： VPC 是针对 Region 级别，其由一个 CIDR Block 来指定 IP 地址范围。 Subnet 是 VPC 网段的子网，AZ 级别资源（无法跨 AZ 覆盖）。 EC2 Instance 启]]></description>
 </item>
 </channel>
 </rss>

@@ -15,6 +15,12 @@ OAuth 2 与 OIDC 都是解决一个问题：解决面向 [第三方应用]^(Thir
 * 令牌可以设定访问资源的范围，以及时效性；
 * 每个应用都有独立的令牌，其中一个泄露不会导致其他应用收到影响；
 
+<important>对于 OAuth 2，Resource Server 通过颁发 Access Token 来授予 Third-Party 访问资源的权限。</important>
+
+<important>对于 OIDC，OpenID Provider 通过颁发 ID Token + Access Token 来授予 Third-Party 获取用户信息的权限。</important>
+
+在围绕着这个基本模式上，针对如何验证 User 身份，如何颁发 Token 引入了多种的授权方式。
+
 ## 2 OAuth 2
 
 OAuth 2 是一个开放授权标准，定义了第三方用户如何访问系统。
@@ -140,23 +146,27 @@ Authz Server 和 Resource Server 可以是同一个。例如例子中往往我�
 
   同时，`Content-Type: application/x-www-form-urlencoded` 是必须的，并且不可以使用 GET 访问。
 
-## 2 OIDC
+## 3 OIDC
 
 [OIDC]^(OpenID Connect) 是基于 OAuth 2 的身份认证协议，是 OAuth 2 的超集。也就是说搭建了一个 OIDC 的服务后，完全可以当做一个 OAuth2 来使用。
 
 OIDC 在 OAuth 2 上构建了适用任何客户端的身份层，用于身份认证。后续流程使用 OAuth 2 负责授权。
 
-### 2.1 基本概念
+### 3.1 基本概念
 
-OIDC 在 Access Token 基础上引入了 ID Token，用于标识 Client 的身份。
+OIDC 在 Access Token 基础上引入了 ID Token，提供用户信息。
 
 基本概念如下：
 
 * End User - 个人用户
 * Relying Party - 第三方应用，即 Client
-* OpenID Provider - 有能力提供 EU 认证的服务，为 RP 颁发 ID Token
+* OpenID Provider - 有能力提供 EU 认证的服务，为 RP 颁发 ID Token 与 Access Token
 * ID Token - JWT 格式的 Token，包含 EU 的身份标识
 * UserInfo Endpoint - 用户信息接口，由于 RP 请求获取用户信息
+
+{{< admonition note Note>}}
+OpenID Provider 也称为 Identity Provider。
+{{< /admonition >}}
 
 基本的流程如下：
 
@@ -164,7 +174,7 @@ OIDC 在 Access Token 基础上引入了 ID Token，用于标识 Client 的身�
 
 1. PR 发送身份认证请求给 OP。
 2. OP 需要对 EU 进行身份认证，并请求授权。通常会导向到 EU 的登录页面。
-3. OP 将 ID Token 与 Access  Token 返回给 RP。
+3. OP 将 ID Token 与 Access Token 返回给 RP。
 4. RP 使用 Access Token 请求 UserInfo Endpoint，根据 ID Token 获取 User 相关信息；
 5. OP 返回 User 信息；
 
@@ -174,25 +184,56 @@ OIDC 在 Access Token 基础上引入了 ID Token，用于标识 Client 的身�
 * Implicit Flow
 * Hybrid Flow
 
-### 2.2 授权方式
+### 3.2 ID Token
 
-#### 2.2.1 Authorization Code Flow
+ID Token 是 JWT 格式的数据结构，基于 JWT 的防篡改机制，使得 ID Token 可以安全的传递给 RP，用于后续 RP 请求 EU 信息时进行验证。
+
+ID Token 的主要构成如下：
+
+```json
+{
+  "iss": "https://oidc.eks.us-west-2.amazonaws.com/id/12312312",
+  "sub": "system:serviceaccount:default:controller"
+  "aud": [
+    "sts.amazonaws.com"
+  ],
+  "nonce": "xxxx",
+  "exp": 1666838679,
+  "iat": 1666752279,
+  "auth_time": 1311280969,
+  "acr": "xxxx"
+}
+```
+
+* iss (Issuer Identifier) - ID 颁发者（Identity Provider）的唯一标识，一般是个 HTTPS URL
+* sub（Subject Identifier）- iss 提供的 EU 标识信息，RP 可以同它来标识唯一的 User
+* aud（Audience）- 标识 ID Token 的目前受众，也就是哪些服务能够处理 ID Token
+* exp（Expiration time）- Token 的过期时间
+* iat（Issued At Time）- Token 的构建时间
+* auth_time（Authentication Time）-（可选）EU 完成认证的时间
+* acr（Authentication Context Class Reference）-（可选）标识一个上下文
+
+### 3.3 授权方式
+
+#### 3.3.1 Authorization Code Flow
 
 [Authorization Code Flow]^(授权码) 使用 OAuth 2 的授权码方式，来换取 ID Token 与 Access Token。
 
-#### 2.2.2 Implicit Flow
+#### 3.3.2 Implicit Flow
 
 [Implicit Flow]^(隐式授权) 在 OAtuh 2 的 Implicit 颁发 Access Token 时，同时加上 ID Token。
 
-#### 2.2.3 Hybrid Flow
+#### 3.3.3 Hybrid Flow
 
 [Hybrid Flow]^(混合授权) 同时使用 Authorization Code + Implicit。
 
-### 2.3 UserInfo Endpoint
+### 3.4 UserInfo Endpoint
 
-UserInfo Endpoint 是 OP 提供的一个接口，也可以看做收到 OAuth 2 保护的资源。因为 RP 需要使用 Access Token 才可以请求该资源。
+UserInfo Endpoint 是 OP 提供的一个接口，也可以看做受到 OAuth 2 保护的资源。因为 RP 需要使用 Access Token 才可以请求该资源。
 
 为了防止 ID Token 承载太多的信息，所以抽出 UserInfo Endpoint 接口用以获得 User 的具体信息。并且规定，该接口必须使用 TLS。
+
+当 RP 收到 OP 提供的 ID Token 与 Access Token 后，就可以调用 UserInfo Endpoint 去获取更多的信息或者资源。
 
 ## 参考
 

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>跨云访问资源 - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="跨云访问资源" />
+<meta property="og:description" content="跨云访问指的是：在一个云厂商的环境中，访问另一个云厂商的服务。最简单的方式就是将静态密钥（AWS AK/SK 与 GCP ServiceAccount Key）注入到应用中，但是显而易见这" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-10-25T13:54:10+08:00" />
+<meta property="article:modified_time" content="2022-11-01T22:18:28+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="跨云访问资源"/>
+<meta name="twitter:description" content="跨云访问指的是：在一个云厂商的环境中，访问另一个云厂商的服务。最简单的方式就是将静态密钥（AWS AK/SK 与 GCP ServiceAccount Key）注入到应用中，但是显而易见这"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "跨云访问资源",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/access-resources-across-clouds\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws, gcp, 云计算","wordcount":  2473 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/access-resources-across-clouds\/","datePublished": "2022-10-25T13:54:10+08:00","dateModified": "2022-11-01T22:18:28+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">跨云访问资源</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/cloud-practice/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Cloud Practice</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-10-25">2022-10-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2473 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-背景知识">1 背景知识</a>
+      <ul>
+        <li><a href="#11-gcp-workload-identity-federation">1.1 GCP Workload Identity Federation</a></li>
+        <li><a href="#12-aws-iam-role">1.2 AWS IAM Role</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-aws-instance-访问-gcp">2 AWS Instance 访问 GCP</a>
+      <ul>
+        <li><a href="#21-具体步骤">2.1 具体步骤</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-gcp-访问-aws">3 GCP 访问 AWS</a>
+      <ul>
+        <li><a href="#31-具体步骤">3.1 具体步骤</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-aws-eks-访问-gcp">4 AWS EKS 访问 GCP</a>
+      <ul>
+        <li><a href="#41-具体步骤">4.1 具体步骤</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>跨云访问指的是：在一个云厂商的环境中，访问另一个云厂商的服务。最简单的方式就是将静态密钥（AWS AK/SK 与 GCP ServiceAccount Key）注入到应用中，但是显而易见这种方式非常的不安全。</p>
+<p>下面通过各个云的 Service 来提供一种安全的跨云访问的方式。</p>
+<h2 id="1-背景知识">1 背景知识</h2>
+<h3 id="11-gcp-workload-identity-federation">1.1 GCP Workload Identity Federation</h3>
+<p>在 GCP 环境中应用都是都过 Service Account Key 访问 GCP 资源。为了能够在其他 Cloud 上安全地使用 Service Account，GCP 提供了 <a href="https://cloud.google.com/iam/docs/workload-identity-federation" target="_blank" rel="noopener noreffer"><strong>Workload Identity Federation</strong></a> 服务，支持外部安全的访问 GCP。</p>
+<p>简单点说，Workload Identity Federation 服务遵循标准的 OAuth 2 Token Exchange 协议，<important>允许 Identity Provider 颁发的 ID Token 来交换得到 Service Account Token</important>，进而 GCP Client 可以使用该 Token 得到 Service Account 的凭证后访问 GCP。</p>
+<p>GCP 通过 <strong><code>Workload Identity Pool</code></strong> 来维护 Identity Provider 与 Service Account 的映射关系。一个 Workload Identity Pool 包括：</p>
+<ul>
+<li>
+<p><strong>Connected Service Accounts</strong> - 允许访问的 Service Account</p>
+<p>为了能够让 Workload Identity Pool 允许访问某个 Service Account，需要配置 Server Account 的 Principals 加上 Pool Name。</p>
+<p>不同的 Principals 格式会限制 Pool 中哪些 Identity Provider 能够访问：</p>
+<a class="lightgallery" href="/posts/cloud/cloud_practice/access-resources-across-clouds/img1.png" title="/posts/cloud/cloud_practice/access-resources-across-clouds/img1.png" data-thumbnail="/posts/cloud/cloud_practice/access-resources-across-clouds/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_practice/access-resources-across-clouds/img1.png"
+            data-srcset="/posts/cloud/cloud_practice/access-resources-across-clouds/img1.png, /posts/cloud/cloud_practice/access-resources-across-clouds/img1.png 1.5x, /posts/cloud/cloud_practice/access-resources-across-clouds/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_practice/access-resources-across-clouds/img1.png" width="1062" height="200" />
+    </a>
+</li>
+<li>
+<p><strong>Identity Providers</strong> - 指定哪些 Identity Providers 颁发的 Token 能够交换 Token</p>
+<p>目前支持的 Identity Provider 类型有：</p>
+<ul>
+<li>AWS - 允许特定 AWS 账户的 Role 来获取 Service Account；</li>
+<li>OIDC - 允许特定 OIDC Identity Provider 颁发的 ID Token 来交换 Service Account；</li>
+<li>SAML</li>
+</ul>
+</li>
+</ul>
+<p>在下面的示例可以看到，基本所有外部访问 GCP 都是使用的 Workload Identity Federation。</p>
+<h3 id="12-aws-iam-role">1.2 AWS IAM Role</h3>
+<p>在 <a href="../../aws_learning/iam/#41-trust-relationship" rel=""><strong>AWS Role Trust Relationship</strong></a> 中提到，Role 可以配置哪些 Identity 可以 Assume 改 Role。在跨云访问 AWS 场景下，就是为 IAM Role 配置映射的 OIDC Identity Provider，使得带着 ID Token 就可以 Assume Role（即获得 Role 的访问凭证）。</p>
+<p>对应 IAM Policy 类似如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;Version&#34;</span><span class="p">:</span> <span class="s2">&#34;2012-10-17&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;Statement&#34;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;sts:AssumeRoleWithWebIdentity&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;Principal&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;Federated&#34;</span><span class="p">:</span> <span class="s2">&#34;accounts.google.com&#34;</span>
+            <span class="p">},</span>
+            <span class="nt">&#34;Condition&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;StringEquals&#34;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&#34;accounts.google.com:aud&#34;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="s2">&#34;123&#34;</span>
+                    <span class="p">]</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>Principal.Federated</strong> 表明支持的 OIDC Identity Provider</li>
+<li><strong>Condition.StringEquals</strong> 根据 ID Token 的 Audience 与 Issuer 进行判定</li>
+</ul>
+<h2 id="2-aws-instance-访问-gcp">2 AWS Instance 访问 GCP</h2>
+<p>在当前场景下，应用程序中的 GCP SDK 会访问 EC2 metadata 来获取 AWS 凭证。接着，SDK 会拿着 AWS 凭证去请求 Workload Identity Federation 以获取 Service Account Token。获取成功后，SDK 就能够以对应的 Service Account 身份访问 GCP 服务了。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_practice/access-resources-across-clouds/img2.png" title="/posts/cloud/cloud_practice/access-resources-across-clouds/img2.png" data-thumbnail="/posts/cloud/cloud_practice/access-resources-across-clouds/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_practice/access-resources-across-clouds/img2.png"
+            data-srcset="/posts/cloud/cloud_practice/access-resources-across-clouds/img2.png, /posts/cloud/cloud_practice/access-resources-across-clouds/img2.png 1.5x, /posts/cloud/cloud_practice/access-resources-across-clouds/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_practice/access-resources-across-clouds/img2.png" width="718" height="330" />
+    </a>
+<h3 id="21-具体步骤">2.1 具体步骤</h3>
+<ol>
+<li>
+<p>创建 EC2 Instance，配置好 Instance Profile 以使用指定的 Role</p>
+</li>
+<li>
+<p>创建一个 Workload Identity Pool，并配置支持 OIDC Identity Provider</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 创建 Workload Identity Pool</span>
+gcloud iam workload-identity-pools create <span class="si">${</span><span class="nv">pool_id</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>    --location<span class="o">=</span><span class="s2">&#34;global&#34;</span> <span class="se">\
+</span><span class="se"></span>    --description<span class="o">=</span><span class="s2">&#34;My AWS Identity Pool&#34;</span> <span class="se">\
+</span><span class="se"></span>    --display-name<span class="o">=</span><span class="si">${</span><span class="nv">pool_id</span><span class="si">}</span>
+
+<span class="c1"># 配置 AWS Identity Provider</span>
+gcloud iam workload-identity-pools providers create-aws <span class="si">${</span><span class="nv">provider_id</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>     --location<span class="o">=</span><span class="s2">&#34;global&#34;</span> <span class="se">\
+</span><span class="se"></span>     --workload-identity-pool<span class="o">=</span><span class="si">${</span><span class="nv">pool_id</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>     --account-id<span class="o">=</span><span class="si">${</span><span class="nv">aws_account</span><span class="si">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>参考文档 <a href="https://cloud.google.com/iam/docs/configuring-workload-identity-federation" target="_blank" rel="noopener noreffer"><strong>Configuring workload identity federation</strong></a>。</p>
+</li>
+<li>
+<p>允许 Workload Identity Pool 访问我们需要的 Service Account</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">gcloud iam service-accounts add-iam-policy-binding <span class="si">${</span><span class="nv">sa_email</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>     --role<span class="o">=</span>roles/iam.workloadIdentityUser <span class="se">\ </span> <span class="c1"># 必须提供的权限</span>
+     --member<span class="o">=</span><span class="s2">&#34;principalSet://iam.googleapis.com/projects/</span><span class="si">${</span><span class="nv">project_number</span><span class="si">}</span><span class="s2">/locations/global/workloadIdentityPools/</span><span class="si">${</span><span class="nv">pool_id</span><span class="si">}</span><span class="s2">/attribute.aws_role/arn:aws:sts::</span><span class="si">${</span><span class="nv">aws_account</span><span class="si">}</span><span class="s2">:assumed-role/</span><span class="si">${</span><span class="nv">aws_role</span><span class="si">}</span><span class="s2">&#34;</span>      <span class="c1"># pool principal，其中 project number 必须是 project 的数字编号</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建 Credential 配置文件，用以 SDK 或者 CLI 使用。</p>
+<p>目前，相关的权限配置已经完成了。GCP SDK 与 CLI 内部都实现了使用 Workload Identity Pool 获取 Token 的方式，我们只需要创建好 Credential 配置文件，让 SDK 或者 CLI 加载即可。</p>
+<p>Credential 配置文件中的字段都是固定的，可以自己拼接，也可以使用 CLI 帮助生成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">gcloud iam workload-identity-pools create-cred-config <span class="se">\
+</span><span class="se"></span>     projects/<span class="si">${</span><span class="nv">project_number</span><span class="si">}</span>/locations/global/workloadIdentityPools/<span class="si">${</span><span class="nv">pool_id</span><span class="si">}</span>/providers/<span class="si">${</span><span class="nv">provider_id</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>     --service-account<span class="o">=</span><span class="si">${</span><span class="nv">sa_email</span><span class="si">}</span> <span class="se">\ </span> <span class="c1"># 使用的 Service Account</span>
+     --aws <span class="se">\ </span>
+     --output-file<span class="o">=</span>credentials.json
+</code></pre></td></tr></table>
+</div>
+</div><p>生成的 Credentials 配置文件如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;external_account&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;audience&#34;</span><span class="p">:</span> <span class="s2">&#34;//iam.googleapis.com/projects/${project_number}/locations/global/workloadIdentityPools/${pool_id}/providers/${provider_id}&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;subject_token_type&#34;</span><span class="p">:</span> <span class="s2">&#34;urn:ietf:params:aws:token-type:aws4_request&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;token_url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://sts.googleapis.com/v1/token&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;credential_source&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;environment_id&#34;</span><span class="p">:</span> <span class="s2">&#34;aws1&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;region_url&#34;</span><span class="p">:</span> <span class="s2">&#34;http://169.254.169.254/latest/meta-data/placement/availability-zone&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;http://169.254.169.254/latest/meta-data/iam/security-credentials&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;regional_cred_verification_url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://sts.{region}.amazonaws.com?Action=GetCallerIdentity&amp;   Version=2011-06-15&#34;</span>
+  <span class="p">},</span>
+  <span class="nt">&#34;service_account_impersonation_url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${sa_name}@${project_id}.iam.gserviceaccount.com:generateAccessToken&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>在 Instance 中，通过 SDK 或者 CLI 使用 Credentials 配置文件，进而访问 GCP</p>
+<p>以 CLI 为例，使用 <code>gcloud auth login --cred-file=${file}</code> 就可以以 Service Account 方式登陆。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">gcloud auth login --cred-file<span class="o">=</span>credentials.json
+
+Authenticated with external account credentials <span class="k">for</span>: <span class="o">[</span><span class="si">${</span><span class="nv">sa_email</span><span class="si">}</span><span class="o">]</span>.
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h2 id="3-gcp-访问-aws">3 GCP 访问 AWS</h2>
+<p>GCP Service Account 支持为 <a href="https://cloud.google.com/iam/docs/create-short-lived-credentials-direct#sa-credentials-oidc" target="_blank" rel="noopener noreffer"><strong>Service Account 生成 OIDC ID Token</strong></a>。所以我们只需要创建一个 Service Account，然后配置 AWS IAM Role Trust Relationship，使得能够使用 Service Account ID Token 来执行 AssumeRoleWithIdentity，获取临时凭证后 GCP 环境访问 AWS。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_practice/access-resources-across-clouds/img2-1.png" title="/posts/cloud/cloud_practice/access-resources-across-clouds/img2-1.png" data-thumbnail="/posts/cloud/cloud_practice/access-resources-across-clouds/img2-1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_practice/access-resources-across-clouds/img2-1.png"
+            data-srcset="/posts/cloud/cloud_practice/access-resources-across-clouds/img2-1.png, /posts/cloud/cloud_practice/access-resources-across-clouds/img2-1.png 1.5x, /posts/cloud/cloud_practice/access-resources-across-clouds/img2-1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_practice/access-resources-across-clouds/img2-1.png" width="718" height="300" />
+    </a>
+<h3 id="31-具体步骤">3.1 具体步骤</h3>
+<ol>
+<li>
+<p>创建 VM Instance，配置好使用的 Service Account</p>
+</li>
+<li>
+<p>创建一个 AWS Role，并配置 Trust Relationship，使得允许使用 Service Account Token 执行 AssumeRoleWithIdentity 操作</p>
+<p>添加的配置如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;Version&#34;</span><span class="p">:</span> <span class="s2">&#34;2012-10-17&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;Statement&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;Sid&#34;</span><span class="p">:</span> <span class="s2">&#34;RoleForGoogle&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;Effect&#34;</span><span class="p">:</span> <span class="s2">&#34;Allow&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;Principal&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;Federated&#34;</span><span class="p">:</span> <span class="s2">&#34;accounts.google.com&#34;</span><span class="p">},</span>
+        <span class="nt">&#34;Action&#34;</span><span class="p">:</span> <span class="s2">&#34;sts:AssumeRoleWithWebIdentity&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;Condition&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;StringEquals&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;accounts.google.com:aud&#34;</span><span class="p">:</span> <span class="s2">&#34;${sa_client_id}&#34;</span><span class="p">}}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>在 VM Instance 上，通过 Service Account Token 来获取 AWS 访问凭证</p>
+<ol>
+<li>
+<p>访问 Metadata Server，获取 Instance 信息与 Service Account 的 ID Token</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">instance_name</span><span class="o">=</span><span class="k">$(</span>curl -H Metadata-Flavor:Google <span class="se">\ </span>
+  <span class="s1">&#39;http://metadata.google.internal/computeMetadata/v1/instance/name&#39;</span><span class="k">)</span>
+
+<span class="nv">project_id</span><span class="o">=</span><span class="k">$(</span>curl -H Metadata-Flavor:Google <span class="se">\ </span>
+  <span class="s1">&#39;http://metadata.google.internal/computeMetadata/v1/project/project-id&#39;</span><span class="k">)</span>
+
+<span class="nv">sa_token</span><span class="o">=</span><span class="k">$(</span>curl -H Metadata-Flavor:Google <span class="se">\ </span>
+  <span class="s1">&#39;http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?format=standard&amp;audience=gcp&#39;</span><span class="k">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中，Service Account ID Token 解析后如下格式：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;aud&#34;</span><span class="p">:</span> <span class="s2">&#34;gcp&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;azp&#34;</span><span class="p">:</span> <span class="s2">&#34;${sa_client_id}&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;exp&#34;</span><span class="p">:</span> <span class="mi">1667312309</span><span class="p">,</span>
+  <span class="nt">&#34;iat&#34;</span><span class="p">:</span> <span class="mi">1667308709</span><span class="p">,</span>
+  <span class="nt">&#34;iss&#34;</span><span class="p">:</span> <span class="s2">&#34;https://accounts.google.com&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;sub&#34;</span><span class="p">:</span> <span class="s2">&#34;${sa_client_id}&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>调用 AssumeRoleWithIdentity 获取 Role 的临时访问凭证</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">aws sts assume-role-with-web-identity <span class="se">\ </span>
+  --role-arn arn:aws:iam::<span class="si">${</span><span class="nv">account_id</span><span class="si">}</span>:role/<span class="si">${</span><span class="nv">role_name</span><span class="si">}</span> <span class="se">\ </span>
+  --role-session-name <span class="si">${</span><span class="nv">project_id</span><span class="si">}</span>.<span class="si">${</span><span class="nv">instance_name</span><span class="si">}</span> <span class="se">\ </span>
+  --web-identity-token <span class="si">${</span><span class="nv">sa_token</span><span class="si">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>输出的结果如下，可以看到成功获取了临时的 AK/SK：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;Credentials&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;AccessKeyId&#34;</span><span class="p">:</span> <span class="s2">&#34;${access_key}&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;SecretAccessKey&#34;</span><span class="p">:</span> <span class="s2">&#34;${secret_key}&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;SessionToken&#34;</span><span class="p">:</span> <span class="s2">&#34;${session_token}&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;Expiration&#34;</span><span class="p">:</span> <span class="s2">&#34;2022-11-01T14:31:14+00:00&#34;</span>
+    <span class="p">},</span>
+    <span class="nt">&#34;SubjectFromWebIdentityToken&#34;</span><span class="p">:</span> <span class="s2">&#34;${sa_client_id}&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;AssumedRoleUser&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;AssumedRoleId&#34;</span><span class="p">:</span> <span class="s2">&#34;xxxx&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;Arn&#34;</span><span class="p">:</span> <span class="s2">&#34;arn:aws:sts::${account_id}:assumed-role/${role_name}/${role_session_name}&#34;</span>
+    <span class="p">},</span>
+    <span class="nt">&#34;Provider&#34;</span><span class="p">:</span> <span class="s2">&#34;accounts.google.com&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;Audience&#34;</span><span class="p">:</span> <span class="s2">&#34;${sa_client_id}&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+</li>
+<li>
+<p>在 Instance 上，使用临时的 AK 与 SK 访问 AWS 服务</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">export</span> <span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">access_key</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="nb">export</span> <span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">secret_key</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="nb">export</span> <span class="nv">AWS_SESSION_TOKEN</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">session_token</span><span class="si">}</span><span class="s2">&#34;</span>
+
+<span class="c1"># 访问 AWS</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h2 id="4-aws-eks-访问-gcp">4 AWS EKS 访问 GCP</h2>
+<p>在 EKS 中，Pod 想访问 AWS 是都通过 <a href="../../aws_learning/eks/#63-irsa" rel=""><strong>IRSA</strong></a> 的方式。其本质上时使用的 OIDC 方式：由 EKS OIDC Identity Provider 给 Pod 中注入 ID Token，Pod 中应用使用 ID Token 访问 AWS STS 服务得到 Role 的访问凭证，进而访问 AWS 服务。</p>
+<p>既然 Pod 有了 ID Token，那么我们就可以使用 GCP <strong>Workload Identity Federation</strong> 服务，支持使用 EKS OIDC Identity Provider 颁发的 ID Token，来交换得到 GCP Service Account Token。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_practice/access-resources-across-clouds/img3.png" title="/posts/cloud/cloud_practice/access-resources-across-clouds/img3.png" data-thumbnail="/posts/cloud/cloud_practice/access-resources-across-clouds/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_practice/access-resources-across-clouds/img3.png"
+            data-srcset="/posts/cloud/cloud_practice/access-resources-across-clouds/img3.png, /posts/cloud/cloud_practice/access-resources-across-clouds/img3.png 1.5x, /posts/cloud/cloud_practice/access-resources-across-clouds/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_practice/access-resources-across-clouds/img3.png" width="718" height="330" />
+    </a>
+<h3 id="41-具体步骤">4.1 具体步骤</h3>
+<ol>
+<li>
+<p>参考 <a href="../../aws_learning/eks/#631-%e4%bd%bf%e7%94%a8%e6%b5%81%e7%a8%8b" rel=""><strong>IRSA 使用流程</strong></a> 创建 EKS 并使用 IRSA 提供给 Pod 权限。</p>
+<p>这时候，Pod 里面就注入了 ID Token，解析后可以看到 EKS OIDC Identity Provider URL 标识：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"> <span class="p">{</span>
+     <span class="nt">&#34;aud&#34;</span><span class="p">:</span> <span class="p">[</span>
+         <span class="s2">&#34;sts.amazonaws.com&#34;</span>
+     <span class="p">],</span>
+     <span class="nt">&#34;exp&#34;</span><span class="p">:</span> <span class="mi">1666828971</span><span class="p">,</span>
+     <span class="nt">&#34;iat&#34;</span><span class="p">:</span> <span class="mi">1666742571</span><span class="p">,</span>
+     <span class="nt">&#34;iss&#34;</span><span class="p">:</span> <span class="s2">&#34;https://oidc.eks.us-west-2.amazonaws.com/id/12312415&#34;</span><span class="p">,</span> <span class="c1">// IdP URL
+</span><span class="c1"></span>     <span class="nt">&#34;kubernetes.io&#34;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&#34;namespace&#34;</span><span class="p">:</span> <span class="s2">&#34;default&#34;</span><span class="p">,</span>
+         <span class="nt">&#34;pod&#34;</span><span class="p">:</span> <span class="p">{</span>
+             <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;controller-l6x5p&#34;</span><span class="p">,</span>
+             <span class="nt">&#34;uid&#34;</span><span class="p">:</span> <span class="s2">&#34;20a40844-12f8-44bc-b3c3-1b9b245a62ab&#34;</span>
+         <span class="p">},</span>
+         <span class="nt">&#34;serviceaccount&#34;</span><span class="p">:</span> <span class="p">{</span>
+             <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;controller&#34;</span><span class="p">,</span>
+             <span class="nt">&#34;uid&#34;</span><span class="p">:</span> <span class="s2">&#34;a2d72939-1234-4045-83d8-00e8854651e5&#34;</span>
+         <span class="p">}</span>
+     <span class="p">},</span>
+     <span class="nt">&#34;nbf&#34;</span><span class="p">:</span> <span class="mi">1666742571</span><span class="p">,</span>
+     <span class="nt">&#34;sub&#34;</span><span class="p">:</span> <span class="s2">&#34;system:serviceaccount:default:controller&#34;</span>
+ <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>我们也可以通过获取 EKS 信息来得到 Identity Provider URL 标识：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="c1">// aws eks describe-cluster --name ${cluster-name} --region us-west-2
+</span><span class="c1"></span><span class="p">{</span>
+    <span class="nt">&#34;cluster&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1">// ...
+</span><span class="c1"></span>        <span class="nt">&#34;identity&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;oidc&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;issuer&#34;</span><span class="p">:</span> <span class="s2">&#34;https://oidc.eks.us-west-2.amazonaws.com/id/3TY232GFASDFSDG&#34;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建一个 Workload Identity Pool，并配置支持 OIDC Identity Provider</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 创建 Workload Identity Pool</span>
+gcloud iam workload-identity-pools create <span class="si">${</span><span class="nv">pool_id</span><span class="si">}</span> <span class="se">\ </span>
+    --location<span class="o">=</span><span class="s2">&#34;global&#34;</span> <span class="se">\ </span>
+    --description<span class="o">=</span><span class="s2">&#34;My AWS Identity Pool&#34;</span> <span class="se">\ </span>
+    --display-name<span class="o">=</span><span class="si">${</span><span class="nv">pool_id</span><span class="si">}</span>
+
+<span class="c1"># 配置 OIDC Identity Provider</span>
+gcloud iam workload-identity-pools providers create-oidc <span class="si">${</span><span class="nv">provider_id</span><span class="si">}</span> <span class="se">\ </span>
+     --location<span class="o">=</span><span class="s2">&#34;global&#34;</span> <span class="se">\ </span>
+     --workload-identity-pool<span class="o">=</span><span class="si">${</span><span class="nv">pool_id</span><span class="si">}</span> <span class="se">\ </span>
+     --issuer-uri<span class="o">=</span><span class="si">${</span><span class="nv">issuer</span><span class="si">}</span> <span class="se">\ </span>                          <span class="c1"># 信任的 issuer，即第 1 步中的 issuer url</span>
+     --allowed-audiences<span class="o">=</span><span class="s2">&#34;sts.amazonaws.com&#34;</span> <span class="se">\ </span>         <span class="c1"># 信任的 audiences，即第 1 步中的 aud</span>
+     --attribute-mapping<span class="o">=</span><span class="s2">&#34;google.subject=assertion.sub&#34;</span> <span class="c1"># 属性映射</span>
+     <span class="c1"># --attribute-condition=&#34;&#34;                         # 可选的条件判断</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>参考文档 <a href="https://cloud.google.com/iam/docs/configuring-workload-identity-federation" target="_blank" rel="noopener noreffer"><strong>Configuring workload identity federation</strong></a>。</p>
+</li>
+<li>
+<p>允许 Workload Identity Pool 访问我们需要的 Service Account</p>
+<p>也就是给 Service Account Principal 加上 Workload Identity Pool，允许 Workload Identity Pool 下的所有 Identity Provider 得到 Service Account 的 Access Token：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">gcloud iam service-accounts add-iam-policy-binding <span class="si">${</span><span class="nv">sa_email</span><span class="si">}</span> <span class="se">\ </span>
+     --role<span class="o">=</span>roles/iam.workloadIdentityUser <span class="se">\ </span> <span class="c1"># 必须提供的权限</span>
+     --member<span class="o">=</span><span class="s2">&#34;principalSet://iam.googleapis.com/projects/</span><span class="si">${</span><span class="nv">project_number</span><span class="si">}</span><span class="s2">/locations/global/workloadIdentityPools/</span><span class="si">${</span><span class="nv">pool_id</span><span class="si">}</span><span class="s2">/*&#34;</span>      <span class="c1"># pool principal，其中 project number 必须是 project 的数字编号</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>更细粒度可以按照 Identity 的属性授予权限，参考文档 <a href="https://cloud.google.com/iam/docs/workload-identity-federation?authuser=1#impersonation" target="_blank" rel="noopener noreffer"><strong>Service account impersonation</strong></a>。</p>
+</li>
+<li>
+<p>创建 Credential 配置文件，用以 SDK 或者 CLI 使用。</p>
+<p>目前，相关的权限配置已经完成了。GCP SDK 与 CLI 内部都实现了使用 Workload Identity Pool 获取 Token 的方式，我们只需要创建好 Credential 配置文件，让 SDK 或者 CLI 加载即可。</p>
+<p>Credential 配置文件中的字段都是固定的，可以自己拼接，也可以使用 CLI 帮助生成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">gcloud iam workload-identity-pools create-cred-config <span class="se">\ </span>
+     projects/<span class="si">${</span><span class="nv">project_number</span><span class="si">}</span>/locations/global/workloadIdentityPools/<span class="si">${</span><span class="nv">pool_id</span><span class="si">}</span>/providers/<span class="si">${</span><span class="nv">provider_id</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>     --service-account<span class="o">=</span><span class="si">${</span><span class="nv">sa_email</span><span class="si">}</span> <span class="se">\ </span> <span class="c1"># 使用的 Service Account</span>
+     --credential-source-file<span class="o">=</span><span class="s2">&#34;/var/run/secrets/eks.amazonaws.com/serviceaccount/token&#34;</span> <span class="se">\ </span>  <span class="c1"># 用于交换的源 Token 文件，即 EKS 注入 Pod 的 ID Token 文件</span>
+     --output-file<span class="o">=</span>credentials.json
+</code></pre></td></tr></table>
+</div>
+</div><p>生成的 Credentials 配置文件如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;external_account&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;audience&#34;</span><span class="p">:</span> <span class="s2">&#34;//iam.googleapis.com/projects/${project_number}/locations/global/workloadIdentityPools/${pool_id}/providers/${provider_id}&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;subject_token_type&#34;</span><span class="p">:</span> <span class="s2">&#34;urn:ietf:params:oauth:token-type:jwt&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;token_url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://sts.googleapis.com/v1/token&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;credential_source&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;file&#34;</span><span class="p">:</span> <span class="s2">&#34;/var/run/secrets/eks.amazonaws.com/serviceaccount/token&#34;</span>
+  <span class="p">},</span>
+  <span class="nt">&#34;service_account_impersonation_url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${sa_name}@${project_id}.iam.gserviceaccount.com:generateAccessToken&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>在 Pod 中，通过 SDK 或者 CLI 使用 Credentials 配置文件，进而访问 GCP</p>
+<p>以 CLI 为例，使用 <code>gcloud auth login --cred-file=${file}</code> 就可以以 Service Account 方式登陆。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">gcloud auth login --cred-file<span class="o">=</span>credentials.json
+
+Authenticated with external account credentials <span class="k">for</span>: <span class="o">[</span><span class="si">${</span><span class="nv">sa_email</span><span class="si">}</span><span class="o">]</span>.
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h2 id="参考">参考</h2>
+<ul>
+<li>Blog: <a href="https://lingxiankong.github.io/2022-02-13-access-resource-multi-clouds.html" target="_blank" rel="noopener noreffer"><strong>Securely access cloud resources between AWS and GCP</strong></a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-11-01&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/e32723a8c2c99a43774fad6e71a63a944c3b08ba" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) e32723a8c2c99a43774fad6e71a63a944c3b08ba: Post(Access Resource across Clouds) (#17)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>e32723a</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/cloud_practice/access-resources-across-clouds/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/" data-title="跨云访问资源" data-hashtags="aws,gcp,云计算"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/" data-hashtag="aws"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/" data-title="跨云访问资源"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/" data-title="跨云访问资源"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/" data-title="跨云访问资源"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/" data-title="跨云访问资源"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/" data-title="跨云访问资源"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/aws/">aws</a>,&nbsp;<a href="/tags/gcp/">gcp</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/" class="prev" rel="prev" title="Thinking in Operator"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Thinking in Operator</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightgallery":true,"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
