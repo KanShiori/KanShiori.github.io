@@ -467,7 +467,7 @@ IRSA 指的是通过 Kubernetes 的资源 Service Account 来给 Pod 绑定 IAM 
   * AWS_ROLE_ARN - 关联到 ServiceAccount 的 Role ARN
   * AWS_WEB_IDENTITY_TOKEN_FILE - 执行 `AssumeRoleWithWebIdentity()` 使用的 Token
 
-  这个 Token 也就是 OIDC 概念中的 ID Token。
+  这个 Token 也就是 OIDC 概念中的 [**ID Token**](../../../net/oauth2-and-oidc/#32-id-token)。
 
 5. 获取临时凭证，访问 AWS
    
@@ -479,7 +479,7 @@ IRSA 指的是通过 Kubernetes 的资源 Service Account 来给 Pod 绑定 IAM 
 
 {{< image src="img6.png" height=300 >}}
 
-* **OIDC Provider 为 Pod 注入 Token**
+* **OIDC Provider 为 Pod 颁发 ID Token，并注入到 Pod 中**
 
   部署 OIDC Provider 后，OIDC Provider 会向 APIServer 注册一个 Pod 的 [**MutatingWebhookConfiguration**]()：
 
@@ -534,7 +534,7 @@ IRSA 指的是通过 Kubernetes 的资源 Service Account 来给 Pod 绑定 IAM 
           path: token
   ```
 
-* **Pod 访问 STS 获取临时凭证，进而访问 AWS**
+* **Pod 使用 Token 访问 STS 获取临时凭证，进而访问 AWS**
   
   Pod 程序基于读取的 Token 以及 Role ARN 调用 [**AssumeRoleWithWebIdentity()**](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html) 接口获取临时的凭证，进而继续访问 AWS 服务。
 

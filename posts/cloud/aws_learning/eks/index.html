@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/eks/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-05-02T22:01:07+08:00" />
-<meta property="article:modified_time" content="2022-09-18T21:19:38+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-11-01T22:18:28+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  4116 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/","datePublished": "2022-05-02T22:01:07+08:00","dateModified": "2022-09-18T21:19:38+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  4131 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/","datePublished": "2022-05-02T22:01:07+08:00","dateModified": "2022-11-01T22:18:28+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">AWS - EKS</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>AWS 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-05-02">2022-05-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4116 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-05-02">2022-05-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4131 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 9 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -832,7 +832,7 @@
 <li>AWS_ROLE_ARN - 关联到 ServiceAccount 的 Role ARN</li>
 <li>AWS_WEB_IDENTITY_TOKEN_FILE - 执行 <code>AssumeRoleWithWebIdentity()</code> 使用的 Token</li>
 </ul>
-<p>这个 Token 也就是 OIDC 概念中的 ID Token。</p>
+<p>这个 Token 也就是 OIDC 概念中的 <a href="../../../net/oauth2-and-oidc/#32-id-token" rel=""><strong>ID Token</strong></a>。</p>
 <ol start="5">
 <li>
 <p>获取临时凭证，访问 AWS</p>
@@ -852,7 +852,7 @@
     </a>
 <ul>
 <li>
-<p><strong>OIDC Provider 为 Pod 注入 Token</strong></p>
+<p><strong>OIDC Provider 为 Pod 颁发 ID Token，并注入到 Pod 中</strong></p>
 <p>部署 OIDC Provider 后，OIDC Provider 会向 APIServer 注册一个 Pod 的 <a href="" rel=""><strong>MutatingWebhookConfiguration</strong></a>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -955,7 +955,7 @@
 </div>
 </div></li>
 <li>
-<p><strong>Pod 访问 STS 获取临时凭证，进而访问 AWS</strong></p>
+<p><strong>Pod 使用 Token 访问 STS 获取临时凭证，进而访问 AWS</strong></p>
 <p>Pod 程序基于读取的 Token 以及 Role ARN 调用 <a href="https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html" target="_blank" rel="noopener noreffer"><strong>AssumeRoleWithWebIdentity()</strong></a> 接口获取临时的凭证，进而继续访问 AWS 服务。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1006,8 +1006,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-09-18&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/01b5e027c390286911febc234984142d39f55b9f" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 01b5e027c390286911febc234984142d39f55b9f: Post(Operator): new post (#16)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>01b5e02</a></span>
+                <span>更新于 2022-11-01&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/e32723a8c2c99a43774fad6e71a63a944c3b08ba" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) e32723a8c2c99a43774fad6e71a63a944c3b08ba: Post(Access Resource across Clouds) (#17)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>e32723a</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

@@ -3,7 +3,15 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 13 Sep 2022 20:09:34 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 25 Oct 2022 13:54:10 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>跨云访问资源</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/</link>
+    <pubDate>Tue, 25 Oct 2022 13:54:10 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/</guid>
+    <description><![CDATA[跨云访问指的是：在一个云厂商的环境中，访问另一个云厂商的服务。最简单的方式就是将静态密钥（AWS AK/SK 与 GCP ServiceAccount Key）注入到应用中，但是显而易见这]]></description>
+</item>
+<item>
     <title>Thinking in Operator</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/</link>
     <pubDate>Tue, 13 Sep 2022 20:09:34 &#43;0800</pubDate>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/</guid>
     <description><![CDATA[1 操作 1.1 Update 当用户修改 Deployment DaemonSet StatefulSet 定义中的 .spec.template 任意字段时，就会触发 Pod 的升级，默认都是 Rolling Update。 1 $ kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.16.1 通过 kubectl rollout status 查看滚动升级的过程： 1 2 3]]></description>
-</item>
-<item>
-    <title>AWS - KMS</title>
-    <link>https://KanShiori.github.io/posts/cloud/aws_learning/kms/</link>
-    <pubDate>Thu, 05 May 2022 21:21:14 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/kms/</guid>
-    <description><![CDATA[1 概述 Key Management Service（简称 KMS）是用于管理密钥的服务：KMS 保管密钥，用户请求 KMS 以加密或解密数据。大多数的 AWS 服务都支持直接使用 KMS，]]></description>
 </item>
 </channel>
 </rss>

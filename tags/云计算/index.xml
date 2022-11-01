@@ -3,7 +3,15 @@
         <title>云计算 - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/</link>
         <description>云计算 - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 13 Sep 2022 20:09:34 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 25 Oct 2022 13:54:10 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+    <title>跨云访问资源</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/</link>
+    <pubDate>Tue, 25 Oct 2022 13:54:10 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/</guid>
+    <description><![CDATA[跨云访问指的是：在一个云厂商的环境中，访问另一个云厂商的服务。最简单的方式就是将静态密钥（AWS AK/SK 与 GCP ServiceAccount Key）注入到应用中，但是显而易见这]]></description>
+</item>
+<item>
     <title>Thinking in Operator</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/</link>
     <pubDate>Tue, 13 Sep 2022 20:09:34 &#43;0800</pubDate>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/use-pulumi/</guid>
     <description><![CDATA[内容基本照搬的官方文档：Architecture &amp; Concepts。 Pulumi 是一个支持 IaC 的平台。与其他 IaC 工具最大的不同时，Pulumi 允许使用熟悉]]></description>
-</item>
-<item>
-    <title>Kubernetes 中调试 Pod</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</link>
-    <pubDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</guid>
-    <description><![CDATA[1 Ephemeral Container 可以使用 kubectl debug 来给一个运行中的 Pod 添加一个 Ephemeral Container 运行，并且不需要重启 Pod。 版本要求 Ephemeral Container 需要 Kubernetes 1.23 版本以上，目前还是处于 beta 状态。 1 kubectl debug -it ${pod_name} --image=busybox --target=${container_name}]]></description>
 </item>
 </channel>
 </rss>
