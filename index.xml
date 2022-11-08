@@ -3,9 +3,17 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 25 Oct 2022 13:54:10 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 07 Nov 2022 20:20:30 &#43;0800</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>GCP - IAM</title>
+    <link>https://KanShiori.github.io/posts/cloud/gcp_learning/iam/</link>
+    <pubDate>Mon, 07 Nov 2022 20:20:30 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/gcp_learning/iam/</guid>
+    <description><![CDATA[1 基本模型 通过 IAM 控制 “谁” 对哪些资源有着哪种访问权限。 IAM 本质上是为了完成两个功能： Authentication - 身份认证，操作资源前确认请求者是 “谁”； Authorization - 授权，操作]]></description>
+</item>
+<item>
     <title>跨云访问资源</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/</link>
     <pubDate>Tue, 25 Oct 2022 13:54:10 &#43;0800</pubDate>
@@ -76,14 +84,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/kustomize/</guid>
     <description><![CDATA[1 概述 Kustomize 基于 kustomization.yaml 文件来生成一系列的 Kubernetes 资源的 YAML 文件。 基于这种模式，Kustomize 能够支持的功能大致分为三类： 生成 Resource - 基于一些来源数据，生成出]]></description>
-</item>
-<item>
-    <title>Kubernetes - Update 与 Rollback</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/</link>
-    <pubDate>Wed, 11 May 2022 21:24:25 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/</guid>
-    <description><![CDATA[1 操作 1.1 Update 当用户修改 Deployment DaemonSet StatefulSet 定义中的 .spec.template 任意字段时，就会触发 Pod 的升级，默认都是 Rolling Update。 1 $ kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.16.1 通过 kubectl rollout status 查看滚动升级的过程： 1 2 3]]></description>
 </item>
 </channel>
 </rss>

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>GCP - IAM - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="GCP - IAM" />
+<meta property="og:description" content="1 基本模型 通过 IAM 控制 “谁” 对哪些资源有着哪种访问权限。 IAM 本质上是为了完成两个功能： Authentication - 身份认证，操作资源前确认请求者是 “谁”； Authorization - 授权，操作" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/gcp_learning/iam/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-11-07T20:20:30+08:00" />
+<meta property="article:modified_time" content="2022-11-08T22:28:11+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="GCP - IAM"/>
+<meta name="twitter:description" content="1 基本模型 通过 IAM 控制 “谁” 对哪些资源有着哪种访问权限。 IAM 本质上是为了完成两个功能： Authentication - 身份认证，操作资源前确认请求者是 “谁”； Authorization - 授权，操作"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/gcp_learning/iam/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "GCP - IAM",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/gcp_learning\/iam\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "gcp","wordcount":  3467 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/gcp_learning\/iam\/","datePublished": "2022-11-07T20:20:30+08:00","dateModified": "2022-11-08T22:28:11+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">GCP - IAM</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/gcp-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>GCP 学习</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-11-07">2022-11-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3467 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-基本模型">1 基本模型</a></li>
+    <li><a href="#2-principal">2 Principal</a>
+      <ul>
+        <li><a href="#21-google-account">2.1 Google Account</a></li>
+        <li><a href="#22-google-group">2.2 Google Group</a></li>
+        <li><a href="#23-google-workspace-account">2.3 Google Workspace Account</a></li>
+        <li><a href="#24-cloud-identity-domain">2.4 Cloud Identity Domain</a></li>
+        <li><a href="#25-all-authenticated-users">2.5 All Authenticated Users</a></li>
+        <li><a href="#26-all-user">2.6 All User</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-service-account">3 Service Account</a>
+      <ul>
+        <li><a href="#31-service-account-key-pair">3.1 Service Account key pair</a>
+          <ul>
+            <li><a href="#311-google-managed-key-pair">3.1.1 Google-managed key pair</a></li>
+            <li><a href="#312-user-managed-key-pair">3.1.2 User-managed key pair</a></li>
+          </ul>
+        </li>
+        <li><a href="#32-service-account-短期凭证">3.2 Service Account 短期凭证</a></li>
+        <li><a href="#33-service-account-的类型">3.3 Service Account 的类型</a></li>
+        <li><a href="#34-service-account-使用权限">3.4 Service Account 使用权限</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-role-与-permission">4 Role 与 Permission</a>
+      <ul>
+        <li><a href="#41-permission">4.1 Permission</a></li>
+        <li><a href="#42-role">4.2 Role</a></li>
+        <li><a href="#43-role-的类型">4.3 Role 的类型</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-access-control">5 Access Control</a>
+      <ul>
+        <li><a href="#51-policy">5.1 Policy</a></li>
+        <li><a href="#52-修改-policy">5.2 修改 Policy</a>
+          <ul>
+            <li><a href="#521-增量更新">5.2.1 增量更新</a></li>
+            <li><a href="#522-全量更新">5.2.2 全量更新</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-基本模型">1 基本模型</h2>
+<p>通过 IAM 控制 “谁” 对哪些资源有着哪种访问权限。</p>
+<p>IAM 本质上是为了完成两个功能：</p>
+<ul>
+<li><strong><code>Authentication</code></strong> - 身份认证，操作资源前<strong>确认请求者是 “谁”</strong>；</li>
+<li><strong><code>Authorization</code></strong> - 授权，<strong>操作者是否有权限操作资源</strong>；</li>
+</ul>
+<p>GCP IAM 的权限管理如下图：</p>
+<a class="lightgallery" href="/posts/cloud/gcp_learning/iam/img1.png" title="/posts/cloud/gcp_learning/iam/img1.png" data-thumbnail="/posts/cloud/gcp_learning/iam/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/gcp_learning/iam/img1.png"
+            data-srcset="/posts/cloud/gcp_learning/iam/img1.png, /posts/cloud/gcp_learning/iam/img1.png 1.5x, /posts/cloud/gcp_learning/iam/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/gcp_learning/iam/img1.png" width="971" height="400" />
+    </a>
+<ul>
+<li>
+<p><strong><code>Principal</code></strong> 表示资源操作者，也就是 “谁”，在 GCP 中包括：</p>
+</li>
+<li>
+<p><strong><code>Role</code></strong> 表示一组权限的集合，决定了 Principal 对资源有着哪些访问全新；</p>
+</li>
+<li>
+<p><strong><code>Role Binding</code></strong> 表示一个 Role 与多个 Principal 的绑定关系，表示真正为 Principal 赋予了 Role 对应的权限；</p>
+</li>
+<li>
+<p><strong><code>Policy</code></strong> 是一组 Role binding 的集合，是某个资源所有设置的权限的集合；</p>
+</li>
+</ul>
+<h2 id="2-principal">2 Principal</h2>
+<p>Principal 表示资源操作者，也就是身份。Principal 支持的类型有：</p>
+<ul>
+<li>Google Account</li>
+<li>Service Account</li>
+<li>Google Group</li>
+<li>Google Workspace Account</li>
+<li>Cloud Identity Domain</li>
+<li>All Authenticated Users</li>
+<li>All Users</li>
+</ul>
+<h3 id="21-google-account">2.1 Google Account</h3>
+<p><strong>Google Account</strong> 代表的就是一个终端用户，任何与 Google 账号关联的 Email 都可以作为 GCP 中的一个 Principal。</p>
+<h3 id="22-google-group">2.2 Google Group</h3>
+<p>Google Group 是 Google Account 和 Service Account 的集合，Group 有着唯一的 Email。</p>
+<p>通过使用 Google Group，可以一次性管理 Group 整个的访问权限，而不需要一个个更改账户或者 Service Account 的权限。</p>
+<p>不过，Google Group 仅仅用于批量配置权限，而不是真正的 Principal。也就是说，不能以 Google Group 的名义来访问资源。</p>
+<h3 id="23-google-workspace-account">2.3 Google Workspace Account</h3>
+<p>Google Workspace Account 是 Google Account 的集合，有着独立的 Domain。创建 Google Account 时，系统会自动将账户添加到 Google Workspace Account 中，例如 <code>username@example.com</code>。</p>
+<p>与 Google Group 一样，Google Workspace 仅仅用于批量配置权限。</p>
+<h3 id="24-cloud-identity-domain">2.4 Cloud Identity Domain</h3>
+<p>Cloud Identity Domain 与 Google Workspace Account 一样，是 Google Account 的集合。但是 Cloud Identity Domain 无法访问 Google Workspace 的应用与功能。</p>
+<h3 id="25-all-authenticated-users">2.5 All Authenticated Users</h3>
+<p>All Authenticated Users 指的是 Principal 值为特殊的 <code>allAuthenticatedUsers</code>，表示所有经过认证的 Principal。</p>
+<h3 id="26-all-user">2.6 All User</h3>
+<p>All User 指的是 Principal 值为特殊的 <code>allUsers</code>，表示所有经过认证和未经过认证的用户。</p>
+<h2 id="3-service-account">3 Service Account</h2>
+<p>与 <a href="../../aws_learning/iam/#4-role" rel=""><strong>AWS Role</strong></a> 的设计理念类似，Service Account 用于 GCP 中的应用程序使用。</p>
+<p>与 Google Account 相对，Service Account 没有固定的密码，通过 Token 作为身份凭证。并且，也支持其他 Principal 或者 Service Account 来模拟 Service Account。</p>
+<h3 id="31-service-account-key-pair">3.1 Service Account key pair</h3>
+<p>每个 Service Account 有着自己的 public/private 密钥对。此密钥对称为 <strong><code>Google-managed key pair</code></strong>。</p>
+<p>通过调用 Service Account Credentials API，GCP 会使用 Google-managed key pair 创建出多个 <strong><code>User-managed key pair</code></strong>，使用 User-managed key pair 的私钥就可以作为 Service Account 来访问 GCP。</p>
+<h4 id="311-google-managed-key-pair">3.1.1 Google-managed key pair</h4>
+<p>Google-managed key pair 是完全由 Google 管理的密钥对，用于生成短期的身份凭证：User-managed key pair。</p>
+<p>GCP 会自动轮转 Google-managed key pair，使用时间最多两周。</p>
+<p>Google-managed key pair 中的私钥始终中第三方托管，用户永远无法访问。</p>
+<p>Google-managed key pair 中的公钥是可公开访问的，因此任何人都可以读取公钥来验证私钥创建的签名。通过以下 API 就可以访问公钥：</p>
+<ul>
+<li>X.509 证书格式：<code>https://www.googleapis.com/service_accounts/v1/metadata/x509/${SERVICE_ACCOUNT_EMAIL}</code></li>
+<li>JWK 格式：<code>https://www.googleapis.com/service_accounts/v1/jwk/${SERVICE_ACCOUNT_EMAIL}</code></li>
+<li>Raw 格式：<code>https://www.googleapis.com/service_accounts/v1/metadata/raw/${SERVICE_ACCOUNT_EMAIL}</code></li>
+</ul>
+<h4 id="312-user-managed-key-pair">3.1.2 User-managed key pair</h4>
+<p>通过调用 GCP API，GCP 会使用 Google-managed key pair 创建出 User-managed key pair。</p>
+<p>使用 User-managed key pair 的私钥就可以作为 Service Account 访问 GCP 了。该私钥也称为 <strong><code>Service Account Key</code></strong>。</p>
+<p>每个 Service Account 最多有 10 个 Service Account Key。GCP 只会存储公钥，Service Account Key 是完全由用户管理的。</p>
+<p>目前支持两种方式创建 User-managed key pair：</p>
+<ul>
+<li>
+<p>使用 IAM API 创建 User-managed key pair，GCP 自动存储公钥，私钥将返回给用户；</p>
+</li>
+<li>
+<p>用户自行创建 User-managed key pair，然后将公钥上传到 GCP；</p>
+</li>
+</ul>
+<h3 id="32-service-account-短期凭证">3.2 Service Account 短期凭证</h3>
+<p>除了 Service Account Key 之外，GCP 也提供 API 用于创建 Service Account 的短期凭证。</p>
+<p>与 Service Account Key 相比，使用短期凭证也可以访问 GCP，但是短期凭证持有短期的生命周期，例如几小时或者更短。</p>
+<p>因此，如果需要为第三方提供 Service Account 的使用权限，那么 Service Account 短期凭证很有用。</p>
+<p>目前支持的凭证类型包括：</p>
+<ul>
+<li>OAuth 2.0 Access Token</li>
+<li>OIDC ID Token</li>
+</ul>
+<p>参考 <a href="https://cloud.google.com/iam/docs/creating-short-lived-service-account-credentials" target="_blank" rel="noopener noreffer"><strong>Creating short-lived service account credentials</strong></a> 文档来创建短期凭证。</p>
+<h3 id="33-service-account-的类型">3.3 Service Account 的类型</h3>
+<p>根据管理 Service Account 的方式不同，分为：</p>
+<ul>
+<li>
+<p><strong>用户管理的 Service Account</strong></p>
+<p>用户使用 GCP 创建的 Service Account。这种 Service Account 使用以下地址标识：<code>${sa-name}@${project}.iam.gserviceaccount.com</code>。</p>
+</li>
+<li>
+<p><strong>Default Service Account</strong></p>
+<p>启动某些 GCP 服务后，这些服务会创建自己的 Default Service Account。当使用这些 GCP 服务时，不指定 Service Account 那么就会使用 Default Service Account。</p>
+<p>目前的 Default Service Account 包括：</p>
+<a class="lightgallery" href="/posts/cloud/gcp_learning/iam/img1-1.png" title="/posts/cloud/gcp_learning/iam/img1-1.png" data-thumbnail="/posts/cloud/gcp_learning/iam/img1-1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/gcp_learning/iam/img1-1.png"
+            data-srcset="/posts/cloud/gcp_learning/iam/img1-1.png, /posts/cloud/gcp_learning/iam/img1-1.png 1.5x, /posts/cloud/gcp_learning/iam/img1-1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/gcp_learning/iam/img1-1.png" width="1079" height="150" />
+    </a>
+</li>
+<li>
+<p><strong>Google 管理的 Service Account</strong></p>
+<p>某些 GCP 服务需要访问用户的资源时，只能通过使用用户的 Service Account 才能操作用户的资源。为此，GCP 会为这些服务创建 Service Account，被称为 Google 管理的 Service Account。</p>
+<p>例如，Cloud Run 需要运行容器，那么需要使用对应的 Service Account 来创建容器。</p>
+<p>这些 Service Account 在 GCP Console 是不会展示出来，在 Policy 或者 Audit Log 中会看到它们。</p>
+</li>
+</ul>
+<h3 id="34-service-account-使用权限">3.4 Service Account 使用权限</h3>
+<p>前面说了，Service Account 是属于 Principal，可以用于访问其他 Resource。当然，Service Account 本身也是 Resource，可以配置 Policy 来控制其他 Principal 如何使用 Service Account。</p>
+<p>GCP 提供了 Predefined Role 来管理 Service Account 使用权限：</p>
+<ul>
+<li>
+<p><code>roles/iam.serviceAccountUser</code></p>
+<p>授予该 Role 后，表示允许使用该 Service Account 来访问 GCP。</p>
+</li>
+<li>
+<p><code>roles/iam.serviceAccountTokenCreator</code></p>
+<p>授予该 Role 后，表示允许创建该 Service Account 的短期凭证。</p>
+</li>
+</ul>
+<h2 id="4-role-与-permission">4 Role 与 Permission</h2>
+<p>与 <a href="../../aws_learning/iam/#3-policy" rel=""><strong>AWS IAM Policy</strong></a> 的设计理念类型，Role 表示的一组 Permission 的集合。</p>
+<p>为 Principal 授予一个 Role 就是授予该 Role 包含的所有权限。</p>
+<div class="details admonition tip open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">Role 仅仅是静态的权限定义，能够限制 “谁” 是靠 Role Binding 实现的。</div>
+        </div>
+    </div>
+<h3 id="41-permission">4.1 Permission</h3>
+<p>一个 Permission 对应于对某种资源的操作，以 <code>service.resource.verb</code> 的格式表示。</p>
+<p>Permission 通常与资源管理的 REST API 对应。也就是说，Principal 必须被授予 API 对应的 Permission 后，才能调用对应的 API。例如，如果要创建某个 Bucket，那么必须要包含 <code>storage.buckets.create</code> Permission。</p>
+<h3 id="42-role">4.2 Role</h3>
+<p>一个 Role 的结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># gcloud iam roles describe roles/storage.admin --format yaml</span><span class="w">
+</span><span class="w"></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">roles/storage.admin</span><span class="w">
+</span><span class="w"></span><span class="nt">stage</span><span class="p">:</span><span class="w"> </span><span class="l">GA</span><span class="w">
+</span><span class="w"></span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l">Storage Admin</span><span class="w">
+</span><span class="w"></span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l">Full control of GCS resources.</span><span class="w">
+</span><span class="w"></span><span class="nt">etag</span><span class="p">:</span><span class="w"> </span><span class="l">AA==</span><span class="w">
+</span><span class="w"></span><span class="nt">includedPermissions</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="l">storage.buckets.create</span><span class="w">
+</span><span class="w"></span><span class="c"># ...</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>其中 <code>includedPermissions</code> 就是 Role 包含的权限的集合，每个权限代表着调用对应的 API 的权限。</p>
+<h3 id="43-role-的类型">4.3 Role 的类型</h3>
+<p>根据 Role 的管理方式，范围：</p>
+<ul>
+<li>
+<p><strong>Basic Roles</strong></p>
+<p>权限范围很大的 Role，一般提供给 Admin User 管理 GCP。包括：Owner、Editor 和 Viewer。</p>
+</li>
+<li>
+<p><strong>Predefined Roles</strong></p>
+<p>GCP 预先创建好的 Role，由 GCP 维护与更新，包含某个资源的大多数权限。</p>
+<p>例如 <code>roles/storage.admin</code> 提供了 GCS 的管理权限。</p>
+</li>
+<li>
+<p><strong>Custom Roles</strong></p>
+<p>由用户自定义的 Role，用户可以根据权限需要自行组合 Permission。</p>
+</li>
+</ul>
+<h2 id="5-access-control">5 Access Control</h2>
+<p>当 Principal 发出一个 Resource 操作请求时，GCP IAM 权限检查基于以下流程：</p>
+<a class="lightgallery" href="/posts/cloud/gcp_learning/iam/img2.png" title="/posts/cloud/gcp_learning/iam/img2.png" data-thumbnail="/posts/cloud/gcp_learning/iam/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/gcp_learning/iam/img2.png"
+            data-srcset="/posts/cloud/gcp_learning/iam/img2.png, /posts/cloud/gcp_learning/iam/img2.png 1.5x, /posts/cloud/gcp_learning/iam/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/gcp_learning/iam/img2.png" width="1071" height="400" />
+    </a>
+<ol>
+<li>
+<p>检查 Resource 所属的 <strong>Organization 的 Policy</strong>，判断 Principal 是否有权限操作资源。</p>
+</li>
+<li>
+<p>检查 Resource 所属的 <strong>Folder 的 Policy</strong>，判断 Principal 是否有权限操作资源。</p>
+</li>
+<li>
+<p>检查 Resource 所属的 <strong>Project 的 Policy</strong>，判断 Principal 是否有权限操作资源。</p>
+</li>
+<li>
+<p>检查 <strong>Resource 的 Policy</strong>，判断 Principal 是否有权限操作资源。</p>
+</li>
+</ol>
+<p>也就是说，GCP 会按照 Resource 的层次结构依次判断是否有操作权限。任一一个层次判断通过后，该 Resource 操作请求就会被通过。</p>
+<h3 id="51-policy">5.1 Policy</h3>
+<p>GCP 的访问控制都是基于 Policy 管理的。Policy 包含了一组 Role Binding，描述了授予哪些 Principal 有着哪些 Role 的权限。</p>
+<p>Policy 的结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;bindings&#34;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;condition&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;title&#34;</span><span class="p">:</span> <span class="s2">&#34;condition-1&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;expression&#34;</span><span class="p">:</span> <span class="s2">&#34;request.time &lt; timestamp(\&#34;2020-01-01T00:00:00Z\&#34;)&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;description&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span>
+      <span class="p">},</span>
+      <span class="nt">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;roles/storage.objectAdmin&#34;</span><span class="p">,</span>
+       <span class="nt">&#34;members&#34;</span><span class="p">:</span> <span class="p">[</span>
+         <span class="s2">&#34;user:ali@example.com&#34;</span><span class="p">,</span>
+         <span class="s2">&#34;serviceAccount:my-other-app@appspot.gserviceaccount.com&#34;</span><span class="p">,</span>
+         <span class="s2">&#34;group:admins@example.com&#34;</span><span class="p">,</span>
+         <span class="s2">&#34;domain:google.com&#34;</span>
+       <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;roles/storage.objectViewer&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;members&#34;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&#34;user:maria@example.com&#34;</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&#34;etag&#34;</span><span class="p">:</span> <span class="s2">&#34;BwXpzEB96jg=&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>bindings</code>
+<ul>
+<li><code>role</code> - 表示授予 Principal 的 Role。</li>
+<li><code>members</code> - 表示授予的 Principal，不同类型的 Principal 有着不同的前缀。</li>
+<li><code>condition</code> - 权限评估时的条件检查</li>
+</ul>
+</li>
+<li><code>etag</code> - 用于并发冲突检查</li>
+</ul>
+<p>GCP 中的每个 Resource 都有着对应的一个 Policy：</p>
+<ul>
+<li>
+<p><strong>Resource-based Policy</strong></p>
+<p>GCP 中每个 Resource 实例都有着对应的一个 Policy，配置该 Policy 决定了哪些 Principal 可以访问该 Resource 实例。</p>
+<p>例如，要配置部分 Principal 可以访问某个 GCS Bucket，那么配置该 Bucket 的 Policy：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="c1">// gsutil iam get gs://my-bucket
+</span><span class="c1"></span><span class="p">{</span>
+  <span class="nt">&#34;bindings&#34;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;members&#34;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&#34;serviceAccount:access-sa@my-project.iam.gserviceaccount.com&#34;</span><span class="p">,</span>
+        <span class="s2">&#34;user:shiori@example.com&#34;</span>
+      <span class="p">],</span>
+      <span class="nt">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;roles/storage.objectViewer&#34;</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&#34;etag&#34;</span><span class="p">:</span> <span class="s2">&#34;CJkW&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>Identity-based Policy</strong></p>
+<p>与大多数 Resource Policy 不同的是，Project、Folder、Organization 的 Policy 是用于直接配置该层次范围内的 Principal 的权限的。</p>
+<p>例如，给 Project 下的某个 Service Account 配置能够访问所有的 GCS Bucket，那么我们需要修改 Project 的 Policy。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="c1">// gcloud projects get-iam-policy my-project --format json
+</span><span class="c1"></span><span class="p">{</span>
+  <span class="nt">&#34;bindings&#34;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;members&#34;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&#34;serviceAccount:my-sa@my-project.iam.gserviceaccount.com&#34;</span>
+      <span class="p">],</span>
+      <span class="nt">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;roles/storage.objectViewer&#34;</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&#34;etag&#34;</span><span class="p">:</span> <span class="s2">&#34;CJkW&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="52-修改-policy">5.2 修改 Policy</h3>
+<p>前面看到，所有的 IAM 访问控制都是配置 Policy 实现的。为了能够方便的修改 Policy，GCP 提供了两种改动方式：</p>
+<ul>
+<li>增量更新 - 添加或删除一个 RoleBinding，不修改其他的 RoleBinding</li>
+<li>全量更新 - 完全替换 Policy</li>
+</ul>
+<h4 id="521-增量更新">5.2.1 增量更新</h4>
+<p>增量更新用于单独管理每一条 RoleBinding。添加或删除一条 RoleBinding 时，不会修改其他 RoleBinding。</p>
+<p>以 CLI 为例，CLI 的每个 Resource 的子命令都会有：</p>
+<ul>
+<li><code>add-iam-policy-binding</code> - 添加一条 RoleBinding</li>
+<li><code>remove-iam-policy-binding</code> - 移除一条 RoleBinding</li>
+</ul>
+<p>以授予某个 Principal 使用 Service Account 权限为例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">gcloud iam service-accounts add-iam-policy-binding <span class="si">${</span><span class="nv">sa</span><span class="si">}</span> --member <span class="si">${</span><span class="nv">member</span><span class="si">}</span> --role<span class="o">=</span>roles/iam.serviceAccountUser
+
+gcloud iam service-accounts remove-iam-policy-binding <span class="si">${</span><span class="nv">sa</span><span class="si">}</span> --member <span class="si">${</span><span class="nv">member</span><span class="si">}</span> --role<span class="o">=</span>roles/iam.serviceAccountUser
+</code></pre></td></tr></table>
+</div>
+</div><p>管理单条 RoleBinding 时，是以 Principal(member) 为 Key 的。每次只能给一个 Principal 配置一个 Role。</p>
+<h4 id="522-全量更新">5.2.2 全量更新</h4>
+<p>全量更新用于直接替换 Policy，也就能够支持同时管理多个 RoleBinding。</p>
+<p>以 CLI 为例，CLI 的每个 Resource 的子命令都会有：</p>
+<ul>
+<li><code>get-iam-policy</code> - 查看 Policy</li>
+<li><code>set-iam-policy</code> - 替换 Policy</li>
+</ul>
+<h2 id="参考">参考</h2>
+<ul>
+<li>官方文档：<a href="https://cloud.google.com/iam/docs/overview" target="_blank" rel="noopener noreffer"><strong>IAM</strong></a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-11-08&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/aafc4258596ae34ab2c3fecc331815f473ea1ac3" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) aafc4258596ae34ab2c3fecc331815f473ea1ac3: Post(GCP IAM) (#18)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>aafc425</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/gcp_learning/iam/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/cloud/gcp_learning/iam/" data-title="GCP - IAM" data-hashtags="gcp"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/cloud/gcp_learning/iam/" data-hashtag="gcp"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/cloud/gcp_learning/iam/" data-title="GCP - IAM"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/cloud/gcp_learning/iam/" data-title="GCP - IAM"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/gcp_learning/iam/" data-title="GCP - IAM"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/gcp_learning/iam/" data-title="GCP - IAM"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/gcp_learning/iam/" data-title="GCP - IAM"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/gcp/">gcp</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud/cloud_practice/access-resources-across-clouds/" class="prev" rel="prev" title="跨云访问资源"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>跨云访问资源</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightgallery":true,"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

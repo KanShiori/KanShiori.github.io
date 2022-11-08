@@ -122,16 +122,17 @@ Policy 仅仅是静态的权限定义，能够限制 “谁” 是靠附加 Poli
 ### 3.1 Policy 的类型
 
 根据 Policy 的管理方式，分为：
+
 * AWS 托管 - 由 AWS 进行维护与更新，包含大多数常用的权限语句；
 * 客户托管 - 由客户自定义与维护，支持版本控制；
 * 内联 - （很少使用）针对于 User/Role 直接绑定的 Policy，不可复用；
 
 根据 Policy 应用主体，分为：
+
 * **`Identity-based Policy`** **基于身份的策略** - 定义 Policy，并附加到 User/Role 来实现对其权限的控制；
 * **`Resource-based Policy`** **基于资源的策略** - 与特定资源绑定的 Policy，配置后限制 “谁” 能访问该资源;
   
   例如 S3 Bucket Policy 配置后限制哪些 Entity 可以访问这个存储桶，Lambda Policy 限制哪些 Entity 可以调用这个 Lambda。
-
 
 ## 4 Role
 
