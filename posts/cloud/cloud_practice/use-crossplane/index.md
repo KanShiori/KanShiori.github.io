@@ -583,7 +583,7 @@ Configuration 包含三个文件：
 * `definition.yaml` - XRD 定义文件；
 * `composition.yaml` - Composition 定义文件；
 
-关于如果构建 Configuration 参考官方文档：[**Create a Configuration**](https://crossplane.io/docs/v1.7/getting-started/create-configuration.html)。
+关于如果构建 Configuration 参考官方文档：[**Create a Configuration**](https://crossplane.io/docs/master/getting-started/create-configuration.html)。
 
 ## 5 Provider
 
