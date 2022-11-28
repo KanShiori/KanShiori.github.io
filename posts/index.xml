@@ -3,7 +3,15 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 07 Nov 2022 20:20:30 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 22 Nov 2022 21:56:17 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>Prometheus Alert</title>
+    <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/alert/</link>
+    <pubDate>Tue, 22 Nov 2022 21:56:17 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/alert/</guid>
+    <description><![CDATA[1 基本概念 Prometheus 生态中的告警，有 Prometheus Server 和 Alertmanager 组件实现。 Prometheus Server 负责采集 Metrics，并根据 Prometheus Rule 配置的 PromQL 决定是否触发 Alert。 Alertmanager 负责接收 Server 的 Alert 信息，然]]></description>
+</item>
+<item>
     <title>GCP - IAM</title>
     <link>https://KanShiori.github.io/posts/cloud/gcp_learning/iam/</link>
     <pubDate>Mon, 07 Nov 2022 20:20:30 &#43;0800</pubDate>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/aws_learning/ebs/</guid>
     <description><![CDATA[1 概述 AWS Elastic Block Store（简称 EBS） 是 AWS 中的主要存储服务，EBS Volume 可以附加到某个 EC2 Instance 上，在 Instance 上看就是一个未经过格式化的块设备，与其他物理硬盘]]></description>
-</item>
-<item>
-    <title>Kustomize</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/kustomize/</link>
-    <pubDate>Mon, 23 May 2022 21:30:43 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/kustomize/</guid>
-    <description><![CDATA[1 概述 Kustomize 基于 kustomization.yaml 文件来生成一系列的 Kubernetes 资源的 YAML 文件。 基于这种模式，Kustomize 能够支持的功能大致分为三类： 生成 Resource - 基于一些来源数据，生成出]]></description>
 </item>
 </channel>
 </rss>

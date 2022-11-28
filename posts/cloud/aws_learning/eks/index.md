@@ -399,7 +399,9 @@ IRSA 指的是通过 Kubernetes 的资源 Service Account 来给 Pod 绑定 IAM 
 
    具体方式见官方文档： [**Create an IAM OIDC provider**](https://docs.aws.amazon.com/zh_cn/eks/latest/userguide/enable-iam-roles-for-service-accounts.html)。
 
-2. 创建 IAM Role，关联相应的 IAM Policy
+2. 创建 IAM Role，关联相应的 IAM Policy，并且配置 Role 的 Trust Relationship
+   
+   具体流程参考 [**Configuring a Kubernetes service account to assume an IAM role**](https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html)。
 
 3. 将 IAM Role 与 Pod 将使用的 ServiceAccount 关联
    

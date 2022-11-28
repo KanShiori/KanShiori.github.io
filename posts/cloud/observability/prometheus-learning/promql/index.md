@@ -3,7 +3,7 @@
 
 ## 1 数据类型
 
-{{< find_img "img1.png" >}}
+{{< image src="img1.png" height=200 >}}
 
 上图简单代表了时序数据库的存储。每次 Prometheus 拉取数据时，拉取到就是图中纵向的一条线，也就是一个统计数据多维度的瞬时值，也被称为 [时间序列]^(Time Series)。
 
@@ -38,7 +38,7 @@ Instant Vector Selector 查询某一时间（默认最新时间）的时间序�
 node_filesystem_size_bytes{mountpoint=~"/mnt/.*", mountpoint!~"/mnt/local_pv/.*"}
 ```
 
-{{< image src="img2.png" >}}
+{{< image src="img2.png" height=110 >}}
 
 {{< admonition tip "__name__">}}
 Metric Name 在 Prometheus 底层会使用 label "__name__" 记录，因此通过 {__name__="xxx"} 可以筛选 Metric 项。
@@ -47,6 +47,7 @@ Metric Name 在 Prometheus 底层会使用 label "__name__" 记录，因此通�
 {{< /admonition >}}
 
 默认会查询最新时间的时间序列，可以通过 **`offset`** 来进行基准时间偏移。如下示例查询当前时间前一天的样本：
+
 ```promql
 node_filesystem_size_bytes{mountpoint=~"/mnt/.*"} offset 1d
 ```
@@ -61,29 +62,33 @@ Range Vector Selectors 查询一段时间范围内的时间序列，并通过 la
 ```promql
 node_filesystem_size_bytes{mountpoint=~"/mnt/.*", mountpoint!~"/mnt/local_pv/.*"} [1m]
 ```
-{{< image src="img3.png" >}}
+
+{{< image src="img3.png" height=130 >}}
 
 {{< admonition note Note>}}
 这里可以看到，即时向量是每个样本只有一个值，区间向量是每个样本包含一组的值。
 {{< /admonition >}}
 
 同样，可以用 "offset" 来指定基准时间：
+
 ```promql
 node_filesystem_size_bytes{mountpoint=~"/mnt/.*", mountpoint!~"/mnt/local_pv/.*"} [1m] offset 1d
 ```
 
-
 ## 3 聚合操作
 
 Prometheus 提供了许多内置的聚合操作，聚合操作仅仅适用于一个即时向量。**通过聚合操作，会得到一个新的即时向量。**
+
 {{< admonition note Note>}}
 可以理解为对即使向量进行一些操作，得到一组新的即使向量。
 {{< /admonition >}}
 
 聚合操作的语法如下：
+
 ```
 <aggr-op>([param,] <vector>) [without/by <label list>]
 ```
+
 * `aggr-op` - 聚合操作名称
 * `param` - 传递给操作的参数
 * `vector` - 即时向量
@@ -96,6 +101,7 @@ Prometheus 提供了许多内置的聚合操作，聚合操作仅仅适用于一
 {{< /admonition >}}
 
 例如，下面使用 without 得到节点所有 CPU 样本的平均值：
+
 ```promql
 avg(node_cpu_seconds_total) without(cpu)
 
@@ -111,6 +117,7 @@ avg(node_cpu_seconds_total) without(cpu)
 * without 去除了即时向量中所有样本的 "cpu" label，而按照剩下的 label 进行分组，相同的 label 样本进行聚合求平均值。
 
 同样，使用 by 将所有节点所有 CPU 的按照 mode 分组，求平均：
+
 ```promql
 avg(node_cpu_seconds_total) by(mode)
 
@@ -126,6 +133,7 @@ avg(node_cpu_seconds_total) by(mode)
 * by 将即时向量所有样本的其他 label 去除，仅仅保留 label "mode"，然后按照 "mode" 分组聚合样本，并求平均值。
 
 ### 3.1 聚合操作符
+
 下面列出了 Prometheus 提供的聚合操作符：
 | 名称                             | 描述                                                                                                      |
 | -------------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -142,7 +150,9 @@ avg(node_cpu_seconds_total) by(mode)
 | quantile(N, \<vector>)           | 在 (0, N * 100%) 中样本的分布次数，类似于 Histogram 的概念                                                |
 
 ### 3.2 聚合操作理解
+
 这里总结一下聚合操作大概的含义：
+
 1. 通过 without 与 by 对即时向量中所有样本过滤/保留 label；
 2. 按照剩余的 label 进行分组，label 值相同的为同一组；
 3. 按照组的维度，对每组样本进行聚合操作；
@@ -150,8 +160,11 @@ avg(node_cpu_seconds_total) by(mode)
 
 
 ## 4 PromQL 运算符
+
 ### 4.1 算术运算符
+
 算术运算符对值进行算术运算，目前包含 6 种算术运算符：
+
 | 运算符 | 描述     |
 | ------ | -------- |
 | +      | 相加     |
@@ -196,7 +209,9 @@ avg(node_cpu_seconds_total) by(mode)
   ```
 
 ### 4.2 关系运算符
+
 关系运算符用于值之间的大小比较，目前包含 6 种关系运算符：
+
 | 运算符 | 描述     |
 | ------ | -------- |
 | ==     | 相等     |
@@ -243,6 +258,7 @@ avg(node_cpu_seconds_total) by(mode)
   ```
 
 ### 4.3 向量匹配
+
 之前看到，两个即时向量之间做运算时，都是遵循 label 完全匹配的样本进行计算。这种即时向量的匹配规则称为 向量匹配。
 
 Prometheus 提供了两种向量匹配模式：
@@ -259,6 +275,7 @@ Prometheus 提供了两种向量匹配模式：
 
 
 ### 4.4 逻辑运算符
+
 逻辑运算符用于向量与向量之间，产生一个新的向量。Prometheus 提供了三种逻辑运算符：and、or、unless。
 
 {{< admonition note Note>}}
@@ -291,6 +308,7 @@ Prometheus 提供了两种向量匹配模式：
 ## 5 PromQL 函数
 
 ### 5.1 数学函数
+
 * abs(v vector)
   
   输入即时向量，返回其每个值的绝对值。
@@ -344,7 +362,6 @@ Prometheus 提供了两种向量匹配模式：
 * predict_linear(v range-vector, t scalar) 
   
   predict_linear 基于区间向量，使用简单的线性回归预测时间序列 t 秒的值，从而对时间序列的变化趋势做出预测。
-
 
 ## 参考
 

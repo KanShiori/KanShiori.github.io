@@ -1,23 +1,17 @@
-# Prometheuse 基本概念
-
-
+# Prometheus 基本概念
 
 
 ## 1 数据模型
 
-Prometheus 保存的所有数据都是 [时间序列]^(time series) 数据，也就是每个数据会带有一个时间戳。
+Prometheus 保存的所有数据都是 [时间序列]^(Time Series) 数据，也就是每个数据会带有一个时间戳。
 
 通过图表可以理解其模型：
-{{< find_img "img1.png" >}}
 
-* 图表中每个点都是一个时间序列数据，也称为 [样本]^(Sample)。
-* 不同的 label 与 Metric name 组合标识了一个数据流，也就是上面图表的一条线。
-* 所有的数据都表示 prometheus_http_request_total 项统计。
+{{< image src="img1.png" height=250 >}}
 
-所以，其数据模型为：
-* **`Metric`** - 统计项
-* **`Metric Name`** 与 **`Labels`** - 统计项下的一个数据流
-* **`Sample`** - 数据流中的某个数据
+* **`Metric`** - 这个统计项，由 Metric Name 表示
+* **`Metric Name`** + **`Labels`** - 统计项下的一个数据流，图中的一条线。其组合也称为 **`Notation`**
+* **`Sample`** - 数据流中的某个数据，也就是图中的某个点
 
 ### 1.1 Metric
 
@@ -213,6 +207,7 @@ Prometheus 拉取一个采集样本时，会自动在时序的基础上添加 `"
 ```promql
 prometheus_http_requests_total{code="200", handler="/-/ready", instance="localhost:9090", job="prometheus"}
 ```
+
 {{< admonition note Note>}}
 如果这两个 label 已经存在了，那么会根据配置文件中的 `honor_label` 配置来决定如何处理。
 {{< /admonition >}}
@@ -246,27 +241,32 @@ prometheus_http_requests_total{code="200", handler="/-/ready", instance="localho
 ## 4 架构
 
 完整的 Prometheus 生态架构图如下：
-{{< find_img "img5.png" >}}
 
-* Prometheus Server 
+{{< image src="img2.png" height=350 >}}
+
+* **Prometheus Server**
   
   以 Pull 方式收集各个 Instance 的 Metric 数据，并保存在自身的时序数据库中。
 
-* Exporter
+* **Exporter**
   
   用于输出被监控组件的 Metric 信息的 HTTP 接口统称为 Exporter，例如 MySQL Exporter 提供 HTTP 查询接口用来采集 MySQL Metric 信息。
 
   Prometheus Server 会根据 Job 来调用 Exporter 的接口采集信息。
 
-* Pushgateway
+* **Pushgateway**
   
   Prometheus Server 仅仅支持 Pull 方式拉取数据，如果需要支持 Push 方式推送数据，或者服务没有可暴露的 HTTP 接口（例如一些客户端仅仅只能靠 Push），那么需要 Pushgateway 作为中转临时存储。
 
   程序将 Metric 信息推送给 Pushgateway，Pushgateway 会保存这些 Metric 信息。异步地，Prometheus Server 会定期从 Pushgateway 拉取 Metric 信息并保存。
 
-* Alertmanager
+* **Alertmanager**
   
   Prometheus Server 支持直接配置告警规则，当告警触发时，会将告警信息推送到 Alertmanager。AlertManager 进一步对数据去重过滤等处理，然后路由到不同的通知软件。
+
+* **Granafa**
+  
+  Prometheus 用于存储 Time Series 数据，Grafana 通过查询 Prometheus 将这些数据可视化的展示出来。
 
 ## 参考
 * 官方文档：[**CONCEPTS**](https://prometheus.io/docs/concepts)

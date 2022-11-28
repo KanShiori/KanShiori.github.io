@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/grafana-basic/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-07-17T08:19:12+00:00" />
-<meta property="article:modified_time" content="2022-11-08T22:28:11+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-11-28T17:07:30+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/observability\/prometheus-learning\/grafana-basic\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "prometheus, monitor","wordcount":  1317 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/observability\/prometheus-learning\/grafana-basic\/","datePublished": "2021-07-17T08:19:12+00:00","dateModified": "2022-11-08T22:28:11+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "prometheus, monitor","wordcount":  1257 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/observability\/prometheus-learning\/grafana-basic\/","datePublished": "2021-07-17T08:19:12+00:00","dateModified": "2022-11-28T17:07:30+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Grafana 基础</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/prometheus-%E7%9B%B8%E5%85%B3/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Prometheus 相关</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-07-17">2021-07-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1317 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-07-17">2021-07-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1257 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -128,30 +128,26 @@
   <ul>
     <li><a href="#1-基本概念">1 基本概念</a>
       <ul>
-        <li><a href="#11-数据源-data-source">1.1 数据源 Data Source</a></li>
-        <li><a href="#12-组织-organization">1.2 组织 Organization</a></li>
-        <li><a href="#13-用户-user">1.3 用户 User</a></li>
-        <li><a href="#14-面板-panel">1.4 面板 Panel</a></li>
-        <li><a href="#15-行-row">1.5 行 Row</a></li>
-        <li><a href="#16-查询编辑器-query-editor">1.6 查询编辑器 Query Editor</a></li>
-        <li><a href="#17-仪表盘-dashboard">1.7 仪表盘 Dashboard</a></li>
+        <li><a href="#11-data-source">1.1 Data Source</a></li>
+        <li><a href="#12-organization">1.2 Organization</a></li>
+        <li><a href="#13-user">1.3 User</a></li>
+        <li><a href="#14-panel">1.4 Panel</a></li>
+        <li><a href="#15-row">1.5 Row</a></li>
+        <li><a href="#16-query-editor">1.6 Query Editor</a></li>
+        <li><a href="#17-dashboard">1.7 Dashboard</a></li>
       </ul>
     </li>
-    <li><a href="#2-定制图表">2 定制图表</a>
+    <li><a href="#2-定制-dashboard">2 定制 Dashboard</a></li>
+    <li><a href="#3-定制-panel">3 定制 Panel</a>
       <ul>
-        <li><a href="#21-定制仪表盘">2.1 定制仪表盘</a></li>
-        <li><a href="#22-定制面板">2.2 定制面板</a>
-          <ul>
-            <li><a href="#221-graph-面板">2.2.1 Graph 面板</a></li>
-          </ul>
-        </li>
+        <li><a href="#31-graph--panel">3.1 Graph  Panel</a></li>
       </ul>
     </li>
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
             </div><div class="content" id="content"><h2 id="1-基本概念">1 基本概念</h2>
-<h3 id="11-数据源-data-source">1.1 数据源 Data Source</h3>
+<h3 id="11-data-source">1.1 Data Source</h3>
 <p>Grafana 支持多种不同类型的时序数据库，称为<strong><ruby>数据源<rt>Data Source</rt></ruby></strong>。目前官方支持：Graphite、InfluxDB、OpenTSDB、Prometheus、Elasticsearch、CloudWatch。</p>
 <p>可以将多个数据源的数据合并到一个单独的仪表盘（Dashboard）上，但是每个面板（Panel）都绑定到属于特定组织的特定数据源。</p>
 <p>添加一个数据源时，分为两种访问模式：</p>
@@ -159,15 +155,15 @@
 <li><strong>Server</strong> 模式（默认）：所有请求都从浏览器发送到 Grafana 后端服务器，后端服务器将请求转发到数据源。</li>
 <li><strong>Browser</strong> 模式：浏览器访问模式，所有请求直接从浏览器发送到数据源。</li>
 </ul>
-<h3 id="12-组织-organization">1.2 组织 Organization</h3>
+<h3 id="12-organization">1.2 Organization</h3>
 <p>Grafana 可以支持创建多个<strong><ruby>组织<rt>Organization</rt></ruby></strong>，每个组织可以有一个或多个数据源。所有的仪表盘都归特定组织拥有。</p>
-<h3 id="13-用户-user">1.3 用户 User</h3>
+<h3 id="13-user">1.3 User</h3>
 <p><strong><ruby>用户<rt>User</rt></ruby></strong>是 Grafana 的账户，一个用户可以隶属于一个或多个组织，通过角色（Role）为其分配不同级别的权限。</p>
 <p>Grafana 也支持各种用户认证方式。</p>
-<h3 id="14-面板-panel">1.4 面板 Panel</h3>
-<p><strong><ruby>面板<rt>Panel</rt></ruby></strong>是<strong>最基本的可视化模块</strong>。每个面板根据查询编辑器（例如 Prometheus 就是 PromQL）查询数据，并提供展示图表。</p>
-<p>目前，Grafana 支持的面板许多面板类型，最常用的就是 Time series，展示基于时间的样本数据。</p>
-<p>可以通过向 Grafana 用户分享链接，或者使用快照功能将正在查看的数据编码为静态和交互式 JSON 文件，来向其他人分享面板以及数据。</p>
+<h3 id="14-panel">1.4 Panel</h3>
+<p><strong><ruby>面板<rt>Panel</rt></ruby></strong>是<strong>最基本的可视化模块</strong>。每个 Panel 根据查询编辑器（例如 Prometheus 就是 PromQL）查询数据，并提供展示图表。</p>
+<p>目前，Grafana 支持的 Panel 许多 Panel 类型，最常用的就是 Time series，展示基于时间的样本数据。</p>
+<p>可以通过向 Grafana 用户分享链接，或者使用快照功能将正在查看的数据编码为静态和交互式 JSON 文件，来向其他人分享 Panel 以及数据。</p>
 <a class="lightgallery" href="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-2.png" title="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-2.png" data-thumbnail="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-2.png">
         <img
             class="lazyload"
@@ -175,10 +171,10 @@
             data-src="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-2.png"
             data-srcset="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-2.png, /posts/cloud/observability/prometheus-learning/grafana-basic/img0-2.png 1.5x, /posts/cloud/observability/prometheus-learning/grafana-basic/img0-2.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-2.png" width="954" height="389" />
+            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-2.png" width="954" height="200" />
     </a>
-<h3 id="15-行-row">1.5 行 Row</h3>
-<p><strong><ruby>行<rt>Row</rt></ruby></strong>用于在<strong>仪表盘界面组织多个面板</strong>，一般为 12 单位的宽度。</p>
+<h3 id="15-row">1.5 Row</h3>
+<p><strong><ruby>行<rt>Row</rt></ruby></strong>用于在<strong>仪表盘界面组织多个 Panel</strong>，一般为 12 单位的宽度。</p>
 <a class="lightgallery" href="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-0.png" title="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-0.png" data-thumbnail="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-0.png">
         <img
             class="lazyload"
@@ -186,10 +182,10 @@
             data-src="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-0.png"
             data-srcset="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-0.png, /posts/cloud/observability/prometheus-learning/grafana-basic/img0-0.png 1.5x, /posts/cloud/observability/prometheus-learning/grafana-basic/img0-0.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-0.png" width="1820" height="97" />
+            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-0.png" width="1820" height="40" />
     </a>
-<h3 id="16-查询编辑器-query-editor">1.6 查询编辑器 Query Editor</h3>
-<p>每个面板都有着一个或多个 Query Editor，通过编写语句来读取数据源的样本，将其展示到面板上。</p>
+<h3 id="16-query-editor">1.6 Query Editor</h3>
+<p>每个 Panel 都有着一个或多个 Query Editor，通过编写语句来读取数据源的样本，将其展示到 Panel 上。</p>
 <a class="lightgallery" href="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-1.png" title="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-1.png" data-thumbnail="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-1.png">
         <img
             class="lazyload"
@@ -197,12 +193,12 @@
             data-src="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-1.png"
             data-srcset="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-1.png, /posts/cloud/observability/prometheus-learning/grafana-basic/img0-1.png 1.5x, /posts/cloud/observability/prometheus-learning/grafana-basic/img0-1.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-1.png" width="1376" height="406" />
+            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img0-1.png" width="1376" height="200" />
     </a>
-<h3 id="17-仪表盘-dashboard">1.7 仪表盘 Dashboard</h3>
-<p>多个面板或者多个行构成一个<strong><ruby>仪表盘<rt>Dashboard</rt></ruby></strong>，用于分类不同的指标项。</p>
-<p>通过分享链接或者通过快照功能，可以向他人分析仪表盘以及数据。</p>
-<p>你也可以仅仅通过 Export 功能，将仪表盘结构导出为 JSON 文件。他人可以通过 Import 该 JSON 文件直接构建对应的仪表盘。</p>
+<h3 id="17-dashboard">1.7 Dashboard</h3>
+<p>多个 Panel 或者多个 Row 构成一个<strong><ruby>仪表盘<rt>Dashboard</rt></ruby></strong>，用于分类不同的指标项。</p>
+<p>通过分享链接或者通过快照功能，可以向他人分析 Dashboard 以及数据。</p>
+<p>你也可以仅仅通过 Export 功能，将 Dashboard 结构导出为 JSON 文件。他人可以通过 Import 该 JSON 文件直接构建对应的 Dashboard 。</p>
 <a class="lightgallery" href="/posts/cloud/observability/prometheus-learning/grafana-basic/img1.png" title="/posts/cloud/observability/prometheus-learning/grafana-basic/img1.png" data-thumbnail="/posts/cloud/observability/prometheus-learning/grafana-basic/img1.png">
         <img
             class="lazyload"
@@ -210,18 +206,17 @@
             data-src="/posts/cloud/observability/prometheus-learning/grafana-basic/img1.png"
             data-srcset="/posts/cloud/observability/prometheus-learning/grafana-basic/img1.png, /posts/cloud/observability/prometheus-learning/grafana-basic/img1.png 1.5x, /posts/cloud/observability/prometheus-learning/grafana-basic/img1.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img1.png" width="1835" height="927" />
+            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img1.png" width="1835" height="300" />
     </a>
-<h2 id="2-定制图表">2 定制图表</h2>
-<h3 id="21-定制仪表盘">2.1 定制仪表盘</h3>
+<h2 id="2-定制-dashboard">2 定制 Dashboard</h2>
 <ol>
 <li>
-<p>创建新的仪表盘</p>
+<p>创建新的 Dashboard</p>
 <p>点击 &ldquo;Create&rdquo; 菜单栏创建新的 Dashboard。点击 &ldquo;Setting&rdquo; 按钮进行配置。</p>
 </li>
 <li>
 <p>配置 General 项</p>
-<p>General 项包含仪表盘名称和一些常规配置。</p>
+<p>General 项包含 Dashboard 名称和一些常规配置。</p>
 <a class="lightgallery" href="/posts/cloud/observability/prometheus-learning/grafana-basic/img10.png" title="/posts/cloud/observability/prometheus-learning/grafana-basic/img10.png" data-thumbnail="/posts/cloud/observability/prometheus-learning/grafana-basic/img10.png">
         <img
             class="lazyload"
@@ -229,20 +224,20 @@
             data-src="/posts/cloud/observability/prometheus-learning/grafana-basic/img10.png"
             data-srcset="/posts/cloud/observability/prometheus-learning/grafana-basic/img10.png, /posts/cloud/observability/prometheus-learning/grafana-basic/img10.png 1.5x, /posts/cloud/observability/prometheus-learning/grafana-basic/img10.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img10.png" width="1010" height="831" />
+            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img10.png" width="1010" height="330" />
     </a>
 <ul>
-<li>Name         - 仪表盘名称</li>
-<li>Description  - 仪表盘描述</li>
-<li>Tages        - 仪表盘 label</li>
-<li>Editable     - Editable 可以编辑仪表盘，Read-only 不允许编辑仪表盘</li>
+<li>Name         -  Dashboard 名称</li>
+<li>Description  -  Dashboard 描述</li>
+<li>Tages        -  Dashboard  label</li>
+<li>Editable     - Editable 可以编辑 Dashboard ，Read-only 不允许编辑 Dashboard</li>
 <li>Timezone     - 配置时区</li>
 <li>Auto-refresh - 定制相对时间显示和自动刷新选项，默认即可</li>
 </ul>
 </li>
 <li>
 <p>配置 Variables 选项</p>
-<p>可以为仪表盘配置多个模板变量，在面板中可以使用模板变量，变量会在仪表盘顶部展示为下拉选择框。</p>
+<p>可以为 Dashboard 配置多个模板变量，在 Panel 中可以使用模板变量，变量会在 Dashboard 顶部展示为下拉选择框。</p>
 <a class="lightgallery" href="/posts/cloud/observability/prometheus-learning/grafana-basic/img11.png" title="/posts/cloud/observability/prometheus-learning/grafana-basic/img11.png" data-thumbnail="/posts/cloud/observability/prometheus-learning/grafana-basic/img11.png">
         <img
             class="lazyload"
@@ -250,13 +245,13 @@
             data-src="/posts/cloud/observability/prometheus-learning/grafana-basic/img11.png"
             data-srcset="/posts/cloud/observability/prometheus-learning/grafana-basic/img11.png, /posts/cloud/observability/prometheus-learning/grafana-basic/img11.png 1.5x, /posts/cloud/observability/prometheus-learning/grafana-basic/img11.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img11.png" width="918" height="109" />
+            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img11.png" width="918" height="70" />
     </a>
 <p>Variables 的类型包括：</p>
 <ul>
 <li>Interval - 表示时间跨度，来动态改变表达式中的时间段</li>
 <li>Query - 允许用户编写数据源查询语句，根据查询结果变为变量的可选值</li>
-<li>Datasource - 允许用户通过变量更改整个仪表盘的数据源</li>
+<li>Datasource - 允许用户通过变量更改整个 Dashboard 的数据源</li>
 <li>Custom - 用户自定义特定的可选变量值</li>
 <li>Constant - 定义隐藏常量</li>
 <li>Ad hoc filter - 仅用于某些特定数据源</li>
@@ -264,8 +259,8 @@
 </ul>
 </li>
 </ol>
-<h3 id="22-定制面板">2.2 定制面板</h3>
-<h4 id="221-graph-面板">2.2.1 Graph 面板</h4>
+<h2 id="3-定制-panel">3 定制 Panel</h2>
+<h3 id="31-graph--panel">3.1 Graph  Panel</h3>
 <ol>
 <li>
 <p>配置 Query 项</p>
@@ -276,7 +271,7 @@
             data-src="/posts/cloud/observability/prometheus-learning/grafana-basic/img12.png"
             data-srcset="/posts/cloud/observability/prometheus-learning/grafana-basic/img12.png, /posts/cloud/observability/prometheus-learning/grafana-basic/img12.png 1.5x, /posts/cloud/observability/prometheus-learning/grafana-basic/img12.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img12.png" width="1399" height="410" />
+            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img12.png" width="1399" height="200" />
     </a>
 <ul>
 <li>Data source - 使用的数据源</li>
@@ -297,11 +292,11 @@
             data-src="/posts/cloud/observability/prometheus-learning/grafana-basic/img13.png"
             data-srcset="/posts/cloud/observability/prometheus-learning/grafana-basic/img13.png, /posts/cloud/observability/prometheus-learning/grafana-basic/img13.png 1.5x, /posts/cloud/observability/prometheus-learning/grafana-basic/img13.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img13.png" width="514" height="805" />
+            alt="/posts/cloud/observability/prometheus-learning/grafana-basic/img13.png" width="514" height="350" />
     </a>
 <ul>
-<li>Title - 面板名称</li>
-<li>Description - 面板描述</li>
+<li>Title -  Panel 名称</li>
+<li>Description -  Panel 描述</li>
 </ul>
 </li>
 <li>
@@ -325,8 +320,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-11-08&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/aafc4258596ae34ab2c3fecc331815f473ea1ac3" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) aafc4258596ae34ab2c3fecc331815f473ea1ac3: Post(GCP IAM) (#18)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>aafc425</a></span>
+                <span>更新于 2022-11-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/a8390a9c03cb774da8afac76dfeef0441211386b" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) a8390a9c03cb774da8afac76dfeef0441211386b: Post(Alert) (#20)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>a8390a9</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
