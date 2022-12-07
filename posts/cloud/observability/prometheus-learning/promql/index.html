@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-07-08T14:31:22+00:00" />
-<meta property="article:modified_time" content="2022-11-28T17:07:30+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-12-07T22:22:09+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -17,7 +17,7 @@
 <meta name="twitter:title" content="Prometheus 查询语言 PromQL"/>
 <meta name="twitter:description" content="PromQL 概念以及语法"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/grafana-basic/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/promql/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-data-model/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
     {
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/observability\/prometheus-learning\/promql\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "prometheus, monitor","wordcount":  2876 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/observability\/prometheus-learning\/promql\/","datePublished": "2021-07-08T14:31:22+00:00","dateModified": "2022-11-28T17:07:30+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "prometheus, monitor","wordcount":  3254 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/observability\/prometheus-learning\/promql\/","datePublished": "2021-07-08T14:31:22+00:00","dateModified": "2022-12-07T22:22:09+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,8 +117,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Prometheus 查询语言 PromQL</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/prometheus-%E7%9B%B8%E5%85%B3/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Prometheus 相关</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-07-08">2021-07-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2876 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-07-08">2021-07-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3254 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -130,7 +130,13 @@
     <li><a href="#2-selector">2 Selector</a>
       <ul>
         <li><a href="#21-instant-vector-selector">2.1 Instant Vector Selector</a></li>
-        <li><a href="#22-range-vector-selectors">2.2 Range Vector Selectors</a></li>
+        <li><a href="#22-range-vector-selectors">2.2 Range Vector Selectors</a>
+          <ul>
+            <li><a href="#231-duration">2.3.1 Duration</a></li>
+          </ul>
+        </li>
+        <li><a href="#232-offset">2.3.2 Offset</a></li>
+        <li><a href="#233-">2.3.3 @</a></li>
       </ul>
     </li>
     <li><a href="#3-聚合操作">3 聚合操作</a>
@@ -154,6 +160,11 @@
         <li><a href="#53-标签操作函数">5.3 标签操作函数</a></li>
         <li><a href="#54-counter-指标增长率">5.4 Counter 指标增长率</a></li>
         <li><a href="#55-gauge-指标趋势变化预测">5.5 Gauge 指标趋势变化预测</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-注意事项">6 注意事项</a>
+      <ul>
+        <li><a href="#61-stale-机制">6.1 Stale 机制</a></li>
       </ul>
     </li>
     <li><a href="#参考">参考</a></li>
@@ -182,7 +193,7 @@
 <p><strong><ruby>标量<rt>scalar</rt></ruby></strong> - <strong>纯量数据</strong>，仅仅是一个数字，没有时间戳。</p>
 </li>
 <li>
-<p><strong><ruby>字符串<rt>string</rt></ruby></strong> - 未被使用的<strong>纯字符串值</strong>。</p>
+<p><strong><ruby>字符串<rt>string</rt></ruby></strong> - 单引号、双引号或者反引号指定的<strong>纯字符串值</strong>。</p>
 </li>
 </ul>
 <h2 id="2-selector">2 Selector</h2>
@@ -259,6 +270,7 @@
 </div>
 </div><h3 id="22-range-vector-selectors">2.2 Range Vector Selectors</h3>
 <p>Range Vector Selectors 查询一段时间范围内的时间序列，并通过 label 匹配进行样本过滤，<strong>最后得到一个区间向量</strong>。</p>
+<h4 id="231-duration">2.3.1 Duration</h4>
 <p>在末尾加上 <strong><code>[&lt;duration&gt;]</code></strong> 的方式来指定获取过去 duration 时间的样本。时间单位支持：s(秒) m(分) h(小时) d(天) w(周) y(年)。</p>
 <p>例如，下面在前面基础上查询过去 1m 的样本：</p>
 <div class="highlight"><div class="chroma">
@@ -286,7 +298,9 @@
             <div class="admonition-content">这里可以看到，即时向量是每个样本只有一个值，区间向量是每个样本包含一组的值。</div>
         </div>
     </div>
-<p>同样，可以用 &ldquo;offset&rdquo; 来指定基准时间：</p>
+<h3 id="232-offset">2.3.2 Offset</h3>
+<p>使用用 <strong><code>offset</code></strong> 来指定基准时间。<code>offset</code> 修饰符只能跟随在 Selector 之后。</p>
+<p>例如下面表明以 1d 前的当前时间为基准，查询过去 1m 的样本：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -294,6 +308,26 @@
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="nv">node_filesystem_size_bytes</span><span class="p">{</span><span class="nl">mountpoint</span><span class="o">=~</span><span class="p">&#34;</span><span class="s">/mnt/.*</span><span class="p">&#34;,</span><span class="w"> </span><span class="nl">mountpoint</span><span class="o">!~</span><span class="p">&#34;</span><span class="s">/mnt/local_pv/.*</span><span class="p">&#34;}</span><span class="w"> </span><span class="p">[</span><span class="s">1m</span><span class="p">]</span><span class="w"> </span><span class="k">offset</span><span class="w"> </span><span class="s">1d</span><span class="w">
 </span></code></pre></td></tr></table>
+</div>
+</div><h3 id="233-">2.3.3 @</h3>
+<p><code>@</code> 修饰符用于指定查询中的特定时间。<code>@</code> 修饰符后跟随的是一个 Unix 时间戳。</p>
+<p>例如查询 <code>http_requests_total</code> 在 <code>2021-01-04T07:40:00+00:00</code> 的值：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="nv">http_requests_total</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="mi">1609746000</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>同样，<code>@</code> 也适用于范围查询：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">rate(http_requests_total[5m] @ 1609746000)
+</code></pre></td></tr></table>
 </div>
 </div><h2 id="3-聚合操作">3 聚合操作</h2>
 <p>Prometheus 提供了许多内置的聚合操作，聚合操作仅仅适用于一个即时向量。<strong>通过聚合操作，会得到一个新的即时向量。</strong></p>
@@ -786,6 +820,17 @@
 <p>predict_linear 基于区间向量，使用简单的线性回归预测时间序列 t 秒的值，从而对时间序列的变化趋势做出预测。</p>
 </li>
 </ul>
+<h2 id="6-注意事项">6 注意事项</h2>
+<h3 id="61-stale-机制">6.1 Stale 机制</h3>
+<p>Prometheus 使用 Stable 机制来表示哪些不再提供的 Time Series。当 Time Series 被标记为 Stable 或者在最新的时间点前 5min 内找不到任何样本的话，在图表上该 Time Series 会消失。</p>
+<p>具体逻辑如下：</p>
+<ul>
+<li>如果某个 Target 不再暴露新的 Sample，那么改 Time Series 会被标记为 Stable</li>
+<li>如果 Target 被移除，那么不久后相关的 Time Series 会被标记为 Stable</li>
+<li>如果标记为 Stable 的 Time Series 又产生了新的 Sample，那么 Time Series 会变回 Normal 状态</li>
+<li>如果 Sample 带有了时间戳，那么不会应用 Stable 机制，而是 Time Series 有着 5min 的阈值时间</li>
+</ul>
+<p>这也意味着，如果某个 Time Series 停止产生了新的 Sample，那么在 5min 内还是可以查询到数据的。超过 5min 后，查询 Time Series 就不会返回任何数据。</p>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://book.douban.com/subject/35034115/" target="_blank" rel="noopener noreffer"><strong>《Prometheus 监控技术与实践》</strong></a></li>
@@ -794,8 +839,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-11-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/a8390a9c03cb774da8afac76dfeef0441211386b" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) a8390a9c03cb774da8afac76dfeef0441211386b: Post(Alert) (#20)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>a8390a9</a></span>
+                <span>更新于 2022-12-07&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/d7bfccca5bfff28d1077e4d3dd79399f0c004da7" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) d7bfccca5bfff28d1077e4d3dd79399f0c004da7: Post(Prom-Basic) (#25)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>d7bfccc</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -814,8 +859,8 @@
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/cloud/observability/prometheus-learning/prometheus-basic/" class="prev" rel="prev" title="Prometheus 基本概念"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Prometheus 基本概念</a>
-            <a href="/posts/cloud/observability/prometheus-learning/grafana-basic/" class="next" rel="next" title="Grafana 基础">Grafana 基础<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+    <div class="post-nav"><a href="/posts/cloud/observability/prometheus-learning/prometheus-data-model/" class="prev" rel="prev" title="Prometheus 数据模型"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Prometheus 数据模型</a>
+            <a href="/posts/cloud/observability/prometheus-learning/prometheus-basic/" class="next" rel="next" title="Prometheus 基础">Prometheus 基础<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

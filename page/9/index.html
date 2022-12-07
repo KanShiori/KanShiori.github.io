@@ -113,9 +113,14 @@
         alt="/images/avatar.png"
         title="/images/avatar.png" /></a></div><div class="home-subtitle">// 超能力使用者</div><div class="links"><a href="https://github.com/KanShiori" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw" aria-hidden="true"></i></a><a href="mailto:kanshiori@163.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw" aria-hidden="true"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/cloud/observability/prometheus-learning/prometheus-basic/">Prometheus 基本概念</a>
+        <a href="/posts/cloud/observability/prometheus-learning/promql/">Prometheus 查询语言 PromQL</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2021-07-08">2021-07-08</time></span>&nbsp;<span class="post-category">收录于 <a href="/categories/prometheus-%E7%9B%B8%E5%85%B3/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Prometheus 相关</a></span></div><div class="content">1 数据类型 上图简单代表了时序数据库的存储。每次 Prometheus 拉取数据时，拉取到就是图中纵向的一条线，也就是一个统计数据多维度的瞬时值，也被称为 [时间序列</div><div class="post-footer">
+        <a href="/posts/cloud/observability/prometheus-learning/promql/">阅读全文</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/prometheus/">prometheus</a>,&nbsp;<a href="/tags/monitor/">monitor</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/cloud/observability/prometheus-learning/prometheus-data-model/">Prometheus 数据模型</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2021-07-05">2021-07-05</time></span>&nbsp;<span class="post-category">收录于 <a href="/categories/prometheus-%E7%9B%B8%E5%85%B3/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Prometheus 相关</a></span></div><div class="content">1 数据模型 Prometheus 保存的所有数据都是 <strong><ruby>时间序列<rt>Time Series</rt></ruby></strong> 数据，也就是每个数据会带有一个时间戳。 通过图表可以理解其模型： Metric - 这个统计项，由 Metric Name</div><div class="post-footer">
-        <a href="/posts/cloud/observability/prometheus-learning/prometheus-basic/">阅读全文</a><div class="post-tags">
+        <a href="/posts/cloud/observability/prometheus-learning/prometheus-data-model/">阅读全文</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/prometheus/">prometheus</a>,&nbsp;<a href="/tags/monitor/">monitor</a></div></div>
 </article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/language/golang/library/ginkgo/">Ginkgo 学习</a>
@@ -136,11 +141,6 @@
         <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/schedule-preemption-eviction/">Kubernetes - Pod 调度机制</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2021-06-23">2021-06-23</time></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 学习</a></span></div><div class="content">1 概述 无论是基本的副本控制器，还是自定义资源，其控制的底层 Pod 的调度都是都通过 Scheduler 完成的。 2 Schedule 2.1 nodeSelector Pod 的 spec.nodeSelector 可以用于控制 Pod 能被调度到哪些节点上。其内</div><div class="post-footer">
         <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/schedule-preemption-eviction/">阅读全文</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/object-and-api/">Kubernetes - Object 与 API 规则</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2021-06-12">2021-06-12</time></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 学习</a></span></div><div class="content">1 概述 1.1 组织对象的方式 Kubernetes 中组织对象的方式，就是按照 Group、Version、Resource 三个层级。 Group 用以来对 API 进行分组（分类）； Version 用以</div><div class="post-footer">
-        <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/object-and-api/">阅读全文</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">

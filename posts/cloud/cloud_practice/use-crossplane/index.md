@@ -15,7 +15,7 @@ Crossplane 的一个资源的部署模型如下：
 * CompositeResource（XRC）- 业务层使用的 XRC，进而生成 XR；
 * CompositeResourceDefinition（XRD）- 类似于 CRD 描述了该资源的定义；
 * Composition - 描述了 XR 由哪些 MR 组成，以及信息如何传递；
-* Managed Resource（MR） - 各个 Provider 原生支持的资源，对应物理云资源；
+* Managed Resource（MR） - 也就是 CR，各个 Provider 原生支持的资源，对应物理云资源；
 * ProviderConfig - 提供给 Provider 访问 Cloud 相关的凭证信息；
 
 {{< admonition note Note>}}
@@ -647,6 +647,335 @@ spec:
 {{< admonition note Note>}}
 通过 `providerConfigRef` 可以实现管理多账户云资源的功能。
 {{< /admonition >}}
+
+## 6 实现
+
+### 6.1 Provider 实现
+
+Provider 是管理各个 MR 的，也就是 CR。因此各个 Provider 就是 Controller，管理着 Crossplane 定义的 CR。
+
+当你部署了 Provider 之后，就可以看到集群中出现的 Controller Pod：
+
+```bash
+$ k get pods -n crossplane-system
+NAME                                                            READY   STATUS    RESTARTS   AGE
+crossplane-contrib-provider-aws-e0b33d016bb8-74754647cf-kltps   1/1     Running   0          5m31s
+```
+
+每个 Provider 实现是使用 controller-runtime 的库实现的。但是与一般的编写方式不同，因为大多数资源都是基于相同的管理逻辑，所以 Crossplane 在 Reconciler 的基础上封装了一层。
+
+可以看到，Provider 中每个 Manager 都基于以下接口实现：
+
+```go
+type ExternalConnectDisconnecter interface {
+	ExternalConnecter
+	ExternalDisconnecter
+}
+
+// ExternalConnecter 创建出一个 ExternalClient，通常是创建 cloud client
+type ExternalConnecter interface {
+	Connect(ctx context.Context, mg resource.Managed) (ExternalClient, error)
+}
+
+// ExternalConnecter 关闭一个 ExternalClient
+type ExternalDisconnecter interface {
+	Disconnect(ctx context.Context) error
+}
+
+// ExternalClient 管理某个 Managed Resource 的声明周期
+type ExternalClient interface {
+  // Observe 查询 Managed Resource 相关的外部资源是否存在，以及更新 Status
+	Observe(ctx context.Context, mg resource.Managed) (ExternalObservation, error)
+
+  // Create 创建 Managed Resource 资源相关的外部资源
+  // Create 会在 Observe 查询外部资源不存在之后调用。Create 实现中只允许更新
+  // Managed Resource 的 annotation，其他的更新会被丢弃
+	Create(ctx context.Context, mg resource.Managed) (ExternalCreation, error)
+
+  // Update 更新 Managed Resource 相关的外部资源
+  // Update 会在 Observe 返回需要更新之后调用
+	Update(ctx context.Context, mg resource.Managed) (ExternalUpdate, error)
+
+  // Delete 删除 Managed Resource 相关外部资源
+  // Delete 在 Managed Resource 标记为删除时调用
+	Delete(ctx context.Context, mg resource.Managed) error
+}
+```
+
+基本所有的 Resource Manager 都实现 `ExternalConnecter` 与 `ExternalClient` 接口，然后注册到 [**Controller Manager**](../kubebuilder/#12-manager) 中。
+
+```go
+func SetupBucket(mgr ctrl.Manager, l logging.Logger, rl workqueue.RateLimiter) error {
+	name := managed.ControllerName(v1alpha3.BucketGroupKind)
+
+  // 注册到 Controller Manager 中
+	return ctrl.NewControllerManagedBy(mgr).
+		Named(name).
+		WithOptions(controller.Options{
+			RateLimiter: ratelimiter.NewDefaultManagedRateLimiter(rl),
+		}).
+		For(&v1alpha3.Bucket{}).
+		Complete(
+      // 通过通用函数将 ExternalConnectDisconnecter 扩展为 Reconciler
+			managed.NewReconciler(mgr,
+				resource.ManagedKind(v1alpha3.BucketGroupVersionKind),
+				managed.WithExternalConnecter(&connecter{client: mgr.GetClient()}),
+				managed.WithLogger(l.WithValues("controller", name)),
+				managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
+			),
+		)
+}
+```
+
+看一下 Crossplane 实现的通用的 Reconciler 大致逻辑：
+
+```go
+type Reconciler struct {
+	client     client.Client            // kubernetes client
+	newManaged func() resource.Managed  // factory to create a managed resource
+
+  external mrExternal                 // ExternalConnectDisconnecter
+	managed  mrManaged
+  // ...
+}
+
+// Reconcile a managed resource with an external resource.
+func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
+	// 读取 MR CR
+  managed := r.newManaged()
+	if err := r.client.Get(ctx, req.NamespacedName, managed); err != nil {
+		return requeue
+	}
+
+  // MR 标记为删除，并且删除策略是 Orphan，那么仅仅移除 CR Finalizer
+	if meta.WasDeleted(managed) && managed.GetDeletionPolicy() == xpv1.DeletionOrphan {
+		// ...
+		if err := r.managed.RemoveFinalizer(ctx, managed); err != nil {
+			return requeue
+		}
+		return norequeue
+	}
+
+  // 对 MR 做一些初始的信息填充
+  // 例如设置 external name
+	if err := r.managed.Initialize(ctx, managed); err != nil {
+		return requeue
+	}
+
+  // 通过 MR Anno 发现创建操作处于中间态，那么不进行任何操作了
+	if meta.ExternalCreateIncomplete(managed) {
+		return requeue
+	}
+
+	// 解析 MR 相关依赖（填充一些字段）
+  // 例如使用 spec.networkRef.name 填充 spec.network
+	if !meta.WasDeleted(managed) {
+		if err := r.managed.ResolveReferences(ctx, managed); err != nil {
+			return requeue
+		}
+	}
+
+  // 构建 ExternalClient
+	external, err := r.external.Connect(externalCtx, managed)
+	if err != nil {
+		return requeue
+	}
+	defer func() {
+		if err := r.external.Disconnect(ctx); err != nil {
+		}
+	}()
+
+  // 执行 Observe 查询 MR 相关资源情况
+	observation, err := external.Observe(externalCtx, managed)
+	if err != nil {
+		return requeue
+	}
+
+  // 查询结果为相关资源不存在，但是 MR Anno 表明之前创建成功，那么检查是否满足 Create 调用周期
+  // 这样是因为防止一些外部资源正在创建中，但是查询可能会报告资源不存在
+	if !observation.ResourceExists && meta.ExternalCreateSucceededDuring(managed, r.creationGracePeriod) {
+		return requeue
+	}
+
+  // MR 标记为删除，那么执行 Delete 操作
+	if meta.WasDeleted(managed) {
+		if observation.ResourceExists {
+			if err := external.Delete(externalCtx, managed); err != nil {
+				return requeue
+			}
+
+			return requeue
+		}
+
+    // 外部资源已经删除，那么移除 MR Finalizer
+		if err := r.managed.RemoveFinalizer(ctx, managed); err != nil {
+			managed.SetConditions(xpv1.Deleting(), xpv1.ReconcileError(err))
+			return requeue
+		}
+
+    // 完全删除，不再需要 requeue
+		return norequeue
+	}
+
+
+  // MR 添加 Finalizer
+	if err := r.managed.AddFinalizer(ctx, managed); err != nil {
+		return requeue
+	}
+
+  // 外部资源不存在，走 Create/Update 逻辑
+	if !observation.ResourceExists {
+    // MR 打上 Pending Anno，用于判断 Create 操作是否执行完
+		meta.SetExternalCreatePending(managed, time.Now())
+
+    // 执行 Create 操作
+		creation, err := external.Create(externalCtx, managed)
+		if err != nil {
+      // Create 失败，打上 CreateFailed Anno
+			meta.SetExternalCreateFailed(managed, time.Now())
+			return requeue
+		}
+
+    // Create 成功，MR 打上 CreateSucceeded Anno
+		meta.SetExternalCreateSucceeded(managed, time.Now())
+		return requeue
+	}
+
+  // 外部资源不需要更新，直接返回
+	if observation.ResourceUpToDate {
+		return requeue
+	}
+
+  // 外部资源需要更新，执行 Update 操作
+	update, err := external.Update(externalCtx, managed)
+	if err != nil {
+		return requeue
+	}
+	return requeue
+```
+
+可以看到，其抽象了一个 Reconciler 的最基本的逻辑，基于目前 MR 的期望状态，执行 Create/Update 操作。
+
+下面以 GCP CloudSQL Manager 为例，看一下 Resource Manager 是怎么实现的。
+
+`cloudsqlConnector` 实现了 `ExternalConnecter`，读取凭证信息构建好 GCP Client，返回一个 `ExternalClient`：
+
+```go
+type cloudsqlConnector struct {
+	kube client.Client
+}
+
+func (c *cloudsqlConnector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
+  // 读取 ProviderConfig 以及相关的凭证信息
+	projectID, opts, err := gcp.GetAuthInfo(ctx, c.kube, mg)
+	if err != nil {
+		return nil, err
+	}
+  // 构建 GCP Client
+	s, err := sqladmin.NewService(ctx, opts)
+	if err != nil {
+		return nil, errors.Wrap(err, errNewClient)
+	}
+	return &cloudsqlExternal{kube: c.kube, db: s.Instances, projectID: projectID}, nil
+}
+```
+
+`cloudsqlExternal` 实现了 `ExternalClient`，通过 GCP Client 管理 CloudSQL：
+
+```go
+type cloudsqlExternal struct {
+	kube      client.Client
+	db        *sqladmin.InstancesService
+	projectID string
+}
+
+func (c *cloudsqlExternal) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
+	cr, ok := mg.(*v1beta1.CloudSQLInstance)
+	if !ok {
+		return managed.ExternalObservation{}, errors.New(errNotCloudSQL)
+	}
+
+  // 查看 DB 是否存在
+	instance, err := c.db.Get(c.projectID, meta.GetExternalName(cr)).Context(ctx).Do()
+	if err != nil {
+		return managed.ExternalObservation{}, errors.Wrap(resource.Ignore(gcp.IsErrorNotFound, err), errGetFailed)
+	}
+	
+  // 更新 MR 中的状态
+	cr.Status.AtProvider = cloudsql.GenerateObservation(*instance)
+	switch cr.Status.AtProvider.State {
+	case v1beta1.StateRunnable:
+		cr.Status.SetConditions(xpv1.Available())
+	case v1beta1.StateCreating:
+		cr.Status.SetConditions(xpv1.Creating())
+	case v1beta1.StateCreationFailed, v1beta1.StateSuspended, v1beta1.StateMaintenance, v1beta1.StateUnknownState:
+		cr.Status.SetConditions(xpv1.Unavailable())
+	}
+
+  // 对于 MR Spec 与实际的 DB 状态，判断是否需要执行 Update
+	upToDate, err := cloudsql.IsUpToDate(meta.GetExternalName(cr), &cr.Spec.ForProvider, instance)
+	if err != nil {
+		return managed.ExternalObservation{}, errors.Wrap(err, errCheckUpToDate)
+	}
+	return managed.ExternalObservation{
+		ResourceExists:    true,
+		ResourceUpToDate:  upToDate,
+		ConnectionDetails: getConnectionDetails(cr, instance),
+	}, nil
+}
+
+func (c *cloudsqlExternal) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
+	cr, ok := mg.(*v1beta1.CloudSQLInstance)
+	if !ok {
+		return managed.ExternalCreation{}, errors.New(errNotCloudSQL)
+	}
+	
+  // 根据 MR Spec 执行 Create
+	instance := &sqladmin.DatabaseInstance{}
+	cloudsql.GenerateDatabaseInstance(meta.GetExternalName(cr), cr.Spec.ForProvider, instance)
+
+  // GCP Client 执行创建
+	if _, err := c.db.Insert(c.projectID, instance).Context(ctx).Do(); err != nil {
+		if gcp.IsErrorAlreadyExists(err) {
+			return managed.ExternalCreation{}, errors.Wrap(err, errNameInUse)
+		}
+		return managed.ExternalCreation{}, errors.Wrap(err, errCreateFailed)
+	}
+
+	cd := managed.ConnectionDetails{
+		xpv1.ResourceCredentialsSecretPasswordKey: []byte(pw),
+	}
+	return managed.ExternalCreation{ConnectionDetails: cd}, nil
+}
+
+func (c *cloudsqlExternal) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
+	cr, ok := mg.(*v1beta1.CloudSQLInstance)
+	if !ok {
+		return managed.ExternalUpdate{}, errors.New(errNotCloudSQL)
+	}
+	if cr.Status.AtProvider.State == v1beta1.StateCreating {
+		return managed.ExternalUpdate{}, nil
+	}
+  // 根据 MR Spec 执行 Patch 请求
+	instance := &sqladmin.DatabaseInstance{}
+	cloudsql.GenerateDatabaseInstance(meta.GetExternalName(cr), cr.Spec.ForProvider, instance)
+	_, err := c.db.Patch(c.projectID, meta.GetExternalName(cr), instance).Context(ctx).Do()
+	return managed.ExternalUpdate{}, errors.Wrap(err, errUpdateFailed)
+}
+
+func (c *cloudsqlExternal) Delete(ctx context.Context, mg resource.Managed) error {
+	cr, ok := mg.(*v1beta1.CloudSQLInstance)
+	if !ok {
+		return errors.New(errNotCloudSQL)
+	}
+	cr.SetConditions(xpv1.Deleting())
+	_, err := c.db.Delete(c.projectID, meta.GetExternalName(cr)).Context(ctx).Do()
+	if gcp.IsErrorNotFound(err) {
+		return nil
+	}
+	return errors.Wrap(err, errDeleteFailed)
+}
+```
 
 ## 参考
 
