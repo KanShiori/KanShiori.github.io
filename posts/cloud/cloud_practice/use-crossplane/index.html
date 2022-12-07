@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_practice/use-crossplane/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-04-14T20:29:51+08:00" />
-<meta property="article:modified_time" content="2022-11-28T17:07:30+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2022-12-07T22:22:09+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/use-crossplane\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "云计算","wordcount":  4045 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/use-crossplane\/","datePublished": "2022-04-14T20:29:51+08:00","dateModified": "2022-11-28T17:07:30+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "云计算","wordcount":  5988 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/use-crossplane\/","datePublished": "2022-04-14T20:29:51+08:00","dateModified": "2022-12-07T22:22:09+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,8 +117,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Crossplane 入门</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/cloud-practice/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Cloud Practice</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-04-14">2022-04-14</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4045 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 9 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-04-14">2022-04-14</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 5988 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 12 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -163,6 +163,11 @@
         <li><a href="#52-providerconfig">5.2 ProviderConfig</a></li>
       </ul>
     </li>
+    <li><a href="#6-实现">6 实现</a>
+      <ul>
+        <li><a href="#61-provider-实现">6.1 Provider 实现</a></li>
+      </ul>
+    </li>
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
@@ -184,7 +189,7 @@
 <li>CompositeResource（XRC）- 业务层使用的 XRC，进而生成 XR；</li>
 <li>CompositeResourceDefinition（XRD）- 类似于 CRD 描述了该资源的定义；</li>
 <li>Composition - 描述了 XR 由哪些 MR 组成，以及信息如何传递；</li>
-<li>Managed Resource（MR） - 各个 Provider 原生支持的资源，对应物理云资源；</li>
+<li>Managed Resource（MR） - 也就是 CR，各个 Provider 原生支持的资源，对应物理云资源；</li>
 <li>ProviderConfig - 提供给 Provider 访问 Cloud 相关的凭证信息；</li>
 </ul>
 <div class="details admonition note open">
@@ -1196,7 +1201,629 @@
             <div class="admonition-content">通过 <code>providerConfigRef</code> 可以实现管理多账户云资源的功能。</div>
         </div>
     </div>
-<h2 id="参考">参考</h2>
+<h2 id="6-实现">6 实现</h2>
+<h3 id="61-provider-实现">6.1 Provider 实现</h3>
+<p>Provider 是管理各个 MR 的，也就是 CR。因此各个 Provider 就是 Controller，管理着 Crossplane 定义的 CR。</p>
+<p>当你部署了 Provider 之后，就可以看到集群中出现的 Controller Pod：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ k get pods -n crossplane-system
+NAME                                                            READY   STATUS    RESTARTS   AGE
+crossplane-contrib-provider-aws-e0b33d016bb8-74754647cf-kltps   1/1     Running   <span class="m">0</span>          5m31s
+</code></pre></td></tr></table>
+</div>
+</div><p>每个 Provider 实现是使用 controller-runtime 的库实现的。但是与一般的编写方式不同，因为大多数资源都是基于相同的管理逻辑，所以 Crossplane 在 Reconciler 的基础上封装了一层。</p>
+<p>可以看到，Provider 中每个 Manager 都基于以下接口实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">ExternalConnectDisconnecter</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nx">ExternalConnecter</span>
+	<span class="nx">ExternalDisconnecter</span>
+<span class="p">}</span>
+
+<span class="c1">// ExternalConnecter 创建出一个 ExternalClient，通常是创建 cloud client
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">ExternalConnecter</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Connect</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">mg</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Managed</span><span class="p">)</span> <span class="p">(</span><span class="nx">ExternalClient</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// ExternalConnecter 关闭一个 ExternalClient
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">ExternalDisconnecter</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Disconnect</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+
+<span class="c1">// ExternalClient 管理某个 Managed Resource 的声明周期
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">ExternalClient</span> <span class="kd">interface</span> <span class="p">{</span>
+  <span class="c1">// Observe 查询 Managed Resource 相关的外部资源是否存在，以及更新 Status
+</span><span class="c1"></span>	<span class="nf">Observe</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">mg</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Managed</span><span class="p">)</span> <span class="p">(</span><span class="nx">ExternalObservation</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+  <span class="c1">// Create 创建 Managed Resource 资源相关的外部资源
+</span><span class="c1"></span>  <span class="c1">// Create 会在 Observe 查询外部资源不存在之后调用。Create 实现中只允许更新
+</span><span class="c1"></span>  <span class="c1">// Managed Resource 的 annotation，其他的更新会被丢弃
+</span><span class="c1"></span>	<span class="nf">Create</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">mg</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Managed</span><span class="p">)</span> <span class="p">(</span><span class="nx">ExternalCreation</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+  <span class="c1">// Update 更新 Managed Resource 相关的外部资源
+</span><span class="c1"></span>  <span class="c1">// Update 会在 Observe 返回需要更新之后调用
+</span><span class="c1"></span>	<span class="nf">Update</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">mg</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Managed</span><span class="p">)</span> <span class="p">(</span><span class="nx">ExternalUpdate</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+  <span class="c1">// Delete 删除 Managed Resource 相关外部资源
+</span><span class="c1"></span>  <span class="c1">// Delete 在 Managed Resource 标记为删除时调用
+</span><span class="c1"></span>	<span class="nf">Delete</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">mg</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Managed</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>基本所有的 Resource Manager 都实现 <code>ExternalConnecter</code> 与 <code>ExternalClient</code> 接口，然后注册到 <a href="../kubebuilder/#12-manager" rel=""><strong>Controller Manager</strong></a> 中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">SetupBucket</span><span class="p">(</span><span class="nx">mgr</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nx">Manager</span><span class="p">,</span> <span class="nx">l</span> <span class="nx">logging</span><span class="p">.</span><span class="nx">Logger</span><span class="p">,</span> <span class="nx">rl</span> <span class="nx">workqueue</span><span class="p">.</span><span class="nx">RateLimiter</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="nx">name</span> <span class="o">:=</span> <span class="nx">managed</span><span class="p">.</span><span class="nf">ControllerName</span><span class="p">(</span><span class="nx">v1alpha3</span><span class="p">.</span><span class="nx">BucketGroupKind</span><span class="p">)</span>
+
+  <span class="c1">// 注册到 Controller Manager 中
+</span><span class="c1"></span>	<span class="k">return</span> <span class="nx">ctrl</span><span class="p">.</span><span class="nf">NewControllerManagedBy</span><span class="p">(</span><span class="nx">mgr</span><span class="p">).</span>
+		<span class="nf">Named</span><span class="p">(</span><span class="nx">name</span><span class="p">).</span>
+		<span class="nf">WithOptions</span><span class="p">(</span><span class="nx">controller</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span>
+			<span class="nx">RateLimiter</span><span class="p">:</span> <span class="nx">ratelimiter</span><span class="p">.</span><span class="nf">NewDefaultManagedRateLimiter</span><span class="p">(</span><span class="nx">rl</span><span class="p">),</span>
+		<span class="p">}).</span>
+		<span class="nf">For</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">v1alpha3</span><span class="p">.</span><span class="nx">Bucket</span><span class="p">{}).</span>
+		<span class="nf">Complete</span><span class="p">(</span>
+      <span class="c1">// 通过通用函数将 ExternalConnectDisconnecter 扩展为 Reconciler
+</span><span class="c1"></span>			<span class="nx">managed</span><span class="p">.</span><span class="nf">NewReconciler</span><span class="p">(</span><span class="nx">mgr</span><span class="p">,</span>
+				<span class="nx">resource</span><span class="p">.</span><span class="nf">ManagedKind</span><span class="p">(</span><span class="nx">v1alpha3</span><span class="p">.</span><span class="nx">BucketGroupVersionKind</span><span class="p">),</span>
+				<span class="nx">managed</span><span class="p">.</span><span class="nf">WithExternalConnecter</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">connecter</span><span class="p">{</span><span class="nx">client</span><span class="p">:</span> <span class="nx">mgr</span><span class="p">.</span><span class="nf">GetClient</span><span class="p">()}),</span>
+				<span class="nx">managed</span><span class="p">.</span><span class="nf">WithLogger</span><span class="p">(</span><span class="nx">l</span><span class="p">.</span><span class="nf">WithValues</span><span class="p">(</span><span class="s">&#34;controller&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)),</span>
+				<span class="nx">managed</span><span class="p">.</span><span class="nf">WithRecorder</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nf">NewAPIRecorder</span><span class="p">(</span><span class="nx">mgr</span><span class="p">.</span><span class="nf">GetEventRecorderFor</span><span class="p">(</span><span class="nx">name</span><span class="p">))),</span>
+			<span class="p">),</span>
+		<span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>看一下 Crossplane 实现的通用的 Reconciler 大致逻辑：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Reconciler</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">client</span>     <span class="nx">client</span><span class="p">.</span><span class="nx">Client</span>            <span class="c1">// kubernetes client
+</span><span class="c1"></span>	<span class="nx">newManaged</span> <span class="kd">func</span><span class="p">()</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Managed</span>  <span class="c1">// factory to create a managed resource
+</span><span class="c1"></span>
+  <span class="nx">external</span> <span class="nx">mrExternal</span>                 <span class="c1">// ExternalConnectDisconnecter
+</span><span class="c1"></span>	<span class="nx">managed</span>  <span class="nx">mrManaged</span>
+  <span class="c1">// ...
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="c1">// Reconcile a managed resource with an external resource.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">Reconciler</span><span class="p">)</span> <span class="nf">Reconcile</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">req</span> <span class="nx">reconcile</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">(</span><span class="nx">reconcile</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// 读取 MR CR
+</span><span class="c1"></span>  <span class="nx">managed</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">newManaged</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">NamespacedName</span><span class="p">,</span> <span class="nx">managed</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">requeue</span>
+	<span class="p">}</span>
+
+  <span class="c1">// MR 标记为删除，并且删除策略是 Orphan，那么仅仅移除 CR Finalizer
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">meta</span><span class="p">.</span><span class="nf">WasDeleted</span><span class="p">(</span><span class="nx">managed</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">managed</span><span class="p">.</span><span class="nf">GetDeletionPolicy</span><span class="p">()</span> <span class="o">==</span> <span class="nx">xpv1</span><span class="p">.</span><span class="nx">DeletionOrphan</span> <span class="p">{</span>
+		<span class="c1">// ...
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">managed</span><span class="p">.</span><span class="nf">RemoveFinalizer</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">managed</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">requeue</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">norequeue</span>
+	<span class="p">}</span>
+
+  <span class="c1">// 对 MR 做一些初始的信息填充
+</span><span class="c1"></span>  <span class="c1">// 例如设置 external name
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">managed</span><span class="p">.</span><span class="nf">Initialize</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">managed</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">requeue</span>
+	<span class="p">}</span>
+
+  <span class="c1">// 通过 MR Anno 发现创建操作处于中间态，那么不进行任何操作了
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">meta</span><span class="p">.</span><span class="nf">ExternalCreateIncomplete</span><span class="p">(</span><span class="nx">managed</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">requeue</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 解析 MR 相关依赖（填充一些字段）
+</span><span class="c1"></span>  <span class="c1">// 例如使用 spec.networkRef.name 填充 spec.network
+</span><span class="c1"></span>	<span class="k">if</span> <span class="p">!</span><span class="nx">meta</span><span class="p">.</span><span class="nf">WasDeleted</span><span class="p">(</span><span class="nx">managed</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">managed</span><span class="p">.</span><span class="nf">ResolveReferences</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">managed</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">requeue</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+  <span class="c1">// 构建 ExternalClient
+</span><span class="c1"></span>	<span class="nx">external</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">external</span><span class="p">.</span><span class="nf">Connect</span><span class="p">(</span><span class="nx">externalCtx</span><span class="p">,</span> <span class="nx">managed</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">requeue</span>
+	<span class="p">}</span>
+	<span class="k">defer</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">external</span><span class="p">.</span><span class="nf">Disconnect</span><span class="p">(</span><span class="nx">ctx</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+
+  <span class="c1">// 执行 Observe 查询 MR 相关资源情况
+</span><span class="c1"></span>	<span class="nx">observation</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">external</span><span class="p">.</span><span class="nf">Observe</span><span class="p">(</span><span class="nx">externalCtx</span><span class="p">,</span> <span class="nx">managed</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">requeue</span>
+	<span class="p">}</span>
+
+  <span class="c1">// 查询结果为相关资源不存在，但是 MR Anno 表明之前创建成功，那么检查是否满足 Create 调用周期
+</span><span class="c1"></span>  <span class="c1">// 这样是因为防止一些外部资源正在创建中，但是查询可能会报告资源不存在
+</span><span class="c1"></span>	<span class="k">if</span> <span class="p">!</span><span class="nx">observation</span><span class="p">.</span><span class="nx">ResourceExists</span> <span class="o">&amp;&amp;</span> <span class="nx">meta</span><span class="p">.</span><span class="nf">ExternalCreateSucceededDuring</span><span class="p">(</span><span class="nx">managed</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">creationGracePeriod</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">requeue</span>
+	<span class="p">}</span>
+
+  <span class="c1">// MR 标记为删除，那么执行 Delete 操作
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">meta</span><span class="p">.</span><span class="nf">WasDeleted</span><span class="p">(</span><span class="nx">managed</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">observation</span><span class="p">.</span><span class="nx">ResourceExists</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">external</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">externalCtx</span><span class="p">,</span> <span class="nx">managed</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">requeue</span>
+			<span class="p">}</span>
+
+			<span class="k">return</span> <span class="nx">requeue</span>
+		<span class="p">}</span>
+
+    <span class="c1">// 外部资源已经删除，那么移除 MR Finalizer
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">managed</span><span class="p">.</span><span class="nf">RemoveFinalizer</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">managed</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">managed</span><span class="p">.</span><span class="nf">SetConditions</span><span class="p">(</span><span class="nx">xpv1</span><span class="p">.</span><span class="nf">Deleting</span><span class="p">(),</span> <span class="nx">xpv1</span><span class="p">.</span><span class="nf">ReconcileError</span><span class="p">(</span><span class="nx">err</span><span class="p">))</span>
+			<span class="k">return</span> <span class="nx">requeue</span>
+		<span class="p">}</span>
+
+    <span class="c1">// 完全删除，不再需要 requeue
+</span><span class="c1"></span>		<span class="k">return</span> <span class="nx">norequeue</span>
+	<span class="p">}</span>
+
+
+  <span class="c1">// MR 添加 Finalizer
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">managed</span><span class="p">.</span><span class="nf">AddFinalizer</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">managed</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">requeue</span>
+	<span class="p">}</span>
+
+  <span class="c1">// 外部资源不存在，走 Create/Update 逻辑
+</span><span class="c1"></span>	<span class="k">if</span> <span class="p">!</span><span class="nx">observation</span><span class="p">.</span><span class="nx">ResourceExists</span> <span class="p">{</span>
+    <span class="c1">// MR 打上 Pending Anno，用于判断 Create 操作是否执行完
+</span><span class="c1"></span>		<span class="nx">meta</span><span class="p">.</span><span class="nf">SetExternalCreatePending</span><span class="p">(</span><span class="nx">managed</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">())</span>
+
+    <span class="c1">// 执行 Create 操作
+</span><span class="c1"></span>		<span class="nx">creation</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">external</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">externalCtx</span><span class="p">,</span> <span class="nx">managed</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+      <span class="c1">// Create 失败，打上 CreateFailed Anno
+</span><span class="c1"></span>			<span class="nx">meta</span><span class="p">.</span><span class="nf">SetExternalCreateFailed</span><span class="p">(</span><span class="nx">managed</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">())</span>
+			<span class="k">return</span> <span class="nx">requeue</span>
+		<span class="p">}</span>
+
+    <span class="c1">// Create 成功，MR 打上 CreateSucceeded Anno
+</span><span class="c1"></span>		<span class="nx">meta</span><span class="p">.</span><span class="nf">SetExternalCreateSucceeded</span><span class="p">(</span><span class="nx">managed</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">())</span>
+		<span class="k">return</span> <span class="nx">requeue</span>
+	<span class="p">}</span>
+
+  <span class="c1">// 外部资源不需要更新，直接返回
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">observation</span><span class="p">.</span><span class="nx">ResourceUpToDate</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">requeue</span>
+	<span class="p">}</span>
+
+  <span class="c1">// 外部资源需要更新，执行 Update 操作
+</span><span class="c1"></span>	<span class="nx">update</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">external</span><span class="p">.</span><span class="nf">Update</span><span class="p">(</span><span class="nx">externalCtx</span><span class="p">,</span> <span class="nx">managed</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">requeue</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">requeue</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到，其抽象了一个 Reconciler 的最基本的逻辑，基于目前 MR 的期望状态，执行 Create/Update 操作。</p>
+<p>下面以 GCP CloudSQL Manager 为例，看一下 Resource Manager 是怎么实现的。</p>
+<p><code>cloudsqlConnector</code> 实现了 <code>ExternalConnecter</code>，读取凭证信息构建好 GCP Client，返回一个 <code>ExternalClient</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">cloudsqlConnector</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">kube</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Client</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cloudsqlConnector</span><span class="p">)</span> <span class="nf">Connect</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">mg</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Managed</span><span class="p">)</span> <span class="p">(</span><span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalClient</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// 读取 ProviderConfig 以及相关的凭证信息
+</span><span class="c1"></span>	<span class="nx">projectID</span><span class="p">,</span> <span class="nx">opts</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">gcp</span><span class="p">.</span><span class="nf">GetAuthInfo</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">kube</span><span class="p">,</span> <span class="nx">mg</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+  <span class="c1">// 构建 GCP Client
+</span><span class="c1"></span>	<span class="nx">s</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sqladmin</span><span class="p">.</span><span class="nf">NewService</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">opts</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">Wrap</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">errNewClient</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">cloudsqlExternal</span><span class="p">{</span><span class="nx">kube</span><span class="p">:</span> <span class="nx">c</span><span class="p">.</span><span class="nx">kube</span><span class="p">,</span> <span class="nx">db</span><span class="p">:</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Instances</span><span class="p">,</span> <span class="nx">projectID</span><span class="p">:</span> <span class="nx">projectID</span><span class="p">},</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>cloudsqlExternal</code> 实现了 <code>ExternalClient</code>，通过 GCP Client 管理 CloudSQL：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">cloudsqlExternal</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">kube</span>      <span class="nx">client</span><span class="p">.</span><span class="nx">Client</span>
+	<span class="nx">db</span>        <span class="o">*</span><span class="nx">sqladmin</span><span class="p">.</span><span class="nx">InstancesService</span>
+	<span class="nx">projectID</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cloudsqlExternal</span><span class="p">)</span> <span class="nf">Observe</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">mg</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Managed</span><span class="p">)</span> <span class="p">(</span><span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalObservation</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">cr</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">mg</span><span class="p">.(</span><span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">CloudSQLInstance</span><span class="p">)</span>
+	<span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalObservation</span><span class="p">{},</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">errNotCloudSQL</span><span class="p">)</span>
+	<span class="p">}</span>
+
+  <span class="c1">// 查看 DB 是否存在
+</span><span class="c1"></span>	<span class="nx">instance</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">projectID</span><span class="p">,</span> <span class="nx">meta</span><span class="p">.</span><span class="nf">GetExternalName</span><span class="p">(</span><span class="nx">cr</span><span class="p">)).</span><span class="nf">Context</span><span class="p">(</span><span class="nx">ctx</span><span class="p">).</span><span class="nf">Do</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalObservation</span><span class="p">{},</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">Wrap</span><span class="p">(</span><span class="nx">resource</span><span class="p">.</span><span class="nf">Ignore</span><span class="p">(</span><span class="nx">gcp</span><span class="p">.</span><span class="nx">IsErrorNotFound</span><span class="p">,</span> <span class="nx">err</span><span class="p">),</span> <span class="nx">errGetFailed</span><span class="p">)</span>
+	<span class="p">}</span>
+	
+  <span class="c1">// 更新 MR 中的状态
+</span><span class="c1"></span>	<span class="nx">cr</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">AtProvider</span> <span class="p">=</span> <span class="nx">cloudsql</span><span class="p">.</span><span class="nf">GenerateObservation</span><span class="p">(</span><span class="o">*</span><span class="nx">instance</span><span class="p">)</span>
+	<span class="k">switch</span> <span class="nx">cr</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">AtProvider</span><span class="p">.</span><span class="nx">State</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nx">StateRunnable</span><span class="p">:</span>
+		<span class="nx">cr</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nf">SetConditions</span><span class="p">(</span><span class="nx">xpv1</span><span class="p">.</span><span class="nf">Available</span><span class="p">())</span>
+	<span class="k">case</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nx">StateCreating</span><span class="p">:</span>
+		<span class="nx">cr</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nf">SetConditions</span><span class="p">(</span><span class="nx">xpv1</span><span class="p">.</span><span class="nf">Creating</span><span class="p">())</span>
+	<span class="k">case</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nx">StateCreationFailed</span><span class="p">,</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nx">StateSuspended</span><span class="p">,</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nx">StateMaintenance</span><span class="p">,</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nx">StateUnknownState</span><span class="p">:</span>
+		<span class="nx">cr</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nf">SetConditions</span><span class="p">(</span><span class="nx">xpv1</span><span class="p">.</span><span class="nf">Unavailable</span><span class="p">())</span>
+	<span class="p">}</span>
+
+  <span class="c1">// 对于 MR Spec 与实际的 DB 状态，判断是否需要执行 Update
+</span><span class="c1"></span>	<span class="nx">upToDate</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cloudsql</span><span class="p">.</span><span class="nf">IsUpToDate</span><span class="p">(</span><span class="nx">meta</span><span class="p">.</span><span class="nf">GetExternalName</span><span class="p">(</span><span class="nx">cr</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">cr</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">ForProvider</span><span class="p">,</span> <span class="nx">instance</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalObservation</span><span class="p">{},</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">Wrap</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">errCheckUpToDate</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalObservation</span><span class="p">{</span>
+		<span class="nx">ResourceExists</span><span class="p">:</span>    <span class="kc">true</span><span class="p">,</span>
+		<span class="nx">ResourceUpToDate</span><span class="p">:</span>  <span class="nx">upToDate</span><span class="p">,</span>
+		<span class="nx">ConnectionDetails</span><span class="p">:</span> <span class="nf">getConnectionDetails</span><span class="p">(</span><span class="nx">cr</span><span class="p">,</span> <span class="nx">instance</span><span class="p">),</span>
+	<span class="p">},</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cloudsqlExternal</span><span class="p">)</span> <span class="nf">Create</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">mg</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Managed</span><span class="p">)</span> <span class="p">(</span><span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalCreation</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">cr</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">mg</span><span class="p">.(</span><span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">CloudSQLInstance</span><span class="p">)</span>
+	<span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalCreation</span><span class="p">{},</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">errNotCloudSQL</span><span class="p">)</span>
+	<span class="p">}</span>
+	
+  <span class="c1">// 根据 MR Spec 执行 Create
+</span><span class="c1"></span>	<span class="nx">instance</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">sqladmin</span><span class="p">.</span><span class="nx">DatabaseInstance</span><span class="p">{}</span>
+	<span class="nx">cloudsql</span><span class="p">.</span><span class="nf">GenerateDatabaseInstance</span><span class="p">(</span><span class="nx">meta</span><span class="p">.</span><span class="nf">GetExternalName</span><span class="p">(</span><span class="nx">cr</span><span class="p">),</span> <span class="nx">cr</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">ForProvider</span><span class="p">,</span> <span class="nx">instance</span><span class="p">)</span>
+
+  <span class="c1">// GCP Client 执行创建
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nf">Insert</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">projectID</span><span class="p">,</span> <span class="nx">instance</span><span class="p">).</span><span class="nf">Context</span><span class="p">(</span><span class="nx">ctx</span><span class="p">).</span><span class="nf">Do</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">gcp</span><span class="p">.</span><span class="nf">IsErrorAlreadyExists</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalCreation</span><span class="p">{},</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">Wrap</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">errNameInUse</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalCreation</span><span class="p">{},</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">Wrap</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">errCreateFailed</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">cd</span> <span class="o">:=</span> <span class="nx">managed</span><span class="p">.</span><span class="nx">ConnectionDetails</span><span class="p">{</span>
+		<span class="nx">xpv1</span><span class="p">.</span><span class="nx">ResourceCredentialsSecretPasswordKey</span><span class="p">:</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">pw</span><span class="p">),</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalCreation</span><span class="p">{</span><span class="nx">ConnectionDetails</span><span class="p">:</span> <span class="nx">cd</span><span class="p">},</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cloudsqlExternal</span><span class="p">)</span> <span class="nf">Update</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">mg</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Managed</span><span class="p">)</span> <span class="p">(</span><span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalUpdate</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">cr</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">mg</span><span class="p">.(</span><span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">CloudSQLInstance</span><span class="p">)</span>
+	<span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalUpdate</span><span class="p">{},</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">errNotCloudSQL</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">cr</span><span class="p">.</span><span class="nx">Status</span><span class="p">.</span><span class="nx">AtProvider</span><span class="p">.</span><span class="nx">State</span> <span class="o">==</span> <span class="nx">v1beta1</span><span class="p">.</span><span class="nx">StateCreating</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalUpdate</span><span class="p">{},</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+  <span class="c1">// 根据 MR Spec 执行 Patch 请求
+</span><span class="c1"></span>	<span class="nx">instance</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">sqladmin</span><span class="p">.</span><span class="nx">DatabaseInstance</span><span class="p">{}</span>
+	<span class="nx">cloudsql</span><span class="p">.</span><span class="nf">GenerateDatabaseInstance</span><span class="p">(</span><span class="nx">meta</span><span class="p">.</span><span class="nf">GetExternalName</span><span class="p">(</span><span class="nx">cr</span><span class="p">),</span> <span class="nx">cr</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">ForProvider</span><span class="p">,</span> <span class="nx">instance</span><span class="p">)</span>
+	<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nf">Patch</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">projectID</span><span class="p">,</span> <span class="nx">meta</span><span class="p">.</span><span class="nf">GetExternalName</span><span class="p">(</span><span class="nx">cr</span><span class="p">),</span> <span class="nx">instance</span><span class="p">).</span><span class="nf">Context</span><span class="p">(</span><span class="nx">ctx</span><span class="p">).</span><span class="nf">Do</span><span class="p">()</span>
+	<span class="k">return</span> <span class="nx">managed</span><span class="p">.</span><span class="nx">ExternalUpdate</span><span class="p">{},</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">Wrap</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">errUpdateFailed</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cloudsqlExternal</span><span class="p">)</span> <span class="nf">Delete</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">mg</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">Managed</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="nx">cr</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">mg</span><span class="p">.(</span><span class="o">*</span><span class="nx">v1beta1</span><span class="p">.</span><span class="nx">CloudSQLInstance</span><span class="p">)</span>
+	<span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">errNotCloudSQL</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">cr</span><span class="p">.</span><span class="nf">SetConditions</span><span class="p">(</span><span class="nx">xpv1</span><span class="p">.</span><span class="nf">Deleting</span><span class="p">())</span>
+	<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">projectID</span><span class="p">,</span> <span class="nx">meta</span><span class="p">.</span><span class="nf">GetExternalName</span><span class="p">(</span><span class="nx">cr</span><span class="p">)).</span><span class="nf">Context</span><span class="p">(</span><span class="nx">ctx</span><span class="p">).</span><span class="nf">Do</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">gcp</span><span class="p">.</span><span class="nf">IsErrorNotFound</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">Wrap</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">errDeleteFailed</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="参考">参考</h2>
 <ul>
 <li>官方文档：<a href="https://crossplane.io/docs/master/" target="_blank" rel="noopener noreffer"><strong>Document</strong></a></li>
 </ul>
@@ -1204,8 +1831,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-11-28&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/a8390a9c03cb774da8afac76dfeef0441211386b" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) a8390a9c03cb774da8afac76dfeef0441211386b: Post(Alert) (#20)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>a8390a9</a></span>
+                <span>更新于 2022-12-07&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/d7bfccca5bfff28d1077e4d3dd79399f0c004da7" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) d7bfccca5bfff28d1077e4d3dd79399f0c004da7: Post(Prom-Basic) (#25)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>d7bfccc</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

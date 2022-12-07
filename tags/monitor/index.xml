@@ -3,7 +3,15 @@
         <title>monitor - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/monitor/</link>
         <description>monitor - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 22 Nov 2022 21:56:17 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/monitor/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 30 Nov 2022 19:37:21 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/monitor/" rel="self" type="application/rss+xml" /><item>
+    <title>Grafana 基础</title>
+    <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/grafana-basic/</link>
+    <pubDate>Wed, 30 Nov 2022 19:37:21 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/grafana-basic/</guid>
+    <description><![CDATA[1 基本概念 1.1 Data Source Grafana 支持多种不同类型的时序数据库，称为<strong><ruby>数据源<rt>Data Source</rt></ruby></strong>。目前官方支持：Graphite、InfluxDB、]]></description>
+</item>
+<item>
     <title>Prometheus Alert</title>
     <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/alert/</link>
     <pubDate>Tue, 22 Nov 2022 21:56:17 &#43;0800</pubDate>
@@ -12,12 +20,12 @@
     <description><![CDATA[1 基本概念 Prometheus 生态中的告警，有 Prometheus Server 和 Alertmanager 组件实现。 Prometheus Server 负责采集 Metrics，并根据 Prometheus Rule 配置的 PromQL 决定是否触发 Alert。 Alertmanager 负责接收 Server 的 Alert 信息，然]]></description>
 </item>
 <item>
-    <title>Grafana 基础</title>
-    <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/grafana-basic/</link>
+    <title>Prometheus 基础</title>
+    <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/</link>
     <pubDate>Sat, 17 Jul 2021 08:19:12 &#43;0000</pubDate>
     <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/grafana-basic/</guid>
-    <description><![CDATA[1 基本概念 1.1 Data Source Grafana 支持多种不同类型的时序数据库，称为<strong><ruby>数据源<rt>Data Source</rt></ruby></strong>。目前官方支持：Graphite、InfluxDB、]]></description>
+    <guid>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/</guid>
+    <description><![CDATA[1 Configuration Prometheus 大多数特性都是通过配置文件传入的，通过参数 --config.file 指定配置文件： 1 ./prometheus --config.file=prometheus.yaml Prometheus 也支持动态重新加载配置文件，可以通过发生 SIGHUP 信号或者向 /-/reload HTTP 接口发送 POST 请]]></description>
 </item>
 <item>
     <title>Prometheus 查询语言 PromQL</title>
@@ -28,11 +36,11 @@
     <description><![CDATA[1 数据类型 上图简单代表了时序数据库的存储。每次 Prometheus 拉取数据时，拉取到就是图中纵向的一条线，也就是一个统计数据多维度的瞬时值，也被称为 [时间序列]]></description>
 </item>
 <item>
-    <title>Prometheus 基本概念</title>
-    <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/</link>
+    <title>Prometheus 数据模型</title>
+    <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-data-model/</link>
     <pubDate>Mon, 05 Jul 2021 14:04:28 &#43;0000</pubDate>
     <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-basic/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-data-model/</guid>
     <description><![CDATA[1 数据模型 Prometheus 保存的所有数据都是 <strong><ruby>时间序列<rt>Time Series</rt></ruby></strong> 数据，也就是每个数据会带有一个时间戳。 通过图表可以理解其模型： Metric - 这个统计项，由 Metric Name]]></description>
 </item>
 </channel>

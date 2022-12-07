@@ -3,9 +3,17 @@
         <title>Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/</link>
         <description>Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 22 Nov 2022 21:56:17 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 30 Nov 2022 19:37:21 &#43;0800</lastBuildDate>
             <atom:link href="https://KanShiori.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Grafana 基础</title>
+    <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/grafana-basic/</link>
+    <pubDate>Wed, 30 Nov 2022 19:37:21 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/grafana-basic/</guid>
+    <description><![CDATA[1 基本概念 1.1 Data Source Grafana 支持多种不同类型的时序数据库，称为<strong><ruby>数据源<rt>Data Source</rt></ruby></strong>。目前官方支持：Graphite、InfluxDB、]]></description>
+</item>
+<item>
     <title>Prometheus Alert</title>
     <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/alert/</link>
     <pubDate>Tue, 22 Nov 2022 21:56:17 &#43;0800</pubDate>
@@ -76,14 +84,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/certificate/</guid>
     <description><![CDATA[1 Kubernetes 中的证书 Kubernetes 所有组件之间的通信都基于 TLS 进行加密，并且都基于 mTLS 进行双向认证。因此，每个组件作为调用者需要配置：client cert + client key + server ca ce]]></description>
-</item>
-<item>
-    <title>AWS - EBS</title>
-    <link>https://KanShiori.github.io/posts/cloud/aws_learning/ebs/</link>
-    <pubDate>Wed, 25 May 2022 21:43:54 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/aws_learning/ebs/</guid>
-    <description><![CDATA[1 概述 AWS Elastic Block Store（简称 EBS） 是 AWS 中的主要存储服务，EBS Volume 可以附加到某个 EC2 Instance 上，在 Instance 上看就是一个未经过格式化的块设备，与其他物理硬盘]]></description>
 </item>
 </channel>
 </rss>

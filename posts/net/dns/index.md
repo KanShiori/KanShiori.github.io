@@ -6,7 +6,8 @@
 ## 1 Domain 体系
 
 **`Domain`** 有着严格的层次划分，例如 `main.cctv.com.` 就由三个标号组成，其中 **.** 为根，com 为顶级域名，cctv 为二级域名，mail 为三级域名。
-{{< find_img "img1.png" >}}
+
+{{< image src="img1.png" height=250 >}}
 
 {{< admonition note "被省略的 .">}}
 因为域名的根永远是 . 号，因此用户在使用时常常会省略，域名解析程序会自动加上根 . 号。
@@ -40,14 +41,15 @@
 
   本地域名服务器也被称为 **`DNS Resolver`**。
 
-{{< find_img "img2.png" >}}
+{{< image src="img2.png" height=250 >}}
 
 ## 3 域名解析过程
 
 主机向本地域名服务器的查询一般是递归查询：如果本地服务器无法处理 DNS 请求，那么就由本地域名服务器向其他上级域名服务器发出 DNS 请求。
-{{< find_img "img3.png" >}}
 
-**缓存机制**：为了提高 DNS 查询效率，域名服务器会缓存 Domain->IP 的映射关系，并在设定的 TTL 时间后清理缓存记录。不仅仅是域名服务器，许多主机也会在本地维护自己的域名缓存。
+{{< image src="img3.png" height=300 >}}
+
+**缓存机制**：为了提高 DNS 查询效率，域名服务器会缓存 Domain -> IP 的映射关系，并在设定的 TTL 时间后清理缓存记录。不仅仅是域名服务器，许多主机也会在本地维护自己的域名缓存。
 
 ## 4 DNS Record
 
@@ -70,6 +72,7 @@ DNS Record 的类型就是 DNS 报文中的 Type。
 ### 4.1 A 类型
 
 A 类型 DNS Record 表示 **Domain 对应的 IP 地址**。当域名服务器接受到 DNS 请求时，查询到 Domain 对应的 DNS Record 是 A 类型，那么就可以直接返回 IP 地址。
+
 ```bash
 $ dig www.google.com
 
@@ -97,6 +100,7 @@ www.google.com.         0       IN      A       172.217.26.228
 AAAA 类型 DNS Record 表示 **Domain 对应的 IPv6 地址**。
 
 dig 命令默认仅仅查询 A 记录，需要通过命令行参数指定：
+
 ```bash
 $ dig www.google.com AAAA
 
@@ -126,12 +130,14 @@ CNAME 类型表示使用别名的 [权威域名]^(canonical name)。也就是说
 **当 Name Server 返回 CNAME 记录时，表明 DNS Resolver 应该通过返回的 CNAME 继续进行 DNS 解析**。
 
 例如，当我们使用 CDN 服务时，用户提供源站后，通常 CDN 服务会提供一个 CNAME，例如 "xx.cdn.dnsv1.com"。而这时，CDN 服务器会在 Name Server 添加一条 DNS Record。
+
 ```
 CNAME <source site> "xx.cdn.dnsv1.com"
 ```
 
 这样，用户访问 source site 时后会返回 CNAME 地址，接着用户就会对 CNAME 地址的服务器发起 DNS 解析以及访问，从而用户就放回到了 CDN 的缓存服务器。
-{{< find_img "img4.png" >}}
+
+{{< image src="img4.png" height=250 >}}
 
 ### 4.4 MX 类型
 

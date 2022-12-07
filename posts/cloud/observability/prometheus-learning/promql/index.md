@@ -15,7 +15,7 @@ PromQL 将表达式归为以下四种类型：
 
 * [标量]^(scalar) - **纯量数据**，仅仅是一个数字，没有时间戳。
   
-* [字符串]^(string) - 未被使用的**纯字符串值**。
+* [字符串]^(string) - 单引号、双引号或者反引号指定的**纯字符串值**。
 
 ## 2 Selector
 
@@ -56,9 +56,12 @@ node_filesystem_size_bytes{mountpoint=~"/mnt/.*"} offset 1d
 
 Range Vector Selectors 查询一段时间范围内的时间序列，并通过 label 匹配进行样本过滤，**最后得到一个区间向量**。
 
+#### 2.3.1 Duration
+
 在末尾加上 **`[<duration>]`** 的方式来指定获取过去 duration 时间的样本。时间单位支持：s(秒) m(分) h(小时) d(天) w(周) y(年)。
 
 例如，下面在前面基础上查询过去 1m 的样本：
+
 ```promql
 node_filesystem_size_bytes{mountpoint=~"/mnt/.*", mountpoint!~"/mnt/local_pv/.*"} [1m]
 ```
@@ -69,10 +72,30 @@ node_filesystem_size_bytes{mountpoint=~"/mnt/.*", mountpoint!~"/mnt/local_pv/.*"
 这里可以看到，即时向量是每个样本只有一个值，区间向量是每个样本包含一组的值。
 {{< /admonition >}}
 
-同样，可以用 "offset" 来指定基准时间：
+### 2.3.2 Offset
+
+使用用 **`offset`** 来指定基准时间。`offset` 修饰符只能跟随在 Selector 之后。
+
+例如下面表明以 1d 前的当前时间为基准，查询过去 1m 的样本：
 
 ```promql
 node_filesystem_size_bytes{mountpoint=~"/mnt/.*", mountpoint!~"/mnt/local_pv/.*"} [1m] offset 1d
+```
+
+### 2.3.3 @
+
+`@` 修饰符用于指定查询中的特定时间。`@` 修饰符后跟随的是一个 Unix 时间戳。
+
+例如查询 `http_requests_total` 在 `2021-01-04T07:40:00+00:00` 的值：
+
+```promql
+http_requests_total @ 1609746000
+```
+
+同样，`@` 也适用于范围查询：
+
+```
+rate(http_requests_total[5m] @ 1609746000)
 ```
 
 ## 3 聚合操作
@@ -362,6 +385,21 @@ Prometheus 提供了两种向量匹配模式：
 * predict_linear(v range-vector, t scalar) 
   
   predict_linear 基于区间向量，使用简单的线性回归预测时间序列 t 秒的值，从而对时间序列的变化趋势做出预测。
+
+## 6 注意事项
+
+### 6.1 Stale 机制
+
+Prometheus 使用 Stable 机制来表示哪些不再提供的 Time Series。当 Time Series 被标记为 Stable 或者在最新的时间点前 5min 内找不到任何样本的话，在图表上该 Time Series 会消失。
+
+具体逻辑如下：
+
+* 如果某个 Target 不再暴露新的 Sample，那么改 Time Series 会被标记为 Stable
+* 如果 Target 被移除，那么不久后相关的 Time Series 会被标记为 Stable
+* 如果标记为 Stable 的 Time Series 又产生了新的 Sample，那么 Time Series 会变回 Normal 状态
+* 如果 Sample 带有了时间戳，那么不会应用 Stable 机制，而是 Time Series 有着 5min 的阈值时间
+
+这也意味着，如果某个 Time Series 停止产生了新的 Sample，那么在 5min 内还是可以查询到数据的。超过 5min 后，查询 Time Series 就不会返回任何数据。
 
 ## 参考
 

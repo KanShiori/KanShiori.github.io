@@ -102,6 +102,14 @@ Silence 用于将特定的告警在一定时间不在通知。
 
 ## 3 Alert 配置
 
+Alertmanager 的所有配置都是通过配置文件提供的，通过参数 `--config.file` 指定配置文件：
+
+```command
+./alertmanager --config.file=alertmanager.yml
+```
+
+Alertmanager 也支持动态重新加载配置文件，可以通过发生 `SIGHUP` 信号或者向 `/-/reload` HTTP 接口发送 POST 请求重新加载配置文件。
+
 Alertmanager 配置项分为：
 
 * global 全局配置
@@ -110,20 +118,34 @@ Alertmanager 配置项分为：
 * receivers 接收器
 * inhibit_rules 抑制规则
 
+完整的配置文件说明见官方文档：[**CONFIGURATION**](https://prometheus.io/docs/alerting/latest/configuration/)。
+
 ### 3.1 global 配置
 
-global 中包含所有配置项的公共配置，可以作为其他配置项的默认值，自动被其他配置项的配置覆盖。
+`global` 配置项中包含所有配置项的公共配置，可以作为其他配置项的默认值，自动被其他配置项的配置覆盖。
 
 ### 3.2 templates 配置
 
-templates 中定义告警模板，自定义告警通知的外观格式以及包含的信息。
+当 Alertmanager 向各个 Receivers 发送告警通知时，会通过 template 来构建通知信息。
 
-templates 的只为读取的模板文件的目录，例如：
+Alertmanager 带有默认的 template。当然，也可以在 `templates` 配置项中定义告警模板，例如：
 
 ```yaml
 templates:
 - '/data/alertmanager/template/*.tmpl'
 ```
+
+#### 3.2.1 template 数据结构
+
+template 会使用 Go 模板语言构建的，因此可以在 template 实现代码逻辑以及变量的使用。
+
+当然，Alertmanager 提供了预定义数据与函数可以在模板文件中使用。
+
+```
+{{ .ExternalURL }}/#/alerts?receiver={{ .Receiver }}
+```
+
+完整的数据结构见 [**NOTIFICATION TEMPLATE REFERENCE**](https://prometheus.io/docs/alerting/latest/notifications/)。
 
 ### 3.3 route 配置
 
@@ -204,69 +226,4 @@ receivers:
 
 ## 4 Prometheus Rule
 
-### 4.1 Alert Rule
-
-Alert Rule 在 Prometheus 的配置文件中配置，Prometheus 会周期性的执行指定的 PromQL，满足条件后就会发送 Alert 给 Alertmanager。
-
-默认情况下，Prometheus 进行告警计算的间隔是 1min，当然可以在配置文件中配置：
-
-```yaml
-global:
-  evaluation_interval: 15s
-```
-
-Alert Rule 可以通过文件或者目录提供给 Prometheus，在配置文件中的 `rule_files` 项指定：
-
-```yaml
-rule_files:
-  - "/etc/prometheus/rule/*_rules.yaml"
-  - "/custom_rules.yaml"
-```
-
-一个 Alert Rule 文件如下所示：
-
-```yaml
-groups:
-- name: Cluster # rule group name
-  rules:
-  - alert: UP
-    annotations:
-      message: Node {{ $labels.name }} has been down for more than 5 min
-    expr: |
-      up{job="node"} == 0
-    for: 3m
-    labels:
-      severity: critical
-      component: node
-  # rules ...
-```
-
-Prometheus 所有的 Alert Rule 是按分组来管理的，每组包含多个相关的 Alert Rule。
-
-一个 Alert Rule 包含如下配置：
-
-* alert 告警的名称
-* expr 告警计算使用的 PromQL
-* for（可选）告警规则满足持续多长时间后，才会发送告警
-* labels 添加到告警上的 Label
-* annotations 设置告警的相关描述信息，告警发送时会作为参数一起发送
-
-配置中，可以使用 Go 的模板语法，以动态获取告警实例的相关信息：
-
-* `{{ $labels.<label_name> }}` - 用于获取某 Label 的值；
-* `{{ $value }}` - 用于获取 PromQL 执行的结果值；
-
-### 4.2 触发规则
-
-配置 Alert Rules 后，Prometheus 就会周期性执行 PromQL 计算是否触发告警。
-
-触发 Alert 会经过三种状态：
-
-* Inactive - 没有满足条件，告警处于未激活状态 
-* Pending - 首次触发告警规则时，但是并没有满足 `for` 配置项的持续时间，告警会处于 PENDING 状态
-* Firing - 已经触发告警，并满足了持续时间。处于 Firing 状态下，Prometheus 会持续将告警发送
-
-{{< admonition note Note>}}
-因为 Prometheus 计算告警是周期性触发地，因此告警状态的变化与触发的时间间隔都是 N * 计算间隔，所以不是完全按照 for 配置持续来触发告警的。
-{{< /admonition >}}
-
+参考 [**Alert Rule**](../prometheus-basic/#32-alert-rule)。

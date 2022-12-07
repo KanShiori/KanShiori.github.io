@@ -201,7 +201,7 @@ xx.crt 是证书文件，xx.crs 是申请文件
    openssl x509 -req  -days 3650 -in client.csr -CA root.crt -CAkey root.key -CAcreateserial -out client.crt
    ```
 
-### 3.2 总结
+### 3.3 总结
 
 换个角度看，为了实现自签名，双向 TLS，两边需要的文件
 
