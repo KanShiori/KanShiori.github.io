@@ -12,6 +12,14 @@
     <description><![CDATA[1 基本概念 1.1 Data Source Grafana 支持多种不同类型的时序数据库，称为<strong><ruby>数据源<rt>Data Source</rt></ruby></strong>。目前官方支持：Graphite、InfluxDB、]]></description>
 </item>
 <item>
+    <title>Prometheus Operator</title>
+    <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-operator/</link>
+    <pubDate>Wed, 30 Nov 2022 03:50:43 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/prometheus-operator/</guid>
+    <description><![CDATA[Prometheus Operator 提供了 Kubernetes 上原生部署 Prometheus 以及其他监控组件的能力。 1 基本模型 为了方便的管理 Prometheus 以及监控，Prometheus Operator 提供了一下的 CR： Prometheus - 用于部署 Prometheus Alertmanager]]></description>
+</item>
+<item>
     <title>Prometheus Alert</title>
     <link>https://KanShiori.github.io/posts/cloud/observability/prometheus-learning/alert/</link>
     <pubDate>Tue, 22 Nov 2022 21:56:17 &#43;0800</pubDate>

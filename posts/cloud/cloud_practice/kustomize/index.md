@@ -9,9 +9,9 @@ Kustomize 基于 `kustomization.yaml` 文件来生成一系列的 Kubernetes 资
 
 基于这种模式，Kustomize 能够支持的功能大致分为三类：
 
-* 生成 Resource - 基于一些来源数据，生成出 Resource 定义，例如生成 ConfigMap 与 Secret
-* Cross-Cutting 字段 - 为一批 Resource 设置相同的字段，例如相同的 Namespace，Label 等
-* Patch Resource - 设置 Patch 字段，以定义 Resource
+* **生成 Resource** - 基于一些来源数据，生成出 Resource 定义，例如生成 ConfigMap 与 Secret
+* **Cross-Cutting 字段** - 为一批 Resource 设置相同的字段，例如相同的 Namespace，Label 等
+* **Patch Resource** - 设置 Patch 字段，以定义 Resource
 
 Kustomize 所有的功能都是在 `kustomization.yaml` 文件中定义的，所有特性见文档：[**Kustomize 功能特性列表**](https://kubernetes.io/zh/docs/tasks/manage-kubernetes-objects/kustomization/#kustomize-%E5%8A%9F%E8%83%BD%E7%89%B9%E6%80%A7%E5%88%97%E8%A1%A8)。
 
@@ -228,35 +228,11 @@ generatorOptions:
     note: generated
 ```
 
-## 4 Cross-Cutting 字段
-
-Cross-cutting 字段指定是为所有生成的 Resource 都添加的字段。包括：
-
-* 所有 Resource 相同的 Namespace
-* 所有 Resource 命名添加相同的前缀或者后缀
-* 所有 Resource 添加相同的 Labels
-* 所有 Resource 添加相同的 Annotations
-
-相关的功能都是通过字段方式使用的，例如：
-
-```yaml
-# kustomization.yaml
-namespace: my-namespace
-namePrefix: dev-
-nameSuffix: "-001"
-commonLabels:
-  app: bingo
-commonAnnotations:
-  oncallPager: 800-555-1212
-resources:
-- deployment.yaml
-```
-
-## 5 Patch Resource
+## 4 Patch Resource
 
 Kustomize 支持使用 Patch 方式来定义化的修改 Resource，这样可以支持修改 Resource 的任意字段。
 
-### 5.1 自定义 Patch
+### 4.1 自定义 Patch
 
 自定义 Patch 指的是能够支持 Resource 的任意字段。包括两种方式：
 
@@ -306,9 +282,9 @@ Kustomize 支持使用 Patch 方式来定义化的修改 Resource，这样可以
 
 无论是哪种 Patch 方式，都需要明确指定修改的 Resource 的名字，以对应生成的 Resource。
 
-### 5.2 特定字段 Patch
+### 4.2 特定字段 Patch
 
-#### 5.2.1 Patch Image
+#### 4.2.1 Patch Image
 
 `images` 支持为各个 Resource 修改 Image。
 
@@ -324,9 +300,52 @@ images:
   newTag: 1.4.0
 ```
 
-### 5.3 变量传递
+#### 4.2.2 公共 Labels 与 Annotations
 
-因为 `namePrefix` 与 `nameSuffix` 功能的存在，在 Resoure Template 中可能无法引用其他 Resource 的名字。为此，Kustomize 提供了一种多个 Resource 定义之间传递变量的方式。
+`commonLabels` 为 所有 Resource 添加相同的 Labels，`commonAnnotations` 为 所有 Resource 添加相同的 Annotations。
+
+```yaml
+# kustomization.yaml
+commonLabels:
+  app: bingo
+commonAnnotations:
+  oncallPager: 800-555-1212
+```
+
+#### 4.2.3 公共 Namespace
+
+`namespace` 为所有 Resource 添加相同的 Namespace。
+
+```yaml
+# kustomization.yaml
+namespace: my-namespace
+```
+
+#### 4.2.4 Patch Name
+
+`namePrefix` 和 `nameSuffix` 为所有 Resource 命名添加相同的前缀或者后缀
+
+```yaml
+# kustomization.yaml
+nameSuffix: "-001"
+```
+
+#### 4.2.5 Patch Replica
+
+`replicas` 修改特定的资源的副本数量。通过命名来指定需要修改的资源。
+
+例如，以下配置修改 Deployment 的 Replica：
+
+```yaml
+# kustomization.yaml
+replicas:
+- name: deployment-name
+  count: 5
+```
+
+## 5 变量传递
+
+Kustomize 提供了一种多个 Resource 定义之间传递变量的方式。
 
 使用 `vars` 字段定义好变量名称，以及获取值的方式：
 
@@ -397,7 +416,7 @@ spec:
 
 Kustomize 支持层级的 `kustomization.yaml` 管理：Base 包含基础的 Resource Template 与 `kustomization.yaml` 文件，Overlay 引用 Base 并添加或覆盖字段。
 
-Overlay 中使用 `bases` 字段来引用 Base 目录的文件，并增加修改。
+Overlay 中使用 `resources` 字段来引用 Base 目录，并增加修改。
 
 例如，我们使用如下的层级：
 
@@ -426,18 +445,107 @@ resources:
 - service.yaml
 
 # dev/kustomization.yaml
-bases:
+resources:
 - ../base
 namePrefix: dev-
 
-# bases:
+# prod/kustomization.yaml:
+resources:
 - ../base
 namePrefix: prod-
 ```
 
 这样，执行 `kubectl kustomize <dev/prod>` 会得到不同的结果。
 
-## 7 kubectl
+## 7 Patch CRD
+
+为了支持 Patch CRD，需要额外的 Kustomize Config 来定义需要 Patch 的字段。
+
+例如，有着 `MyKind` 与 `Bee` 两个 CR，以下的 Kustomize Config 文件为例：
+
+```yaml
+# kustomizeconfig/mykind.yaml
+commonLabels:
+- path: spec/selectors
+  create: true
+  kind: MyKind
+
+nameReference:
+- kind: Bee
+  fieldSpecs:
+  - path: spec/beeRef/name    # MyKind 的 `spec.beeRef.name` 字段值为生成的 Bee 资源的 name
+    kind: MyKind
+- kind: Secret
+  fieldSpecs:
+  - path: spec/secretRef/name # MyKind 的 `spec.secretRef.name` 字段值为生成的 Secret 资源的 name
+    kind: MyKind
+
+varReference:
+- path: spec/containers/command # MyKind 的 `spec.containers.command` 字段可以使用 Vars
+  kind: MyKind
+- path: spec/beeRef/action      # MyKind 的 `spec.beeRef.action` 字段可以使用 Vars
+  kind: MyKind
+```
+
+* `commonLabels` 定义了配置公共 Labels 也会影响 `MyKind` 的 `spec.selectors` 字段。
+
+* `nameReference` 定义使用 `MyKind` 的子字段会使用其他 Resource 的命名。
+
+* `varReference` 定义了 `MyKind` 的子字段需要进行 Vars 的解析。
+
+对应的 Kustomize 文件与 Resource 文件如下：
+
+```yaml
+# kustomization.yaml
+resources:
+- resources.yaml
+namePrefix: test-
+commonLabels:       # 会影响 `MyKind` 的 `spec.selectors` 字段
+  foo: bar
+vars:              # vars 对应于 Kustomize Config 文件的 `varReference` 配置
+- name: BEE_ACTION
+  objref:
+    kind: Bee
+    name: bee
+    apiVersion: v1beta1
+  fieldref:
+    fieldpath: spec.action
+configurations:
+- kustomizeconfig/mykind.yaml
+
+# resources.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: crdsecret
+data:
+  PATH: YmJiYmJiYmIK
+---
+apiVersion: v1beta1
+kind: Bee
+metadata:
+  name: bee
+spec:
+  action: fly
+---
+apiVersion: jingfang.example.com/v1beta1
+kind: MyKind
+metadata:
+  name: mykind
+spec:
+  secretRef:
+    name: crdsecret # 映射到 crdsecret Secret 生成后的 name
+  beeRef:
+    name: bee       # 映射到 bee Secret 生成后的 name
+    action: $(BEE_ACTION)
+  containers:
+  - command:
+    - "echo"
+    - "$(BEE_ACTION)"
+    image: myapp
+```
+
+## 8 kubectl
 
 除了本身的 `kubectl kustomize` 来使用 Kustomize 之外，kubectl 基本的命令都已经支持直接使用 Kustomize。
 
