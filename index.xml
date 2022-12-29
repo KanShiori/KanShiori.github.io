@@ -46,6 +46,14 @@
     <description><![CDATA[跨云访问指的是：在一个云厂商的环境中，访问另一个云厂商的服务。最简单的方式就是将静态密钥（AWS AK/SK 与 GCP ServiceAccount Key）注入到应用中，但是显而易见这]]></description>
 </item>
 <item>
+    <title>K8s 实现 - Scheduler 实现</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/scheduler-implement/</link>
+    <pubDate>Mon, 19 Sep 2022 15:21:22 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/scheduler-implement/</guid>
+    <description><![CDATA[1 概述 Kubernetes Scheduler 负责了 Schedule + Eviction + Preemption 三个功能。Scheduler 本质上也是一个 Controller，监听着 Pod 和 Node 等资源，出现事件时尝试执行调度操作。 目]]></description>
+</item>
+<item>
     <title>Thinking in Operator</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/</link>
     <pubDate>Tue, 13 Sep 2022 20:09:34 &#43;0800</pubDate>
@@ -76,14 +84,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/aws_learning/private-link/</guid>
     <description><![CDATA[1 概述 在 AWS - VPC 与 Service 通信 中，描述了 VPC 与 Service 通信的几种方式： VPC Peering - 连接两个不同网段的 VPC Transit Gateway - 连接多个不同网段的 VPC Private Link - 通过 Endpoint 来作为 Service 的代理 每种方式]]></description>
-</item>
-<item>
-    <title>Certificate 总结</title>
-    <link>https://KanShiori.github.io/posts/net/certificate/</link>
-    <pubDate>Mon, 13 Jun 2022 21:29:19 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/net/certificate/</guid>
-    <description><![CDATA[1 基本原理 签发证书本质上是：使用 CA 的私钥给申请的公钥进行签名 从签发证书的角度看，设计到两个对象： CA - 签发证书的机构 root cert - CA 证书（包含 CA 公钥）]]></description>
 </item>
 </channel>
 </rss>
