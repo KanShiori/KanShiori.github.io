@@ -28,7 +28,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/vm\/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "虚拟机, KVM, 云计算","wordcount":  2221 ,
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "虚拟机, KVM, 云计算","wordcount":  2209 ,
         "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/vm\/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F\/","datePublished": "2020-10-31T17:47:42+08:00","dateModified": "2020-10-31T17:47:42+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">制作虚拟机镜像</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/vm/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>VM</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-10-31">2020-10-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2221 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-10-31">2020-10-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2209 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -136,8 +136,8 @@
       <ul>
         <li><a href="#21-cloud-init">2.1 cloud-init</a>
           <ul>
-            <li><a href="#1-基本概念">(1) 基本概念</a></li>
-            <li><a href="#2-运行过程">(2) 运行过程</a></li>
+            <li><a href="#211-基本概念">2.1.1 基本概念</a></li>
+            <li><a href="#212-运行过程">2.1.2 运行过程</a></li>
           </ul>
         </li>
         <li><a href="#22-制作镜像">2.2 制作镜像</a></li>
@@ -151,7 +151,7 @@
 <h2 id="1-从-iso-镜像安装">1 从 ISO 镜像安装</h2>
 <p>最基本的安装方式，通过安装并运行一个新的虚拟机，然后得到对应的配置文件与镜像文件。</p>
 <h3 id="11-手动安装">1.1 手动安装</h3>
-<p>最基本的安装方式，通过 ISO 文件进行安装。</p>
+<p>最基本的安装方式，通过 ISO 文件进行安装：</p>
 <ol>
 <li>
 <p>下载 ISO 镜像文件，镜像文件在各个镜像站中就可以找到。（因为不使用图形界面，所以下载的是非图形化的 ISO）</p>
@@ -174,27 +174,30 @@
 </div>
 </div><p>其中要注意几个参数：</p>
 <ul>
-<li>因为我们是安装非图形化，所以需要 <code>--location</code> 参数指定 iso，并指定 <code>--boot menu=on</code> 打开安装菜单，最后还需要指定安装信息的输出 <code>--console pty --extra-args 'console=ttyS0'</code> 这样安装菜单才能正常展示出来</li>
-<li><code>--graphics none</code> 指定非图形化；</li>
-<li><code>--network bridge=virbr0</code>，指定网络模式，这里指定 libvirt 默认创建的 bridge 网卡，可以认为这是一个 libvirt 维护内网，安装时选择 dhcp 就可以获得一个可用的内网地址；</li>
+<li>
+<p>因为我们是安装非图形化，所以需要 <code>--location</code> 参数指定 iso，并指定 <code>--boot menu=on</code> 打开安装菜单，最后还需要指定安装信息的输出 <code>--console pty --extra-args 'console=ttyS0'</code> 这样安装菜单才能正常展示出来</p>
+</li>
+<li>
+<p><code>--graphics none</code> 指定非图形化；</p>
+</li>
+<li>
+<p><code>--network bridge=virbr0</code>，指定网络模式，这里指定 libvirt 默认创建的 bridge 网卡，可以认为这是一个 libvirt 维护内网，安装时选择 dhcp 就可以获得一个可用的内网地址；</p>
+<p>具体 libvirt 的网络模型，后面再单独研究下。</p>
+</li>
+<li>
+<p><code>-- disk size=8</code>，disk 参数用于指定系统盘，这里指定自动创建一个 8G 的 qcow2 文件，作为系统盘（默认镜像文件保存在 /var/lib/libvirt/images/）目录下；</p>
+</li>
 </ul>
-<p>具体 libvirt 的网络模型，后面在单独研究下。</p>
-<ul>
-<li><code>-- disk size=8</code>，disk 参数用于指定系统盘，这里指定自动创建一个 8G 的 qcow2 文件，作为系统盘（默认镜像文件保存在 /var/lib/libvirt/images/）目录下；</li>
-</ul>
-<p>这时就会进入虚拟机的安装步骤，具体安装步骤就不赘述了。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img1.png"/>
-
-
-</p>
+<p>这时就会进入虚拟机的安装步骤，具体安装步骤就不赘述了。</p>
+<a class="lightgallery" href="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img1.png" title="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img1.png" data-thumbnail="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img1.png"
+            data-srcset="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img1.png, /posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img1.png 1.5x, /posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img1.png" width="600" height="300" />
+    </a>
 </li>
 <li>
 <p>安装成功后，可以看到 domain 就被创建了，这就可以得到它的配置文件与镜像文件了。</p>
@@ -215,7 +218,7 @@ Id    Name                           State
 </div></li>
 </ol>
 <h3 id="12-自动安装">1.2 自动安装</h3>
-<p>可以看到，手动安装需要人为在菜单中选择、配置，这不适用于多个虚拟机的安装。而 RedHat 创建了 kickstart 安装方法，使得整个虚拟机安装流程变得自动化。</p>
+<p>可以看到，手动安装需要人为在菜单中选择、配置，这不适用于多个虚拟机的安装。而 RedHat 创建了 <code>kickstart</code> 安装方法，使得整个虚拟机安装流程变得自动化。</p>
 <p>这块不了解，具体见红帽官方文档：<a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/installation_guide/ch-kickstart2#s1-kickstart2-whatis" target="_blank" rel="noopener noreffer">KICKSTART INSTALLATIONS</a></p>
 <h2 id="2-使用-cloud-image">2 使用 Cloud Image</h2>
 <p>当然，上面制作过程中耗时都在安装系统上了，而各个云厂商的虚拟机数量那么多，肯定不会一台台去安装操作系统了。所以，目前最常见的都是直接下载已经安装过系统的虚拟机镜像文件。</p>
@@ -224,13 +227,19 @@ Id    Name                           State
 <h3 id="21-cloud-init">2.1 cloud-init</h3>
 <p>下面内容都来自于文档，这里仅为自己做个记录。</p>
 <p>首先明确 cloud init 的功能：系统第一次启动时，cloud init 相关的进程会根据配置信息去进行系统的配置，包括：设置 hostname、ssh key、password 等；</p>
-<h4 id="1-基本概念">(1) 基本概念</h4>
+<h4 id="211-基本概念">2.1.1 基本概念</h4>
 <ul>
-<li><strong>metadata</strong>：包含服务器信息，用于 cloud-init 配置；</li>
-<li><strong>userdata</strong>：包含 cloud-init 系统配置信息，可以是 文件，脚本，yaml 文件等；</li>
-<li><strong>datasource</strong>：cloud-init 读取配置数据的来源，包含大部分云厂商，当然，也可以来自本地的文件 (<a href="https://cloudinit.readthedocs.io/en/latest/topics/datasources/nocloud.html" target="_blank" rel="noopener noreffer">NoCloud datasource</a>)；</li>
+<li>
+<p><strong>metadata</strong>：包含服务器信息，用于 cloud-init 配置；</p>
+</li>
+<li>
+<p><strong>userdata</strong>：包含 cloud-init 系统配置信息，可以是 文件，脚本，yaml 文件等；</p>
+</li>
+<li>
+<p><strong>datasource</strong>：cloud-init 读取配置数据的来源，包含大部分云厂商，当然，也可以来自本地的文件 (<a href="https://cloudinit.readthedocs.io/en/latest/reference/datasources/nocloud.html#nocloud" target="_blank" rel="noopener noreffer">NoCloud datasource</a>)；</p>
+</li>
 </ul>
-<h4 id="2-运行过程">(2) 运行过程</h4>
+<h4 id="212-运行过程">2.1.2 运行过程</h4>
 <p>cloud init 设置包括五个阶段：</p>
 <ol>
 <li>
@@ -256,19 +265,16 @@ Id    Name                           State
 <li>
 <p>Init、Config、Final 阶段</p>
 <p>对应 service 为 <strong>cloud-init.service</strong>、<strong>cloud-config.service</strong>、 <strong>cloud-final.service</strong>。</p>
-<p>通过 local 阶段，网络已经配置好了，并且已经得到了 metadata。而 <code>/etc/cloud/cloud.cfg</code> 配置定义了剩下三个阶段对应的任务，也就是 module。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img2.png"/>
-
-
-</p>
+<p>通过 local 阶段，网络已经配置好了，并且已经得到了 metadata。而 <code>/etc/cloud/cloud.cfg</code> 配置定义了剩下三个阶段对应的任务，也就是 module。</p>
+<a class="lightgallery" href="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img2.png" title="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img2.png" data-thumbnail="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img2.png"
+            data-srcset="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img2.png, /posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img2.png 1.5x, /posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img2.png" width="489" height="300" />
+    </a>
 <p>cloud init 通过一些缓存信息来判断机器是否经过初始化，通过 <code>cloud-init clean</code> 也可以手动清理缓存信息。</p>
 <p><code>/var/log/cloud-init.log</code> 记录了 cloud-init 运行的完整过程。</p>
 </li>
@@ -297,7 +303,7 @@ Id    Name                           State
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ virt-customize -a CentOS-7-x86_64-GenericCloud-2003.qcow2  --root-password password:yourpassword
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ virt-customize -a CentOS-7-x86_64-GenericCloud-2003.qcow2 --root-password password:yourpassword
 </code></pre></td></tr></table>
 </div>
 </div></div>
@@ -305,7 +311,7 @@ Id    Name                           State
     </div>
 </li>
 <li>
-<p>因为 cloud-init 需要一个 datasource，而我们没有使用云厂商，所以使用 NoCloud 形式，按照官方的 s 示例创建一个 disk 文件。</p>
+<p>因为 cloud-init 需要一个 datasource，而我们没有使用云厂商，所以使用 NoCloud 形式，按照官方示例创建一个 disk 文件。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -361,38 +367,31 @@ $ genisoimage  -output seed.iso -volid cidata -joliet -rock user-data meta-data
 </span><span class="se"></span>    --import
 </code></pre></td></tr></table>
 </div>
-</div><p>几个比较重要的参数：</p>
-<ul>
+</div><ul>
 <li><code>--disk CentOS-7-x86_64-GenericCloud-2003.qcow2</code>：制定系统盘；</li>
 <li><code>--import</code>：跳过安装过程，因为已经安装好操作系统，不需要进行安装过程；</li>
 <li><code>--disk seed.iso</code>：传递 cloud-init datasource 信息；</li>
 </ul>
-<p>虚拟机启动过程中，可以看到 cloud-init 配置信息的一些打印：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img3.png"/>
-
-
-</p>
-<p>最后根据配置的密码成功进入：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img4.png"/>
-
-
-</p>
+<p>虚拟机启动过程中，可以看到 cloud-init 配置信息的一些打印：</p>
+<a class="lightgallery" href="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img3.png" title="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img3.png" data-thumbnail="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img3.png"
+            data-srcset="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img3.png, /posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img3.png 1.5x, /posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img3.png" width="1622" height="30" />
+    </a>
+<p>最后根据配置的密码成功进入：</p>
+<a class="lightgallery" href="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img4.png" title="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img4.png" data-thumbnail="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img4.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img4.png"
+            data-srcset="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img4.png, /posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img4.png 1.5x, /posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img4.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/vm/%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F/img4.png" width="597" height="100" />
+    </a>
 </li>
 <li>
 <p>而 <strong>CentOS-7-x86_64-GenericCloud-2003.qcow2</strong> 就是虚拟机经过配置的镜像文件，而 libvirt 启动所需的配置文件就是 <code>/etc/libvirt/qemu/guest1.xml</code>。</p>
@@ -432,7 +431,7 @@ $ genisoimage  -output seed.iso -volid cidata -joliet -rock user-data meta-data
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
 

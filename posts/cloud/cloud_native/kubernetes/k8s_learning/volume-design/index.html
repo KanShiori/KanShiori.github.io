@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Kubernetes - 存储设计 - Shiori&#39;s Blog</title><meta name="Description" content="Kubernetes Volume 设计与 CSI 基本概念"><meta property="og:title" content="Kubernetes - 存储设计" />
+<meta property="og:description" content="Kubernetes Volume 设计与 CSI 基本概念" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-11-11T14:35:42+00:00" />
+<meta property="article:modified_time" content="2023-01-29T21:13:25+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="Kubernetes - 存储设计"/>
+<meta name="twitter:description" content="Kubernetes Volume 设计与 CSI 基本概念"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/" /><link rel="prev" href="https://KanShiori.github.io/posts/net/credentials/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/volume-implementation/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Kubernetes - 存储设计",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/volume-design\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2982 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/volume-design\/","datePublished": "2021-11-11T14:35:42+00:00","dateModified": "2023-01-29T21:13:25+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": "Kubernetes Volume 设计与 CSI 基本概念"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kubernetes - 存储设计</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 学习</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-11-11">2021-11-11</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2982 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-volume-基本概念">1 Volume 基本概念</a>
+      <ul>
+        <li><a href="#11-构建流程">1.1 构建流程</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-volume-plugin">2 Volume Plugin</a></li>
+    <li><a href="#3-csi-基本架构">3 CSI 基本架构</a>
+      <ul>
+        <li><a href="#31-sidecar-容器">3.1 Sidecar 容器</a></li>
+        <li><a href="#32-csi-identity-服务">3.2 CSI Identity 服务</a></li>
+        <li><a href="#33-csi-controller-服务">3.3 CSI Controller 服务</a></li>
+        <li><a href="#34-csi-node-服务">3.4 CSI Node 服务</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-csi-相关资源对象">4 CSI 相关资源对象</a>
+      <ul>
+        <li><a href="#41-csidriver">4.1 CSIDriver</a></li>
+        <li><a href="#42-csinode">4.2 CSINode</a></li>
+        <li><a href="#43-persistentvolumeclaim">4.3 PersistentVolumeClaim</a></li>
+        <li><a href="#44-volumeattachment">4.4 VolumeAttachment</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-volume-基本概念">1 Volume 基本概念</h2>
+<p>为了支持多种多样的存储，Kubernetes 抽象出了 Volume 的概念，规范了 Volume 的操作流程与接口。而各个存储插件都围绕着 Volume 实现对应的功能。</p>
+<p>Kubernetes 把 Volume 的操作分解为了四种操作：</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img1.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img1.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img1.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img1.png" width="706" height="400" />
+    </a>
+<ul>
+<li>
+<p><important>Provision / Delete</important></p>
+<p><strong>创建与删除 Volume</strong>，也就是创建或删除实际的 Block Device。</p>
+<p>这时 Volume 的来源、容量、性能等参数是确定的。</p>
+<p>例如，AWS 创建与删除 EBS。</p>
+</li>
+<li>
+<p><important>Attach / Detach</important></p>
+<p><strong>将 Volume 接入到 Node 中，使得 Node 上可以看见对应的 Block Device</strong>。</p>
+<p>这时 Volume 的设备名称、驱动等面向操作系统的信息是确定的。</p>
+<p>例如，AWS Attach 与 Detach EBS 到 EC2 Instance 上。</p>
+</li>
+<li>
+<p><important>Mount / Unmount</important></p>
+<p><strong>将 Volume 格式化并挂载到 Node Dir 上，使得 Volume 在 Node 上是可访问的了。</strong></p>
+<p>这时，Volume 的文件系统、访问目录等信息是确定的了。</p>
+<p>例如，Mount 挂载 Block Device。</p>
+</li>
+<li>
+<p><important>SetUp / TearDown</important></p>
+<p><strong>将 Volume Node Dir 挂载到容器中，使得 Volume 在容器中可访问。</strong></p>
+<p>例如，使用 Bind Mount 挂载目录到容器中。</p>
+</li>
+</ul>
+<p>另外，对于一些特殊类型的 Volume（例如 hostpath、secret、configmap 等），因为本身不需要 Attach 等流程，仅仅实现了 SetUp 步骤。</p>
+<h3 id="11-构建流程">1.1 构建流程</h3>
+<p>下面以 PVC 为例，更加细节的说一下 Volume 的构建流程：</p>
+<ol>
+<li>
+<p><strong>Deploy PVC</strong></p>
+<p>用户 Deploy PVC 对象。</p>
+</li>
+<li>
+<p><strong>Provision Volume</strong></p>
+<p>PV Controller 基于 StorageClass 创建一个 Volume（无法绑定已有 PV 的情况下），并创建 PV 对象。</p>
+</li>
+<li>
+<p><strong>Bind PV</strong></p>
+<p>PV Controller 将 PV 与 PVC 绑定。</p>
+</li>
+<li>
+<p><strong>Attach Volume</strong></p>
+<p>Controller Manager 中的 AttachDetach Controller 将 Attach Volume 到 Node 上，Node 上看来是一个块设备。</p>
+</li>
+<li>
+<p><strong>Mount Device</strong></p>
+<p>Kubelet 中的 Volume Manager 将块设备 Mount 到一个全局的目录。</p>
+</li>
+<li>
+<p><strong>Setup Volume</strong></p>
+<p>Kubelet 中的 Volume Manager 准备 Pod 特定的目录，该目录后续用于挂载到各个容器中的目录。</p>
+</li>
+</ol>
+<h2 id="2-volume-plugin">2 Volume Plugin</h2>
+<p><a href="#1-volume-%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5" rel=""><strong>Volume 基本概念</strong></a> 中所述的流程是 Kubernetes 作为控制面的流程，到具体调用 Provision Attach 等操作时，都会调用 Volume 对应的 Plugin 的实现。</p>
+<p>目前 Kubernetes 的 Volume Plugin 可以分为三类：</p>
+<ul>
+<li>
+<p><strong>内置 Volume Plugin</strong></p>
+<p>包括 ConfigMap、HostPath 等内置的存储类型，以及一些云厂商的云存储的，其 Volume Plugin 实现是在 Controller Manager 源码中的。</p>
+<p>这些称为 In-Tree Plugin，意思是在 Kubernetes 代码树中。</p>
+</li>
+<li>
+<p><strong>CSI (Container Storage Interface)</strong></p>
+<p>可扩展的接口，Volume 的四个操作被由不同的 Controller 负责：</p>
+<ul>
+<li>Provision / Delete - CSI Plugin Watch PVC 资源并处理</li>
+<li>Attach / Detach - CSI Plugin Watch VolumeAttachment 资源并处理</li>
+<li>Mount / Unmount - Kubelet 调用 CSI Plugin 的 RPC 接口处理</li>
+<li>SetUp / TearDown - Kubelet 处理 CSI Plugin 的 RPC 接口处理</li>
+</ul>
+</li>
+<li>
+<p><strong>FlexVolume</strong> <important>(deprecated)</important></p>
+<p>可扩展的接口，通过可执行文件进行交互，Controller Manager 调用可执行文件的命令来操作 Volume。</p>
+</li>
+</ul>
+<h2 id="3-csi-基本架构">3 CSI 基本架构</h2>
+<p>对于 Kubernetes 层面，CSI Plugin 是一个 Controller + RPC Service：</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img2.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img2.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img2.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img2.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img2.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img2.png" width="560" height="430" />
+    </a>
+<ul>
+<li><strong>Controller</strong> - 负责 Volume 的 Provision/Delete + Attach/Detach 操作，这时 Kubernetes 与 Controller 通过 PVC 与 VolumeAttachment 两个资源进行交互</li>
+<li><strong>RPC Service</strong> - 提供给 Volume 的 Mount/Unmount 接口，Kubelet 通过调用 Mount/Unmount 接口与 RPC Service 交互。</li>
+</ul>
+<p>为了简化 CSI Plugin 的实现复杂度，Kubernetes 提供了一些通用的容器，用以实现 Controller 大部分的控制逻辑，用户只需要实现更加底层的 Volume 操作逻辑即可。</p>
+<p>CSI Plugin 的架构如下：</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img3.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img3.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img3.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img3.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img3.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/img3.png" width="1075" height="300" />
+    </a>
+<ul>
+<li>
+<p><important>Sidecar</important> - 一组实现了 CSI Plugin 的通用控制逻辑的容器</p>
+<p>例如 Watch PVC/VolumeAttachment 以触发 Volume 操作。</p>
+<p>这些容器由 Kubernetes 社区维护，以减少实现 CSI 的重复代码。</p>
+</li>
+<li>
+<p><important>Driver</important> - 一个 gRPC Service，对外提供的三个 Service：</p>
+<ul>
+<li><important>CSI Identity</important> - 提供查询 CSI 插件信息的接口；</li>
+<li><important>CSI Controller</important> - 提供对 Volume 的管理接口；</li>
+<li><important>CSI Node</important> - 提供 Node 上操作接口；</li>
+</ul>
+<p>每个 Service 提供了具体 Volume 操作的接口，提供给 Sidecar 与 Kubelet 调用。</p>
+</li>
+</ul>
+<p>可以看到，这样用户只需要实现一个 CSI Driver 就可以构建一个 CSI Plugin 了。</p>
+<h3 id="31-sidecar-容器">3.1 Sidecar 容器</h3>
+<p>Sidecar 容器会包含<important> Watch 资源的工作，并执行 CSI Driver 的回调函数，然后更新相关的资源</important>。</p>
+<p>通常，这些容器用于与 CSI Driver 的容器捆绑，作为一个 Pod 部署在一起。</p>
+<ul>
+<li>
+<p><a href="https://github.com/kubernetes-csi/node-driver-registrar" target="_blank" rel="noopener noreffer"><strong>node-driver-registrar</strong></a></p>
+<p>容器调用 CSI Node 的 <code>NodeGetInfo()</code> 接口，<strong>将 CSI Node 注册到 Kubelet</strong>。</p>
+</li>
+<li>
+<p><a href="https://github.com/kubernetes-csi/external-provisioner" target="_blank" rel="noopener noreffer"><strong>external-provisioner</strong></a></p>
+<p>容器会 Watch <code>PVC</code> 资源，并调用 CSI Controller 的 <code>CreateVolume()</code> 接口来<strong>创建一个 Volume</strong>。</p>
+</li>
+<li>
+<p><a href="https://github.com/kubernetes-csi/external-attacher" target="_blank" rel="noopener noreffer"><strong>external-attacher</strong></a></p>
+<p>容器会 Watch <code>VolumeAttachment</code> 资源，并调用 CSI Controller 的 <code>ControllerPublishVolume()</code> 与 <code>ControllerUnpublishVolume()</code> 接口，<strong>将 Volume Attach 到指定的 Node</strong>。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">external-attacher 仅仅用于 Attach 操作，而 Volume 的 MountDevice 与 Setup 操作，都是由 Kubelet 直接调用 CSI Node 插件的接口实现的。</div>
+        </div>
+    </div>
+</li>
+<li>
+<p><a href="https://github.com/kubernetes-csi/external-snapshotter" target="_blank" rel="noopener noreffer"><strong>external-snapshotter</strong></a></p>
+<p>snapshot controller 容器会 Watch <code>VolumeSnapshot</code> 与 <code>VolumeSnapshotContent</code> 资源，snapshotter 容器会 Watch <code>VolumeSnapshotConent</code> 资源，并负责调用 CSI Controller 插件的 <code>CreateSnapshot()</code>、<code>DeleteSnapshot()</code> 与 <code>ListSnapshot()</code> 接口。</p>
+</li>
+<li>
+<p><a href="https://github.com/kubernetes-csi/external-resizer" target="_blank" rel="noopener noreffer"><strong>external-resizer</strong></a></p>
+<p>容器 Watch <code>PersistentVolumeClaim</code> 资源的修改事件，当用户请求扩容 PVC 时，调用 CSI Controller 的 <code>ControllerExpandVolume()</code> 接口<strong>扩容 Volume</strong>。</p>
+</li>
+<li>
+<p><a href="https://github.com/kubernetes-csi/livenessprobe" target="_blank" rel="noopener noreffer"><strong>livenessprobe</strong></a></p>
+<p>容器会监控 CSI 插件的监控状态，并通过 Liveness Probe 提供给 Kubernetes。</p>
+</li>
+</ul>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">查看官方文档 <a href="https://kubernetes-csi.github.io/docs/sidecar-containers.html" target="_blank" rel="noopener noreffer"><strong>Kubernetes CSI Sidecar Containers</strong></a> 来了解完整的 Sidecar 容器。</div>
+        </div>
+    </div>
+<h3 id="32-csi-identity-服务">3.2 CSI Identity 服务</h3>
+<p><strong><code>CSI Identity</code></strong> 服务用于<strong>提供插件的一些信息</strong>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="kd">service</span> <span class="n">Identity</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 返回插件的 name 与 version
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">GetPluginInfo</span><span class="p">(</span><span class="n">GetPluginInfoRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">GetPluginInfoResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 得到插件拥有的功能
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">GetPluginCapabilities</span><span class="p">(</span><span class="n">GetPluginCapabilitiesRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">GetPluginCapabilitiesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 查询插件是否正在运行中
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">Probe</span> <span class="p">(</span><span class="n">ProbeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ProbeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span><span class="p">}</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="33-csi-controller-服务">3.3 CSI Controller 服务</h3>
+<p><strong><code>CSI Controller</code></strong> 服务<strong>定义了对 Volume 的管理接口</strong>，包括：Provision/Delete、Attach/Detach、Snapshot 等操作。这些操作都是属于 Controller 的操作，在 Master 节点上执行。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="kd">service</span> <span class="n">Controller</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 创建一个 Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">CreateVolume</span> <span class="p">(</span><span class="n">CreateVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">CreateVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 删除一个 Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">DeleteVolume</span> <span class="p">(</span><span class="n">DeleteVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">DeleteVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// Attach Volume 到指定的 Node
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerPublishVolume</span> <span class="p">(</span><span class="n">ControllerPublishVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerPublishVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// Detach Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerUnpublishVolume</span> <span class="p">(</span><span class="n">ControllerUnpublishVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerUnpublishVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 检查一个 Volume 的能力
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ValidateVolumeCapabilities</span> <span class="p">(</span><span class="n">ValidateVolumeCapabilitiesRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ValidateVolumeCapabilitiesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 查询已经创建的所有的 Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ListVolumes</span> <span class="p">(</span><span class="n">ListVolumesRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ListVolumesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 查询存储池的容量
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">GetCapacity</span> <span class="p">(</span><span class="n">GetCapacityRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">GetCapacityResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 查询 Controller 支持的功能
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerGetCapabilities</span> <span class="p">(</span><span class="n">ControllerGetCapabilitiesRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerGetCapabilitiesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 创建一个 Snapshot
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">CreateSnapshot</span> <span class="p">(</span><span class="n">CreateSnapshotRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">CreateSnapshotResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 删除一个 Snapshot
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">DeleteSnapshot</span> <span class="p">(</span><span class="n">DeleteSnapshotRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">DeleteSnapshotResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 查询所有创建的 Snapshot
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ListSnapshots</span> <span class="p">(</span><span class="n">ListSnapshotsRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ListSnapshotsResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 扩容一个 Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerExpandVolume</span> <span class="p">(</span><span class="n">ControllerExpandVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerExpandVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 查询一个 Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">ControllerGetVolume</span> <span class="p">(</span><span class="n">ControllerGetVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">ControllerGetVolumeResponse</span><span class="p">)</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>        <span class="k">option</span> <span class="p">(</span><span class="n">alpha_method</span><span class="p">)</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span><span class="err">
+</span><span class="err"></span>    <span class="p">}</span><span class="err">
+</span><span class="err"></span><span class="p">}</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="34-csi-node-服务">3.4 CSI Node 服务</h3>
+<p><strong><code>CSI Node</code></strong> 提供<strong>在 Node 上 Volume 的操作</strong>，包括 MountDevice 与 Setup 等操作。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="kd">service</span> <span class="n">Node</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 将 Volume 挂载到一个全局目录，即 MountDevice 操作
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeStageVolume</span> <span class="p">(</span><span class="n">NodeStageVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeStageVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 将 Volume 取消挂载全局目录
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeUnstageVolume</span> <span class="p">(</span><span class="n">NodeUnstageVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeUnstageVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 将 Volume 挂载到 Pod 目录，即 Setup 操作
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodePublishVolume</span> <span class="p">(</span><span class="n">NodePublishVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodePublishVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 将 Volume 取消挂载 Pod 目录
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeUnpublishVolume</span> <span class="p">(</span><span class="n">NodeUnpublishVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeUnpublishVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 返回 Volume 信息
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeGetVolumeStats</span> <span class="p">(</span><span class="n">NodeGetVolumeStatsRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeGetVolumeStatsResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 扩容 Volume
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeExpandVolume</span><span class="p">(</span><span class="n">NodeExpandVolumeRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeExpandVolumeResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 返回 Node 插件功能，例如是否只是 stage/unstage
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeGetCapabilities</span> <span class="p">(</span><span class="n">NodeGetCapabilitiesRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeGetCapabilitiesResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// 返回插件对应的节点信息
+</span><span class="c1"></span>  <span class="k">rpc</span> <span class="n">NodeGetInfo</span> <span class="p">(</span><span class="n">NodeGetInfoRequest</span><span class="p">)</span><span class="err">
+</span><span class="err"></span>    <span class="k">returns</span> <span class="p">(</span><span class="n">NodeGetInfoResponse</span><span class="p">)</span> <span class="p">{}</span><span class="err">
+</span><span class="err"></span><span class="p">}</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="4-csi-相关资源对象">4 CSI 相关资源对象</h2>
+<h3 id="41-csidriver">4.1 CSIDriver</h3>
+<p><strong><code>CSIDriver</code></strong> 用于<strong>让 Kubernetes 发现该 CSI 插件，并知晓其拥有的功能</strong>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage.k8s.io/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CSIDriver</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mycsidriver.example.com</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">attachRequired</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">podInfoOnMount</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">fsGroupPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">File</span><span class="w"> </span><span class="c"># added in Kubernetes 1.19, this field is GA as of Kubernetes 1.23</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumeLifecycleModes</span><span class="p">:</span><span class="w"> </span><span class="c"># added in Kubernetes 1.16, this field is beta</span><span class="w">
+</span><span class="w">    </span>- <span class="l">Persistent</span><span class="w">
+</span><span class="w">    </span>- <span class="l">Ephemeral</span><span class="w">
+</span><span class="w">  </span><span class="nt">tokenRequests</span><span class="p">:</span><span class="w"> </span><span class="c"># added in Kubernetes 1.20. See status at https://kubernetes-csi.github.io/docs/token-requests.html#status</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">audience</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;gcp&#34;</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">audience</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&#34;</span><span class="w"> </span><span class="c"># empty string means defaulting to the `--api-audiences` of kube-apiserver</span><span class="w">
+</span><span class="w">      </span><span class="nt">expirationSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">3600</span><span class="w">
+</span><span class="w">  </span><span class="nt">requiresRepublish</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="c"># added in Kubernetes 1.20. See status at https://kubernetes-csi.github.io/docs/token-requests.html#status</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>相关字段含义如下：</p>
+<ul>
+<li><code>name</code> - CSI Driver 的名字</li>
+<li><a href="https://kubernetes-csi.github.io/docs/skip-attach.html" target="_blank" rel="noopener noreffer"><strong>attachRequired</strong></a> - 表示 Volume 是否需要 Attach 操作（Kubernetes 是否需要创建 VolumeAttachment 资源）</li>
+<li><a href="https://kubernetes-csi.github.io/docs/pod-info.html" target="_blank" rel="noopener noreffer"><strong>podInfoOnMount</strong></a> - 表明当调用 Mount 操作时，是否需要传递额外的 Pod 信息给 CSI Driver</li>
+<li><a href="https://kubernetes-csi.github.io/docs/support-fsgroup.html" target="_blank" rel="noopener noreffer"><strong>fsGroupPolicy</strong></a> - 表示 CSI Driver 是否支持：当 Mount Volume 时，修改 Volume 的所有权与权限</li>
+<li><code>volumeLifecycleModes</code> - Volume 支持的模式</li>
+<li><code>tokenRequests</code> - Kubelet 调用 CSI Node 的 NodePublishVolume() 接口时是否需要提供 Pod 的 ServiceAccount</li>
+<li><code>requiresRepublish</code> - 为 true 时，Kubelet 会周期性调用 CSI Node 的 NodePublishVolume() 接口</li>
+</ul>
+<h3 id="42-csinode">4.2 CSINode</h3>
+<p>CSI Driver 可以生成特定的关于 Node 的信息，将其保存到 <strong><code>CSINode</code></strong> 对象中，而不用将信息保存到 Kubernetes Node 对象中。Kubernetes 会创建 <code>CSINode</code> 对象，并根据已经注册的 CSIDriver 来填充 <code>CSINode</code> 信息。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CSINode</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kube-node-5</span><span class="w">
+</span><span class="w">  </span><span class="nt">ownerReferences</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Node</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kube-node-5</span><span class="w">
+</span><span class="w">    </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l">f442c38a-f0f3-4a79-8153-3e5bcd7c91a4</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">drivers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">hostpath.csi.k8s.io</span><span class="w">
+</span><span class="w">    </span><span class="nt">nodeID</span><span class="p">:</span><span class="w"> </span><span class="l">kube-node-5</span><span class="w">
+</span><span class="w">    </span><span class="nt">topologyKeys</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">topology.hostpath.csi/node</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>drivers - 该 Node 上运行的所有 CSI Driver
+<ul>
+<li>name - CSI Driver 的名字</li>
+<li>nodeID - Driver 提供的该 Node ID</li>
+<li><a href="https://kubernetes-csi.github.io/docs/topology.html" target="_blank" rel="noopener noreffer"><strong>topologyKeys</strong></a> - 针对于该 CSI 的 Topology Key</li>
+</ul>
+</li>
+</ul>
+<h3 id="43-persistentvolumeclaim">4.3 PersistentVolumeClaim</h3>
+<p>当用户部署对应 CSI 插件的 PVC 时，由 CSI Controller 来负责创建对应的 PV 并绑定到指定的 PVC。等待 PVC 与 PV 相互绑定后，Kubernetes 就继续进行 Attach 等流程了。</p>
+<p>PV 定义中使用 <code>spec.csi</code> 字段来表明该 PV 是 CSI 提供的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PersistentVolume</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pv0003</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">csi</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l">hostpath.csi.k8s.io</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumeHandle</span><span class="p">:</span><span class="w"> </span><span class="l">5a760aab-d579-11eb-ba5c-fa03df0e077d</span><span class="w">
+</span><span class="w">    </span><span class="nt">readonly</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="w">    </span><span class="nt">fsType</span><span class="p">:</span><span class="w"> </span><span class="l">Filesystem</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumeAttributes</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">standard</span><span class="w">
+</span><span class="w">      </span><span class="nt">storage.kubernetes.io/csiProvisionerIdentity</span><span class="p">:</span><span class="w"> </span><span class="m">1624246373313-8081</span>-<span class="l">hostpath.csi.k8s.io-kube-node-5</span><span class="w">
+</span><span class="w">    </span><span class="c"># controllerPublishSecretRef: []</span><span class="w">
+</span><span class="w">    </span><span class="c"># nodeStageSecretRef: []</span><span class="w">
+</span><span class="w">    </span><span class="c"># nodePublishSecretRef: []</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>driver - CSI Driver 的名字</li>
+<li>volumeHandle - 插件提供的 Volume ID，用于 Kubernetes 与插件共同标识该 Volume</li>
+<li>readonly - 表明 Volume 是否是只读</li>
+<li>fsType - Volume 类型</li>
+<li>volumeAttributes - Volume 的一些元信息，将通过 volume_context 传递给 CSI 插件</li>
+<li>controllerPublishSecretRef - 调用 CSI Controller 的 ControllerPublishVolume() 与 ControllerUnpublishVolume() 时传递的 Secret 对象</li>
+<li>nodeStageSecretRef - 调用 CSI Node 的 NodeStageVolume() 时传递的 Secret 对象</li>
+<li>nodePublishSecretRef - 调用 CSI Node 的 NodePublishVolume() 时传递的 Secret 对象</li>
+</ul>
+<h3 id="44-volumeattachment">4.4 VolumeAttachment</h3>
+<p>当 Kubernetes 需要 Attach Volume 时，其 Kubernetes 会创建 <code>VolumeAttachment</code> 资源表示需要进行 Attach，而 <strong>CSI Controller 需要监听 VolumeAttachment 资源然后进行实际的 Attach 操作</strong>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">VolumeAttachment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pv0003</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">attacher</span><span class="p">:</span><span class="w"> </span><span class="l">www.example.csi.com</span><span class="w">
+</span><span class="w">  </span><span class="nt">nodeName</span><span class="p">:</span><span class="w"> </span><span class="l">node-1</span><span class="w">
+</span><span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">persistentVolumeName</span><span class="p">:</span><span class="w"> </span><span class="l">pvc0003</span><span class="w">
+</span><span class="w">    </span><span class="nt">inlineVolumeSpec</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="c"># pvc spec</span><span class="w">
+</span><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">attached</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">attachmentMetadata</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w"></span><span class="c">#   attachError:</span><span class="w">
+</span><span class="w"></span><span class="c">#     time:</span><span class="w">
+</span><span class="w"></span><span class="c">#     message:</span><span class="w">
+</span><span class="w"></span><span class="c">#   detachError:</span><span class="w">
+</span><span class="w"></span><span class="c">#     time:</span><span class="w">
+</span><span class="w"></span><span class="c">#     message:</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>spec
+<ul>
+<li>attacher - 需要执行 Attach 操作的 CSI Driver</li>
+<li>nodeName - 目标 Node</li>
+<li>source
+<ul>
+<li>persistentVolumeName - 指定被 Attach 的 PVC</li>
+<li>inlineVolumeSpec - 使用内联的 PVC</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>status
+<ul>
+<li>attached - 表明是否成功 Attach</li>
+<li>attachmentMetadata - Attach 成功后填充的一些元信息，以提供给后续的操作</li>
+<li>attachError - 上一次 Attach 失败信息</li>
+<li>detachError - 上一次 Detach 失败信息</li>
+</ul>
+</li>
+</ul>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://draveness.me/kubernetes-volume/" target="_blank" rel="noopener noreffer"><strong>Blog：详解 Kubernetes Volume 的实现原理</strong></a></li>
+<li><a href="http://bingerambo.com/posts/2021/02/kubelet-volume-manager%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" target="_blank" rel="noopener noreffer"><strong>Blog：kubelet volume manager 源码分析</strong></a></li>
+<li><a href="https://github.com/container-storage-interface/spec/blob/master/csi.proto" target="_blank" rel="noopener noreffer"><strong>CSI Proto</strong></a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2023-01-29&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bda434c4d3e8b30c4cf9c964c1a89f0abe09f3ab" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bda434c4d3e8b30c4cf9c964c1a89f0abe09f3ab: Post(informer-implement) (#31)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bda434c</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/" data-title="Kubernetes - 存储设计" data-hashtags="k8s,云计算"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/" data-hashtag="k8s"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/" data-title="Kubernetes - 存储设计"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/" data-title="Kubernetes - 存储设计"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/" data-title="Kubernetes - 存储设计"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/" data-title="Kubernetes - 存储设计"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/" data-title="Kubernetes - 存储设计"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/net/credentials/" class="prev" rel="prev" title="Cookie-Session 与 JWT"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Cookie-Session 与 JWT</a>
+            <a href="/posts/cloud/cloud_native/kubernetes/k8s_programming/volume-implementation/" class="next" rel="next" title="K8s 实现 - Volume 实现">K8s 实现 - Volume 实现<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightgallery":true,"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

@@ -125,3 +125,48 @@ func Operate(resources []Resources) {
 ```
 
 "判断" 与 "操作" 分离使得整体的 Operate 分为了清晰的步骤，更容易阅读与扩展。如果 Operate 之间互斥，可以使用 [**如何使用标志位互斥**](#如何使用标志位互斥) 中描述的代码。
+
+## 为什么需要 `last-applied-configuration`
+
+在 [**kubectl apply**](../../k8s_learning/update-resource-mechanism/#31-kubectl-apply) 实现中，默认的 Client Side Apply 使用了 `last-applied-configuration` Annotation 记录上一次的 Apply Config，由此来进行 Diff，而不是直接使用 Object 来 Diff。
+
+一开始感觉直接使用当前 Object 进行 Diff 就可以得出 “期望” 与 “实际” 状态之间的差异，为了需要一个看起来多余的 Annotation 来记录呢？
+
+往往一个 Object 的不同字段可能会由不同的 Controller 更新，也会被手动更新一些字段。这时候你的部分字段不是由 Apply Config 控制的，如果使用 Object 直接比较会导致一些字段的丢失。
+
+我们通过一个例子说明，如果直接使用 Object 来进行 Diff 会发生什么：
+
+1. 第一次使用 Apply Config 更新下面的 Object。这时候 `fieldA` 和 `fieldB` 都是由 Apply 来更新的。
+
+   ```yaml
+   kind: Object
+   spec:
+     fieldA: aaa
+     fieldB: bbb
+   ```
+
+2. 如果该 Object 另外字段也会由其他 Controller 管理，那么可能其他 Controller 更新了 `fieldC` 字段。
+
+   ```yaml
+   kind: Object
+   spec:
+     fieldA: aaa
+     fieldB: bbb
+     fieldC: ccc
+   ```
+
+3. 但是，`fieldC` 字段的更新并不会体现在你的 Apply Config 中，这时候你再次 Apply 就会导致 `fieldC` 字段的丢失。
+
+   ```yaml
+   kind: Object
+   spec:
+     fieldA: aaa
+     fieldB: bbb
+     # fieldC: ccc # deleted by apply
+   ```
+
+问题最关键地点在于，Apply 的语义是 Update（而不是 Patch），所以需要知道 Apply 管理的是哪些字段，从而不影响其他的字段。因此需要额外的 Annotation `last-applied-configuration` 来记录管理的哪些字段。
+
+同样，这也是为啥后续 Server Side Apply 能够不需要额外 Annotation 的原因。因为 Server Side Apply 提供了字段所有权的机制，知道哪些字段是哪些 Controller 管理的，所以不需要 `last-applied-configuration` 记录了。
+
+
