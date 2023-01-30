@@ -720,7 +720,7 @@ func NewInTreeRegistry() runtime.Registry {
 
 ### 5.3 Plugin 实现
 
-各个 Plugin 的接口实现参考 [**Scheduler Framework 扩展点**](8-extend-scheduler/#1-scheduler-framework-扩展点)。
+各个 Plugin 的接口实现参考 [**Scheduler Framework 扩展点**](../8-extend-scheduler/#1-scheduler-framework-扩展点)。
 
 下面给出一些 Plugin 的一个实现作为示例。
 

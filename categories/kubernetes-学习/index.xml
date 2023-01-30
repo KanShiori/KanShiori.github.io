@@ -69,10 +69,10 @@
 </item>
 <item>
     <title>Kubernetes - 存储设计</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume/</link>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/</link>
     <pubDate>Thu, 11 Nov 2021 14:35:42 &#43;0000</pubDate>
     <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume/</guid>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/</guid>
     <description><![CDATA[1 Volume 基本概念 为了支持多种多样的存储，Kubernetes 抽象出了 Volume 的概念，规范了 Volume 的操作流程与接口。而各个存储插件都围绕着 Volume 实现对应的功能。]]></description>
 </item>
 <item>

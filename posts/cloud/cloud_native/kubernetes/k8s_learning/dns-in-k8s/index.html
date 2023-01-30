@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-07T13:16:11+00:00" />
-<meta property="article:modified_time" content="2022-12-29T15:20:59+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-01-29T21:13:25+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -17,7 +17,7 @@
 <meta name="twitter:title" content="Kubernetes - 集群中的 DNS"/>
 <meta name="twitter:description" content="1 Pod 的 DNS 1.1 Pod 的 DNS 域名 对每个 Pod 来说，CoreDNS 会为其设置一个 &lt;pod_ip&gt;.&lt;namespace&gt;.pod.&lt;clust-domain&gt; 格式的 DNS 域名。 1 2 3 4 5 6 7 # 访问 POD IP DNS $ nslookup 192-168-166-168.tidb-cluster-dev.pod.cluster.local Server: 10.96.0.10 Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local Name: 192-168-166-168.tidb-cluster-dev.pod.cluster.local Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-peer.tidb-cluster-dev.svc.cluster.local 对于 Deployment"/>
 <meta name="application-name" content="Shiori&#39;s Blog">
-<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/pv-pvc-storageclass/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
     {
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/dns-in-k8s\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1455 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/dns-in-k8s\/","datePublished": "2021-06-07T13:16:11+00:00","dateModified": "2022-12-29T15:20:59+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1490 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/dns-in-k8s\/","datePublished": "2021-06-07T13:16:11+00:00","dateModified": "2023-01-29T21:13:25+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kubernetes - 集群中的 DNS</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-06-07">2021-06-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1455 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-06-07">2021-06-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1490 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -129,11 +129,11 @@
     <li><a href="#1-pod-的-dns">1 Pod 的 DNS</a>
       <ul>
         <li><a href="#11-pod-的-dns-域名">1.1 Pod 的 DNS 域名</a></li>
-        <li><a href="#12-自定义-hostname-和-subdomain">1.2 自定义 hostname 和 subdomain</a></li>
+        <li><a href="#12-自定义-hostname-和-subdomain">1.2 自定义 Hostname 和 Subdomain</a></li>
         <li><a href="#13-自定义-dns-配置">1.3 自定义 DNS 配置</a></li>
       </ul>
     </li>
-    <li><a href="#2-service-中的-dns">2 Service 中的 DNS</a></li>
+    <li><a href="#2-service-的-dns">2 Service 的 DNS</a></li>
     <li><a href="#3-node-本地-dns-缓存">3 Node 本地 DNS 缓存</a></li>
     <li><a href="#4-coredns">4 CoreDNS</a>
       <ul>
@@ -167,9 +167,9 @@ Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-p
 </code></pre></td></tr></table>
 </div>
 </div><p>对于 Deployment 或 DaemonSet 类型创建的 Pod，CoreDNS 会为其管理的每个 Pod 设置一个 <code>&lt;pod_ip&gt;.&lt;depolyment/daemonset_name&gt;.svc.&lt;cluster_domain&gt;</code> 格式的 DNS 域名。</p>
-<h3 id="12-自定义-hostname-和-subdomain">1.2 自定义 hostname 和 subdomain</h3>
-<p>默认情况下，Pod 内容器的 hostname 被设置为 Pod 的名称。因此，使用副本控制器时 Pod 名称会包含随机串，因此 hostname 无法固定。</p>
-<p>可以通过 <code>spec.hostname</code> 字段定义容器环境的 hostname，通过 <code>spec.subdomain</code> 字段定义容器环境的子域名。</p>
+<h3 id="12-自定义-hostname-和-subdomain">1.2 自定义 Hostname 和 Subdomain</h3>
+<p>默认情况下，Pod 内容器的 Hostname 被设置为 Pod 的名称。因此，使用副本控制器时 Pod 名称会包含随机串，所以 Pod 的 Hostname 不是固定的。</p>
+<p>可以通过 Pod 定义中 <code>spec.hostname</code> 字段定义容器环境的 Hostname，通过 <code>spec.subdomain</code> 字段定义容器环境的子域名。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -182,8 +182,9 @@ Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-p
 </span><span class="w">  </span><span class="nt">subdomain</span><span class="p">:</span><span class="w"> </span><span class="l">mysubdomain</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><p>Pod 创建成功后，Kubernetes 为其设置 DNS 域名为 <code>&lt;hostname&gt;.&lt;subdomain&gt;.&lt;namespace&gt;.svc.&lt;cluster_domain&gt;</code>。这时通过部署一个 Headless Service 就可以在 DNS 服务器中自动创建对应 DNS 记录。这样就可以通过该 DNS 域名来访问 Pod。</p>
-<p>实际上，StatefulSet 就是通过这种方式来使用 Headless Service 的。查看一个 StatefulSet 管理的 Pod：</p>
+</div><p>Pod 创建成功后，Kubernetes 为其设置 DNS 域名为 <code>&lt;hostname&gt;.&lt;subdomain&gt;.&lt;namespace&gt;.svc.&lt;cluster_domain&gt;</code>。</p>
+<p><strong>如果为 Pod 部署一个 Headless Service，那么 CoreDNS 会自动创建对应 DNS 记录</strong>。这样就可以通过该 DNS 域名来访问 Pod。</p>
+<p>实际上，StatefulSet 就是通过 Headless Service + Pod Spec 来固定每个 Pod 的 DNS 域名的。查看一个 StatefulSet 管理的 Pod：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -191,12 +192,18 @@ Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-p
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">$ kubectl get po my-tidb-cluster-dev-pd-0 -o yaml</span><span class="w">
-</span><span class="w"></span><span class="c"># ...</span><span class="w">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># kubectl get pod my-tidb-cluster-dev-pd-0 -o yaml</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
 </span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">my-tidb-cluster-dev-pd-0</span><span class="w"> </span><span class="c"># 固定 pod 的 hostname</span><span class="w">
+</span><span class="w">  </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">my-tidb-cluster-dev-pd-0     </span><span class="w"> </span><span class="c"># 固定 pod 的 hostname</span><span class="w">
 </span><span class="w">  </span><span class="nt">subdomain</span><span class="p">:</span><span class="w"> </span><span class="l">my-tidb-cluster-dev-pd-peer </span><span class="w"> </span><span class="c"># 在 StatefulSet 中定义的 Headless Service name</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
@@ -204,10 +211,18 @@ Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-p
 <p>通过 Pod 定义中的 <code>spec.dnsPolicy</code> 可以定义使用的 DNS 策略。</p>
 <p>目前包含以下的 DNS 策略：</p>
 <ul>
-<li>Default ：从 Node 继承 DNS</li>
-<li>ClusterFirst ：与配置的集群 domain 后缀不匹配的 DNS 查询，都会转发到从 Node 继承的上游服务器</li>
-<li>ClusterFirstWithHostNet ：如果 Pod 使用 hostNetwork 运行，DNS 应该使用 host</li>
-<li>None ：忽略 Kubernetes DNS 设置，由用户通过 <code>spec.dnsConfig</code> 字段进行配置</li>
+<li>
+<p><strong>Default</strong> - 从 Node 继承 DNS 配置</p>
+</li>
+<li>
+<p><strong>ClusterFirst</strong> - 先查询集群内部的 DNS 服务器，不匹配集群 Cluster Domain 则转发查询 Node 的 DNS</p>
+</li>
+<li>
+<p><strong>ClusterFirstWithHostNet</strong> - 如果 Pod 使用 HostNetwork 运行，DNS 应该使用 Host，否则与 <strong>ClusterFirst</strong> 相同</p>
+</li>
+<li>
+<p><strong>None</strong> - 忽略 Kubernetes DNS 设置，由用户通过 <code>spec.dnsConfig</code> 字段进行配置</p>
+</li>
 </ul>
 <p>通过 <code>spec.dnsConfig</code> 字段进行更加细节的 DNS 相关配置。</p>
 <div class="highlight"><div class="chroma">
@@ -240,7 +255,7 @@ Address 1: 192.168.166.168 my-tidb-cluster-dev-tidb-0.my-tidb-cluster-dev-tidb-p
 </span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">edns0</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><p>Pod 创建后，容器内的 <em>/etc/resolv.conf</em> 文件会被设置：</p>
+</div><p>Kubernetes 通过设置 Container 中的 <code>/etc/resolv.conf</code> 文件来配置 DNS 策略：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -253,27 +268,24 @@ search ns1.svc.cluster-domain.example my.dns.search.suffix
 option natods:2 eth0
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="2-service-中的-dns">2 Service 中的 DNS</h2>
+</div><h2 id="2-service-的-dns">2 Service 的 DNS</h2>
 <p>Service DNS 相关已经在 <a href="../service-and-endpoint/" rel=""><strong>Service</strong></a> 一文中说明，这里仅仅简单提及一下。</p>
 <p>每个 Service 会自动对应一个 DNS 域名，命名方式为 <code>&lt;service&gt;.&lt;namespace&gt;.svc.&lt;cluster_domain&gt;</code>，cluster_domain 默认为 cluster.local。</p>
-<p>通过改变 namespace 可以访问不同 namespace 下的 Service</p>
+<p>通过改变 namespace 可以访问不同 namespace 下的 Service。</p>
 <h2 id="3-node-本地-dns-缓存">3 Node 本地 DNS 缓存</h2>
-<p>集群中的 DNS 服务都是通过 &ldquo;kube-dns&rdquo; 的 Service 提供的，所有容器都可以通过其 ClusterIP 地址去进行 DNS 域名解析。</p>
-<p>为了缓解 DNS 服务的压力，Kubernetes 引入了 Node 本地 DNS 缓存，使得 DNS 域名解析可以在 Node 本地缓存，不用每次跨主机去 CoreDNS 进行解析。</p>
-<p>使用 Node 本地 DNS 缓存后，Pod 进行 DNS 解析的流程如下：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/img1.png"/>
-
-
-</p>
-<p>Node 本地 DNS 缓存的功能是通过部署一个 DaemonSet 实现的，其 Pod 运行的 <em>k8s.gcr.io/k8s-dns-node-cache</em> 镜像实现了 DNS 缓存功能。</p>
+<p>默认下，集群中的 DNS 服务都是通过 <code>kube-dns</code> 的 Service 提供的，所有容器都可以通过其 ClusterIP 地址去访问 CoreDNS 进行 DNS 域名解析。</p>
+<p>为了缓解 DNS 服务器的压力，Kubernetes 引入了 Node 本地 DNS 缓存，使得 DNS 域名解析可以在 Node 本地缓存，不用每次跨主机去 CoreDNS 进行解析。</p>
+<p>使用 Node 本地 DNS 缓存后，Pod 进行 DNS 解析的流程如下：</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/img1.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/img1.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/img1.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/dns-in-k8s/img1.png" width="762" height="400" />
+    </a>
+<p>Node 本地 DNS 缓存的功能是通过部署一个 DaemonSet 实现的，其 Pod 运行的 <code>k8s.gcr.io/k8s-dns-node-cache</code> 镜像实现了 DNS 缓存功能。</p>
 <p>具体部署方式见文档：<a href="https://kubernetes.io/zh/docs/tasks/administer-cluster/nodelocaldns/" target="_blank" rel="noopener noreffer"><strong>在 Kubernetes 集群中使用 NodeLocal DNSCache</strong></a></p>
 <h2 id="4-coredns">4 CoreDNS</h2>
 <p>从 1.11 版本开始，Kubernetes 集群的 DNS 服务由 CoreDNS 提供，其用 Go 实现的一个高性能、插件式、易扩展的 DNS 服务器。</p>
@@ -288,16 +300,16 @@ option natods:2 eth0
 <li>kubernetes ：从 Kubernetes 中读取 zone 数据</li>
 <li>etcd ：从 etcd 中读取 zone 记录，可用于自定义域名记录</li>
 <li>file ：从 RFC11035 格式文件读取 zone 数据</li>
-<li>hosts ：使用 /etc/hosts 文件或者其他文件读取 zone 数据，可用于自定义域名记录</li>
+<li>hosts ：使用 <code>/etc/hosts</code> 文件或者其他文件读取 zone 数据，可用于自定义域名记录</li>
 <li>auto ：从磁盘中自动加载区域文件</li>
 <li>reload ：定时重新加载 Corefile 配置文件内容</li>
 <li>forward ：转发域名查询到上游 DNS 服务器上</li>
 <li>prometheus ：为 Prometheus 系统提供采集性能指标数据 URL</li>
-<li>pprof ：在 URL 路径 /debug/pprof 提供性能数据</li>
+<li>pprof ：在 URL 路径 <code>/debug/pprof</code> 提供性能数据</li>
 <li>log ：对 DNS 查询进行日志记录</li>
 <li>errors ：对错误信息进行日志记录</li>
 </ul>
-<p>默认下，CoreDNS 的 Pod 会使用 <em>coredns</em> ConfigMap 提供对 CoreDNS 的配置。因此，你可以通过配置此 ConfigMap 进行 CoreDNS 的配置。</p>
+<p>默认下，CoreDNS 的 Pod 会使用 <code>coredns</code> ConfigMap 提供对 CoreDNS 的配置。因此，你可以通过配置此 ConfigMap 进行 CoreDNS 的配置。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -327,32 +339,32 @@ option natods:2 eth0
 </span><span class="lnt">25
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ k get configmaps  coredns -n kube-system -o yaml
-<span class="c1"># ...</span>
-kind: ConfigMap
-data:
-  Corefile: <span class="p">|</span>
-    .:53 <span class="o">{</span>
-        errors
-        health <span class="o">{</span>
-           lameduck 5s
-        <span class="o">}</span>
-        ready
-        kubernetes cluster.local in-addr.arpa ip6.arpa <span class="o">{</span>
-           pods insecure
-           fallthrough in-addr.arpa ip6.arpa
-           ttl <span class="m">30</span>
-        <span class="o">}</span>
-        prometheus :9153
-        forward . /etc/resolv.conf <span class="o">{</span>
-           max_concurrent <span class="m">1000</span>
-        <span class="o">}</span>
-        cache <span class="m">30</span>
-        loop
-        reload
-        loadbalance
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># kubectl get configmaps  coredns -n kube-system -o yaml</span><span class="w">
+</span><span class="w"></span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">Corefile</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">    .:53 {
+</span><span class="sd">        errors
+</span><span class="sd">        health {
+</span><span class="sd">           lameduck 5s
+</span><span class="sd">        }
+</span><span class="sd">        ready
+</span><span class="sd">        kubernetes cluster.local in-addr.arpa ip6.arpa {
+</span><span class="sd">           pods insecure
+</span><span class="sd">           fallthrough in-addr.arpa ip6.arpa
+</span><span class="sd">           ttl 30
+</span><span class="sd">        }
+</span><span class="sd">        prometheus :9153
+</span><span class="sd">        forward . /etc/resolv.conf {
+</span><span class="sd">           max_concurrent 1000
+</span><span class="sd">        }
+</span><span class="sd">        cache 30
+</span><span class="sd">        loop
+</span><span class="sd">        reload
+</span><span class="sd">        loadbalance
+</span><span class="sd">    }</span><span class="w">    
+</span></code></pre></td></tr></table>
 </div>
 </div><h2 id="参考">参考</h2>
 <ul>
@@ -364,8 +376,8 @@ data:
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2022-12-29&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/d3ea9b7ffc6994602f6a00bc9c32886eb1eb85f0" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) d3ea9b7ffc6994602f6a00bc9c32886eb1eb85f0: Post(Scheduler Implement) (#28)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>d3ea9b7</a></span>
+                <span>更新于 2023-01-29&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bda434c4d3e8b30c4cf9c964c1a89f0abe09f3ab" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bda434c4d3e8b30c4cf9c964c1a89f0abe09f3ab: Post(informer-implement) (#31)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bda434c</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -385,11 +397,11 @@ data:
     </div>
 
     <div class="post-nav"><a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/service-and-endpoint/" class="prev" rel="prev" title="Kubernetes - Service 与 Endpoint"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Kubernetes - Service 与 Endpoint</a>
-            <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/pv-pvc-storageclass/" class="next" rel="next" title="Kubernetes - PV PVC StorageClass">Kubernetes - PV PVC StorageClass<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+            <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume/" class="next" rel="next" title="Kubernetes - Volume">Kubernetes - Volume<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
 

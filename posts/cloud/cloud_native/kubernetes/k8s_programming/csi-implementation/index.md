@@ -7,7 +7,7 @@
 
 ## 1 Interface
 
-在 [**Kubernetes - 存储设计**](../../k8s_learning/volume#3-csi-基本架构) 中看到，具体实现 CSI 时需要用户实现三个 RPC Service：
+在 [**Kubernetes - 存储设计**](../../k8s_learning/volume-design#3-csi-基本架构) 中看到，具体实现 CSI 时需要用户实现三个 RPC Service：
 
 {{< image src="img0.png" height=300 >}}
 

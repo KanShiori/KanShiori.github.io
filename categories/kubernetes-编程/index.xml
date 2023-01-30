@@ -3,7 +3,15 @@
         <title>Kubernetes 编程 - 分类 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/categories/kubernetes-%E7%BC%96%E7%A8%8B/</link>
         <description>Kubernetes 编程 - 分类 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 19 Sep 2022 15:21:22 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E7%BC%96%E7%A8%8B/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 26 Dec 2022 18:57:22 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/kubernetes-%E7%BC%96%E7%A8%8B/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 实现 - Informer 实现</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/informer-implement/</link>
+    <pubDate>Mon, 26 Dec 2022 18:57:22 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/informer-implement/</guid>
+    <description><![CDATA[1 基本架构 Kubernetes Client-go 库基于 ETCD 的实现了 Push + Pull 的基本模型，其实现的架构如下： 图中上半部分是 Client-go 的实现，包括核心组件： Reflector - Watch 与 List Resource，当 Resource 出现]]></description>
+</item>
+<item>
     <title>K8s 实现 - Scheduler 实现</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/scheduler-implement/</link>
     <pubDate>Mon, 19 Sep 2022 15:21:22 &#43;0800</pubDate>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/4-generate-code/</guid>
     <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 最简单的方式是调用]]></description>
-</item>
-<item>
-    <title>K8s 编程 - 3 - Custom Resource</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/3-custom-resource/</link>
-    <pubDate>Tue, 17 Aug 2021 14:55:49 &#43;0000</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/3-custom-resource/</guid>
-    <description><![CDATA[Kubernetes 编程系列 主要记录一些开发 Controller 所相关的知识，大部分内容来自于《Programming Kubernetes》（推荐直接阅读）。 1 自定义资源定义 从]]></description>
 </item>
 </channel>
 </rss>
