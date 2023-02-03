@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>OpenKruise - Shiori&#39;s Blog</title><meta name="Description" content="Shiori&#39;s Blog"><meta property="og:title" content="OpenKruise" />
+<meta property="og:description" content="1 概述 OpenKruise 通过自定义一些 CRD 来提供一些原生 Resource 不含有的功能。 其基本架构如下： Manager kruise-manager 是各个 CRD 的 Controller 和 Webhook，通过 Deployment 部署。 每个 CRD Controller 逻辑上都是独立的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-01-31T19:07:30+08:00" />
+<meta property="article:modified_time" content="2023-02-03T17:18:43+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="OpenKruise"/>
+<meta name="twitter:description" content="1 概述 OpenKruise 通过自定义一些 CRD 来提供一些原生 Resource 不含有的功能。 其基本架构如下： Manager kruise-manager 是各个 CRD 的 Controller 和 Webhook，通过 Deployment 部署。 每个 CRD Controller 逻辑上都是独立的"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/" /><link rel="prev" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/informer-implement/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "OpenKruise",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/openkruise\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  4769 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_practice\/openkruise\/","datePublished": "2023-01-31T19:07:30+08:00","dateModified": "2023-02-03T17:18:43+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">OpenKruise</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/cloud-practice/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Cloud Practice</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2023-01-31">2023-01-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4769 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 10 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-概述">1 概述</a></li>
+    <li><a href="#2-pod-inplace-update">2 Pod InPlace Update</a>
+      <ul>
+        <li><a href="#21-什么是-inplace-update">2.1 什么是 InPlace Update</a></li>
+        <li><a href="#22-使用场景">2.2 使用场景</a></li>
+        <li><a href="#23-实现">2.3 实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-workloads">3 Workloads</a>
+      <ul>
+        <li><a href="#31-cloneset">3.1 CloneSet</a>
+          <ul>
+            <li><a href="#311-pvc-template">3.1.1 PVC Template</a></li>
+            <li><a href="#311-指定-pod-缩容">3.1.1 指定 Pod 缩容</a></li>
+            <li><a href="#312-缩容顺序">3.1.2 缩容顺序</a></li>
+            <li><a href="#313-inplace-update">3.1.3 InPlace Update</a></li>
+            <li><a href="#314-partition-分批灰度">3.1.4 Partition 分批灰度</a></li>
+            <li><a href="#315-lifecycle-hook">3.1.5 Lifecycle Hook</a></li>
+            <li><a href="#316-流式扩容">3.1.6 流式扩容</a></li>
+          </ul>
+        </li>
+        <li><a href="#32-advanced-statefulset">3.2 Advanced StatefulSet</a>
+          <ul>
+            <li><a href="#321-inplace-update">3.2.1 InPlace Update</a></li>
+            <li><a href="#322-自定义升级顺序">3.2.2 自定义升级顺序</a></li>
+            <li><a href="#323-序号跳过">3.2.3 序号跳过</a></li>
+            <li><a href="#324-流式扩容">3.2.4 流式扩容</a></li>
+          </ul>
+        </li>
+        <li><a href="#33-broadcastjob">3.3 BroadcastJob</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-sidecar">4 Sidecar</a>
+      <ul>
+        <li><a href="#41-sidecarset">4.1 SidecarSet</a>
+          <ul>
+            <li><a href="#411-container-注入">4.1.1 Container 注入</a></li>
+            <li><a href="#412-sidecar-container-版本控制">4.1.2 Sidecar Container 版本控制</a></li>
+            <li><a href="#413-sidecar-container-热升级">4.1.3 Sidecar Container 热升级</a></li>
+            <li><a href="#414-metadata-注入">4.1.4 Metadata 注入</a></li>
+          </ul>
+        </li>
+        <li><a href="#42-resourcedistribution">4.2 ResourceDistribution</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-多区域部署">5 多区域部署</a>
+      <ul>
+        <li><a href="#51-uniteddeployment">5.1 UnitedDeployment</a>
+          <ul>
+            <li><a href="#511-升级方式">5.1.1 升级方式</a></li>
+          </ul>
+        </li>
+        <li><a href="#52-workloadspread">5.2 WorkloadSpread</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-概述">1 概述</h2>
+<p>OpenKruise 通过自定义一些 CRD 来提供一些原生 Resource 不含有的功能。</p>
+<p>其基本架构如下：</p>
+<a class="lightgallery" href="/posts/cloud/cloud_practice/openkruise/img1.png" title="/posts/cloud/cloud_practice/openkruise/img1.png" data-thumbnail="/posts/cloud/cloud_practice/openkruise/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_practice/openkruise/img1.png"
+            data-srcset="/posts/cloud/cloud_practice/openkruise/img1.png, /posts/cloud/cloud_practice/openkruise/img1.png 1.5x, /posts/cloud/cloud_practice/openkruise/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_practice/openkruise/img1.png" width="1080" height="300" />
+    </a>
+<ul>
+<li>
+<p>Manager</p>
+<p>kruise-manager 是各个 CRD 的 Controller 和 Webhook，通过 <code>Deployment</code> 部署。</p>
+<p>每个 CRD Controller 逻辑上都是独立的，不过都运行在 kruise-manager 一个进程中。</p>
+</li>
+<li>
+<p>Daemon</p>
+<p>kruise-daemon 通过 <code>DaemonSet</code> 部署在每个 Node 上，用于实现镜像预热、容器重启等功能。</p>
+</li>
+</ul>
+<h2 id="2-pod-inplace-update">2 Pod InPlace Update</h2>
+<h3 id="21-什么是-inplace-update">2.1 什么是 InPlace Update</h3>
+<p>InPlace Update 是 OpenKruise 提供的核心功能，不同于原生 Workload 的 Recreate Update，InPlace Update 指的是不删除 Pod 情况下升级 Container。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_practice/openkruise/img2.png" title="/posts/cloud/cloud_practice/openkruise/img2.png" data-thumbnail="/posts/cloud/cloud_practice/openkruise/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_practice/openkruise/img2.png"
+            data-srcset="/posts/cloud/cloud_practice/openkruise/img2.png, /posts/cloud/cloud_practice/openkruise/img2.png 1.5x, /posts/cloud/cloud_practice/openkruise/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_practice/openkruise/img2.png" width="1008" height="350" />
+    </a>
+<p>官方文档给出的两种方式的对比：</p>
+<ul>
+<li>
+<p>Recreate Update</p>
+<p>通过 Delete Pod 和 Create Pod 来进行升级，因此对于 <code>Deployment</code> 等部署的， Pod Name 和 UID 都会变化。</p>
+<p>新创建的 Pod 会重新走调度流程，因此所在的 Node 可能会发生变化。</p>
+<p>新创建的 Pod 很大可能是分配一个新的 Pod IP。</p>
+</li>
+<li>
+<p>InPlace Update</p>
+<p>仅仅重建 Pod 内部的 Container，升级前后仍然是相同的 Pod，因此 Pod Name 和 UID 不会变化，Pod 使用的资源（IP、Volume 等）也不会变化。</p>
+<p>一个 Container 升级时，Pod 中其他的 Container 不会受到影响。</p>
+</li>
+</ul>
+<p>目前，OpenKruise 实现的几个 Workload 都是支持 InPlace Update：</p>
+<ul>
+<li><code>CloneSet</code></li>
+<li><code>Advanced StatefulSet</code></li>
+<li><code>Advanced DaemonSet</code></li>
+<li><code>SidecarSet</code></li>
+</ul>
+<p>其中，<code>CloneSet</code>、<code>Advanced StatefulSet</code>、<code>Advanced DaemonSet</code> 使用相同的代码实现的 InPlace Update，<code>SidecarSet</code> 逻辑有一些不一样。</p>
+<h3 id="22-使用场景">2.2 使用场景</h3>
+<p>InPlace Update 对应 Workload 中的升级类型为 <code>InPlaceIfPossible</code>。顾名思义，只有在一定场景下才能进行 InPlace Update，其他场景还是必须使用 Recreate Update。</p>
+<p>InPlace Update 支持的场景有：</p>
+<ul>
+<li>
+<p>更新 <code>spec.template.metadata.*</code> 字段，例如 Label 和 Annotation。Kruise 会将改动应用当当前所有的 Pod 上。</p>
+</li>
+<li>
+<p>更新 <code>spec.template.spec.container[x].image</code> 字段，Kruise 会原地升级该特定的 Container，而不会重建 Pod。</p>
+</li>
+<li>
+<p>更新 <code>spec.template.metadata.labels/annotations</code>，并且 Container Env 引用了这些 Label 和 Annotation，那么 Kruise 会原地升级该 Container，使得信息 Env 值生效。</p>
+</li>
+</ul>
+<p>对于其他字段的更改，InPlace Update 是无法支持的，因此还是会执行 Recreate Update。</p>
+<h3 id="23-实现">2.3 实现</h3>
+<p>官网给出的 InPlace Update 一个 Pod 的流程图：</p>
+<a class="lightgallery" href="/posts/cloud/cloud_practice/openkruise/img3.png" title="/posts/cloud/cloud_practice/openkruise/img3.png" data-thumbnail="/posts/cloud/cloud_practice/openkruise/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_practice/openkruise/img3.png"
+            data-srcset="/posts/cloud/cloud_practice/openkruise/img3.png, /posts/cloud/cloud_practice/openkruise/img3.png 1.5x, /posts/cloud/cloud_practice/openkruise/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_practice/openkruise/img3.png" width="3654" height="350" />
+    </a>
+<p>Kubernetes 原生 Workload 都是基于 Delete + Create 来进行 Pod 升级的，不过 Pod 本身是支持直接更新 Container Image 来仅仅升级某个 Container 的。</p>
+<p>Kruise 就是利用了这个能力，加上 <code>kruise-daemon</code> 的配合，实现了 InPlace Update 的功能。</p>
+<h2 id="3-workloads">3 Workloads</h2>
+<h3 id="31-cloneset">3.1 CloneSet</h3>
+<p>CloneSet 对标原生的 <code>Deployment</code>，提供了增强的功能。</p>
+<h4 id="311-pvc-template">3.1.1 PVC Template</h4>
+<p>PVC Template 功能可以为每个 Pod 创建对应的 PVC，类似于 <code>StatefulSet</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CloneSet</span><span class="w">
+</span><span class="w"></span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">nginx:alpine</span><span class="w">
+</span><span class="w">        </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">    </span><span class="c"># mount the volume to a container</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">data-vol</span><span class="w">
+</span><span class="w">          </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/usr/share/nginx/html</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumeClaimTemplates</span><span class="p">:</span><span class="w">  </span><span class="c"># volume template</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">data-vol</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">requests</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l">20Gi</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>不过，与 <code>StatefulSet</code> 的 PVC Template 功能的区别在于：</p>
+<ul>
+<li>
+<p>创建的 PVC 会有 ownerReference 指向 CloneSet。也就是说，其 PVC 会随着 CloneSet 删除而删除。</p>
+</li>
+<li>
+<p>创建的 PVC 会自动打上 <code>apps.kruise.io/cloneset-instance-id: xxx</code>，使得能够的和 CloneSet 关联。</p>
+</li>
+<li>
+<p>Pod 被缩容删除时，其对应的 PVC 也会被删除。但是如果 Pod 是被手动删除或者重调度，还是会复用的 PVC。</p>
+</li>
+<li>
+<p>如果 Pod 是 Recreate Update，PVC 会被删除新建。如果 Pod 是 InPlace Update，PVC 会复用。</p>
+</li>
+</ul>
+<h4 id="311-指定-pod-缩容">3.1.1 指定 Pod 缩容</h4>
+<p><code>StatefulSet</code> 按照顺序缩容 Pod，<code>Deployment</code> 随机缩容 Pod，CloneSet 能够支持指定需要删除的 Pod。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CloneSet</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">4</span><span class="w">
+</span><span class="w">  </span><span class="nt">scaleStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">podsToDelete</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">sample-9m4hp </span><span class="w"> </span><span class="c"># pod name</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>当 Controller 执行缩容操作时，会优先处理 <code>podsToDelete</code> 中的 Pod，并且删除后自动清除该记录。</p>
+<h4 id="312-缩容顺序">3.1.2 缩容顺序</h4>
+<p>CloneSet 会按照以下优先级缩容 Pod：</p>
+<ol>
+<li>
+<p>未调度 &lt; 已调度</p>
+</li>
+<li>
+<p>PodPending &lt; PodUnknown &lt; PodRunning</p>
+</li>
+<li>
+<p>Not ready &lt; ready</p>
+</li>
+<li>
+<p>较小 <code>pod-deletion-cost</code> &lt; 较大 <code>pod-deletion-cost</code></p>
+<p><code>pod-deletion-cost</code> 是一个特殊的 Pod 的 Annotation，CloneSet 缩容时会参考该值。它表示该 Pod 的删除代价，代价越小的 Pod 会被优先删除。</p>
+</li>
+<li>
+<p>较大打散权重 &lt; 较小</p>
+<p>CloneSet 支持同 Node 打散 Pod，或者 Pod Topology Spread Constraint 打散 Pod。如果 Pod Template 中包含 Pod Topology Spread Constraint 定义，那么会优先按照拓扑约束删除 Pod。否则，会按照同节点 Pod 优先删除的策略。</p>
+</li>
+<li>
+<p>处于 Ready 时间较短 &lt; 较长</p>
+</li>
+<li>
+<p>容器重启次数较多 &lt; 较少</p>
+</li>
+<li>
+<p>创建时间较短 &lt; 较长</p>
+</li>
+</ol>
+<h4 id="313-inplace-update">3.1.3 InPlace Update</h4>
+<p>CloneSet 提供三种升级方式：</p>
+<ul>
+<li><code>Recreate</code> - 默认的方式，重建 <code>Pod</code> 来升级</li>
+<li><code>InPlaceIfPossible</code> - 允许情况下进行 InPlace Update，否则使用 Recreate Update</li>
+<li><code>InPlaceOnly</code> - 进允许 InPlace Update，不允许的情况会禁止更新字段</li>
+</ul>
+<p>此外，还提供了 Grace Period 功能。配置了情况下，Controller 变更 Pod Status 为 Not-Ready 后，会等待 Grace Period 时间，然后才会去更新 Pod Spec 触发升级。这样，为 endpoints-controller 留出时间将 <code>Pod</code> 从 <code>Endpoints</code> 列表中移除。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CloneSet</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">InPlaceIfPossible</span><span class="w">
+</span><span class="w">    </span><span class="nt">inPlaceUpdateStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">gracePeriodSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id="314-partition-分批灰度">3.1.4 Partition 分批灰度</h4>
+<p>Partition 表示保留旧版本 Pod 的数量或者百分比。这表明，CloneSet 会保留部分 Pod 不进行升级，用以实现分批次灰度。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CloneSet</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">generation</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">5</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">partition</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">observedGeneration</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span><span class="w">  </span><span class="nt">readyReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">5</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">5</span><span class="w">
+</span><span class="w">  </span><span class="nt">currentRevision</span><span class="p">:</span><span class="w"> </span><span class="l">sample-d4d4fb5bd </span><span class="w">
+</span><span class="w">  </span><span class="nt">updateRevision</span><span class="p">:</span><span class="w"> </span><span class="l">sample-56dfb978d4</span><span class="w">
+</span><span class="w">  </span><span class="nt">updatedReadyReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">           
+</span><span class="w">  </span><span class="nt">updatedReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">  </span><span class="c"># 只有两个 Pod 升级了</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>如果启动了 <code>CloneSetPartitionRollback</code> Feature Gate，还支持将 Partition 扩大时，回滚升级。</p>
+<h4 id="315-lifecycle-hook">3.1.5 Lifecycle Hook</h4>
+<p>每个 CloneSet 管理的 Pod 会处于明确的状态，在 Pod Label 中 <code>lifecycle.apps.kruise.io/state</code> 标记：</p>
+<a class="lightgallery" href="/posts/cloud/cloud_practice/openkruise/img4.png" title="/posts/cloud/cloud_practice/openkruise/img4.png" data-thumbnail="/posts/cloud/cloud_practice/openkruise/img4.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_practice/openkruise/img4.png"
+            data-srcset="/posts/cloud/cloud_practice/openkruise/img4.png, /posts/cloud/cloud_practice/openkruise/img4.png 1.5x, /posts/cloud/cloud_practice/openkruise/img4.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_practice/openkruise/img4.png" width="1046" height="300" />
+    </a>
+<ul>
+<li>Normal 正常状态</li>
+<li>PreparingUpdate 准备原地升级</li>
+<li>Updating 原地升级中</li>
+<li>Updated 原地升级完成</li>
+<li>PreparingDelete 准备删除</li>
+</ul>
+<p>Lifecycle Hook 指的就是上述状态转换过程中的卡点。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CloneSet</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">lifecycle</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">preDelete</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">finalizersHandler</span><span class="p">:</span><span class="w">  </span><span class="c"># 通过 finalizer 定义 hook</span><span class="w">
+</span><span class="w">      </span>- <span class="l">example.io/unready-blocker</span><span class="w">
+</span><span class="w">    </span><span class="nt">inPlaceUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">finalizersHandler</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="l">example.io/unready-blocker</span><span class="w">
+</span><span class="w">  </span><span class="nt">lifecycle</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">inPlaceUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">labelsHandler</span><span class="p">:</span><span class="w">     </span><span class="c"># 或者也可以通过 label 定义</span><span class="w">
+</span><span class="w">        </span><span class="nt">example.io/block-unready</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;true&#34;</span><span class="w"> 
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id="316-流式扩容">3.1.6 流式扩容</h4>
+<p>指定 <code>scaleStrategy.maxUnavailable</code> 可以限制扩容的步长。支持绝对值或者百分比。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CloneSet</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">minReadySeconds</span><span class="p">:</span><span class="w"> </span><span class="m">60</span><span class="w">
+</span><span class="w">  </span><span class="nt">scaleStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="32-advanced-statefulset">3.2 Advanced StatefulSet</h3>
+<p><code>Advanced StatefulSet</code> 对标原生的 <code>StatefulSet</code>，提供了更多功能。其类型名也是 <code>StatefulSet</code>，只是 <code>apiVersion</code> 不一样。</p>
+<p><code>Advanced StatefulSet</code> 是完全兼容原生的 <code>StatefulSet</code> 行为的。因此迁移时，只需要将 <code>apiVersion</code> 修改后提交即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml">- <span class="w"> </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">+  apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1beta1</span><span class="w">
+</span><span class="w">   </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StatefulSet</span><span class="w">
+</span><span class="w">   </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">     </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">   </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">     </span><span class="c">#...</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id="321-inplace-update">3.2.1 InPlace Update</h4>
+<p>配置与前述相同 <a href="#313-inplace-update" rel=""><strong>InPlace Update</strong></a>。</p>
+<h4 id="322-自定义升级顺序">3.2.2 自定义升级顺序</h4>
+<p><code>Advanced StatefulSet</code> 支持不按照 Pod 序号顺序进行升级。通过 <code>spec.updateStrategy.rollingUpdate.unorderedUpdate</code> 配置来自定义升级顺序。</p>
+<p>注意，<code>unorderedUpdate</code> 只能配合 <code>podManagementPolicy: Parallel</code> 使用。</p>
+<p>目前，只支持 <code>priorityStrategy</code> 一个优先级策略，支持两种优先级方式：</p>
+<ul>
+<li>
+<p>weight</p>
+<p>通过给不同 Label 的 Pod 分配权重，权重大的 Pod 优先升级。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1beta1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StatefulSet</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">rollingUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">unorderedUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">priorityStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">weightPriority</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="m">50</span><span class="w">
+</span><span class="w">            </span><span class="nt">matchSelector</span><span class="p">:</span><span class="w">
+</span><span class="w">              </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">                </span><span class="nt">test-key</span><span class="p">:</span><span class="w"> </span><span class="l">foo</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="m">30</span><span class="w">
+</span><span class="w">            </span><span class="nt">matchSelector</span><span class="p">:</span><span class="w">
+</span><span class="w">              </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">                </span><span class="nt">test-key</span><span class="p">:</span><span class="w"> </span><span class="l">bar</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>order</p>
+<p>通过给 Pod 配置特定的 Label 来表示 Pod 序号，而不使用 Pod 名称作为序号。</p>
+<p>注意，使用的 Label Value 类似于 Pod 名称，默认为 Int 值，例如 &ldquo;sts-10&rdquo; 表明需要为 10。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1beta1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StatefulSet</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">rollingUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">unorderedUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">priorityStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">orderPriority</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">orderedKey</span><span class="p">:</span><span class="w"> </span><span class="l">some-label-key</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h4 id="323-序号跳过">3.2.3 序号跳过</h4>
+<p>通过在 <code>reserveOrdinals</code> 字段中写入跳过的序号，<code>Advanced StatefulSet</code> 会自动跳过创建这些序号的 Pod。如果对应 Pod 已经存在，那么会删除 Pod。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1beta1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StatefulSet</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">4</span><span class="w">
+</span><span class="w">  </span><span class="nt">reserveOrdinals</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="m">1</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>举个例子，对于上面示例，当前实际运行的 Pod 序号为 <code>[0,2,3,4]</code>。</p>
+<ul>
+<li>如果要移除 Pod 3，设置 <code>reserveOrdinals: [1,3]</code>。那么 Pod 3 会被删除，并且 Pod 5 会被创建出来。</li>
+<li>如果想删除 Pod 3，设置 <code>reserveOrdinals: [1,3]</code> 与 <code>replicas: 3</code>。那么 Pod 3 会被删除，不会有新的 Pod 创建。</li>
+</ul>
+<h4 id="324-流式扩容">3.2.4 流式扩容</h4>
+<p>指定 <code>scaleStrategy.maxUnavailable</code> 可以限制扩容当前不可用 Pod 的最大数量。注意，该功能只在 <code>podManagementPolicy: Parallel</code> 时生效。</p>
+<p>例如，下面示例中，一开始会一次性创建 10 个 Pod。后续，每当一个 Pod 变为 Running 和 Ready 后，才会创建新的 Pod。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1beta1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StatefulSet</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">100</span><span class="w">
+</span><span class="w">  </span><span class="nt">scaleStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="l">%</span><span class="w"> </span><span class="c"># percentage or absolute number</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="33-broadcastjob">3.3 BroadcastJob</h3>
+<p><code>BroadcastJob</code> 会在每个 Node 上运行一个短期的 Pod，用于为每个 Node 做一个一次性的工作。</p>
+<p>此外，<code>BroadcastJob</code> 还支持维持每个 Node 都跑成功一个 Pod 任务，即使后面新 Node 加入后，也会自动分配 Pod 执行。</p>
+<p>基本的定义如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">BroadcastJob</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">broadcastjob-ttl</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">          </span><span class="c"># template 描述 Pod 模板</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pi</span><span class="w">
+</span><span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">perl</span><span class="w">
+</span><span class="w">          </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;perl&#34;</span><span class="p">,</span><span class="w">  </span><span class="s2">&#34;-Mbignum=bpi&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;-wle&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;print bpi(2000)&#34;</span><span class="p">]</span><span class="w">
+</span><span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">Never</span><span class="w">
+</span><span class="w">  </span><span class="nt">parallelism</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">    </span><span class="c"># 允许同时运行多少个 Pod</span><span class="w">
+</span><span class="w">  </span><span class="nt">completionPolicy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Always</span><span class="w">
+</span><span class="w">    </span><span class="nt">ttlSecondsAfterFinished</span><span class="p">:</span><span class="w"> </span><span class="m">30</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p><code>CompletionPolicy</code> 指定了管理 Pod 的行为，支持：</p>
+<ul>
+<li>
+<p>Always</p>
+<p>意味着 Job 最终会完成，并配置以下参数：</p>
+<ul>
+<li><code>ActiveDeadlineSeconds</code> 指定 Pod 运行超时时间，超时后 Job 会停止并标记为 Failed。</li>
+<li><code>BackoffLimit</code> 指定重试次数，超过次数后 Job 才会标记为 Failed。</li>
+<li><code>TTLSecondsAfterFinished</code> 指定 <code>BroadcastJob</code> 在完成后的保留时间，超过时间就会删除对应的 Job 和 Pod。</li>
+</ul>
+</li>
+<li>
+<p>Never</p>
+<p>意味着 BroadcastJob 会一直存在。也就是说，当新的 Node 加入后，就会自动创建对应的 Job 执行。</p>
+</li>
+</ul>
+<h2 id="4-sidecar">4 Sidecar</h2>
+<h3 id="41-sidecarset">4.1 SidecarSet</h3>
+<p><code>SidecarSet</code> 通过 Admission Webhook 的方式自动为集群中的 Pod 注入 Sidecar 容器，并且支持原地升级 Sidecar 容器。</p>
+<p>基本的定义如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># sidecarset.yaml</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">SidecarSet</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">test-sidecarset</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">ns         </span><span class="w"> </span><span class="c"># 管理的 Namespace，默认为全集群生效</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">              </span><span class="c"># 注入的 Pod 的 label selector</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateStrategy</span><span class="p">:</span><span class="w">        </span><span class="c"># 升级策略</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">RollingUpdate</span><span class="w">
+</span><span class="w">    </span><span class="nt">maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">            </span><span class="c"># sidecar 容器</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sidecar1</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">centos:6.7</span><span class="w">
+</span><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;sleep&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;999d&#34;</span><span class="p">]</span><span class="w"> </span><span class="c"># do nothing at all</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">log-volume</span><span class="w">
+</span><span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/log</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w"> </span><span class="c"># this field will be merged into pod.spec.volumes</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">log-volume</span><span class="w">
+</span><span class="w">    </span><span class="nt">emptyDir</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>在 SidecarSet 中 <code>status</code> 记录了容器信息：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">matchedPods</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">  </span><span class="nt">observedGeneration</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">  </span><span class="nt">readyPods</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">  </span><span class="nt">updatedPods</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id="411-container-注入">4.1.1 Container 注入</h4>
+<p><code>SidecarSet</code> 扩展了 <code>container</code> 字段，用于方便注入：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">SidecarSet</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sidecarset</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">nginx:alpine</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/nginx/conf</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx.conf</span><span class="w">
+</span><span class="w">    </span><span class="c"># extended sidecar container fields</span><span class="w">
+</span><span class="w">    </span><span class="nt">podInjectPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">BeforeAppContainer</span><span class="w"> </span><span class="c"># container 注入 spec 位置</span><span class="w">
+</span><span class="w">    </span><span class="nt">shareVolumePolicy</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">disabled | enabled</span><span class="w">
+</span><span class="w">    </span><span class="nt">transferEnv</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">sourceContainerName</span><span class="p">:</span><span class="w"> </span><span class="l">main</span><span class="w">
+</span><span class="w">      </span><span class="nt">envName</span><span class="p">:</span><span class="w"> </span><span class="l">PROXY_IP</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">Name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx.conf</span><span class="w">
+</span><span class="w">    </span><span class="nt">hostPath</span><span class="p">:</span><span class="w"> </span><span class="l">/data/nginx/conf</span><span class="w">
+</span><span class="w">  </span><span class="nt">injectionStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">paused</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p>Container 注入位置</p>
+<p><code>podInjectPolicy</code> 支持配置为 <strong>BeforeAppContainer</strong> 或者 <strong>AfterAppContainer</strong>，定义 Sidecar Container 注入到 Pod 原 Container 的位置。</p>
+</li>
+<li>
+<p>共享 Volume</p>
+<ul>
+<li>共享特定 Volume：通过 <code>spec.volumes</code> 挂载特定 Volume；</li>
+<li>共享所有 Volume：配置 <code>shareVolumePolicy: true</code> 可以将 Pod 所有的 Volume 挂载到 Sidecar Container；</li>
+</ul>
+</li>
+<li>
+<p>共享 Env</p>
+<p>通过 <code>transferEnv</code> 配置将别的 Container Env 设置给 Sidecar Container。</p>
+</li>
+<li>
+<p>注入暂停</p>
+<p><code>injectionStrategy.paused: true</code> 表明暂停 Container 注入，但是不会影响存量的 Container。</p>
+</li>
+</ul>
+<h4 id="412-sidecar-container-版本控制">4.1.2 Sidecar Container 版本控制</h4>
+<p>因为 Sidecar Container 仅仅在 Pod 创建时注入，所以如果 <code>SidecarSet</code> 变更后，可能多个 Pod 会注入不同版本的 Sidecar Container。</p>
+<p>为此，<code>SidecarSet</code> 会创建 <code>ControllerRevision</code> 记录历史的版本，并支持使用历史版本进行注入。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">SidecarSet</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sidecarset</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">injectionStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">revision</span><span class="p">:</span><span class="w"> 
+</span><span class="w">      </span><span class="nt">revisionName</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;specific-controllerRevision-name&gt;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id="413-sidecar-container-热升级">4.1.3 Sidecar Container 热升级</h4>
+<p>如果 Sidecar Container 是影响服务可用性的，那么 Sidecar Container 升级就会导致 Pod 不可用。为此，提供了热升级的解决方案。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">SidecarSet</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">hotupgrade-sidecarset</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sidecar</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">openkruise/hotupgrade-sample:sidecarv1</span><span class="w">
+</span><span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">Always</span><span class="w">
+</span><span class="w">    </span><span class="nt">lifecycle</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">postStart</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">exec</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">command</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="l">/bin/sh</span><span class="w">
+</span><span class="w">          </span>- <span class="l">/migrate.sh</span><span class="w">
+</span><span class="w">    </span><span class="nt">upgradeStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">upgradeType</span><span class="p">:</span><span class="w"> </span><span class="l">HotUpgrade</span><span class="w">
+</span><span class="w">      </span><span class="nt">hotUpgradeEmptyImage</span><span class="p">:</span><span class="w"> </span><span class="l">openkruise/hotupgrade-sample:empty</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>upgradeType: HotUpgrade</code> 表明执行热升级方案。</li>
+<li><code>hotUpgradeEmptyImage</code> 指定热升级过程中的切换容器。</li>
+<li><code>lifecycle.postStart</code> 执行脚本处理状态迁移。</li>
+</ul>
+<p>当 Pod 创建时，将会注入两个 Sidecar Container：</p>
+<ul>
+<li><code>&lt;sidecarContainer.name&gt;-1</code> 为当前实际运行的 Sidecar Container</li>
+<li><code>&lt;sidecarContainer.name&gt;-2</code> 为配置的 <code>hotUpgradeEmptyImage</code> 容器，作为热升级的预备</li>
+</ul>
+<a class="lightgallery" href="/posts/cloud/cloud_practice/openkruise/img5.png" title="/posts/cloud/cloud_practice/openkruise/img5.png" data-thumbnail="/posts/cloud/cloud_practice/openkruise/img5.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_practice/openkruise/img5.png"
+            data-srcset="/posts/cloud/cloud_practice/openkruise/img5.png, /posts/cloud/cloud_practice/openkruise/img5.png 1.5x, /posts/cloud/cloud_practice/openkruise/img5.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_practice/openkruise/img5.png" width="837" height="300" />
+    </a>
+<p>执行热升级的流程如下：</p>
+<ol>
+<li>将 <code>hotUpgradeEmptyImage</code> 容器升级为 Sidecar Container</li>
+<li>新容器启动后执行 PostStart Hook，执行业务的状态迁移</li>
+<li>将原先运行的 Sidecar Container 设置为 <code>hotUpgradeEmptyImage</code> 容器</li>
+</ol>
+<h4 id="414-metadata-注入">4.1.4 Metadata 注入</h4>
+<p><code>SidecarSet</code> 支持注入 Pod Annotations：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">SidecarSet</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">patchPodMetadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">oom-score</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;{&#34;log-agent&#34;: 1}&#39;</span><span class="w">
+</span><span class="w">      </span><span class="nt">custom.example.com/sidecar-configuration</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;{&#34;command&#34;: &#34;/home/admin/bin/start.sh&#34;, &#34;log-level&#34;: &#34;3&#34;}&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">patchPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">MergePatchJson</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">apps.kruise.io/container-launch-priority</span><span class="p">:</span><span class="w"> </span><span class="l">Ordered</span><span class="w">
+</span><span class="w">    </span><span class="nt">patchPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">Overwrite | Retain</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>支持的策略包括：</p>
+<ul>
+<li>Retain - 原 Pod 中不存在的 Annotation 才会注入</li>
+<li>Overwrite - 会覆盖原 Pod 中的 Annotation</li>
+<li>MergePatchJson - 用于 Annotation 是 JSON 字符串的场景，支持与原 Pod Anno 的 JSON 字符串合并后注入</li>
+</ul>
+<h3 id="42-resourcedistribution">4.2 ResourceDistribution</h3>
+<p><code>ResourceDistribution</code> 支持将 <code>Secret</code> 或者 <code>ConfigMap</code> 同步到多个 Namespace 中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ResourceDistribution</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">resource</span><span class="p">:</span><span class="w">               </span><span class="c"># 原始 Secret 或 ConfigMap</span><span class="w">
+</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">game-demo</span><span class="w">
+</span><span class="w">    </span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="c"># data ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">targets</span><span class="p">:</span><span class="w">                  </span><span class="c"># 筛选出需要同步的 Namespace</span><span class="w">
+</span><span class="w">    </span><span class="nt">allNamespaces</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">    </span><span class="c"># 同步给所有 Namespace</span><span class="w">
+</span><span class="w">    </span><span class="nt">includedNamespaces</span><span class="p">:</span><span class="w">     </span><span class="c"># 同步给特定的 Namespace</span><span class="w">
+</span><span class="w">      </span><span class="nt">list</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ns-1</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ns-4</span><span class="w">
+</span><span class="w">    </span><span class="nt">namespaceLabelSelector</span><span class="p">:</span><span class="w"> </span><span class="c"># 基于 label selector 筛选</span><span class="w">
+</span><span class="w">      </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l">test</span><span class="w">
+</span><span class="w">    </span><span class="nt">excludedNamespaces</span><span class="p">:</span><span class="w">     </span><span class="c"># 排除特定 Namespace</span><span class="w">
+</span><span class="w">        </span><span class="nt">list</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ns-3</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>当 <code>resource</code> 中定义的配置更新后，会自动地对所有目标 Namespace 中的资源进行同步更新。<code>ResourceDistribution</code> 通过记录资源的 Hash 来判断是否需要同步。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">game-demo</span><span class="w">
+</span><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">  
+</span><span class="w">    </span><span class="nt">kruise.io/resourcedistribution.resource.from</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">    </span><span class="nt">kruise.io/resourcedistribution.resource.distributed.timestamp</span><span class="p">:</span><span class="w"> </span><span class="ld">2021-09-06 08:44:52.7861421 +0000</span><span class="w"> </span><span class="l">UTC m=+12896.810364601</span><span class="w">
+</span><span class="w">    </span><span class="nt">kruise.io/resourcedistribution.resource.hashcode</span><span class="p">:</span><span class="w"> </span><span class="l">0821a13321b2c76b5bd63341a0d97fb46bfdbb2f914e2ad6b613d10632fa4b63</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>由于配置了 OwnerReference，当 <code>ResourceDistribution</code> 被删除时，所有相关的资源都会被删除。</p>
+<h2 id="5-多区域部署">5 多区域部署</h2>
+<h3 id="51-uniteddeployment">5.1 UnitedDeployment</h3>
+<p>UnitedDeployment 提供了多区域创建 Workload 的能力。每个区域被称为 <code>Subset</code>，对应会部署一个 Workload。</p>
+<p>目前支持部署的 Workload 包括：<code>StatefulSet</code> <code>AdvancedStatefulSet</code> <code>CloneSet</code> <code>Deployment</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">UnitedDeployment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sample-ud</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">6</span><span class="w">            </span><span class="c"># 所有 subset 部署的 replica 总和</span><span class="w">
+</span><span class="w">  </span><span class="nt">revisionHistoryLimit</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">               </span><span class="c"># 创建的 Workload 的模板</span><span class="w">
+</span><span class="w">    </span><span class="nt">statefulSetTemplate</span><span class="p">:</span><span class="w">  
+</span><span class="w">      </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">      </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">topology</span><span class="p">:</span><span class="w">              </span><span class="c"># 部署拓扑</span><span class="w">
+</span><span class="w">    </span><span class="nt">subsets</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subset-a   </span><span class="w"> </span><span class="c"># zone a 部署一个 sts，replica 为 1</span><span class="w">
+</span><span class="w">      </span><span class="nt">nodeSelectorTerm</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">node</span><span class="w">
+</span><span class="w">          </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">          </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="l">zone-a</span><span class="w">
+</span><span class="w">      </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subset-b  </span><span class="w"> </span><span class="c"># zone b 部署一个 sts，replica 为 3</span><span class="w">
+</span><span class="w">      </span><span class="nt">nodeSelectorTerm</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">node</span><span class="w">
+</span><span class="w">          </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">          </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="l">zone-b</span><span class="w">
+</span><span class="w">      </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">50</span><span class="l">%</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subset-c </span><span class="w"> </span><span class="c"># zone b 部署一个 sts，replica 为 2</span><span class="w">
+</span><span class="w">      </span><span class="nt">nodeSelectorTerm</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">node</span><span class="w">
+</span><span class="w">          </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">          </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="l">zone-c</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">manualUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">partitions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">subset-a</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">        </span><span class="nt">subset-b</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">        </span><span class="nt">subset-c</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Manual</span><span class="w">
+</span><span class="w"></span><span class="c"># ...</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到，在 <code>topology.subsets</code> 中我们定义了多个 <code>Subset</code>。当一个 <code>Subset</code> 增加或去除时，UnitedDeployment 控制器会创建或删除相应的 Workload。</p>
+<p>对于创建的 Workload：</p>
+<ul>
+<li>
+<p>每个 Workload 有着独立的命名，前缀为 <code>&lt;UnitedDeployment_name&gt;-&lt;Subset_name&gt;</code>。</p>
+</li>
+<li>
+<p>Workload 基于 <code>spec.template</code> 来创建的，同时会将 <code>Subset</code> 定义中的相关配置合并（例如 <code>nodeSelectorTerm</code> 等）</p>
+</li>
+</ul>
+<h4 id="511-升级方式">5.1.1 升级方式</h4>
+<p>如果修改了 <code>spec.template</code> 那么就会更新各个 Workload，从而触发 Pod 的升级。</p>
+<p>对于 <code>AdvancedStatefulSet</code> 与 <code>StatefulSet</code> 作为 Workload，还能够通过 Subset 配置 Partition 策略，从而控制升级流程。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">UnitedDeployment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sample-ud</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">manualUpdate</span><span class="p">:</span><span class="w">    </span><span class="c"># 设置各个 workload 的 partition</span><span class="w">
+</span><span class="w">      </span><span class="nt">partitions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">subset-a</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">        </span><span class="nt">subset-b</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">        </span><span class="nt">subset-c</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Manual</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="52-workloadspread">5.2 WorkloadSpread</h3>
+<p><code>WorkloadSpread</code> 也用于多区域部署，与 <code>UnitedDeployment</code> 区别在于，<code>WorkloadSpread</code> 是基于一个 Workload 进行多区域的部署。</p>
+<p><code>WorkloadSpread</code> 利用 Webhook 为 Workload Pod 注入 <code>Subset</code> 的部署信息，同时控制 Pod 的缩扩容顺序。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">WorkloadSpread</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">workloadspread-demo</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">targetRef</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1 | apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment | CloneSet</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">workload-xxx</span><span class="w">
+</span><span class="w">  </span><span class="nt">subsets</span><span class="p">:</span><span class="w">                      </span><span class="c"># subsets 中定义多区域的部署</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subset-a</span><span class="w">
+</span><span class="w">      </span><span class="nt">requiredNodeSelectorTerm</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">topology.kubernetes.io/zone</span><span class="w">
+</span><span class="w">            </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">            </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">              </span>- <span class="l">zone-a</span><span class="w">
+</span><span class="w">    </span><span class="nt">preferredNodeSelectorTerms</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">        </span><span class="nt">preference</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">another-node-label-key</span><span class="w">
+</span><span class="w">            </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">            </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">              </span>- <span class="l">another-node-label-value</span><span class="w">
+</span><span class="w">      </span><span class="nt">maxReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">      </span><span class="nt">tolertions</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w">
+</span><span class="w">      </span><span class="nt">patch</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">xxx-specific-label</span><span class="p">:</span><span class="w"> </span><span class="l">xxx</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subset-b</span><span class="w">
+</span><span class="w">      </span><span class="nt">requiredNodeSelectorTerm</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">topology.kubernetes.io/zone</span><span class="w">
+</span><span class="w">            </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">            </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">              </span>- <span class="l">zone-b</span><span class="w">
+</span><span class="w">  </span><span class="nt">scheduleStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Adaptive | Fixed</span><span class="w">
+</span><span class="w">    </span><span class="nt">adaptive</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">rescheduleCriticalSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">30</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="参考">参考</h2>
+<ul>
+<li>官方文档：<a href="https://openkruise.io/zh/docs/" target="_blank" rel="noopener noreffer"><strong>OpenKruise</strong></a>。</li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2023-02-03&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/6463d151b6bfa450a71ea0cafbdd783e31737370" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 6463d151b6bfa450a71ea0cafbdd783e31737370: Post(credentials): optimize (#33)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>6463d15</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/cloud/cloud_practice/openkruise/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/" data-title="OpenKruise" data-hashtags="k8s,云计算"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/" data-hashtag="k8s"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/" data-title="OpenKruise"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/" data-title="OpenKruise"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/" data-title="OpenKruise"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/" data-title="OpenKruise"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/" data-title="OpenKruise"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/k8s/">k8s</a>,&nbsp;<a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/cloud/cloud_native/kubernetes/k8s_programming/informer-implement/" class="prev" rel="prev" title="K8s 实现 - Informer 实现"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>K8s 实现 - Informer 实现</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightgallery":true,"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

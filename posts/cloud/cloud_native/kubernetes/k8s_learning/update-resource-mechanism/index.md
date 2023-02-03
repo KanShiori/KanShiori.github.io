@@ -184,29 +184,74 @@ Server Side Apply 与 `kubectl apply` 类似，只不过 diff 行为发生在 AP
 * **放弃修改**：在请求中去除字段，表明不更改其字段。
 * **成为 Shared Manager**：请求中字段设为当前值，不更改字段，但是会成为 Shared Manager。
 
+### 2.5 Patch 生成方式
+
+上面提的都是支持的 Patch，对应的一个问题是根据完整的 Object 生成 Patch 请求。
+
+#### 2.5.1 Two way merge
+  
+提供两个 Object：Original 与 Modified，Two-way merge 会根据将 Current 变为 Modified 生成 Patch。
+
+```go
+// pkg: k8s.io/apimachinery/pkg/util/strategicpatch
+func CreateTwoWayMergePatch(original, modified []byte, dataStruct interface{}, fns ...mergepatch.PreconditionFunc) ([]byte, error) {
+    // ...
+}
+```
+
+但是 Two-way merge 无法处理一个 Object 被多个 Controller 修改的情况，因为 Two-way merge 无法知晓 Original 与 Modified 中的冲突修改哪个是最新的，只是无脑将 Original 变为 Modified。
+
+{{< image src="img1.png" height=350 >}}
+
+1. Controller A 修改了 Field A，将 Original 其变为 Current；
+2. Controller B 期望修改 Field B，与 Current 对比生成 Patch；
+3. Controller B 执行 Patch，导致 Controller A 的修改被回滚了，对象完全变为 Modified；
+
+#### 2.5.2 Three way merge
+  
+Two-way merge 的优化就在于引入了 Current，通过 Current+Modified 的 Patch 与 Original+Modified 的 Patch，就可以知道哪些修改是应该被合并的。
+
+```go
+// pkg: k8s.io/apimachinery/pkg/util/strategicpatch
+// Create a 3-way merge patch.
+// Calculate addition-and-change patch between current and modified.
+// Calculate deletion patch between original and modified.
+func CreateThreeWayMergePatch(original, modified, current []byte, schema LookupPatchMeta, overwrite bool, fns ...mergepatch.PreconditionFunc) ([]byte, error)  {
+    // ...
+}
+```
+
+{{< image src="img2.png" height=350 >}}
+
+1. Controller A 修改了 Field A，将 Original 其变为 Current；
+2. Controller B 期望修改 Field B，与 Current 生成 Patch 只保留 Addition+Change 修改，与 Original 生成 Patch 只保留 Delete 修改；
+3. Controller B 执行 Patch，保留了不是自己的修改；
+
+`kubectl apply` 就是使用的 Three-way merge，Apply 的字段都会被变更，而未 Apply 的字段都会保留。这也是为什么 `kubectl apply` 需要通过 Annotation 记录 Original 了。
+
 ## 3 CLI 实现
 
 ### 3.1 kubectl apply
 
 #### 3.1.1 client side apply
 
-`kubectl apply` 默认执行的是 client side apply，是基于对象的 `last-applied-configuration` annotation 进行 diff。
+`kubectl apply` 默认执行的是 client side apply，是基于对象的 `last-applied-configuration` Annotation 进行 diff。
 
 总的来说 `kubectl apply` 分为三种情况：
 
-* **apply 的对象当前不存在** - 执行 POST HTTP 创建对象，并设置 last-applied-configuration annotation。
+* **apply 的对象当前不存在** - 执行 POST HTTP 创建对象，并设置 `last-applied-configuration` Annotation。
 * **apply 的对象存在，对象为 Kubernetes 原生对象** - 执行 PATCH HTTP，Patch 类型为 strategic merge patch。
 * **apply 的对象存在，对象不是 Kubernetes 原生对象** - 执行 PATCH HTTP，Patch 类型为 merge patch。
 
-对象不存在，`kubectl apply` 等价于 `kubectl create` 命令，仅仅多设置了 last-applied-configuration annotation，为后续更新做准备。
+对象不存在，`kubectl apply` 等价于 `kubectl create` 命令，仅仅多设置了 last-applied-configuration Annotation，为后续更新做准备。
 
-对象存在，`kubectl apply` 等价与 `kubectl patch` 命令，区别在于 `kubectl apply` 输入是一个完整的对象，命令通过 `last-applied-configuration` annotation 得到上一次的对象配置，然后进行 diff 生成 Patch 请求。
+对象存在，`kubectl apply` 等价与 `kubectl patch` 命令，区别在于 `kubectl apply` 输入是一个对象，命令通过 `last-applied-configuration` Annotation 得到上一次的对象配置，然后进行 [**Three-way merge**](#252-three-way-merge) 生成 Patch 请求。
 
 #### 3.1.2 server side apply
 
 `kubectl apply` 加上 `--server-side` 参数时使用的就是 server side apply。使用 `--force-conflicts` 参数可以强制更新，使用 `--field-manager` 参数可以指定 Manager 名字（默认为 kubectl）。
 
-server side apply 的过程是完全交给 APIServer 处理，kubectl 不需要读取 annotation 进行 diff，直接通过 PATCH HTTP 提交完整的对象即可，由 APISever 来进行 diff 操作，并修改资源。
+server side apply 的过程是完全交给 APIServer 处理，kubectl 不需要读取 Annotation 进行 diff，直接通过 PATCH HTTP 提交完整的对象即可，由 APISever 来进行 diff 操作，并修改资源。
 
 ### 3.2 kubectl patch
 
@@ -214,7 +259,7 @@ server side apply 的过程是完全交给 APIServer 处理，kubectl 不需要�
 
 ### 3.3 kubectl edit
 
-`kubectl edit` 比 `kubectl apply` 更加简单，因为不需要通过 annotation 读取变化，而是直接 diff 编辑前后的对象来生成 Patch 请求。
+`kubectl edit` 比 `kubectl apply` 更加简单，因为不需要通过 Annotation 读取变化，而是直接 diff 编辑前后的对象来生成 Patch 请求。
 
 当然，Patch 类型也是基于对象是否是 Kubernetes 原生的决定的。
 

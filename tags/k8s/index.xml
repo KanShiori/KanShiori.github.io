@@ -3,7 +3,15 @@
         <title>k8s - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/k8s/</link>
         <description>k8s - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 26 Dec 2022 18:57:22 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 31 Jan 2023 19:07:30 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+    <title>OpenKruise</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/</link>
+    <pubDate>Tue, 31 Jan 2023 19:07:30 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/</guid>
+    <description><![CDATA[1 概述 OpenKruise 通过自定义一些 CRD 来提供一些原生 Resource 不含有的功能。 其基本架构如下： Manager kruise-manager 是各个 CRD 的 Controller 和 Webhook，通过 Deployment 部署。 每个 CRD Controller 逻辑上都是独立的]]></description>
+</item>
+<item>
     <title>K8s 实现 - Informer 实现</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/informer-implement/</link>
     <pubDate>Mon, 26 Dec 2022 18:57:22 &#43;0800</pubDate>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/kubeconfig/</guid>
     <description><![CDATA[1 基本概念 kubeconfig 文件是 kubectl 用以查找访问集群的配置。 kubeconfig 文件的结构如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 apiVersion:v1kind:Configcurrent-context:federal-contextclusters:- cluster:certificate-authority:path/to/my/cafileserver:https://horse.org:4443name:horse-cluster- cluster:insecure-skip-tls-verify:trueserver:https://pig.org:443name:pig-clustercontexts:- context:cluster:horse-clusternamespace:chisel-nsuser:green-username:federal-context- context:cluster:pig-clusternamespace:saw-nsuser:black-username:queen-anne-contextpreferences:colors:trueusers:- name:blue-useruser:token:blue-token-]]></description>
-</item>
-<item>
-    <title>Kubernetes 中调试 Pod</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</link>
-    <pubDate>Tue, 29 Mar 2022 14:07:03 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/debug-pod/</guid>
-    <description><![CDATA[1 Ephemeral Container 可以使用 kubectl debug 来给一个运行中的 Pod 添加一个 Ephemeral Container 运行，并且不需要重启 Pod。 版本要求 Ephemeral Container 需要 Kubernetes 1.23 版本以上，目前还是处于 beta 状态。 1 kubectl debug -it ${pod_name} --image=busybox --target=${container_name}]]></description>
 </item>
 </channel>
 </rss>
