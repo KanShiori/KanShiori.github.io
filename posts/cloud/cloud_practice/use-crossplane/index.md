@@ -261,7 +261,7 @@ spec:
 
 一些标准的字段（例如 `writeConnectionSecretToRef` 和 `compositionRef`）不需要在 XRD 中定义，Crossplane 会自动为所有的 XR 注册这些标准字段，也称为 XRM。
 
-完整的字段介绍见官方文档：[**CompositeResourceDefinitions**](https://crossplane.io/docs/master/reference/composition.html#compositeresourcedefinitions)。
+完整的字段介绍见官方文档：[**CompositeResourceDefinitions**](https://docs.crossplane.io/v1.11/concepts/composition/#compositeresourcedefinitions)。
 
 ### 3.3 Composition
 
@@ -406,7 +406,7 @@ spec:
           medium: db-custom-1-3840
 ```
 
-更多的转换方式见：[**Transform Types**](https://crossplane.io/docs/master/reference/composition.html#transform-types)。
+更多的转换方式见：[**Transform Types**](https://docs.crossplane.io/v1.11/concepts/composition/#transform-types)。
 
 #### 传递 Connect 信息
 
@@ -583,7 +583,7 @@ Configuration 包含三个文件：
 * `definition.yaml` - XRD 定义文件；
 * `composition.yaml` - Composition 定义文件；
 
-关于如果构建 Configuration 参考官方文档：[**Create a Configuration**](https://crossplane.io/docs/master/getting-started/create-configuration.html)。
+关于如果构建 Configuration 参考官方文档：[**Create a Configuration**](https://docs.crossplane.io/v1.11/concepts/packages/#configuration-packages)。
 
 ## 5 Provider
 

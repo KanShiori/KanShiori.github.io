@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/statefulset/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-09T11:55:46+00:00" />
-<meta property="article:modified_time" content="2023-01-29T21:13:25+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-02-03T17:18:43+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/statefulset\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  1745 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/statefulset\/","datePublished": "2021-06-09T11:55:46+00:00","dateModified": "2023-01-29T21:13:25+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2583 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/statefulset\/","datePublished": "2021-06-09T11:55:46+00:00","dateModified": "2023-02-03T17:18:43+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,8 +117,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kubernetes - StatefulSet</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-06-09">2021-06-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1745 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 4 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-06-09">2021-06-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2583 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -134,24 +134,31 @@
     </li>
     <li><a href="#2-statefulset-基础">2 StatefulSet 基础</a>
       <ul>
-        <li><a href="#21-spec">2.1 Spec</a></li>
-        <li><a href="#22-status">2.2 Status</a></li>
-        <li><a href="#23-使用">2.3 使用</a></li>
-        <li><a href="#24-pod-管理策略">2.4 Pod 管理策略</a></li>
-        <li><a href="#25-pod-升级策略">2.5 Pod 升级策略</a>
+        <li><a href="#21-spec-与-status">2.1 Spec 与 Status</a></li>
+        <li><a href="#22-pod-序号">2.2 Pod 序号</a></li>
+        <li><a href="#23-存储">2.3 存储</a>
           <ul>
-            <li><a href="#251-partitions">2.5.1 Partitions</a></li>
+            <li><a href="#251-pvc-retention-policy">2.5.1 PVC Retention Policy</a></li>
           </ul>
         </li>
+        <li><a href="#24-网络">2.4 网络</a></li>
+        <li><a href="#25-缩扩容">2.5 缩扩容</a></li>
+        <li><a href="#26-升级">2.6 升级</a>
+          <ul>
+            <li><a href="#261-revision">2.6.1 Revision</a></li>
+            <li><a href="#262-partitions">2.6.2 Partitions</a></li>
+            <li><a href="#242-max-unavailable">2.4.2 Max Unavailable</a></li>
+          </ul>
+        </li>
+        <li><a href="#27-min-ready-second">2.7 Min Ready Second</a></li>
       </ul>
     </li>
-    <li><a href="#总结">总结</a></li>
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
             </div><div class="content" id="content"><h2 id="1-概述">1 概述</h2>
 <p>Pod 在设计的理念上是<strong>无状态</strong>的，Pod 可以在任意时刻被销毁，可以在任意时刻被在别的节点创建相同的副本。</p>
-<p>Deployment 与 RelicSets 就是基于这个理念设计的，它们仅仅保证 Pod 的副本数量，而不关心其他。</p>
+<p>Deployment 与 ReplicaSets 就是基于这个理念设计的，它们仅仅保证 Pod 的副本数量，而不关心其他。</p>
 <p>对于大多数程序，其都是需要 “状态” 的，也就是重启能够恢复之前的数据。这个状态可能包括：</p>
 <ul>
 <li><strong>存储</strong></li>
@@ -163,7 +170,7 @@
 <p>对于网络，基于 Service 的存在，一般的后端服务可以不用关系其所处于的网络环境。但是对于分布式程序或者 p2p 程序，每个程序是需要知道其他程序的网络地址的。所以，<strong>Pod 重启前后的网络地址要是一样的</strong>。</p>
 <p>还有一点是基于 Pod 之间的关系，有时候<strong>多个 Pod 实例之间的启停顺序也应该是一样的</strong>。</p>
 <h3 id="11-如何保存-状态">1.1 如何保存 “状态”</h3>
-<p>对于存储，PVC 是与 Pod 生命周期不耦合的，所以我们让 Pod 重启前后都使用同一个 PVC，那么其数据就是相同的。所以问题变为了：<strong>建立 Pod 与 PVC 的映射关系</strong>。</p>
+<p>对于存储，PVC 是与 Pod 生命周期不耦合的，所以我们让 Pod 重启前后都使用同一个 PVC，那么其数据就是相同的。所以问题变为了：<important>建立 Pod 与 PVC 的映射关系</important>。</p>
 <p>对于网络，Pod 的 IP 不是恒定的，这个是 Pod 的基本概念，无能更改。所以问题变为了：<strong>要找到一个可以代表这个 Pod 的恒定网络地址</strong>。</p>
 <p>对于启动顺序，要保证 Pod 之间的运行顺序，那么需要认得每一个 Pod，也就是 Pod 的命名必须是有规范与固定的。</p>
 <p>所有的问题都由固定的 Pod 命名来解决，Pod 会按照 0-N 的方式来进行命名，而这样 Pod0 可以固定到 Pod0 PVC，固定到 Pod0 DNS 域名，启动顺序按照 Pod0 Pod1 … 来启动。</p>
@@ -180,7 +187,7 @@
 </li>
 </ul>
 <h2 id="2-statefulset-基础">2 StatefulSet 基础</h2>
-<h3 id="21-spec">2.1 Spec</h3>
+<h3 id="21-spec-与-status">2.1 Spec 与 Status</h3>
 <p>StatefuleSet 基本定义如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -224,9 +231,9 @@
 </span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
 </span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">web</span><span class="w">
 </span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;nginx&#34;</span><span class="w">
-</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
-</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;nginx&#34;</span><span class="w"> </span><span class="c"># Headless Service 命名</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">          </span><span class="c"># 副本数量</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">            </span><span class="c"># Pod Selector，决定要管理哪些 Pod</span><span class="w">
 </span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
 </span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
 </span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
@@ -243,7 +250,7 @@
 </span><span class="w">        </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
 </span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">www</span><span class="w">
 </span><span class="w">          </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/usr/share/nginx/html</span><span class="w">
-</span><span class="w">  </span><span class="nt">volumeClaimTemplates</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumeClaimTemplates</span><span class="p">:</span><span class="w"> </span><span class="c"># 创建的 PVC 模板</span><span class="w">
 </span><span class="w">  </span>- <span class="nt">metadata</span><span class="p">:</span><span class="w">
 </span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">www</span><span class="w">
 </span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
@@ -254,20 +261,7 @@
 </span><span class="w">      </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l">shared-ssd-storage</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li><code>serviceName</code> ：使用的 Headless Service 命名；</li>
-<li><code>replicas</code> ：副本数量；</li>
-<li><code>selector</code> ：Pod selector，决定要管理哪些 Pod；</li>
-<li><strong><code>template</code></strong> ：Pod template；</li>
-<li><strong><code>volumeClaimTemplates</code></strong> ：创建的 PVC 模板；
-<ul>
-<li><code>metadata.name</code> ：创建的 PVC 基础命名，命名以 <code>&lt;name&gt;-&lt;podname&gt;</code> 格式；</li>
-<li><code>spec</code> ：与创建一个 PVC 的 spec 相同；</li>
-</ul>
-</li>
-</ul>
-<h3 id="22-status">2.2 Status</h3>
-<p>StatefulSet 会将升级与版本信息记录到 status 字段：</p>
+</div><p>StatefulSet 会将升级与版本信息记录到 <code>status</code> 字段：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -283,51 +277,132 @@
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">status</span><span class="p">:</span><span class="w">
 </span><span class="w">  </span><span class="nt">collisionCount</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
-</span><span class="w">  </span><span class="nt">currentReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
-</span><span class="w">  </span><span class="nt">currentRevision</span><span class="p">:</span><span class="w"> </span><span class="l">my-cluster-69545dcd7d</span><span class="w">
-</span><span class="w">  </span><span class="nt">observedGeneration</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">  </span><span class="nt">observedGeneration</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">                  </span><span class="c"># 更新 Status 时的 STS 的 generation</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">                            </span><span class="c"># 期望运行的 Pod 数量</span><span class="w">
 </span><span class="w">  </span><span class="nt">readyReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
-</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
-</span><span class="w">  </span><span class="nt">updateRevision</span><span class="p">:</span><span class="w"> </span><span class="l">my-cluster-69545dcd7d</span><span class="w">
-</span><span class="w">  </span><span class="nt">updatedReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">currentReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">                     </span><span class="c"># 当前版本（升级前）的 Pod 数量</span><span class="w">
+</span><span class="w">  </span><span class="nt">currentRevision</span><span class="p">:</span><span class="w"> </span><span class="l">my-cluster-69545dcd7d</span><span class="w"> </span><span class="c"># 当前版本的标识（name + hash）</span><span class="w">
+</span><span class="w">  </span><span class="nt">updatedReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">                     </span><span class="c"># 升级版本的 Pod 数量</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateRevision</span><span class="p">:</span><span class="w"> </span><span class="l">my-cluster-69545dcd7d </span><span class="w"> </span><span class="c"># 升级版本的标识（name + hash）</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li>currentReplicas ：当前版本的 Pod 数量；</li>
-<li>currentRevision ：当前版本的标识；</li>
-<li>updatedReplicas ：升级完成的 Pod 数量；</li>
-<li>updateRevision ：需要升级的版本标识；</li>
-</ul>
-<p>而在对应的 Pod label 中，<code>controller-revision-hash</code> 会保存着其对应的 Revision，也就是创建其 Pod 的 StatefulSet 添加的：</p>
+</div><p>通过这些字段可以推断出当前的升级进度，见 <a href="../rolling-upgrade/#143-statefulset" rel=""><strong>Kubernetes - Update 与 Rollback</strong></a></p>
+<h3 id="22-pod-序号">2.2 Pod 序号</h3>
+<p>为了让每个 Pod 有着唯一标识，每个 Pod 会被分配一个整数序号。默认情况下为 0 到 N-1。</p>
+<p>如果开启了 <code>StatefulSetStartOrdinal</code> Feature Gate，可以通过配置 <code>.spec.ordinals.start</code> 设置 Pod 的起始序号。</p>
+<h3 id="23-存储">2.3 存储</h3>
+<p>对于 StatefulSet 中定义的 VolumeClaimTemplate，会为每个 Pod 创建对应的 PVC。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StatefulSet</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">web</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumeClaimTemplates</span><span class="p">:</span><span class="w"> </span><span class="c"># 创建的 PVC 模板</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">www</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">requests</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l">1Gi</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>创建的 PVC 命名也是固定的格式：<code>&lt;template_name&gt;-&lt;pod_name&gt;</code>。因此，当 Pod 重建时，会关联上相同的 PVC，从而复用相同的 PV。</p>
+<p>默认下，Pod 或者 StatefulSet 被删除时，对应的 PVC 与 PV 都不会被删除，需要手动删除。</p>
+<h4 id="251-pvc-retention-policy">2.5.1 PVC Retention Policy</h4>
+<p>当开启 <code>StatefulSetAutoDeletePVC</code> Feature Gate 后，允许通过配置 <code>.spec.persistentVolumeClaimRetentionPolicy</code> 控制是否自动删除 PVC。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">controller-revision-hash</span><span class="p">:</span><span class="w"> </span><span class="l">my-cluster-69545dcd7d</span><span class="w">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StatefulSet</span><span class="w">
+</span><span class="w"></span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">persistentVolumeClaimRetentionPolicy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">whenDeleted</span><span class="p">:</span><span class="w"> </span><span class="l">Retain</span><span class="w">
+</span><span class="w">    </span><span class="nt">whenScaled</span><span class="p">:</span><span class="w"> </span><span class="l">Delete</span><span class="w">
+</span><span class="w"></span><span class="c"># ...</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><p>通过对比 Pod 的 <code>controller-revision-hash</code> label 与 StatefulSet 保存的 <code>updateRevision</code> 就可以判断这个 Pod 是否已经升级过了。因此，StatefulSet 可以不断对未升级的 Pod 执行升级操作。</p>
-<h3 id="23-使用">2.3 使用</h3>
-<p>注意事项：</p>
+</div><p>目前支持两个阶段的配置：</p>
 <ul>
-<li>PV 或者 StorageClass 需要预先创建，不会自动创建与删除；</li>
-<li>虽然 PVC 是由 StatefulSet 自动创建的，但是不会进行自动删除，这是为了保留数据；</li>
-<li>Headless Service 需要预先创建，不会自动创建与删除；</li>
-<li>删除 StatefulSet 不会使其清理所有的 Pod，应该通过将 .spec.replicas 设置为 0 来让其清理所有的 Pod；</li>
+<li>
+<p><strong>whenDeleted</strong></p>
+<p>配置 StatefulSet 被删除时，对于 PVC 的保留策略。注意，只在 StatefulSet 被删除时生效，Pod 重建依旧会复用 PVC。</p>
+<p>也就是说，支持了 StatefulSet 删除的同时删除 PVC。</p>
+</li>
+<li>
+<p><strong>whenScaled</strong></p>
+<p>配置 Pod 缩容时，对于 PVC 的保留策略。</p>
+</li>
 </ul>
-<h3 id="24-pod-管理策略">2.4 Pod 管理策略</h3>
-<p>通过 <code>spec.podManagementPolicy</code> 可以设置管理的 Pod 的策略：</p>
+<p>每个阶段都支持如下策略：</p>
 <ul>
-<li><strong>OrderedReady</strong> ：默认策略，按照 Pod 的顺序依次创建或停止，前一个 Pod 完成后才会进行下一个 Pod 的操作；</li>
-<li><strong>Parallel</strong> ：所有 Pod 创建或停止都是并行的，也就是说你不需要启停顺序的特性；</li>
+<li>
+<p><strong>Retain</strong> - 默认值，保留 PVC</p>
+</li>
+<li>
+<p><strong>Delete</strong> - Pod 被删除同时删除 PVC（不影响 PV）</p>
+</li>
 </ul>
-<h3 id="25-pod-升级策略">2.5 Pod 升级策略</h3>
-<p>通过 <code>spec.updateStrategy</code> 可以设置 Pod 的升级策略，也就是当你更新 <code>spec.template</code> 的镜像版本时，触发的操作。</p>
+<h3 id="24-网络">2.4 网络</h3>
+<p>StatefulSet 中每个 Pod 会根据 StatefulSet 名称以及 Pod 序号设置 Pod 的 Hostname，格式为：<code>&lt;sts_name&gt;-&lt;pod_number&gt;</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">webapp-1</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>根据<a href="../dns-in-k8s/#12-%e8%87%aa%e5%ae%9a%e4%b9%89-hostname-%e5%92%8c-subdomain" rel=""><strong>生成 Pod DNS 的机制</strong></a>，那么创建对应的 Headless Service 后，Pod 就会得到一个固定的 DNS Domain。</p>
+<p>注意，用户需要负责创建 Headless Service，StatefulSet 不会创建。</p>
+<h3 id="25-缩扩容">2.5 缩扩容</h3>
+<p>默认下，StatusfulSet 是依次扩容或缩容 Pod 的。缩扩容某个 Pod 前，它前面的所有 Pod 必须是 Running 和 Ready 状态。</p>
+<p>通过 <code>spec.podManagementPolicy</code> 可以配置缩扩 Pod 的策略：</p>
+<ul>
+<li>
+<p><strong>OrderedReady</strong> ：默认策略，按照 Pod 的顺序依次创建或停止，前一个 Pod 完成后才会进行下一个 Pod 的操作。</p>
+</li>
+<li>
+<p><strong>Parallel</strong> ：所有 Pod 创建或停止都是并行的，不会等待 Pod 进入 Running 和 Ready 或者完全删除。该策略仅仅影响缩扩容，不会影响升级流程。</p>
+</li>
+</ul>
+<h3 id="26-升级">2.6 升级</h3>
+<p>当用户更新 <code>spec.template</code> 时，就会触发 Pod 的升级操作。</p>
+<p><code>spec.updateStrategy</code> 用于设置 Pod 的升级策略：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -346,17 +421,37 @@
 </span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">RollingUpdate</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li><code>type</code> 指定升级策略</li>
-<li><code>updateStrategy</code> ：指定 RollingUpdate 时控制滚动升级行为</li>
-</ul>
-<p>目前支持两种策略：</p>
+</div><p>目前支持两种策略：</p>
 <ul>
-<li><strong>OnDelete</strong> （默认）：需要升级时，并不会自动删除旧版本 Pod，需要用户手动停止旧版本的 Pod，才会创建对应新版本 Pod。</li>
-<li><strong>RollingUpdate</strong> ：自动删除旧版本的 Pod，并创建新版本 Pod。管理方式依赖于 Pod 管理策略。</li>
+<li>
+<p><strong>OnDelete</strong> - 需要升级时，并不会自动删除旧版本 Pod，需要用户手动停止旧版本的 Pod，才会创建对应新版本 Pod。</p>
+</li>
+<li>
+<p><strong>RollingUpdate</strong> - 默认策略，自动删除旧版本的 Pod，并创建新版本 Pod。管理方式依赖于 Pod 管理策略。</p>
+</li>
 </ul>
-<h4 id="251-partitions">2.5.1 Partitions</h4>
-<p>设置 <code>spec.updateStrategy.rollingUpdate.partition</code> 可以对 Pod 进行<strong>分区管理</strong>。只有序号大于或等于的 Pod 才会进行滚动升级，其他 Pod 保持不变（即使被删除后重新创建）。</p>
+<p>对于 RollingUpdate，StatefulSet Controller 会按照序号从大到小的顺序重建依次重建每个 Pod，每个 Pod 需要等待前面的 Pod 进入 Running 和 Ready 才会继续。</p>
+<h4 id="261-revision">2.6.1 Revision</h4>
+<p><code>StatefulSet</code> 使用 Revision 来标识特定的版本，在管理的 Pod Label 中，<code>controller-revision-hash</code> 会保存着其对应的 Revision。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">controller-revision-hash</span><span class="p">:</span><span class="w"> </span><span class="l">my-cluster-69545dcd7d</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>通过对比 Pod Label <code>controller-revision-hash</code> 与 StatefulSet Status <code>updateRevision</code> 就可以判断这个 Pod 是否已经升级过了。因此，StatefulSet 可以不断对未升级的 Pod 执行升级操作。</p>
+<h4 id="262-partitions">2.6.2 Partitions</h4>
+<p>设置 <code>.spec.updateStrategy.rollingUpdate.partition</code> 可以对 Pod 进行<strong>分区管理</strong>。只有序号大于或等于的 Pod 才会进行滚动升级，其他 Pod 保持不变（即使被删除后重新创建）。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -391,27 +486,23 @@ web-1   1/1     Running   <span class="m">0</span>          30s
 web-2   1/1     Running   <span class="m">0</span>          50s
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="总结">总结</h2>
-<p>StatefulSet 在原理上设计的让人感觉很优雅，仅仅从固定的 Pod 出发来实现 “有状态” 这个复杂的事情。</p>
-<p>不过也许还有好多场景 StatefulSet 也无法满足，可能需要更多的开发。</p>
-<p>需要弄清楚以下几点：</p>
-<ul>
-<li><a href="#11-%e7%8a%b6%e6%80%81-%e6%98%af%e4%bb%80%e4%b9%88" rel=""><strong>为了需要有状态应用</strong></a></li>
-<li><a href="#11-%e5%a6%82%e4%bd%95%e4%bf%9d%e5%ad%98-%e7%8a%b6%e6%80%81" rel=""><strong>如何为 Pod 实现有状态</strong></a></li>
-<li><a href="#21-spec" rel=""><strong>StatefulSet 基本定义与使用</strong></a></li>
-<li><a href="#24-pod-%e7%ae%a1%e7%90%86%e7%ad%96%e7%95%a5" rel=""><strong>StatefulSet 的 Pod 管理策略</strong></a></li>
-<li><a href="#25-pod-%e5%8d%87%e7%ba%a7%e7%ad%96%e7%95%a5" rel=""><strong>StatefulSet 的升级策略</strong></a></li>
-</ul>
+</div><h4 id="242-max-unavailable">2.4.2 Max Unavailable</h4>
+<p>指定 <code>.spec.updateStrategy.rollingUpdate.maxUnavailable</code> 来控制滚动升级期间，最大的不可用的 Pod 数量。</p>
+<p>该值可以是绝对值（Pod 数量）或者百分比（Pod 期望数量百分比）。默认值为 1，表明只允许一个 Pod 不可用，所以默认滚动升级是 one by one 的。</p>
+<p>当配置值大于 1 后，那么表明滚动升级每次可能升级多个 Pod。</p>
+<h3 id="27-min-ready-second">2.7 Min Ready Second</h3>
+<p><code>spec.minReadySeconds</code> 可以指定新创建的 Pod 在没有崩溃的情况下，运行多久后才被认为是可用的。</p>
+<p>该功能对于平滑升级很有用。例如，有两个 Pod 提供服务，在升级第一个 Pod 后等待一段时间，使得第一个 Pod 接受流量并处理后，再升级下一个 Pod，防止流量瞬间掉低。</p>
 <h2 id="参考">参考</h2>
 <ul>
-<li><a href="https://kubernetes.feisky.xyz/concepts/objects/statefulset" target="_blank" rel="noopener noreffer"><strong>《Kubernetes 指南》</strong></a></li>
+<li>官方文档：<a href="https://kubernetes.io/zh-cn/docs/concepts/workloads/controllers/statefulset" target="_blank" rel="noopener noreffer"><strong>StatefulSet</strong></a></li>
 </ul>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-01-29&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bda434c4d3e8b30c4cf9c964c1a89f0abe09f3ab" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bda434c4d3e8b30c4cf9c964c1a89f0abe09f3ab: Post(informer-implement) (#31)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bda434c</a></span>
+                <span>更新于 2023-02-03&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/6463d151b6bfa450a71ea0cafbdd783e31737370" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 6463d151b6bfa450a71ea0cafbdd783e31737370: Post(credentials): optimize (#33)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>6463d15</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

@@ -113,17 +113,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJpY
 
    其中，JWT RFC 中推荐了七项内容（可以认为是约定俗成的信息）：
 
-   * iss（Issuer）- 签发人；
-   * exp（Expiration Time）- 令牌过期时间；
-   * sub（Subject）- 主题；
-   * aud（Audience）- 令牌受众；
-   * nbf（Not Before）- 令牌生效时间；
-   * iat（Issued At）- 令牌签发时间；
-   * jti（JWT ID）- 令牌 ID；
+   * `iss`（Issuer）- 签发人；
+   * `exp`（Expiration Time）- 令牌过期时间；
+   * `sub`（Subject）- 主题；
+   * `aud`（Audience）- 令牌受众；
+   * `nbf`（Not Before）- 令牌生效时间；
+   * `iat`（Issued At）- 令牌签发时间；
+   * `jti`（JWT ID）- 令牌 ID；
 
 * **`Signature`** - 通过 Header 中定义算法，通过特定密钥（服务器保管）对前面两部分进行加密计算。
   
-  服务端在接收到 JWT 后，会使用密钥对 Header + Payload 再次计算，通过对比 Signature 字段来判断内容是否被篡改。
+  服务端在接收到 JWT 后，会使用密钥对 `Header` + `Payload` 再次计算，通过对比 `Signature` 字段来判断内容是否被篡改。
+
+一般情况下，验证 JWT 的流程如下：
+
+1. 接收 JWT 后解析；
+2. 验证 `iss` `aud` `exp` 等信息是否合法；
+3. 基于 `alg`，使用 `Header` + `Payload` + Key 在本地计算出签名，与 `Signature` 进行对比
 
 ### 2.2 特点
 

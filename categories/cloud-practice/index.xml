@@ -3,7 +3,15 @@
         <title>Cloud Practice - 分类 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/categories/cloud-practice/</link>
         <description>Cloud Practice - 分类 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 25 Oct 2022 13:54:10 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/cloud-practice/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 31 Jan 2023 19:07:30 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/categories/cloud-practice/" rel="self" type="application/rss+xml" /><item>
+    <title>OpenKruise</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/</link>
+    <pubDate>Tue, 31 Jan 2023 19:07:30 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/</guid>
+    <description><![CDATA[1 概述 OpenKruise 通过自定义一些 CRD 来提供一些原生 Resource 不含有的功能。 其基本架构如下： Manager kruise-manager 是各个 CRD 的 Controller 和 Webhook，通过 Deployment 部署。 每个 CRD Controller 逻辑上都是独立的]]></description>
+</item>
+<item>
     <title>跨云访问资源</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/</link>
     <pubDate>Tue, 25 Oct 2022 13:54:10 &#43;0800</pubDate>
