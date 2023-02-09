@@ -3,7 +3,23 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 31 Jan 2023 19:07:30 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 06 Feb 2023 20:09:34 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 编程 - Operator Design Notes</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/operator-design-note/</link>
+    <pubDate>Mon, 06 Feb 2023 20:09:34 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/operator-design-note/</guid>
+    <description><![CDATA[下面简单介绍了各个 Operator 项目的设计框架与思路，作为参考。 Cockroach Operator Cockroach Operator 基于 Controller Runtime 实现的，因此逻辑的入口是 Reconcile() 函数。 大体的逻辑如下： 1 2 3 4 5 6 7 8 9 10 11 12]]></description>
+</item>
+<item>
+    <title>K8s 编程 - Operator Programming Notes</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/operator-programming-note/</link>
+    <pubDate>Sun, 05 Feb 2023 20:09:34 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/operator-programming-note/</guid>
+    <description><![CDATA[下面是作为 Operator 初学者自己总结的一些经验，纯属个人随意总结，没有任何正确性可言。 使用 Status 传递过程式操作状态 过程式操作指的是 Upgrade Scale 这样的操作，也就是触]]></description>
+</item>
+<item>
     <title>OpenKruise</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/</link>
     <pubDate>Tue, 31 Jan 2023 19:07:30 &#43;0800</pubDate>
@@ -66,22 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/scheduler-implement/</guid>
     <description><![CDATA[1 概述 Kubernetes Scheduler 负责了 Schedule + Eviction + Preemption 三个功能。Scheduler 本质上也是一个 Controller，监听着 Pod 和 Node 等资源，出现事件时尝试执行调度操作。 目]]></description>
-</item>
-<item>
-    <title>Thinking in Operator</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/</link>
-    <pubDate>Tue, 13 Sep 2022 20:09:34 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/</guid>
-    <description><![CDATA[下面是作为 Operator 初学者自己总结的一些经验，纯属个人随意总结，没有任何正确性可言。 如何使用 Status 传递过程式操作状态 过程式操作指的是 Upgrade Scale 这样的操作，也就]]></description>
-</item>
-<item>
-    <title>Kubernetes - 网络设计</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/container-network/</link>
-    <pubDate>Wed, 31 Aug 2022 20:22:14 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/container-network/</guid>
-    <description><![CDATA[1 网络模型 Kubernetes 集群中的网络是虚拟扁平的大网络，Service 与 Pod 的网络有着各自独立的一个网段，每个 Service 与 Pod 占用网段中的一个 IP。Pod 之间可以通]]></description>
 </item>
 </channel>
 </rss>
