@@ -3,7 +3,23 @@
         <title>云计算 - 标签 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/</link>
         <description>云计算 - 标签 - Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 31 Jan 2023 19:07:30 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 06 Feb 2023 20:09:34 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 编程 - Operator Design Notes</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/operator-design-note/</link>
+    <pubDate>Mon, 06 Feb 2023 20:09:34 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/operator-design-note/</guid>
+    <description><![CDATA[下面简单介绍了各个 Operator 项目的设计框架与思路，作为参考。 Cockroach Operator Cockroach Operator 基于 Controller Runtime 实现的，因此逻辑的入口是 Reconcile() 函数。 大体的逻辑如下： 1 2 3 4 5 6 7 8 9 10 11 12]]></description>
+</item>
+<item>
+    <title>K8s 编程 - Operator Programming Notes</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/operator-programming-note/</link>
+    <pubDate>Sun, 05 Feb 2023 20:09:34 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/operator-programming-note/</guid>
+    <description><![CDATA[下面是作为 Operator 初学者自己总结的一些经验，纯属个人随意总结，没有任何正确性可言。 使用 Status 传递过程式操作状态 过程式操作指的是 Upgrade Scale 这样的操作，也就是触]]></description>
+</item>
+<item>
     <title>OpenKruise</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_practice/openkruise/</link>
     <pubDate>Tue, 31 Jan 2023 19:07:30 &#43;0800</pubDate>
@@ -36,14 +52,6 @@
     <description><![CDATA[1 概述 Kubernetes Scheduler 负责了 Schedule + Eviction + Preemption 三个功能。Scheduler 本质上也是一个 Controller，监听着 Pod 和 Node 等资源，出现事件时尝试执行调度操作。 目]]></description>
 </item>
 <item>
-    <title>Thinking in Operator</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/</link>
-    <pubDate>Tue, 13 Sep 2022 20:09:34 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/thinking-in-opeator/</guid>
-    <description><![CDATA[下面是作为 Operator 初学者自己总结的一些经验，纯属个人随意总结，没有任何正确性可言。 如何使用 Status 传递过程式操作状态 过程式操作指的是 Upgrade Scale 这样的操作，也就]]></description>
-</item>
-<item>
     <title>Kubernetes - 网络设计</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/container-network/</link>
     <pubDate>Wed, 31 Aug 2022 20:22:14 &#43;0800</pubDate>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/kustomize/</guid>
     <description><![CDATA[1 概述 Kustomize 基于 kustomization.yaml 文件来生成一系列的 Kubernetes 资源的 YAML 文件。 基于这种模式，Kustomize 能够支持的功能大致分为三类： 生成 Resource - 基于一些来源数据，生成出]]></description>
-</item>
-<item>
-    <title>Kubernetes - Update 与 Rollback</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/</link>
-    <pubDate>Wed, 11 May 2022 21:24:25 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/rolling-upgrade/</guid>
-    <description><![CDATA[1 操作 1.1 Update 当用户修改 Deployment DaemonSet StatefulSet 定义中的 .spec.template 任意字段时，就会触发 Pod 的升级，默认都是 Rolling Update。 1 $ kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.16.1 通过 kubectl rollout status 查看滚动升级的过程： 1 2 3]]></description>
 </item>
 </channel>
 </rss>
