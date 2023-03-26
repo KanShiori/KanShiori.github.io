@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/schedule-preemption-eviction/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-23T12:09:25+00:00" />
-<meta property="article:modified_time" content="2023-02-09T21:11:10+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/schedule-preemption-eviction\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3210 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/schedule-preemption-eviction\/","datePublished": "2021-06-23T12:09:25+00:00","dateModified": "2023-02-09T21:11:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  5228 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/schedule-preemption-eviction\/","datePublished": "2021-06-23T12:09:25+00:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,8 +117,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kubernetes - Pod 调度机制</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-06-23">2021-06-23</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3210 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-06-23">2021-06-23</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 5228 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 11 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -137,20 +137,22 @@
             <li><a href="#232-pod-亲和性与反亲和性">2.3.2 Pod 亲和性与反亲和性</a></li>
           </ul>
         </li>
-        <li><a href="#24-taint-与-tolerations">2.4 taint 与 tolerations</a>
+        <li><a href="#24-taint-与-tolerations">2.4 Taint 与 Tolerations</a>
           <ul>
-            <li><a href="#241-taint">2.4.1 taint</a></li>
-            <li><a href="#242-tolerations">2.4.2 tolerations</a></li>
+            <li><a href="#241-taint">2.4.1 Taint</a></li>
+            <li><a href="#242-tolerations">2.4.2 Tolerations</a></li>
           </ul>
         </li>
+        <li><a href="#25-topology-spread-constraints">2.5 Topology Spread Constraints</a></li>
       </ul>
     </li>
     <li><a href="#3-eviction">3 Eviction</a>
       <ul>
         <li><a href="#31-节点压力驱逐">3.1 节点压力驱逐</a>
           <ul>
-            <li><a href="#312-配置驱逐参数">3.1.2 配置驱逐参数</a></li>
-            <li><a href="#313-驱逐策略">3.1.3 驱逐策略</a></li>
+            <li><a href="#311-node-condition">3.1.1 Node Condition</a></li>
+            <li><a href="#312-如何选择被驱逐的-pod">3.1.2 如何选择被驱逐的 Pod</a></li>
+            <li><a href="#313-最小驱逐回收">3.1.3 最小驱逐回收</a></li>
           </ul>
         </li>
         <li><a href="#32-api-驱逐">3.2 API 驱逐</a></li>
@@ -161,9 +163,25 @@
       <ul>
         <li><a href="#41-priorityclass">4.1 PriorityClass</a></li>
         <li><a href="#42-pod-优先级">4.2 Pod 优先级</a></li>
+        <li><a href="#43-非抢占式-priorityclass">4.3 非抢占式 PriorityClass</a></li>
         <li><a href="#43-抢占">4.3 抢占</a></li>
       </ul>
     </li>
+    <li><a href="#5-pod-qos">5 Pod Qos</a>
+      <ul>
+        <li><a href="#51-guaranteed-pod">5.1 Guaranteed Pod</a></li>
+        <li><a href="#52-burstable-pod">5.2 Burstable Pod</a></li>
+        <li><a href="#53-besteffort-pod">5.3 BestEffort Pod</a></li>
+        <li><a href="#54-qos-对于-oomkill-的影响">5.4 Qos 对于 OOMKill 的影响</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-poddisruptionbudget">6 PodDisruptionBudget</a>
+      <ul>
+        <li><a href="#61-spec-与-status">6.1 Spec 与 Status</a></li>
+        <li><a href="#62-poddisruptionconditions">6.2 PodDisruptionConditions</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-pod-overhead">7 Pod Overhead</a></li>
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
@@ -429,11 +447,11 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><p>上面例子中，podAntiAffinity 表明不要调度到同节点已经运行着 app:web-store 的 Pod 的节点上，podAffinity 表明调度到同节点运行着 app:store 的 Pod 的节点上。通俗点说，该 Pod 不能重复部署在同一个节点，并且每次部署要与 app:store 的 Pod 绑定。</p>
-<h3 id="24-taint-与-tolerations">2.4 taint 与 tolerations</h3>
+<h3 id="24-taint-与-tolerations">2.4 Taint 与 Tolerations</h3>
 <p>与 affinity 相反，taint 使节点排斥一类特定的 Pod。</p>
 <p>为了能使 taint 节点能够被调度到一些特殊的 Pod，可以设置 Pod 的 toleration，表明不在意某些节点的 taint 。</p>
-<h4 id="241-taint">2.4.1 taint</h4>
-<p>通过 <code>kubectl taint</code> 为节点增加一个 taint：</p>
+<h4 id="241-taint">2.4.1 Taint</h4>
+<p>通过 <code>kubectl taint</code> 为节点增加一个 Taint：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -443,7 +461,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>为 node1 添加 key1:value1 的 traint，其触发的效果是不能被调度（NoSchedule）</li>
+<li>为 node1 添加 key1:value1 的 Taint，其触发的效果是不能被调度（NoSchedule）</li>
 </ul>
 <p>当然，你也可以为删除某个节点的 taint：</p>
 <div class="highlight"><div class="chroma">
@@ -457,38 +475,43 @@
 </div><ul>
 <li>结尾的 - 号表示是删除一个 taint；</li>
 </ul>
-<p>设置的 kv 对用于来判断 toleration 是否匹配 taint。</p>
-<p>目前包含几种类型的 effect ：</p>
+<p>设置的 k/v 对用于来判断 Toleration 是否匹配 Taint。</p>
+<p>目前包含几种类型的 effect：</p>
 <ul>
 <li><strong>NoSchedule</strong> ：不将 Pod 调度到该节点，但是不影响已经运行的 Pod；</li>
 <li><strong>PreferNoSchedule</strong> ：尽量不降 Pod 分配到该节点，是个软性条件；</li>
 <li><strong>NoExecute</strong> ：不将 Pod 调度到该节点，并且会驱逐已经运行并且不能容忍污点的 Pod；</li>
 </ul>
-<p>Kubernetes 会在一些条件下，自动会节点添加一些内置的污点：</p>
+<p>当达到条件时，Kubernetes 可能会给 Node 添加某个 Taint，包括：</p>
 <ul>
-<li>node.kubernetes.io/not-ready + NoExecute ：节点为准备好，Ready 为 false；</li>
-<li>node.kubernetes.io/unreachable + NoExecute ：节点不可达，Ready 为 unknown；</li>
-<li>node.kubernetes.io/memory-pressure + ：节点存在内存压力；</li>
-<li>node.kubernetes.io/disk-pressure + NoSchedule ：节点存在磁盘压力；</li>
-<li>node.kubernetes.io/pid-pressure + NoSchedule ：节点 PID 压力；</li>
-<li>node.kubernetes.io/network-unavailable + NoSchedule ：节点网络不可用；</li>
-<li>node.kubernetes.io/unschedulable + NoSchedule ：节点不可调度；</li>
-<li>node.cloudprovider.kubernetes.io/uninitialized + NoSchedule ：节点未被云平台初始化；</li>
+<li><code>node.kubernetes.io/not-ready</code> + NoExecute - 节点为准备好，Ready 为 false；</li>
+<li><code>node.kubernetes.io/unreachable</code> + NoExecute - 节点不可达，Ready 为 unknown；</li>
+<li><code>node.kubernetes.io/memory-pressure</code> + NoSchedule - 节点存在内存压力；</li>
+<li><code>node.kubernetes.io/disk-pressure</code> + NoSchedule - 节点存在磁盘压力；</li>
+<li><code>node.kubernetes.io/pid-pressure</code> + NoSchedule - 节点 PID 压力；</li>
+<li><code>node.kubernetes.io/network-unavailable</code> + NoSchedule - 节点网络不可用；</li>
+<li><code>node.kubernetes.io/unschedulable</code> + NoSchedule - 节点不可调度；</li>
+<li><code>node.cloudprovider.kubernetes.io/uninitialized</code>+ NoSchedule - 节点未被云平台初始化；</li>
 </ul>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>DaemonSet 创建的 Pod<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">DaemonSet 创建的 Pod 会自动加上上面两个 NoExecute 的 taint，使得其 Pod 不会被驱逐。</div>
+            <div class="admonition-content"><p>DaemonSet 创建的 Pod 会自动加下面两个 NoExecute 的 Taint，使得其 Pod 不会被驱逐。</p>
+<ul>
+<li><code>node.kubernetes.io/unreachable</code></li>
+<li><code>node.kubernetes.io/not-ready</code></li>
+</ul>
+</div>
         </div>
     </div>
-<h4 id="242-tolerations">2.4.2 tolerations</h4>
-<p>当 Pod 设置的 <code>spec.tolerations</code> 能够 “匹配” 节点某个 taint 时，就可以认为该 taint 不存在。</p>
+<h4 id="242-tolerations">2.4.2 Tolerations</h4>
+<p>当 Pod 设置的 <code>spec.tolerations</code> 能够 “匹配” 节点某个 Taint 时，就可以认为该 Taint 不存在。</p>
 <p>“匹配” 有两个含义：</p>
 <ul>
-<li>如果 operator 是 Exist，那么相同的 key 即可。如果 operator 为 Equal，那么 key val 都要相同</li>
-<li>effect 相同</li>
+<li>如果 <code>operator</code> 是 Exist，那么相同的 key 即可。如果 <code>operator</code> 为 Equal，那么 key val 都要相同</li>
+<li><code>effect</code> 相同</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -548,23 +571,124 @@
 </span><span class="w">    </span><span class="nt">tolerationSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">3600</span><span class="w">  </span><span class="c"># 匹配到 taint 后，3600 内不会被驱逐</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><h2 id="3-eviction">3 Eviction</h2>
+</div><h3 id="25-topology-spread-constraints">2.5 Topology Spread Constraints</h3>
+<p>Pod 提供了 <code>spec.topologySpreadConstraints</code> 字段来描述多个副本之间的拓扑关系。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">example-pod</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">topologySpreadConstraints</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">maxSkew</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;integer&gt;</span><span class="w">
+</span><span class="w">      </span><span class="nt">minDomains</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;integer&gt;</span><span class="w"> </span><span class="c"># 可选；自从 v1.25 开始成为 Beta</span><span class="w">
+</span><span class="w">      </span><span class="nt">topologyKey</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;string&gt;</span><span class="w">
+</span><span class="w">      </span><span class="nt">whenUnsatisfiable</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;string&gt;</span><span class="w">
+</span><span class="w">      </span><span class="nt">labelSelector</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;object&gt;</span><span class="w">
+</span><span class="w">      </span><span class="nt">matchLabelKeys</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;list&gt;</span><span class="w"> </span><span class="c"># 可选；自从 v1.25 开始成为 Alpha</span><span class="w">
+</span><span class="w">      </span><span class="nt">nodeAffinityPolicy</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">Honor|Ignore]</span><span class="w"> </span><span class="c"># 可选；自从 v1.26 开始成为 Beta</span><span class="w">
+</span><span class="w">      </span><span class="nt">nodeTaintsPolicy</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">Honor|Ignore]</span><span class="w"> </span><span class="c"># 可选；自从 v1.26 开始成为 Beta</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>maxSkew</code> - 描述最大能够接受不同区域间副本的偏差值。</p>
+<p>例如，如果 <code>maxSkew</code> 为 1，存在三个部署区域，那么最大副本数量与最小副本数量最大差值为 1。</p>
+</li>
+<li>
+<p><code>minDomains</code> -</p>
+</li>
+<li>
+<p><code>topologyKey</code> - 划分区域时使用的 Node Label，相同 Label Value 的 Node 将被认为是同一个区域。</p>
+<p>例如，通常可能会使用 <code>topology.kubernetes.io/zone</code> 来划分区域，表示 Zone 之间副本数量的要求。</p>
+</li>
+<li>
+<p><code>whenUnsatisfiable</code> - 指定不满足分布约束时的处理方式：</p>
+<ul>
+<li><strong>DoNotSchedule</strong> - 调度器不调度，Pod 处于 Pending 状态</li>
+<li><strong>ScheduleAnyway</strong> - 仍然调度，调度器会尽量满足分布约束</li>
+</ul>
+</li>
+<li>
+<p><code>labelSelector</code> - 计算各个区域的 Pod 副本数时，使用的 Label Selector</p>
+</li>
+<li>
+<p><code>matchLabelKeys</code> - 与 <code>labelSelector</code> 类似，但是是匹配的 Label Value 来计算 Pod 数量</p>
+</li>
+</ul>
+<h2 id="3-eviction">3 Eviction</h2>
 <h3 id="31-节点压力驱逐">3.1 节点压力驱逐</h3>
 <p>kubelet 会监控 CPU、Mem、磁盘空间、文件系统 inode 数量等资源，一旦某个资源消耗达到一个阈值，<strong>kubelet 会主动驱逐节点上的一个或多个 Pod，以回收资源</strong>。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">压力驱逐不同于 API 驱逐，不会参考 <code>PodDisruptionBudget</code> 或者 Pod 的 <code>terminationGracePeriodSeconds</code>。</div>
+        </div>
+    </div>
 <p>驱逐时，kubelet 会<strong>将 Pod 设置为 Failed 状态，并停止 Pod</strong>，而上层的副本控制器可能会在其他地方创建 Pod 来替代。</p>
-<p>驱逐的阈值分为：</p>
+<p>驱逐方式分为：</p>
 <ul>
-<li><strong>soft eviction thresholds</strong> ：达到软阈值后并持续了一段时间没有恢复，就会通过 graceful 的方式驱逐一些 Pod；</li>
-<li><strong>hard eviction thresholds</strong> ：一旦触发阈值，立即通过 force 方式进行驱逐；</li>
+<li>
+<p><strong>Soft Eviction Thresholds</strong></p>
+<p>达到软阈值后并持续了一段时间没有恢复，就会通过 Graceful 的方式驱逐一些 Pod，但是等待时间是参考 kubelet 配置而不是 Pod 配置。</p>
+<p>通过 kubelet 的配置参数来指定软驱逐的阈值。</p>
+</li>
+<li>
+<p><strong>hard eviction thresholds</strong></p>
+<p>一旦触发阈值，kubelet 立刻杀死 Pod。</p>
+<p>kubelet 默认有以下的硬驱逐条件：</p>
+<ul>
+<li><code>memory.available&lt;100Mi</code></li>
+<li><code>nodefs.available&lt;10%</code></li>
+<li><code>imagefs.available&lt;15%</code></li>
+<li><code>nodefs.inodesFree&lt;5%</code></li>
 </ul>
-<h4 id="312-配置驱逐参数">3.1.2 配置驱逐参数</h4>
-<p>驱逐相关的配置参数都需要配置 kubelet 的启动参数来进行配置。</p>
-<h4 id="313-驱逐策略">3.1.3 驱逐策略</h4>
-<p>kubelet 会按照下面参数来决定驱逐 pod 的顺序：</p>
+</li>
+</ul>
+<h4 id="311-node-condition">3.1.1 Node Condition</h4>
+<p>kubelet 会将 Node 状态通过 Condition 方式暴露出来（默认 10s），以提供驱逐的信息：</p>
+<ul>
+<li>
+<p><strong>MemoryPressure</strong> - Node Mem 已经满足驱逐条件。</p>
+</li>
+<li>
+<p><strong>DiskPressure</strong> - Node Fs 或者 Image Fs 或 Inode 已经满足驱逐条件。</p>
+</li>
+<li>
+<p><strong>PIDPressure</strong> - PID 以满足驱逐条件</p>
+</li>
+</ul>
+<h4 id="312-如何选择被驱逐的-pod">3.1.2 如何选择被驱逐的 Pod</h4>
+<p>kubelet 会按照下面参数来决定哪个 Pod 被驱逐：</p>
 <ol>
-<li>Pod 资源使用量是否超过 spec.request；</li>
-<li>Pod 优先级；</li>
-<li>Pod 相对于 spec.request 的资源使用情况；</li>
+<li>
+<p>Pod 资源使用量是否超过 <code>spec.request</code>。</p>
+</li>
+<li>
+<p>Pod 优先级。</p>
+</li>
+<li>
+<p>Pod 相对于 <code>spec.request</code> 的资源使用情况；</p>
+</li>
 </ol>
 <p>因此，kubelet 会按照下面顺序进行驱逐：</p>
 <ol>
@@ -574,22 +698,55 @@
 <blockquote>
 <p>BestEffort Burstable Guaranteed 是 <a href="https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/" target="_blank" rel="noopener noreffer"><strong>QosClass</strong></a>。</p>
 </blockquote>
+<h4 id="313-最小驱逐回收">3.1.3 最小驱逐回收</h4>
+<p>某些情况下，驱逐 Pod 可能只能回收少量资源，导致 kubelet 会反复驱逐。</p>
+<p>通过配置 kubelet，可以让其在驱逐回收资源时，至少回收多少资源才停止驱逐。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kubelet.config.k8s.io/v1beta1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">KubeletConfiguration</span><span class="w">
+</span><span class="w"></span><span class="nt">evictionHard</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">memory.available</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;500Mi&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">nodefs.available</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1Gi&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">imagefs.available</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;100Gi&#34;</span><span class="w">
+</span><span class="w"></span><span class="nt">evictionMinimumReclaim</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">memory.available</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;0Mi&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">nodefs.available</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;500Mi&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">imagefs.available</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2Gi&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>上面配置表明，NodeFS 驱逐回收时，至少回收 500Mi。</p>
 <h3 id="32-api-驱逐">3.2 API 驱逐</h3>
-<p>与节点压力驱逐的不同，API 驱逐是指通过 <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#create-eviction-pod-v1-core" target="_blank" rel="noopener noreffer"><strong>Eviction API</strong></a> 来进行主动的驱逐，并且停止 Pod 是 graceful。</p>
-<p><code>kubectl drain</code> 就是通过 API 进行驱逐，停止某个节点上的所有 Pod。</p>
+<p>与节点压力驱逐的不同，API 驱逐是指通过 <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#create-eviction-pod-v1-core" target="_blank" rel="noopener noreffer"><strong>Eviction API</strong></a> 来进行主动的驱逐，并且停止 Pod 是 Graceful Stop。</p>
+<p>例如，<code>kubectl drain</code> 就是通过 API 进行驱逐，停止某个节点上的所有 Pod。</p>
 <p>API 驱逐会受到 <a href="https://kubernetes.io/docs/tasks/run-application/configure-pdb/" target="_blank" rel="noopener noreffer"><strong>PodDisruptionBudgets</strong></a> 和 <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-termination" target="_blank" rel="noopener noreffer"><strong>terminationGracePeriodSeconds</strong></a> 的控制。</p>
 <h3 id="33-污点驱逐">3.3 污点驱逐</h3>
 <p>在第 2 部分看到，自定义的污点也会导致 Pod 的驱逐，不能容忍 NoExecute 污点的 Pod 都会被驱逐。</p>
 <h2 id="4-preemption">4 Preemption</h2>
-<p>Pods 可以被提供一个优先级。高优先级的 Pod 会被优先调度，scheduler 甚至会尝试抢占低优先级的 Pod，来让高优先级的 Pod 先运行。</p>
+<p>Pods 可以被提供一个优先级。高优先级的 Pod 会被优先调度，Scheduler 甚至会尝试抢占低优先级的 Pod，来让高优先级的 Pod 先运行。</p>
 <p>要使用优先级与抢占功能：</p>
 <ol>
-<li>创建 PriorityClass；</li>
-<li>Pod 或者 Pod template 定义中指定<code> spec.priorityClassName</code> 为一个特定的 PriorityClasses。</li>
+<li>
+<p>创建 PriorityClass。</p>
+</li>
+<li>
+<p>Pod 或者 Pod Template 定义中指定 <code>spec.priorityClassName</code> 为一个特定的 PriorityClasses。</p>
+</li>
 </ol>
 <h3 id="41-priorityclass">4.1 PriorityClass</h3>
-<p><strong><code>PriorityClass</code></strong> 是一个 non-namespaced 资源，其包含一个 value 来描述优先级。Kubernetes 内置两个 PriorityClass ：system-cluster-critical system-node-critical，表明是系统关键的组件、</p>
-<p>一个基本的 PriorityClass 优先级如下：</p>
+<p><strong><code>PriorityClass</code></strong> 包含一个 <code>value</code> 来描述优先级，值越大优先级越高。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -610,11 +767,25 @@
 </span><span class="w"></span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;This priority class should be used for XYZ service pods only.&#34;</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li><code>value</code> ：优先级值，32 位整型，越大表示优先级越高。</li>
-<li><code>globalDefault</code> ：是否是系统默认优先级，没有指定 PriorityClass 的 Pod 使用默认优先级；<br>
-如果系统没有设置 globalDefault，那么默认优先级是 0。</li>
-<li><code>description</code> ：文本描述；</li>
+</div><div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">Kubernetes 内置两个 PriorityClass：<code>system-cluster-critical</code> 和 <code>system-node-critical</code>，表明是系统关键的组件。</div>
+        </div>
+    </div>
+<ul>
+<li>
+<p><code>value</code> - 优先级值，32 位整型，越大表示优先级越高。</p>
+</li>
+<li>
+<p><code>globalDefault</code> - 是否是系统默认优先级，没有指定 PriorityClass 的 Pod 使用默认优先级。</p>
+<p>如果系统没有设置 globalDefault，那么默认优先级是 0。</p>
+</li>
+<li>
+<p><code>description</code> ：文本描述。</p>
+</li>
 </ul>
 <h3 id="42-pod-优先级">4.2 Pod 优先级</h3>
 <p>创建 Pod 时通过指定 <code>spec.priorityClassName</code> 来指定一个特定的 PriorityClass。</p>
@@ -648,26 +819,328 @@
 </span><span class="w">  </span><span class="nt">priorityClassName</span><span class="p">:</span><span class="w"> </span><span class="l">high-priority</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><p>当 Pod 优先级设置后，<strong>scheduler 会按照优先级对 pending Pods 进行排序，高优先级的 pending Pod 优先于低优先级的进行处理</strong>。</p>
-<p>如果高优先级的 Pod 无法被调度到节点，那么 scheduler 才会继续调度到低优先级 Pod。</p>
+</div><p>当 Pod 优先级设置后，<strong>scheduler 会按照优先级对 Pending Pods 进行排序，高优先级的 Pending Pod 优先于低优先级的进行处理</strong>。</p>
+<p>如果高优先级的 Pod 无法被调度到节点，那么 Scheduler 才会继续调度到低优先级 Pod。</p>
+<h3 id="43-非抢占式-priorityclass">4.3 非抢占式 PriorityClass</h3>
+<p>PriorityClass 支持一个配置 <code>preemptionPolicy</code> 配置抢占的行为。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">scheduling.k8s.io/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PriorityClass</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">high-priority-nonpreempting</span><span class="w">
+</span><span class="w"></span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="m">1000000</span><span class="w">
+</span><span class="w"></span><span class="nt">preemptionPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">Never</span><span class="w">
+</span><span class="w"></span><span class="nt">globalDefault</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="w"></span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;This priority class will not cause other pods to be preempted.&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>目前支持：</p>
+<ul>
+<li>
+<p><strong>PreemptLowerPriority</strong> - 允许使用该 PriorityClass 的 Pod 抢占其他优先级的 Pod。</p>
+</li>
+<li>
+<p><strong>Never</strong> - 使用该 PriorityClass 放置在调度队列的中较低优先级的 Pod 之前，但是不能抢占其他 Pod</p>
+</li>
+</ul>
 <h3 id="43-抢占">4.3 抢占</h3>
-<p>当 scheduler 发现一个 Pod 无法被调度到任何节点时，就会触发抢占的逻辑。scheduler 会尝试计算：是否移除某个节点的一个或多个低优先级的 Pod，使得节点能够满足被调度的条件。</p>
-<p>如果能够找到该节点，新 Pod 状态信息中的 <code>nominatedNodeName</code> 为被设置为节点名，使得用户可以看到抢占信息。</p>
-<p>之后，节点上被低优先级的 Pod 会被驱逐（graceful stop 30s）。因此，这里会导致新 Pod 调度到该节点之间有一个需要等待的时间差。</p>
-<p>所以，Nominated Node 这不代表新 Pod 必定会调度到该节点，也许驱逐期间出现别的节点满足调度条件，那么就会被调度。</p>
-<p>如果新 Pod 与将被驱逐的 Pod 之间有 pod affinity 关系，那么抢占后亲和性关系就不再会被满足，因此 scheduler 不会选择这样的节点来进行抢占。同样，推荐在同优先级或者高优先级的 Pod 间设置 pod affinity。</p>
-<p>同样，针对拓扑域下的 pod affinity，也会有上述的问题，因此 scheduler 不会进行跨节点抢占。</p>
+<p>当 Scheduler 发现一个 Pod 无法被调度到任何节点时，就会触发抢占的逻辑。Scheduler 会尝试计算：<strong>是否移除某个节点的一个或多个低优先级的 Pod，使得节点能够满足被调度的条件</strong>。</p>
+<p>如果能够找到该节点，新 Pod 状态信息中的 <code>nominatedNodeName</code> 为被设置为 Node Name，使得用户可以看到抢占信息。</p>
+<p>之后，Node 被低优先级的 Pod 会被驱逐（Graceful Stop）。因此，这里会导致新 Pod 调度到该 Node 之间有一个需要等待的时间差。所以，Nominated Node 这不代表新 Pod 必定会调度到该节点，也许驱逐期间出现别的节点满足调度条件，那么就会被调度。</p>
+<p>如果新 Pod 与将被驱逐的 Pod 之间有 Pod Affinity 关系，那么抢占后亲和性关系就不再会被满足，因此 Scheduler 不会选择这样的节点来进行抢占。同样，推荐在同优先级或者高优先级的 Pod 间设置 pod affinity。</p>
+<p>同样，针对拓扑域下的 Pod Affinity，也会有上述的问题，因此 Scheduler 不会进行跨节点抢占。</p>
+<h2 id="5-pod-qos">5 Pod Qos</h2>
+<p>Pod 中的 <code>status.qosClass</code> 表明了 Pod 的服务质量。Kubernetes 在创建 Pod 时会将其设置到 Pod 上。</p>
+<p>Qos 类别包括：</p>
+<ul>
+<li>Guaranteed</li>
+<li>Burstable</li>
+<li>BestEffort</li>
+</ul>
+<h3 id="51-guaranteed-pod">5.1 Guaranteed Pod</h3>
+<p>Guaranteed 表示 Pod 的资源收到最严格的控制。其要求包括：</p>
+<ul>
+<li>Pod 中每个 Container 都必须指定 Mem Request 和 Mem Limits。</li>
+<li>Pod 中每个 Container 的 Mem Request 必须等于 Mem Limits。</li>
+<li>Pod 中每个 Container 都必须指定 CPU Request 和 CPU Limits。</li>
+<li>Pod 中每个 Container 的 CPU Request 必须等于 CPU Limits。</li>
+</ul>
+<p>每个 Container 包括 InitContainer 和普通 Container。不过 Ephemeral Container 不支持配置资源，所以不受限制。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="c"># ...</span><span class="w">
+</span><span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">limits</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l">700m</span><span class="w">
+</span><span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">200Mi</span><span class="w">
+</span><span class="w">      </span><span class="nt">requests</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l">700m</span><span class="w">
+</span><span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">200Mi</span><span class="w">
+</span><span class="w">    </span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">qosClass</span><span class="p">:</span><span class="w"> </span><span class="l">Guaranteed</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="52-burstable-pod">5.2 Burstable Pod</h3>
+<p>Burstable 指定的 Pod 的资源能一定程度上的超频，但是还是有着上限的控制。其要求包括：</p>
+<ul>
+<li>Pod 不符合 Guaranteed 标准。</li>
+<li>Pod 中至少一个 Container 具有 Mem Request/Limits 或者 CPU Request/Limits</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">Always</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">qos-demo-2-ctr</span><span class="w">
+</span><span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">limits</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">200Mi</span><span class="w">
+</span><span class="w">      </span><span class="nt">requests</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">100Mi</span><span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">qosClass</span><span class="p">:</span><span class="w"> </span><span class="l">Burstable</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="53-besteffort-pod">5.3 BestEffort Pod</h3>
+<p>BestEffort 表明 Pod 没有收到任何的资源限制，也就是没有配置任何的 Mem 或 CPU 配置。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="c"># ...</span><span class="w">
+</span><span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">  </span><span class="c"># ...</span><span class="w">
+</span><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">qosClass</span><span class="p">:</span><span class="w"> </span><span class="l">BestEffort</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="54-qos-对于-oomkill-的影响">5.4 Qos 对于 OOMKill 的影响</h3>
+<p>kubelet 会根据 Qos 等级为每个 Container 设置一个 <code>oom_score_adj</code> 的值。</p>
+<ul>
+<li>Guaranteed 值为 -997</li>
+<li>BestEffort 值为 1000</li>
+<li>Burstable 值为 <code>min(max(2, 1000 - (1000 * memoryRequestBytes) / machineMemoryCapacityBytes), 999)</code></li>
+</ul>
+<p>当 Node 出现内存压力时，内核的 OOMKill 就会参考对应的分值去 Kill 进程。分值越高，优先级越低。因此优先会 Kill Guaranteed 的 Container。</p>
+<h2 id="6-poddisruptionbudget">6 PodDisruptionBudget</h2>
+<p>根据 Pod 销毁的场景，Kubernetes 将其分为了两个概念：</p>
+<ul>
+<li>
+<p>Involuntary Disruptions</p>
+<p>Pod 环境出现异常，导致 Pod 不得不被销毁。例如：</p>
+<ul>
+<li>Node 硬件故障</li>
+<li>Node 失联</li>
+<li>Node 资源不足，导致 Pod 被驱逐</li>
+</ul>
+</li>
+<li>
+<p>Voluntary Disruptions</p>
+<p>由 Pod 管理员或程序发起的主动操作。例如：</p>
+<ul>
+<li>更新了 Deployment</li>
+<li>执行了 Drain Node</li>
+</ul>
+</li>
+</ul>
+<p>因为 Involuntary Disruptions 是未知的，因此只能通过一些高可用的方式来避免。而对于 Voluntary Disruptions，Kubernetes 提供了 PodDisruptionBudget 来作为一个全局的限制，后续称为 PDB。</p>
+<p>PDB 基于 Eviction API 来进行限制，因此只有驱逐操作时才会触发 PDB 的检查。因此，使用 PDB 后应该通过 Eviction API 来改变 Pod 数量。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">PDB 仅仅限制 Evict 的操作，典型的就是使用 Drain Node 操作。</div>
+        </div>
+    </div>
+<h3 id="61-spec-与-status">6.1 Spec 与 Status</h3>
+<p>PDB 定义如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">policy/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PodDisruptionBudget</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">zk-pdb</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">minAvailable</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">zookeeper</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p><code>selector</code> 就是用于筛选哪些 Pod 会收到管理。如果为空表明集群所有的 Pod。</p>
+<p>PDB 基于两种方式来控制 Pod 数量（只能选择其中一个）：</p>
+<ul>
+<li>
+<p><code>minAvailable</code> - 驱逐后，必须保证可用的 Pod 最小数量，支持数值与百分比。</p>
+</li>
+<li>
+<p><code>maxUnavailable</code> - 驱逐后，允许不可用的 Pod 最大数量，支持数值与百分比。</p>
+</li>
+</ul>
+<p>如果使用 Kubernetes 内置的 Workload（例如 Deployment、StatefulSet 等），那么上述两中方式都能使用。使用其他管理 Pod 方式时，有一些其他的限制：</p>
+<ul>
+<li>只允许使用 <code>minAvailable</code>，并且只能使用数值。</li>
+</ul>
+<p>PDB 的状态中可以看到一些相关的信息：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">policy/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PodDisruptionBudget</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">zk-pdb</span><span class="w">
+</span><span class="w"></span><span class="c"># …</span><span class="w">
+</span><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">currentHealthy</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">desiredHealthy</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span><span class="w">  </span><span class="nt">disruptionsAllowed</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">  </span><span class="nt">expectedPods</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">observedGeneration</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="62-poddisruptionconditions">6.2 PodDisruptionConditions</h3>
+<p>开启 Feature Gate 后，会给 Pod 添加一个 <code>DisruptionTarget</code> 的 Condition，用来表明 Pod 因为发生 Disruptions 而被删除。</p>
+<p>Condition 中的 <code>reason</code> 字段会给出 Pod 被终止的具体原因，包括：</p>
+<ul>
+<li>
+<p><strong>PreemptionByKubeScheduler</strong></p>
+<p>Pod 被抢占，用于接受优先级更高的 Pod。</p>
+</li>
+<li>
+<p><strong>DeletionByTaintManager</strong></p>
+<p>Pod 不能容忍 Node 的 <code>NoExcute</code> Taint，导致 Pod 被驱逐。</p>
+</li>
+<li>
+<p><strong>EvictionByEvictionAPI</strong></p>
+<p>Pod 被 Kubernetes API 进行驱逐。</p>
+</li>
+<li>
+<p><strong>DeletionByPodGC</strong></p>
+<p>Node 不存在了，导致 Pod 被 GC 删除。</p>
+</li>
+<li>
+<p><strong>TerminationByKubelet</strong></p>
+<p>Pod 由于 Node 压力驱逐或者 Node 关闭被 kubelet 终止。</p>
+</li>
+</ul>
+<h2 id="7-pod-overhead">7 Pod Overhead</h2>
+<p>运行 Pod 时，除了 Pod 程序占用的内存外，Pod 环境本身可能占用一些系统资源。这些额外的资源可以通过定义 RuntimeClass 的 <code>overhead</code> 字段来指出。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">node.k8s.io/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">RuntimeClass</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kata-fc</span><span class="w">
+</span><span class="w"></span><span class="nt">handler</span><span class="p">:</span><span class="w"> </span><span class="l">kata-fc</span><span class="w">
+</span><span class="w"></span><span class="nt">overhead</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">podFixed</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;120Mi&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;250m&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>上面示例表明，CRI <code>kata-fc</code> 创建一个 Pod 会用到的 Mem 和 CPU，那么 Kubernetes 中计算 Pod Mem 和 CPU 会加上指定的值。</p>
 <h2 id="参考">参考</h2>
 <ul>
 <li>Blog：<a href="https://segmentfault.com/a/1190000021402192" target="_blank" rel="noopener noreffer"><strong>k8s 节点资源预留与 pod 驱逐</strong></a></li>
 <li>官方文档：<a href="https://kubernetes.io/docs/concepts/scheduling-eviction/" target="_blank" rel="noopener noreffer"><strong>Scheduling, Preemption and Eviction</strong></a></li>
+<li>官方文档：<a href="https://kubernetes.io/zh/docs/concepts/workloads/pods/disruptions/#pod-disruption-budgets" target="_blank" rel="noopener noreffer"><strong>Pod Disruptions</strong></a></li>
 </ul>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734: Post(Operator Desgin Notes) (#36)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cce6cda</a></span>
+                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

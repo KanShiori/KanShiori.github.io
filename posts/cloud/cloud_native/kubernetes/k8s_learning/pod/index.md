@@ -233,7 +233,51 @@ kubelet 重启容器的时间间隔以指数的方式增长（1n、2n、4n …�
 重启间隔时间是以 kubelet handle 周期为单位。
 {{< /admonition >}}
 
-## 4 Probe
+## 4 Pod 的停止
+
+通常情况下，CRI 会先给每个 Container 的**主进程**发送一个 `SIGTERM` 信号（或者是 Image 定义的 `STOPSIGNAL` 信号），来尝试优雅停止 Pod。
+
+一旦优雅停止超时，CRI 会向**所有剩余的进**程发送 `SIGKILL` 信号，之后 Pod 就会从 APIServer 上移除。
+
+更加细节的停止过程如下：
+
+1. APIServer 中 Pod 对象被更新，通过 `deletionTimestamp` 将其标记为删除中。这时，`kubectl describe` 展示 Pod 为 `Terminating`。
+
+2. `kubelet` 看到 Pod 为删除中，开始本地的 Pod 关闭过程。
+
+  1. 如果 Container 定义了 `preStop` 回调，`kubelet` 开始在容器中执行回调。如果 `preStop` 执行时间超过了 `terminationGracePeriodSeconds` 时间，那么 `kubelet` 每次 2s 继续执行 `preStop`。
+
+  2. `kubelet` 调用 CRI 来给每个 Container 的进程 1 发送 `SIGTERM` 信号。
+
+3. 在 `kubelet` 关闭 Pod 的同时，Controller 会将 Pod 从 `Endpoints` 或者 `EndpointSlice` 对象中移除。
+
+4. 如果停止时间超过 `terminationGracePeriodSeconds`，那么 `kubelet` 会向 Pod 中所有的容器发送 `SIGKILL` 信号，包括 `pause` 容器。
+
+5. `kubelet` 触发将 Pod 从 APIServer 中强制删除的逻辑，将 `terminationGracePeriodSeconds` 设置为 0（表明立马删除 Pod 对象）。
+
+6. APIServer 删除 Pod 对象，任何 Client 都无法看到该 Pod。
+
+### 4.1 强制删除
+
+默认情况下，所有的删除操作都有 30s 的优雅删除等待时间。可以通过配置 Pod 的 `terminationGracePeriodSeconds` 来配置等待时间。
+
+如果将 Pod 的 `terminationGracePeriodSeconds` 设置为 0，那么 APIServer 会立即删除该 Pod 对象，而不会等待 `kubelet` 来修改 Pod 对象。
+
+{{< admonition warning WARN>}}
+强制删除不等待 Pod 实际被删除，可能 Pod 会无期限的运行在集群上。
+{{< /admonition >}}
+
+通过 `kubectl delete --grace-period=0 --force` 可以执行强制删除 Pod。
+
+### 4.2 Pod GC
+
+在控制面运行着 Pod GC Controller，会在 Pod 个数超过配置的阈值时（配置的 `terminated-pod-gc-threshold` 参数），删除已经终止的 Pod。这些 Pod 的 Phase 为 `Succeeded` 或者 `Failed`。
+
+
+
+
+
+## 5 Probe
 
 Probe 以旁路的方式，周期性地检测 Pod 容器的情况，检测失败是及时更新 Pod 的状态，使得上层感知后进行一些恢复操作。
 
@@ -243,13 +287,13 @@ Probe 以旁路的方式，周期性地检测 Pod 容器的情况，检测失败
 要明确，Probe 是以容器为对象的，而不是 Pod。
 {{< /admonition >}}
 
-### 4.1 LivenessProbe
+### 5.1 LivenessProbe
 
 **`LivenessProbe`** 用于周期性判断一个容器是否是存活的，**如果 LivenessProbe 探测失败，那么 kubelet 将会 “杀掉” 该容器。**
 
 容器停止后，后续的操作是由 [**重启策略**](#34-pod-重启策略) 控制的。
 
-### 4.2 ReadinessProbe
+### 5.2 ReadinessProbe
 
 **`ReadinessProbe`** 用于周期性判断一个容器是否是 Ready，**从而影响 Pod 的 Ready condition 是否为 True。**
 
@@ -261,13 +305,13 @@ Probe 以旁路的方式，周期性地检测 Pod 容器的情况，检测失败
 因为 ReadinessProbe 是一种被动探测的方式，而 [**Readiness Gate**](#331-自定义-condition) 提供了一种主动修改的方式。
 {{< /admonition >}}
 
-### 4.3 StartupProbe
+### 5.3 StartupProbe
 
 **`StartupProbe`** 仅仅在容器启动后会运行，并且**成功后不会再次运行，直到容器重新启动**。
 
 StartupProbe 是为了解决有些容器的启动情况很慢的情况，这种情况只需要进行一次成功的探测，所以不适合 ReadyinessProbe 的周期性语义。
 
-### 4.4 使用 Probe
+### 5.4 使用 Probe
 
 三种探针都可以使用三种探测方式：
 
@@ -321,7 +365,7 @@ StartupProbe 是为了解决有些容器的启动情况很慢的情况，这种�
 * `successThreshold` ：探测失败后，经过几次探测成功后，才将其变为健康状态，默认值为 1。仅仅适用于 StartupProbe。
 * `failureThreshold` ：连续探测失败多少次后，才将其容器视为不健康状态，默认值为 3。
 
-## 5 Init Container
+## 6 Init Container
 
 大多数应用在启动前都需要进行一些初始化的操作。Kubernetes 提供了 init container 来进行 Pod 的初始化操作。
 
@@ -360,7 +404,7 @@ init container 与应用容器的区别如下：
 * init container 不能设置 ReadinessProber。
 * Pod 重新启动时，init container 将会重新运行。所以 init container 应该是幂等的。
 
-## 6 Ephemeral Container
+## 7 Ephemeral Container
 
 有时由于容器崩溃或者容器镜像不包含 debug 工具，使得通过 `kubectl exec` 方式不能很好的进行调试。v1.18 版本开始，新添加一个 `kubectl debug` 命令，用于创建 **`ephemeral container`** 来进行 debug。
 

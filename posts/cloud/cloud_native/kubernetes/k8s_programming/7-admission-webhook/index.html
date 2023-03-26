@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/7-admission-webhook/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-09-21T06:58:07+00:00" />
-<meta property="article:modified_time" content="2023-02-09T21:11:10+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/7-admission-webhook\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  5717 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/7-admission-webhook\/","datePublished": "2021-09-21T06:58:07+00:00","dateModified": "2023-02-09T21:11:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  5814 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/7-admission-webhook\/","datePublished": "2021-09-21T06:58:07+00:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">K8s 编程 - 7 - Admission Webhook</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 编程</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-09-21">2021-09-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 5717 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-09-21">2021-09-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 5814 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 12 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -153,7 +153,12 @@
         <li><a href="#22-response">2.2 Response</a></li>
       </ul>
     </li>
-    <li><a href="#3-与-apiserver-的鉴权方式">3 与 APIServer 的鉴权方式</a></li>
+    <li><a href="#3-与-apiserver-的身份认证">3 与 APIServer 的身份认证</a>
+      <ul>
+        <li><a href="#31-apiserver-验证-webhook-身份">3.1 APIServer 验证 Webhook 身份</a></li>
+        <li><a href="#32-webhook-验证-apiserver-身份">3.2 Webhook 验证 APIServer 身份</a></li>
+      </ul>
+    </li>
     <li><a href="#4-实现">4 实现</a>
       <ul>
         <li><a href="#41-http-server">4.1 HTTP Server</a></li>
@@ -177,27 +182,31 @@
 <p>下面代码都来自于 <a href="https://github.com/kubernetes/kubernetes/tree/master/test/images/agnhost/webhook" target="_blank" rel="noopener noreffer"><em>agnhost/webhook</em></a>，这是官方的 Admission Webhook 的示例</p>
 </blockquote>
 <p>在 <a href="../6-custom-api-server/#6-admission" rel=""><strong>Custom APIServer/Admission</strong></a> 一节中看到，APISever 提供了 Admission Plugin 机制来进行 Mutating 与 Validating 的插件式扩展。不过 Admission Plugin 是要重新编译 APISever 来实现的，因此 APISever 提供了更加灵活的 Admission Webhook。</p>
-<p><strong>Admission Webhook 的调用时机在 Admission Plugin 的尾部，在 Quota Plugin 之前</strong>。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_programming/7-admission-webhook/img1.png"/>
-
-
-</p>
+<p><strong>Admission Webhook 的调用时机在 Admission Plugin 的尾部，在 Quota Plugin 之前</strong>。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/7-admission-webhook/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_programming/7-admission-webhook/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_programming/7-admission-webhook/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/7-admission-webhook/img1.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/7-admission-webhook/img1.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/7-admission-webhook/img1.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/7-admission-webhook/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/7-admission-webhook/img1.png" width="722" height="400" />
+    </a>
 <p>Admission Webhook 的使用包含：</p>
 <ul>
-<li>部署 <strong><code>Webhook Server</code></strong>，用于 APISever 转发请求；</li>
-<li>部署 <strong><code>ValidatingWebhookConfiguration</code></strong>/<strong><code>MutatingWebhookConfiguration</code></strong> 资源，向 APISever 注册 Webhook Server；</li>
-<li>RBAC（如果 Webhook Server 需要）</li>
+<li>
+<p>部署 <strong><code>Webhook Server</code></strong>，用于 APISever 转发请求；</p>
+</li>
+<li>
+<p>部署 <strong><code>ValidatingWebhookConfiguration</code></strong>/<strong><code>MutatingWebhookConfiguration</code></strong> 资源，向 APISever 注册 Webhook Server；</p>
+</li>
+<li>
+<p>RBAC（如果 Webhook Server 需要）</p>
+</li>
 </ul>
 <h2 id="1-webhookconfiguration">1 WebhookConfiguration</h2>
-<p>通过部署 <strong><code>ValidatingWebhookConfiguration</code></strong>/<strong><code>MutatingWebhookConfiguration</code></strong> 来<strong>向 APIServer 注册 Validating/Mutating Webhook Server</strong>。下面是一个 ValidatingWebhookConfiguration 示例，而 MutatingWebhookConfiguration 是类似的。</p>
+<p>通过部署 <strong><code>ValidatingWebhookConfiguration</code></strong>/<strong><code>MutatingWebhookConfiguration</code></strong> 来<strong>向 APIServer 注册 Validating/Mutating Webhook Server</strong>。</p>
+<p>下面是一个 ValidatingWebhookConfiguration 示例，而 MutatingWebhookConfiguration 是类似的。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -287,7 +296,8 @@
 </ul>
 <h3 id="11-请求匹配规则">1.1 请求匹配规则</h3>
 <h4 id="111-rules">1.1.1 rules</h4>
-<p><strong>每个 webhook 必须指定一组 <code>rules</code>，用以让 APIServer 决定是否转发请求给 webhook server</strong>。当一个请求能够匹配 operation、group、version、resource、scope，那么请求就会转发。</p>
+<p><strong>每个 webhook 必须指定一组 <code>rules</code>，用以让 APIServer 决定是否转发请求给 webhook server</strong>。</p>
+<p>当一个请求能够匹配 operation、group、version、resource、scope，那么请求就会转发。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -402,13 +412,13 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><h4 id="114-matchpolicy">1.1.4 matchPolicy</h4>
-<p>一个资源可能属于多个 API Group，这在升级资源版本时很常见。例如，Deployment 支持 extensions/v1beta1，apps/v1beta1 等。</p>
+<p>一个资源可能属于多个 API Group，这在升级资源版本时很常见。例如，Deployment 支持 <code>extensions/v1beta1</code>，<code>apps/v1beta1</code> 等。</p>
 <p><strong><code>matchPolicy</code></strong> 用于定义 rules 如何匹配请求，其值可以为：</p>
 <ul>
 <li><strong>Exact</strong> - 表示请求需要完全匹配</li>
 <li><strong>Equivalent</strong>（默认值） - <strong>表示请求可以匹配不同 APIGroup 的相同资源</strong></li>
 </ul>
-<p>例如下面示例，通过 matchPolicy 也可以匹配 extensions/v1beta1 的 Deployment 了。</p>
+<p>例如下面示例，通过 matchPolicy 也可以匹配 <code>extensions/v1beta1</code> 的 Deployment 了。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -451,7 +461,7 @@
     </div>
 <h3 id="12-与-webhook-通信方式">1.2 与 Webhook 通信方式</h3>
 <h4 id="121-url">1.2.1 URL</h4>
-<p><strong>URL 为一个 webhook server 地址，以标准的 URL 格式</strong>。但是，不允许使用用户或者基本身份认证（例如 URL 中的 user:password@），也不允许 URL 中使用 # 和 ? 传参。</p>
+<p><strong>URL 为一个 webhook server 地址，以标准的 URL 格式</strong>。但是，不允许使用用户或者基本身份认证（例如 URL 中的 user:password@），也不允许 URL 中使用 <code>#</code> 和 <code>?</code> 传参。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -470,7 +480,7 @@
 </span><span class="w"></span><span class="nt">webhooks</span><span class="p">:</span><span class="w">
 </span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">my-webhook.example.com</span><span class="w">
 </span><span class="w">  </span><span class="nt">clientConfig</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34; https://my-webhook.example.com:9443/my-webhook-path&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;https://my-webhook.example.com:9443/my-webhook-path&#34;</span><span class="w">
 </span><span class="w">  </span><span class="c"># ...</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
@@ -602,7 +612,7 @@
 </div><h2 id="2-request-与-response">2 Request 与 Response</h2>
 <h3 id="21-request">2.1 Request</h3>
 <p>APIServer 发送 POST HTTP 请求，其设置了 HTTP Header 中 <code>Content-Type: application/json</code>，<strong>body 内容为 AdmissionReview 对象的 JSON 格式，设置了其中的 &ldquo;request&rdquo; 字段</strong>。</p>
-<p>下面示例展示了对于 apps/v1 Deployment scale 子资源的调用请求，对应的 AdmissionReview 对象内容。</p>
+<p>下面示例展示了对于 <code>apps/v1</code> Deployment scale 子资源的调用请求，对应的 AdmissionReview 对象内容。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -674,62 +684,62 @@
   <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;admission.k8s.io/v1&#34;</span><span class="p">,</span>
   <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;AdmissionReview&#34;</span><span class="p">,</span>
   <span class="nt">&#34;request&#34;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="err">#</span> <span class="err">随机</span> <span class="err">uid，用于标识这次</span> <span class="err">admission</span> <span class="err">调用</span>
-    <span class="nt">&#34;uid&#34;</span><span class="p">:</span> <span class="s2">&#34;705ab4f5-6393-11e8-b7cc-42010a800002&#34;</span><span class="p">,</span>
+    <span class="c1">// 随机 uid，用于标识这次 admission 调用
+</span><span class="c1"></span>    <span class="nt">&#34;uid&#34;</span><span class="p">:</span> <span class="s2">&#34;705ab4f5-6393-11e8-b7cc-42010a800002&#34;</span><span class="p">,</span>
 
-    <span class="err">#</span> <span class="err">请求中对象的</span> <span class="err">GVK</span>
-    <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;group&#34;</span><span class="p">:</span><span class="s2">&#34;autoscaling&#34;</span><span class="p">,</span><span class="nt">&#34;version&#34;</span><span class="p">:</span><span class="s2">&#34;v1&#34;</span><span class="p">,</span><span class="nt">&#34;kind&#34;</span><span class="p">:</span><span class="s2">&#34;Scale&#34;</span><span class="p">},</span>
-    <span class="err">#</span> <span class="err">请求中对象的</span> <span class="err">GVR</span>
-    <span class="nt">&#34;resource&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;group&#34;</span><span class="p">:</span><span class="s2">&#34;apps&#34;</span><span class="p">,</span><span class="nt">&#34;version&#34;</span><span class="p">:</span><span class="s2">&#34;v1&#34;</span><span class="p">,</span><span class="nt">&#34;resource&#34;</span><span class="p">:</span><span class="s2">&#34;deployments&#34;</span><span class="p">},</span>
-    <span class="err">#</span> <span class="err">请求对象的</span> <span class="err">subresource</span>
-    <span class="nt">&#34;subResource&#34;</span><span class="p">:</span> <span class="s2">&#34;scale&#34;</span><span class="p">,</span>
+    <span class="c1">// 请求中对象的 GVK
+</span><span class="c1"></span>    <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;group&#34;</span><span class="p">:</span><span class="s2">&#34;autoscaling&#34;</span><span class="p">,</span><span class="nt">&#34;version&#34;</span><span class="p">:</span><span class="s2">&#34;v1&#34;</span><span class="p">,</span><span class="nt">&#34;kind&#34;</span><span class="p">:</span><span class="s2">&#34;Scale&#34;</span><span class="p">},</span>
+    <span class="c1">// 请求中对象的 GVR
+</span><span class="c1"></span>    <span class="nt">&#34;resource&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;group&#34;</span><span class="p">:</span><span class="s2">&#34;apps&#34;</span><span class="p">,</span><span class="nt">&#34;version&#34;</span><span class="p">:</span><span class="s2">&#34;v1&#34;</span><span class="p">,</span><span class="nt">&#34;resource&#34;</span><span class="p">:</span><span class="s2">&#34;deployments&#34;</span><span class="p">},</span>
+    <span class="c1">// 请求对象的 subresource
+</span><span class="c1"></span>    <span class="nt">&#34;subResource&#34;</span><span class="p">:</span> <span class="s2">&#34;scale&#34;</span><span class="p">,</span>
 
-    <span class="err">#</span> <span class="err">请求源对象的</span> <span class="err">GVK</span>
-    <span class="err">#</span> <span class="err">因为</span> <span class="err">`matchPolicy:</span> <span class="err">Equivalent`</span> <span class="err">可能会让请求转变，而这里保存转变前的</span> <span class="err">GVK</span>
-    <span class="nt">&#34;requestKind&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;group&#34;</span><span class="p">:</span><span class="s2">&#34;autoscaling&#34;</span><span class="p">,</span><span class="nt">&#34;version&#34;</span><span class="p">:</span><span class="s2">&#34;v1&#34;</span><span class="p">,</span><span class="nt">&#34;kind&#34;</span><span class="p">:</span><span class="s2">&#34;Scale&#34;</span><span class="p">},</span>
-    <span class="err">#</span> <span class="err">请求源对象的</span> <span class="err">GVR</span>
-    <span class="err">#</span> <span class="err">因为</span> <span class="err">`matchPolicy:</span> <span class="err">Equivalent`</span> <span class="err">可能会让请求转变，而这里保存转变前的</span> <span class="err">GVR</span>
-    <span class="err">#</span> <span class="err">Fully-qualified</span> <span class="err">group/version/kind</span> <span class="err">of</span> <span class="err">the</span> <span class="err">resource</span> <span class="err">being</span> <span class="err">modified</span> <span class="err">in</span> <span class="err">the</span> <span class="err">original</span> <span class="err">request</span> <span class="err">to</span> <span class="err">the</span> <span class="err">API</span> <span class="err">server.</span>
-    <span class="err">#</span> <span class="err">This</span> <span class="err">only</span> <span class="err">differs</span> <span class="err">from</span> <span class="err">`resource`</span> <span class="err">if</span> <span class="err">the</span> <span class="err">webhook</span> <span class="err">specified</span> <span class="err">`matchPolicy:</span> <span class="err">Equivalent`</span> <span class="err">and</span> <span class="err">the</span>
-    <span class="err">#</span> <span class="err">original</span> <span class="err">request</span> <span class="err">to</span> <span class="err">the</span> <span class="err">API</span> <span class="err">server</span> <span class="err">was</span> <span class="err">converted</span> <span class="err">to</span> <span class="err">a</span> <span class="err">version</span> <span class="err">the</span> <span class="err">webhook</span> <span class="err">registered</span> <span class="err">for.</span>
-    <span class="nt">&#34;requestResource&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;group&#34;</span><span class="p">:</span><span class="s2">&#34;apps&#34;</span><span class="p">,</span><span class="nt">&#34;version&#34;</span><span class="p">:</span><span class="s2">&#34;v1&#34;</span><span class="p">,</span><span class="nt">&#34;resource&#34;</span><span class="p">:</span><span class="s2">&#34;deployments&#34;</span><span class="p">},</span>
-    <span class="err">#</span> <span class="err">请求源对象的</span> <span class="err">subresource</span>
-    <span class="err">#</span> <span class="err">因为</span> <span class="err">`matchPolicy:</span> <span class="err">Equivalent`</span> <span class="err">可能会让请求转变，而这里保存转变前的</span> <span class="err">subresource</span>
-    <span class="nt">&#34;requestSubResource&#34;</span><span class="p">:</span> <span class="s2">&#34;scale&#34;</span><span class="p">,</span>
+    <span class="c1">// 请求源对象的 GVK
+</span><span class="c1"></span>    <span class="c1">// 因为 `matchPolicy: Equivalent` 可能会让请求转变，而这里保存转变前的 GVK
+</span><span class="c1"></span>    <span class="nt">&#34;requestKind&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;group&#34;</span><span class="p">:</span><span class="s2">&#34;autoscaling&#34;</span><span class="p">,</span><span class="nt">&#34;version&#34;</span><span class="p">:</span><span class="s2">&#34;v1&#34;</span><span class="p">,</span><span class="nt">&#34;kind&#34;</span><span class="p">:</span><span class="s2">&#34;Scale&#34;</span><span class="p">},</span>
+    <span class="c1">// 请求源对象的 GVR
+</span><span class="c1"></span>    <span class="c1">// 因为 `matchPolicy: Equivalent` 可能会让请求转变，而这里保存转变前的 GVR
+</span><span class="c1"></span>    <span class="c1">// Fully-qualified group/version/kind of the resource being modified in the original request to the API server.
+</span><span class="c1"></span>    <span class="c1">// This only differs from `resource` if the webhook specified `matchPolicy: Equivalent` and the
+</span><span class="c1"></span>    <span class="c1">// original request to the API server was converted to a version the webhook registered for.
+</span><span class="c1"></span>    <span class="nt">&#34;requestResource&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;group&#34;</span><span class="p">:</span><span class="s2">&#34;apps&#34;</span><span class="p">,</span><span class="nt">&#34;version&#34;</span><span class="p">:</span><span class="s2">&#34;v1&#34;</span><span class="p">,</span><span class="nt">&#34;resource&#34;</span><span class="p">:</span><span class="s2">&#34;deployments&#34;</span><span class="p">},</span>
+    <span class="c1">// 请求源对象的 subresource
+</span><span class="c1"></span>    <span class="c1">// 因为 `matchPolicy: Equivalent` 可能会让请求转变，而这里保存转变前的 subresource
+</span><span class="c1"></span>    <span class="nt">&#34;requestSubResource&#34;</span><span class="p">:</span> <span class="s2">&#34;scale&#34;</span><span class="p">,</span>
 
-    <span class="err">#</span> <span class="err">请求对象的</span> <span class="err">name</span>
-    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;my-deployment&#34;</span><span class="p">,</span>
-    <span class="err">#</span> <span class="err">请求对象的</span> <span class="err">namespace</span>
-    <span class="nt">&#34;namespace&#34;</span><span class="p">:</span> <span class="s2">&#34;my-namespace&#34;</span><span class="p">,</span>
+    <span class="c1">// 请求对象的 name
+</span><span class="c1"></span>    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;my-deployment&#34;</span><span class="p">,</span>
+    <span class="c1">// 请求对象的 namespace
+</span><span class="c1"></span>    <span class="nt">&#34;namespace&#34;</span><span class="p">:</span> <span class="s2">&#34;my-namespace&#34;</span><span class="p">,</span>
 
-    <span class="err">#</span> <span class="err">请求的操作，CREATE</span> <span class="err">UPDATE</span> <span class="err">DELETE</span> <span class="err">CONNECT</span>
-    <span class="nt">&#34;operation&#34;</span><span class="p">:</span> <span class="s2">&#34;UPDATE&#34;</span><span class="p">,</span>
+    <span class="c1">// 请求的操作，CREATE UPDATE DELETE CONNECT
+</span><span class="c1"></span>    <span class="nt">&#34;operation&#34;</span><span class="p">:</span> <span class="s2">&#34;UPDATE&#34;</span><span class="p">,</span>
 
     <span class="nt">&#34;userInfo&#34;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="err">#</span> <span class="err">APIServer</span> <span class="err">身份认证的</span> <span class="err">username</span>
-      <span class="nt">&#34;username&#34;</span><span class="p">:</span> <span class="s2">&#34;admin&#34;</span><span class="p">,</span>
-      <span class="err">#</span> <span class="err">APIServer</span> <span class="err">身份认证的</span> <span class="err">uid</span>
-      <span class="nt">&#34;uid&#34;</span><span class="p">:</span> <span class="s2">&#34;014fbff9a07c&#34;</span><span class="p">,</span>
-      <span class="err">#</span> <span class="err">APIServer</span> <span class="err">身份认证的</span> <span class="err">group</span>
-      <span class="nt">&#34;groups&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;system:authenticated&#34;</span><span class="p">,</span><span class="s2">&#34;my-admin-group&#34;</span><span class="p">],</span>
-      <span class="err">#</span> <span class="err">Arbitrary</span> <span class="err">extra</span> <span class="err">info</span> <span class="err">associated</span> <span class="err">with</span> <span class="err">the</span> <span class="err">user</span> <span class="err">making</span> <span class="err">the</span> <span class="err">request</span> <span class="err">to</span> <span class="err">the</span> <span class="err">API</span> <span class="err">server.</span>
-      <span class="err">#</span> <span class="err">This</span> <span class="err">is</span> <span class="err">populated</span> <span class="err">by</span> <span class="err">the</span> <span class="err">API</span> <span class="err">server</span> <span class="err">authentication</span> <span class="err">layer</span> <span class="err">and</span> <span class="err">should</span> <span class="err">be</span> <span class="err">included</span>
-      <span class="err">#</span> <span class="err">if</span> <span class="err">any</span> <span class="err">SubjectAccessReview</span> <span class="err">checks</span> <span class="err">are</span> <span class="err">performed</span> <span class="err">by</span> <span class="err">the</span> <span class="err">webhook.</span>
-      <span class="nt">&#34;extra&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="c1">// APIServer 身份认证的 username
+</span><span class="c1"></span>      <span class="nt">&#34;username&#34;</span><span class="p">:</span> <span class="s2">&#34;admin&#34;</span><span class="p">,</span>
+      <span class="c1">// APIServer 身份认证的 uid
+</span><span class="c1"></span>      <span class="nt">&#34;uid&#34;</span><span class="p">:</span> <span class="s2">&#34;014fbff9a07c&#34;</span><span class="p">,</span>
+      <span class="c1">// APIServer 身份认证的 group
+</span><span class="c1"></span>      <span class="nt">&#34;groups&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;system:authenticated&#34;</span><span class="p">,</span><span class="s2">&#34;my-admin-group&#34;</span><span class="p">],</span>
+      <span class="c1">// Arbitrary extra info associated with the user making the request to the API server.
+</span><span class="c1"></span>      <span class="c1">// This is populated by the API server authentication layer and should be included
+</span><span class="c1"></span>      <span class="c1">// if any SubjectAccessReview checks are performed by the webhook.
+</span><span class="c1"></span>      <span class="nt">&#34;extra&#34;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&#34;some-key&#34;</span><span class="p">:[</span><span class="s2">&#34;some-value1&#34;</span><span class="p">,</span> <span class="s2">&#34;some-value2&#34;</span><span class="p">]</span>
       <span class="p">}</span>
     <span class="p">},</span>
 
-    <span class="err">#</span> <span class="err">请求操作的对象，可以通过</span> <span class="err">scheme</span> <span class="err">解析为具体的结构</span>
-    <span class="nt">&#34;object&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span><span class="s2">&#34;autoscaling/v1&#34;</span><span class="p">,</span><span class="nt">&#34;kind&#34;</span><span class="p">:</span><span class="s2">&#34;Scale&#34;</span><span class="p">,</span><span class="err">...</span><span class="p">},</span>
-    <span class="err">#</span> <span class="err">当前集群中的对象</span>
-    <span class="err">#</span> <span class="err">It</span> <span class="err">is</span> <span class="err">null</span> <span class="err">for</span> <span class="err">CREATE</span> <span class="err">and</span> <span class="err">CONNECT</span> <span class="err">operations.</span>
-    <span class="nt">&#34;oldObject&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span><span class="s2">&#34;autoscaling/v1&#34;</span><span class="p">,</span><span class="nt">&#34;kind&#34;</span><span class="p">:</span><span class="s2">&#34;Scale&#34;</span><span class="p">,</span><span class="err">...</span><span class="p">},</span>
-    <span class="err">#</span> <span class="err">操作的</span> <span class="err">Option，包含</span> <span class="err">CreateOptions、UpdateOptions、DeleteOptions</span>
-    <span class="nt">&#34;options&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span><span class="s2">&#34;meta.k8s.io/v1&#34;</span><span class="p">,</span><span class="nt">&#34;kind&#34;</span><span class="p">:</span><span class="s2">&#34;UpdateOptions&#34;</span><span class="p">,</span><span class="err">...</span><span class="p">},</span>
+    <span class="c1">// 请求操作的对象，可以通过 scheme 解析为具体的结构
+</span><span class="c1"></span>    <span class="nt">&#34;object&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span><span class="s2">&#34;autoscaling/v1&#34;</span><span class="p">,</span><span class="nt">&#34;kind&#34;</span><span class="p">:</span><span class="s2">&#34;Scale&#34;</span><span class="p">,</span><span class="err">...</span><span class="p">},</span>
+    <span class="c1">// 当前集群中的对象
+</span><span class="c1"></span>    <span class="c1">// It is null for CREATE and CONNECT operations.
+</span><span class="c1"></span>    <span class="nt">&#34;oldObject&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span><span class="s2">&#34;autoscaling/v1&#34;</span><span class="p">,</span><span class="nt">&#34;kind&#34;</span><span class="p">:</span><span class="s2">&#34;Scale&#34;</span><span class="p">,</span><span class="err">...</span><span class="p">},</span>
+    <span class="c1">// 操作的 Option，包含 CreateOptions、UpdateOptions、DeleteOptions
+</span><span class="c1"></span>    <span class="nt">&#34;options&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span><span class="s2">&#34;meta.k8s.io/v1&#34;</span><span class="p">,</span><span class="nt">&#34;kind&#34;</span><span class="p">:</span><span class="s2">&#34;UpdateOptions&#34;</span><span class="p">,</span><span class="err">...</span><span class="p">},</span>
 
-    <span class="err">#</span> <span class="err">dryRun</span> <span class="err">表明请求是否是</span> <span class="err">dry</span> <span class="err">run</span> <span class="err">mode</span>
-    <span class="err">#</span> <span class="err">See</span> <span class="err">http:</span><span class="c1">//k8s.io/docs/reference/using-api/api-concepts/#make-a-dry-run-request for more details.
+    <span class="c1">// dryRun 表明请求是否是 dry run mode
+</span><span class="c1"></span>    <span class="c1">// See http://k8s.io/docs/reference/using-api/api-concepts/#make-a-dry-run-request for more details.
 </span><span class="c1"></span>    <span class="nt">&#34;dryRun&#34;</span><span class="p">:</span> <span class="kc">false</span>
   <span class="p">}</span>
 <span class="p">}</span>
@@ -860,12 +870,33 @@
 </div><ul>
 <li>warn 信息不能超过 120 字节</li>
 </ul>
-<h2 id="3-与-apiserver-的鉴权方式">3 与 APIServer 的鉴权方式</h2>
-<p>Admission Webhook 与 APIServer 支持三种鉴权方式：basic auth、bearer token、cert。</p>
+<h2 id="3-与-apiserver-的身份认证">3 与 APIServer 的身份认证</h2>
+<h3 id="31-apiserver-验证-webhook-身份">3.1 APIServer 验证 Webhook 身份</h3>
+<p>APIServer 基于证书认证的方式来验证 Webhook 身份，通过使用  <a href="#1-webhookconfiguration" rel=""><strong>WebhookConfiguration</strong></a> 的<code>clientConfig.caBundle</code> 字段配置的 CA 证书来验证 Webhook 的证书。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># ...</span><span class="w">
+</span><span class="w">  </span><span class="nt">clientConfig</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">service</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;example-namespace&#34;</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;example-service&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">caBundle</span><span class="p">:</span><span class="w"> </span><span class="l">OMIT</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="32-webhook-验证-apiserver-身份">3.2 Webhook 验证 APIServer 身份</h3>
+<p>如果 Webhook 需要认证 APIServer 身份，可以提供给 APIServer 一个 kubeconfig，APIServer 会使用 kubeconfig 文件中的配置作为访问凭证。</p>
 <p>需要三个阶段来进行配置：</p>
 <ol>
 <li>
-<p>启动 APIServer 时，通过 <strong>&quot;&ndash;admission-control-config-file&rdquo;</strong> 参数<strong>指定 Admission Control 配置文件</strong>。</p>
+<p>启动 APIServer 时，通过 <strong><code>--admission-control-config-file</code></strong> 参数<strong>指定 Admission Control 配置文件</strong>。</p>
 </li>
 <li>
 <p>在 Admission Control 配置文件中，指定 MutatingAdmissionWebhook Controller 与 ValidatingAdmissionWebhook  Controller 读取的证书。</p>
@@ -1779,8 +1810,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734: Post(Operator Desgin Notes) (#36)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cce6cda</a></span>
+                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

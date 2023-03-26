@@ -224,17 +224,120 @@ Service 是一个虚拟的概念，<important>Service IP 到 Pod IP 的转换是
 
 IPVS 也是使用的 Linux netfilter 模块实现的。但是对比 iptables 的链式调用，IPVS 底层使用 hash map 来进行数据包的路由，因此性能更高。
 
-## 5 NetworkPolicy 实现
+## 5 NetworkPolicy
 
 Kubernetes 中 Pod 之间的网络默认是完全连通的，每个 Pod 可以向任何 Pod 发送请求，也可以接收任何 Pod 的请求。
 
-如果要对 Pod 之间的网络进行隔离，可以使用 NetworkPolicy 对象。NetworkPolicy 的说明见[**官方文档**](https://kubernetes.io/zh-cn/docs/concepts/services-networking/network-policies/)。
+如果要对 Pod 之间的网络进行隔离，可以使用 [**NetworkPolicy**](https://kubernetes.io/zh-cn/docs/concepts/services-networking/network-policies/) 对象。
+
+
+目前，NetworkPolicy 还有着许多的限制：
+
+* 强制流量进入公共的 Gateway（通过 Service Mesh 实现）
+* 基于 Node 配置策略（可以使用 CIDR 配置）
+* 适用于所有 Namespace 或 Pod 的策略
+* 生成网络安全事件日志的能力（例如，哪些连接被拒绝）
+* 显式拒绝策略的能力（NetworkPolicy 只能添加允许策略）
+* 禁止 Localhost 或来自 Node 的网络流量（Pod 无法阻塞访问 Localhost，以及无法拒绝来自本地 Node 的访问）
+
+### 5.1 NetworkPolicy 定义
+
+Pod 的网络隔离分为：Ingress 与 Egress 隔离。这两种隔离设置都是独立的，并且只关乎于 Pod 与另一个 Pod 的访问。
+
+* Egress 隔离
+
+  默认情况下，一个 Pod 的 Egress 是非隔离的，所有外向流量都是允许的。当应用了任意的 Egress 策略时，那么只有策略允许的流量才能通过，默认的策略变为拒绝。
+
+  多个 NetworkPolicy 的 Egress 的效果是相加的。
+
+* Ingress 隔离
+
+  默认情况下，一个 Pod 的 Ingress 是非隔离的，即所有入站流量都是允许的。当应用了任意的 Ingress 策略时，那么只有策略允许的流量才能通过，默认的策略变为拒绝。
+
+要允许源 Pod 到目标 Pod 的连接，源 Pod 的 Egress 策略与目标 Pod 的 Ingress 策略都需要允许。
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: 172.17.0.0/16
+            except:
+              - 172.17.1.0/24
+        - namespaceSelector:
+            matchLabels:
+              project: myproject
+        - podSelector:
+            matchLabels:
+              role: frontend
+      ports:
+        - protocol: TCP
+          port: 6379
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/24
+      ports:
+        - protocol: TCP
+          port: 5978
+```
+
+* podSelector - 筛选应用该 NetworkPolicy 的 Pod；
+* policyTypes - 应用 Ingress 还是 Egress；
+* ingress - 设置的 Ingress 策略
+* egress - 设置的 Egress 策略
+
+### 5.2 To 和 From
+
+Ingress 的 `from` 与 Egress 的 `to` 都可以指定四种 Selector：
+
+* **podSelector** - 与 NetworkPolicy 同 Namespace 下，通过 Label 筛选出允许的 Pod；
+* **namespaceSelector** - 选择特定的 Namespace 下的所有 Pod；
+* **podSelector** + **namespaceSelector** - 筛选特定 Namespace 下的特定 Pod；
+* **ipBlock** - 基于 IP Range 筛选，IP 可能来自于 Pod 或 LB 等；
+
+### 5.3 针对特定 Port
+
+通过 `ports` 可以针对特定端口范围进行限制：
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: multi-port-egress
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/24
+      ports:
+        - protocol: TCP
+          port: 32000
+          endPort: 32768
+```
+
+### 5.4 firewall 插件
 
 NetworkPolicy 功能的实现是由 CNI Plugin 实现的，因此不同的 CNI Plugin 可能有着不同的实现。
 
-### 5.1 firewall 插件
-
-Kubernetes 提供了一个通用的 CNI Chained Plugin [**firewall**](https://www.cni.dev/plugins/current/meta/firewall/)，支持配置 iptables 与 firewalld 来限制 Container 的出入流量。因此 CNI Plugin 可以使用该 Plugin 来实现 NetworkPolicy 功能。
+不过 Kubernetes 提供了一个通用的 CNI Chained Plugin [**firewall**](https://www.cni.dev/plugins/current/meta/firewall/)，支持配置 iptables 与 firewalld 来限制 Container 的出入流量。因此 CNI Plugin 可以使用该 Plugin 来实现 NetworkPolicy 功能。
 
 以 iptables 为例，其实现就是通过配置 iptables 来允许或拒绝数据包。
 

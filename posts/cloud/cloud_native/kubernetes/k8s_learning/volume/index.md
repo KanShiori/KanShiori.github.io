@@ -147,6 +147,10 @@ Access Mode 描述了 Pod 访问 Volume 的模式，是否支持多节点同时�
 
 同样，如果 PVC 被某个 Pod 使用中，也会添加一个名为 `kubernetes.io/pvc-protection` 的 Finalizer，以防止用户删除使用中的 PVC。
 
+{{< admonition note Note>}}
+实际存储的删除在 Finalizer 移除后开始了，不会参考 PV 上其他的 Finalizer。
+{{< /admonition >}}
+
 ### 1.2 PVC
 
 [PVC]^(Persistent Volume Claim) 描述一个 Pod 对 PV 的需求，是基于 namespace 下的。
@@ -244,6 +248,17 @@ spec:
       persistentVolumeClaim:
         claimName: myclaim  # 指定使用的 PVC
 ```
+
+#### 1.2.4 DataSource 与 DataSourceRef
+
+PVC 提供了 `dataSource` 字段来实现 [**Volume Snapshot**](#5-volume-snapshot) 与 [**Volume Clone**](#6-clone-volume)。
+
+PVC 还提供了 `dataSourceRef` 字段，该字段大致含义与 `dataSource` 几乎相同，大部分情况下该字段都是相同的内容。
+
+不过，`dataSourceRef` 提供了更高级的功能，包括：
+
+* `dataSourceRef` 可以包含不同任意类型的对象，而 `dataSource` 只支持 PVC 与 VolumeSnapshot。
+* `dataSourceRef` 能给支持跨 Namespace 的 PVC 或 VolumeSnapshot，`dataSource` 只能支持同 Namespace 操作。
 
 ### 1.3 StorageClass
 
@@ -389,7 +404,7 @@ PV PVC StorageClass 三者的关系如下图：
 
 {{< image src="img1.png" height=250 >}}
 
-PVC 绑定 PVC 基于 `spec.volumeName` 字段：
+PVC 绑定 PV 基于 `spec.volumeName` 字段：
 
 ```yaml
 apiVersion: v1
@@ -755,6 +770,189 @@ spec:
 #### 4.1.2 PVC 的命名
 
 Kubernetes 为 Ephemeral Volume 创建的 PVC 命名为：`${pod-name}-${volume-name}`。因为命名规则是固定的，所以要小心不同 Pod 创建的 PVC 可能冲突。
+
+## 5 Volume Snapshot
+
+Volume Snapshot 利用云厂商的功能，通过 CR 来对存储进行快照备份。目前，Volume Snapshot 仅部分 CSI Driver 支持。
+
+Volume Snapshot 涉及到以下 CRD：
+
+* **VolumeSnapshotContent** - 实际创建出的 Volume Snapshot（概念类似与 PV）
+  
+* **VolumeSnapshot** - 执行 Volume Snapshot 的请求（概念类似于 PVC）
+
+* **VolumeSnapshotClass** - 指定 VolumeSnapshot 的不同属性（概念类似于 StorageClass）
+
+Kubernetes 提供了 `csi-snapshotter` 的 Sidecar Container 和 CSI Driver 共同部署。`csi-snapshotter` 负责 Watch 和管理集群中的 VolumeSnapshot 和 VolumeSnapshotContent 资源，涉及实际操作时调用 CSI Driver 的 `CreateSnapshot` 和 `DeleteSnapshot` 接口。
+
+### 5.1 VolumeSnapshot
+
+VolumeSnapshot 中定义了对某个 PVC 执行 Volume Snapshot 的请求。
+
+```yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: new-snapshot-test
+spec:
+  volumeSnapshotClassName: csi-hostpath-snapclass
+  source:
+    persistentVolumeClaimName: pvc-test
+```
+
+`volumeSnapshotClassName` 定义了使用的 VolumeSnapshotClass，那么执行快照时会使用对应的属性。如果没指定，会使用默认 Class。
+
+Snapshot 操作执行后，将对应的 VolumeSnapshotContent 设置在定义中。当然，你也可以直接绑定一个已经存在的 VolumeSnapshotContent。
+
+```yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: test-snapshot
+spec:
+  source:
+    volumeSnapshotContentName: test-content
+```
+
+### 5.2 VolumeSnapshotContent
+
+VolumeSnapshotContent 代表一个具体的快照资源。
+
+```yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotContent
+metadata:
+  name: snapcontent-72d9a349-aacd-42d2-a240-d775650d2455
+spec:
+  deletionPolicy: Delete
+  driver: hostpath.csi.k8s.io
+  source:
+    volumeHandle: ee0cfb94-f8d4-11e9-b2d8-0242ac110002
+  sourceVolumeMode: Filesystem
+  volumeSnapshotClassName: csi-hostpath-snapclass
+  volumeSnapshotRef:
+    name: new-snapshot-test
+    namespace: default
+    uid: 72d9a349-aacd-42d2-a240-d775650d2455
+```
+
+`volumeHandle` 指定了执行 Snapshot 的 Volume ID，而不是对应的 Snapshot ID。
+
+创建快照后，对应的 Snapshot ID 记录在 `snapshotHandle` 上。当然，也可以通过该字段将已有的 Snapshot 绑定到 VolumeSnapshotContent。
+
+```yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotContent
+metadata:
+  name: new-snapshot-content-test
+spec:
+  deletionPolicy: Delete
+  driver: hostpath.csi.k8s.io
+  source:
+    snapshotHandle: 7bdd0de3-aaeb-11e8-9aae-0242ac110002  # snapshot id
+  sourceVolumeMode: Filesystem
+  volumeSnapshotRef:
+    name: new-snapshot-test
+    namespace: default
+```
+
+#### 5.2.1 Source Volume Mode
+
+`sourceVolumeMode` 字段表明执行 Snapshot 的 Volume 的模式，包括：Filesystem 或 Block。
+
+如果你希望使用 Snapshot 创建 PVC 时，支持转换 Volume Mode，那么需要添加一个 Annotation：
+
+```yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotContent
+metadata:
+  name: new-snapshot-content-test
+  annotations:
+    - snapshot.storage.kubernetes.io/allow-volume-mode-change: "true" # 表明改变 Mode
+spec:
+  deletionPolicy: Delete
+  driver: hostpath.csi.k8s.io
+  source:
+    snapshotHandle: 7bdd0de3-aaeb-11e8-9aae-0242ac110002
+  sourceVolumeMode: Filesystem
+  volumeSnapshotRef:
+    name: new-snapshot-test
+    namespace: default
+```
+
+### 5.3 VolumeSnapshotClass
+
+VolumeSnapshotClass 提供了执行 Snapshot 的参数。
+
+```yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: csi-hostpath-snapclass
+driver: hostpath.csi.k8s.io
+deletionPolicy: Delete
+parameters:
+  # ...
+```
+
+`driver` 指定了使用哪个 CSI Driver，因为由 Driver 具体执行 Snapshot 操作。
+
+`deletionPolicy` 表明 VolumeSnapshot 删除时，如何处理 VolumeSnapshotContent。
+
+* **Retain** - 保留 VolumeSnapshotContent，意味着底层的 Snapshot 也会保留
+* **Delete** - 删除 VolumeSnapshotContent，底层的 Snapshot 也会删除
+
+### 5.4 基于 Snapshot 创建 PV
+
+定义 PVC 时，可以指定让其使用 VolumeSnapshot 创建 PV。那么 PV 对应的存储将从实际 Snapshot 恢复，从而恢复数据。
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: restore-pvc
+spec:
+  storageClassName: csi-hostpath-sc
+  dataSource:
+    name: new-snapshot-test
+    kind: VolumeSnapshot  # 基于快照恢复
+    apiGroup: snapshot.storage.k8s.io
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+```
+
+## 6 Clone Volume
+
+Clone Volume 的意思是复制现有的 Volume。利用大部分云厂商的 Clone Disk 的功能。
+
+从 Kubernetes 角度看，Clone 只能是在创建新的 PVC 时，指定一个现有的 PVC 作为数据源，并且源 PVC 必须是 Bound 状态并且不在使用中。新的 PVC 会绑定到新的 PV，对应后面会绑定到 Clone 出的新的 Disk。
+
+实际上的 Volume Clone 操作完全由 CSI Driver 负责。新的
+
+通过 `dataSource` 来表明从一个先有的 PVC 克隆。
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: clone-of-pvc-1
+    namespace: myns
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: cloning
+  resources:
+    requests:
+      storage: 5Gi  # 大于等于现在的 storage
+  dataSource:       # 指向一个 PVC
+    kind: PersistentVolumeClaim
+    name: pvc-1
+```
+
+Clone 后的 PVC 是完全独立的，源 PVC 的修改或删除都不会影响新的 PVC。
 
 ## 参考
 

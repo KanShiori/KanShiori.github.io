@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/pod/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-05T16:29:21+00:00" />
-<meta property="article:modified_time" content="2023-02-09T21:11:10+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/pod\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3694 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/pod\/","datePublished": "2021-06-05T16:29:21+00:00","dateModified": "2023-02-09T21:11:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  4300 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/pod\/","datePublished": "2021-06-05T16:29:21+00:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,8 +117,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kubernetes - Pod 基本概念</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-06-05">2021-06-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3694 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-06-05">2021-06-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4300 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 9 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -159,16 +159,22 @@
         <li><a href="#34-pod-重启策略">3.4 Pod 重启策略</a></li>
       </ul>
     </li>
-    <li><a href="#4-probe">4 Probe</a>
+    <li><a href="#4-pod-的停止">4 Pod 的停止</a>
       <ul>
-        <li><a href="#41-livenessprobe">4.1 LivenessProbe</a></li>
-        <li><a href="#42-readinessprobe">4.2 ReadinessProbe</a></li>
-        <li><a href="#43-startupprobe">4.3 StartupProbe</a></li>
-        <li><a href="#44-使用-probe">4.4 使用 Probe</a></li>
+        <li><a href="#41-强制删除">4.1 强制删除</a></li>
+        <li><a href="#42-pod-gc">4.2 Pod GC</a></li>
       </ul>
     </li>
-    <li><a href="#5-init-container">5 Init Container</a></li>
-    <li><a href="#6-ephemeral-container">6 Ephemeral Container</a></li>
+    <li><a href="#5-probe">5 Probe</a>
+      <ul>
+        <li><a href="#51-livenessprobe">5.1 LivenessProbe</a></li>
+        <li><a href="#52-readinessprobe">5.2 ReadinessProbe</a></li>
+        <li><a href="#53-startupprobe">5.3 StartupProbe</a></li>
+        <li><a href="#54-使用-probe">5.4 使用 Probe</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-init-container">6 Init Container</a></li>
+    <li><a href="#7-ephemeral-container">7 Ephemeral Container</a></li>
   </ul>
 </nav></div>
             </div><div class="content" id="content"><h2 id="1-pod-的进程模型">1 Pod 的进程模型</h2>
@@ -519,7 +525,51 @@
             <div class="admonition-content">重启间隔时间是以 kubelet handle 周期为单位。</div>
         </div>
     </div>
-<h2 id="4-probe">4 Probe</h2>
+<h2 id="4-pod-的停止">4 Pod 的停止</h2>
+<p>通常情况下，CRI 会先给每个 Container 的<strong>主进程</strong>发送一个 <code>SIGTERM</code> 信号（或者是 Image 定义的 <code>STOPSIGNAL</code> 信号），来尝试优雅停止 Pod。</p>
+<p>一旦优雅停止超时，CRI 会向<strong>所有剩余的进</strong>程发送 <code>SIGKILL</code> 信号，之后 Pod 就会从 APIServer 上移除。</p>
+<p>更加细节的停止过程如下：</p>
+<ol>
+<li>
+<p>APIServer 中 Pod 对象被更新，通过 <code>deletionTimestamp</code> 将其标记为删除中。这时，<code>kubectl describe</code> 展示 Pod 为 <code>Terminating</code>。</p>
+</li>
+<li>
+<p><code>kubelet</code> 看到 Pod 为删除中，开始本地的 Pod 关闭过程。</p>
+</li>
+<li>
+<p>如果 Container 定义了 <code>preStop</code> 回调，<code>kubelet</code> 开始在容器中执行回调。如果 <code>preStop</code> 执行时间超过了 <code>terminationGracePeriodSeconds</code> 时间，那么 <code>kubelet</code> 每次 2s 继续执行 <code>preStop</code>。</p>
+</li>
+<li>
+<p><code>kubelet</code> 调用 CRI 来给每个 Container 的进程 1 发送 <code>SIGTERM</code> 信号。</p>
+</li>
+<li>
+<p>在 <code>kubelet</code> 关闭 Pod 的同时，Controller 会将 Pod 从 <code>Endpoints</code> 或者 <code>EndpointSlice</code> 对象中移除。</p>
+</li>
+<li>
+<p>如果停止时间超过 <code>terminationGracePeriodSeconds</code>，那么 <code>kubelet</code> 会向 Pod 中所有的容器发送 <code>SIGKILL</code> 信号，包括 <code>pause</code> 容器。</p>
+</li>
+<li>
+<p><code>kubelet</code> 触发将 Pod 从 APIServer 中强制删除的逻辑，将 <code>terminationGracePeriodSeconds</code> 设置为 0（表明立马删除 Pod 对象）。</p>
+</li>
+<li>
+<p>APIServer 删除 Pod 对象，任何 Client 都无法看到该 Pod。</p>
+</li>
+</ol>
+<h3 id="41-强制删除">4.1 强制删除</h3>
+<p>默认情况下，所有的删除操作都有 30s 的优雅删除等待时间。可以通过配置 Pod 的 <code>terminationGracePeriodSeconds</code> 来配置等待时间。</p>
+<p>如果将 Pod 的 <code>terminationGracePeriodSeconds</code> 设置为 0，那么 APIServer 会立即删除该 Pod 对象，而不会等待 <code>kubelet</code> 来修改 Pod 对象。</p>
+<div class="details admonition warning open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-exclamation-triangle fa-fw" aria-hidden="true"></i>WARN<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">强制删除不等待 Pod 实际被删除，可能 Pod 会无期限的运行在集群上。</div>
+        </div>
+    </div>
+<p>通过 <code>kubectl delete --grace-period=0 --force</code> 可以执行强制删除 Pod。</p>
+<h3 id="42-pod-gc">4.2 Pod GC</h3>
+<p>在控制面运行着 Pod GC Controller，会在 Pod 个数超过配置的阈值时（配置的 <code>terminated-pod-gc-threshold</code> 参数），删除已经终止的 Pod。这些 Pod 的 Phase 为 <code>Succeeded</code> 或者 <code>Failed</code>。</p>
+<h2 id="5-probe">5 Probe</h2>
 <p>Probe 以旁路的方式，周期性地检测 Pod 容器的情况，检测失败是及时更新 Pod 的状态，使得上层感知后进行一些恢复操作。</p>
 <p>目前包含三种探针：LivenessProbe、ReadinessProbe 和 StartupProbe。</p>
 <div class="details admonition note open">
@@ -530,10 +580,10 @@
             <div class="admonition-content">要明确，Probe 是以容器为对象的，而不是 Pod。</div>
         </div>
     </div>
-<h3 id="41-livenessprobe">4.1 LivenessProbe</h3>
+<h3 id="51-livenessprobe">5.1 LivenessProbe</h3>
 <p><strong><code>LivenessProbe</code></strong> 用于周期性判断一个容器是否是存活的，<strong>如果 LivenessProbe 探测失败，那么 kubelet 将会 “杀掉” 该容器。</strong></p>
 <p>容器停止后，后续的操作是由 <a href="#34-pod-%e9%87%8d%e5%90%af%e7%ad%96%e7%95%a5" rel=""><strong>重启策略</strong></a> 控制的。</p>
-<h3 id="42-readinessprobe">4.2 ReadinessProbe</h3>
+<h3 id="52-readinessprobe">5.2 ReadinessProbe</h3>
 <p><strong><code>ReadinessProbe</code></strong> 用于周期性判断一个容器是否是 Ready，<strong>从而影响 Pod 的 Ready condition 是否为 True。</strong></p>
 <p>只有 Pod Ready condition 为 True 时，Service 才可以将其 Pod 加入到 Endpoints，从而该 Pod 才能接受请求并处理。</p>
 <p>同样，当 Pod Ready condition 从 True 变为 False 时，Service 会将其 Pod 从 Endpoints 移除。</p>
@@ -545,10 +595,10 @@
             <div class="admonition-content">因为 ReadinessProbe 是一种被动探测的方式，而 <a href="#331-%e8%87%aa%e5%ae%9a%e4%b9%89-condition" rel=""><strong>Readiness Gate</strong></a> 提供了一种主动修改的方式。</div>
         </div>
     </div>
-<h3 id="43-startupprobe">4.3 StartupProbe</h3>
+<h3 id="53-startupprobe">5.3 StartupProbe</h3>
 <p><strong><code>StartupProbe</code></strong> 仅仅在容器启动后会运行，并且<strong>成功后不会再次运行，直到容器重新启动</strong>。</p>
 <p>StartupProbe 是为了解决有些容器的启动情况很慢的情况，这种情况只需要进行一次成功的探测，所以不适合 ReadyinessProbe 的周期性语义。</p>
-<h3 id="44-使用-probe">4.4 使用 Probe</h3>
+<h3 id="54-使用-probe">5.4 使用 Probe</h3>
 <p>三种探针都可以使用三种探测方式：</p>
 <ul>
 <li>
@@ -643,7 +693,7 @@
 <li><code>successThreshold</code> ：探测失败后，经过几次探测成功后，才将其变为健康状态，默认值为 1。仅仅适用于 StartupProbe。</li>
 <li><code>failureThreshold</code> ：连续探测失败多少次后，才将其容器视为不健康状态，默认值为 3。</li>
 </ul>
-<h2 id="5-init-container">5 Init Container</h2>
+<h2 id="6-init-container">6 Init Container</h2>
 <p>大多数应用在启动前都需要进行一些初始化的操作。Kubernetes 提供了 init container 来进行 Pod 的初始化操作。</p>
 <p><strong><code>init container</code></strong> 也是普通的容器，但是仅仅只运行一次就结束。多个 init container 的情况下，<strong>按照定义的顺序运行，并且只有前面的运行成功后才会运行后面的。</strong></p>
 <p>某个 init container 运行失败后，其 Pod 的启动流程会终止。而其后的操作就是受到 <a href="#34-pod-%e9%87%8d%e5%90%af%e7%ad%96%e7%95%a5" rel=""><strong>重启策略</strong></a> 的控制。
@@ -709,15 +759,15 @@
 <li>init container 不能设置 ReadinessProber。</li>
 <li>Pod 重新启动时，init container 将会重新运行。所以 init container 应该是幂等的。</li>
 </ul>
-<h2 id="6-ephemeral-container">6 Ephemeral Container</h2>
+<h2 id="7-ephemeral-container">7 Ephemeral Container</h2>
 <p>有时由于容器崩溃或者容器镜像不包含 debug 工具，使得通过 <code>kubectl exec</code> 方式不能很好的进行调试。v1.18 版本开始，新添加一个 <code>kubectl debug</code> 命令，用于创建 <strong><code>ephemeral container</code></strong> 来进行 debug。</p>
 <p>具体使用方式可以参考：<a href="../../../../cloud_practice/debug-pod/#1-ephemeral-container" rel=""><strong>Ephemeral Container</strong></a>。</p>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734: Post(Operator Desgin Notes) (#36)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cce6cda</a></span>
+                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

@@ -3,7 +3,15 @@
         <title>所有文章 - Shiori&#39;s Blog</title>
         <link>https://KanShiori.github.io/posts/</link>
         <description>所有文章 | Shiori&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 06 Feb 2023 20:09:34 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 14 Mar 2023 10:57:15 &#43;0800</lastBuildDate><atom:link href="https://KanShiori.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>Kubernetes - CEL 语法</title>
+    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/cel-in-k8s/</link>
+    <pubDate>Tue, 14 Mar 2023 10:57:15 &#43;0800</pubDate>
+    <author>Shiori</author>
+    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/cel-in-k8s/</guid>
+    <description><![CDATA[1 概述 Kubernetes 中 Validate 规则都是通过 Common Expression Language 来表达的。 CEL 表达式通常是一行简短的代码，能够内联到 Kubernetes 资源的属性中。不同的资源可能有着不同的输入，因此当你使用 CEL]]></description>
+</item>
+<item>
     <title>K8s 编程 - Operator Design Notes</title>
     <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/operator-design-note/</link>
     <pubDate>Mon, 06 Feb 2023 20:09:34 &#43;0800</pubDate>
@@ -74,14 +82,6 @@
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/cloud/cloud_practice/access-resources-across-clouds/</guid>
     <description><![CDATA[跨云访问指的是：在一个云厂商的环境中，访问另一个云厂商的服务。最简单的方式就是将静态密钥（AWS AK/SK 与 GCP ServiceAccount Key）注入到应用中，但是显而易见这]]></description>
-</item>
-<item>
-    <title>K8s 实现 - Scheduler 实现</title>
-    <link>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/scheduler-implement/</link>
-    <pubDate>Mon, 19 Sep 2022 15:21:22 &#43;0800</pubDate>
-    <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/scheduler-implement/</guid>
-    <description><![CDATA[1 概述 Kubernetes Scheduler 负责了 Schedule + Eviction + Preemption 三个功能。Scheduler 本质上也是一个 Controller，监听着 Pod 和 Node 等资源，出现事件时尝试执行调度操作。 目]]></description>
 </item>
 </channel>
 </rss>

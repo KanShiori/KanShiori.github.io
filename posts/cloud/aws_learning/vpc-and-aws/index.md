@@ -6,20 +6,18 @@
 **`VPC Peering`** 用于<important>连接两个不同地址范围的 VPC，VPC 可以处于不同的 Region，甚至不同的 AWS 账户</important>。
 
 当 VPC Peering 连接两个 VPC 后，VPC 内部的资源（Instance、RDS 等）可以直接访问到对端 VPC 的资源。
-{{< find_img "img1.png" >}}
+
+{{< image src="img1.png" height=230 >}}
 
 但是，VPC Peering 是**不具有传递性的**。以上图来说，VPC1 是无法通过 VPC2 与 VPC3 通信的。
 
 ### 1.1 使用 VPC Peering
 
 使用 VPC Peering 连接 VPC 需要的工作：
-1. 由源端 VPC **发起 VPC Peering**，连接到对端 VPC。
-   
-   发起的称为 **`Requester VPC`**。
 
-2. 对端 VPC **接受 VPC Peering**。
-   
-   对端的称为 **`Accepter VPC`**。
+1. 由源端 VPC **发起 VPC Peering**，连接到对端 VPC。发起的称为 **`Requester VPC`**。
+
+2. 对端 VPC **接受 VPC Peering**。对端的称为 **`Accepter VPC`**。
 
 3. **配置 Route Table**，将对方 VPC 的数据包发往 VPC Peering。
    
@@ -37,25 +35,25 @@
 
 从发起请求开始，VPC Peering 会经过各个阶段：
 
-{{< image src="img2.png" >}}
+{{< image src="img2.png" height=230 >}}
 
 ### 1.3 VPC Peering 构建步骤
 
 使用 VPC Peering 联通两个 VPC 的大致流程如下：
 
-1. 构建 VPC Peering
+1. **构建 VPC Peering**
    
    VPC A 发起 VPC Peering 连接，而 VPC B 需要 Accept 该 VPC Peering。
 
-2. 配置 Route Table
+2. **配置 Route Table**
 
    两个 VPC 或 Subnet 的 Route Table 都需要添加一项指向对方 VPC 子网的路由项，Destination 为 Peering ID `pcx-xxxx`。
 
-3. 配置 Network ACL
+3. **配置 Network ACL**
    
    确保互相访问的 Subnet 的 Network ACL 不会拦截对方网段的数据包。
 
-4. 配置 Security Group
+4. **配置 Security Group**
    
    确保互相访问的 Instance 的 Security Group 能够允许对方网段的数据包。
 
@@ -69,19 +67,19 @@ Transit Gateway（简称为 TGW）类似于一个路由器，可以连接多个 
 
 Transit Gateway 的基本概念如下：
 
-* Attachment
+* **Attachment**
   
   Attachment 意味着将 VPC 或者网络设备连接到 TGW。
 
-* Transit Gateway Route Table
+* **Transit Gateway Route Table**
   
   TGW Route Table 决定了 TGW 如何转发数据报。
 
-* Associations
+* **Associations**
   
   Associations 代表 Attachment 与 Route Table 的关联关系。一个 Attachment 与一个 Route Table 关联，Route Table 可以有多个 Attachment 复用。
 
-* Route propagation
+* **Route propagation**
   
   对于部分 Attachment 那么支持动态将路由传播给 Route Table。
 
@@ -186,54 +184,14 @@ TGW 也支持 Multicast，可以数据包发送给多个 Attachment。
 {{< /admonition >}}
 
 目前，Endpoint 分为三类：
+
 * Gateway Endpoints
 * Interface Endpoints
 * Gateway Load Balancer Endpoints
 
 其中，第一种流量会通过公网，而后两种不会通过公网，其实现技术称之为 **`Private Link`**。
 
-### 3.1 Gateway Endpoint
-
-使用 **`Gateway Endpoint`** **只能连接特定的 AWS 服务：S3 与 DynamoDB**。或者说，当你创建 Endpoint 是连接的是 S3 或者 DynamoDB 服务，可以选择使用 Gateway Endpoint。
-{{< find_img "img3.png" >}}
-
-使用 Gateway Endpoint 的步骤：
-
-1. **创建 Endpoint**，创建时选择目标服务为 Gateway 类型的 DynamoDB 或 S3。
-
-2. 配置 Route Table，是流量能够指向对应 Endpoint 的 vpce-*id*。
-
-    | Destination   | Target       | Status | Propagated |
-    | ------------- | ------------ | ------ | ---------- |
-    | pl-6ea54007   | vpc-a2984bc5 | Active | No         |
-
-3. Instance 通过 Service 域名来访问 Endpoint。
-
-### 3.2 Interface Endpoint
-
-大多数 AWS Service 可以通过 **`Interface Endpoint`** 进行连接。创建 Interface Endpoint 相当于创建一个 Network Interface，有着 Private IP 与 Private DNS。
-{{< find_img "img4.png" >}}
-
-使用 Interface Endpoint 的步骤：
-1. **创建 Endpoint**，创建时选择需要的目标 AWS 服务。
-2. Instance **通过 Private IP 或者 Private DNS 来访问 Service**。
-
-{{< admonition note "支持 S3 与 DynamoDB">}}
-Interface Endpoint 是支持连接 S3 与 DynamoDB Service 的。
-{{< /admonition >}}
-
-### 3.3 Gateway Load Balancer Endpoint
-
-Gateway Load Balancer Endpoint 能够将流量路由到 Gateway Load Balancer，然后由 Load Balancer 负载均衡到下游的 Service。
-
-创建 Endpoint 的称为 Service Consumer，下游的 Service 称为 Service Provider。
-
-## 4 Endpoint Service
-
-你也可以将自己的程序作为一个 **`Endpoint Service`**，**使得别人可以通过 Interface Endpoint 来访问你的服务。**
-
-Endpoint Service 的入口是一个 LB：**Network Load Balancer** 或 **Gateway Load Balancer**。
-{{< find_img "img5.png" >}}
+具体如何使用参考 [**AWS - Private Link**](../private-link/)。
 
 ## 参考
 

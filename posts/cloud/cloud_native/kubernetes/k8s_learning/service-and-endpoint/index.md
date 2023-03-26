@@ -8,6 +8,7 @@
 这个固定的地址，就需要由 **`Service`** 来提供。同样，因为访问的地址固定了，Service 也可以提供负载均衡这样的功能。
 
 最简单的例子，有一个 Web 后端服务，有着 3 个 Pod 运行。而前端想访问该后端服务，想要的只是一个固定的域名或者地址，而不关系后端服务的 Pod 会怎样被调度。
+
 {{< admonition note "为什么这样设计">}}
 可以感觉，这就是分层。上下层之间只通过固定的地址通信，而不关心层内部是怎样运行的。
 {{< /admonition >}}
@@ -22,60 +23,106 @@ Service 基本的定义如下：
 apiVersion: v1
 kind: Service
 metadata:
-  name: string
-  namespace: string
-  labels:
-    - name: string
-  annotations:
-    - name: string
+  name: my-service
 spec:
-  selector: []
-  type: string
-  clusterIP: string
-  sessionAffinity: string
+  selector:
+    app.kubernetes.io/name: MyApp
   ports:
-  - name: string
-    protocol: string
-     port: int
-     targetPort: int
-     nodePort: int
-  status:
-    loadBalancer:
-      ingress:
-      ip: string
-      hostname: string
-  topologyKeys:
-    - "key"
-  externalName: string
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
 ```
-* `spec.selector` ：用于 Service 选择被代理的 Pod；
-* `spec.type` ： Service 类型，见 [**Service 的类型**](#4-service-类型)；
-* `spec.clusterIP` ：固定的地址，为空那么随机提供；
-* `spec.sessionAffinity` ： 设置负载均衡策略；
-* `spec.ports` ：提供需要代理的协议，源端口，目的端口，宿主机端口（NodePort 类型）；
-* `spec.status` ：使用 LoadBalancer 类型下，提供相关参数；
-* `spec.topologyKeys` ：控制流量转发的拓扑控制，优先将流量转发到相同 key 的 Node 上的 Pod；
-* `spec.externalName` ：ExternalName 类型 service 代理的集群外的服务域名；
 
-### 2.2 负载均衡策略
+上述 Service 会将 Port 80 的请求转发到 Pod 的 Port 9376，通过 `selector` 来筛选作为后端的 Pod。
+
+Pod 中定义的端口是有名字的，因此也可以在 Service 中引用这些名称：
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app.kubernetes.io/name: proxy
+  ports:
+  - name: name-of-service-port
+    protocol: TCP
+    port: 80
+    targetPort: http-web-svc  # port name in Pod
+```
+
+### 2.2 Cluster IP
+
+创建 Service 后，Kubernetes 为分配一个 Cluster IP 作为 Service 的地址。该 IP 是虚拟的，`kube-proxy` 处理数据包时才会使用该 IP。
+
+当然，你也可以通过设置 `spec.clusterIP` 来手动指定 Service IP。不过该 IP 地址必须在 `service-cluster-ip-range` CIDR 范围内。
+
+Kubernetes 根据配置的 `service-cluster-ip-range` 来选择 Cluster IP。会将该 CIDR 分为两段：
+
+* Kubernetes 会优先从高段中选择 Cluster IP。
+* 手动指定 Cluster IP 应该从底端中选择，以防止冲突。
+
+### 2.3 LB Policy
 
 k8s 默认提供两种负载均衡策略：
+
 * **RoundRobin** ：轮询模式，将请求轮询到后端各个 Pod。默认模式
   
 * **SessionAffinity** ：基于客户端 IP 地址进行会话保持的模式。即第一次将某个客户端发起请求到后端某个 Pod，之后相同客户端发起请求都会被转发到对应 Pod。
 
-将 `spec.sessionAffinity` 指定为 "ClientIP"，就表明了开启 SessionAffinity 策略。
+  将 `spec.sessionAffinity` 指定为 "ClientIP"，就表明了开启 SessionAffinity 策略。
 
-### 2.3 支持的网络协议
+  通过 `spec.sessionAffinityConfig.clientIP.timeoutSeconds` 来设置会话最大的持续时间，默认为 3h。
+
+### 2.4 Traffic Policy
+
+#### 2.4.1 Internal Traffic Policy
+
+`spec.internalTrafficPolicy` 来配置 Kubernetes 集群内部的流量（Pod 之间的流量）如何被路由。支持：
+
+* **Cluster**
+  
+  集群中的所有 Node 都可以将流量转发到任意 Ready Pod，即使要转发的 Pod 不在当前 Node 上。
+
+  例如，Node A B C 三个节点都运行了一个 Pod，那么 Node A 的 `kube-proxy` 路由流量时，可能将流量路由到 Node A B C 的 Pod。
+
+  这种方式提供了高可用性，如果某个 Pod 故障时，还是能将流量路由到其他 Node 上的 Pod。 
+
+* **Local**
+  
+  流量只能路由给当前 Node 上的 Pod。如果当前 Node 上没有 Pod，那么会丢弃该流量。
+
+  例如，Node A B C 三个节点都运行了一个 Pod，那么 Node A 的 `kube-proxy` 只能将流量路由到 Node A 的 Pod。
+
+  这种方式减少了跨 Node 间的流量，但是如果 Pod 故障时，请求可能无法被服务。
+
+#### 2.4.2 External Traffic Policy
+
+`spec.externalTrafficPolicy` 控制从外部的流量（外部 -> Node -> Pod 的流量）如何被路由。支持：
+
+* **Cluster**
+  
+  集群中的所有 Node 都可以提供外部服务，能够将流量转发到其他 Node 上的 Pod。
+
+  Node 之间的流量会经过一次 SNAT，所以会隐藏源 IP 地址。
+
+* **Local**
+  
+  Node 只能路由流量给本地上运行的 Pod，也就是说不是所有 Node 都能提供外部服务。
+
+
+### 2.5 支持的协议
 
 目前 Service 支持如下网络协议：
+
 * TCP: 默认网络协议，可用于所有类型 Service
 * UDP: 可用于大多数类型 Service。LoadBalancer 类型取决于云服务是否支持
 * HTTP: 取决于云服务是否支持
 * PROXY: 取决于云服务是否支持
 * SCTP
 
-从 1.17 版本开始，可以为 Service 和 Endpoint 资源对象设置 `spec.ports[].AppProtocol` 字段，用于表示后端服务在某端口停的应用层协议类型。
+另外，可以为 Service 设置 `spec.ports[_].appProtocol` 字段，用于表示后端服务在某端口停的应用层协议类型。该字段会被映射到对应的 Endpoints 或者 EndpointSlices 对象。
 
 ```yaml
 # ...
@@ -83,7 +130,7 @@ spec:
   ports:
   - port: 8080
     targetPort: 8080
-    AppProtocol: HTTP
+    appProtocol: HTTP
 ```
 
 ## 3 服务发现
@@ -95,19 +142,19 @@ Kubernetes 提供了两种机制供客户端以固定的范式获取后端 Servi
 如果 Pod 在 Service 之后创建，那么集群中同 namespace **Service 地址信息会通过 ENV 传递给容器**（不包括 Headless Service）。相关的环境变量包括：
 
 ```bash
-<service>_PORT=<proto>://<clusterip>:<port>
-<service>_PORT_<port>_<proto>=<proto>://<clusterip>:<port>
-<service>_PORT_<port>_<proto>_ADDR=<clusterip>
-<service>_PORT_<port>_<proto>_PORT=<port>
-<service>_PORT_<port>_<proto>_PROTO=<proto>
-<service>_SERVICE_HOST=<clusterip>
-<service>_SERVICE_PORT=<port>
-<service>_SERVICE_PORT_<NAME>=<port>
+${service}_PORT=${proto}://${clusterip}:${port}
+${service}_PORT_${port}_${proto}=${proto}://${clusterip}:${port}
+${service}_PORT_${port}_${proto}_ADDR=${clusterip}
+${service}_PORT_${port}_${proto}_PORT=${port}
+${service}_PORT_${port}_${proto}_PROTO=${proto}
+${service}_SERVICE_HOST=${clusterip}
+${service}_SERVICE_PORT=${por}
+${service}_SERVICE_PORT_${nanme}=${port}
 ```
 
-默认相关的环境变量使用的都是 service.spec.port[0] 信息。如果使用的多 port 代理，需要使用 xxx_PORT_xxx 相关环境变量。
+默认相关的环境变量使用的都是 `spec.port[0]` 信息。如果使用的多 port 代理，需要使用 xxx_PORT_xxx 相关环境变量。
 
-环境变量默认还会提供 kubernetes 的 service 地址，用于 Pod 来访问 APIServer。
+环境变量默认还会提供 Kubernetes 的 APIServer Service 地址，用于 Pod 来访问 APIServer。
 
 ### 3.2 DNS 方式
 
@@ -125,18 +172,20 @@ spec:
       name: http
 ```
 
-当执行 `nslookup <service>` 时，自动在当前的 namespace 下访问。通过 `nslookup \<service>.\<namespace>` 可以跨 namespace 进行 DNS 解析。
-
+当执行 `nslookup <service>` 时，自动在当前的 namespace 下访问。通过 `nslookup <service>.<namespace>` 可以跨 namespace 进行 DNS 解析。
 
 ## 4 Service 类型
 
 Service 核心的功能是：代理。代理涉及到两个点：访问代理的前端，被代理的后端。
 
-针对这个前后端的不同，Service 分为了 4 种类型：
+针对这个前后端的不同，Service 分为了几种类型：
 
 * **`ClusterIP`**（默认）：**代理一组后端 Pod，提供一个固定的内部地址 ClusterIP + Port**，也称为 VIP；
-* **`NodePort`** ：NodePort 在 ClusterIP 基础上，会**将 ClusterIP + Port 映射到 Node 上的某个端口**，使得集群外部可以访问内部服务；
+  
+* **`NodePort`** ：NodePort 在 ClusterIP 基础上，会**将 ClusterIP + Port 映射到 Node 上的某个端口**，使得集群外部可以访问内部服务
+  
 * **`LoadBalancer`** ：LoadBalancer 在 NodePort 上，**将一部分 Node 的端口映射到一个 IP 上**，使得外部网络可以访问 Node；
+
 * **`ExternalName`** ：**代理集群外部服务的 DNS 域名**，而不是通过 selector 来选择集群内部后端 Pod；
 
 可以看到，ClusterIP NodePort LoadBalancer 是针对访问代理的前端做了区分，而 ExternalName 是在被代理后端的不同。
@@ -144,6 +193,9 @@ Service 核心的功能是：代理。代理涉及到两个点：访问代理的
 ### 4.1 ClusterIP
 
 ClusterIP 是最基本的 Service，通过一个 VIP + Port 来在集群内部代理了一组 Pod 的 Port。始终要记得，VIP 是在集群内部才能使用。
+
+{{< image src="img1.png" height=270 >}}
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -151,8 +203,8 @@ metadata:
   name: service-python
 spec:
   ports:
-  - port: 3000  # 入口端口
-    protocol: TCP  # 代理协议
+  - port: 3000       # 入口端口
+    protocol: TCP    # 代理协议
     targetPort: 443  # 目标端口
   selector:
     run: pod-python  # 仅代理匹配的 Pod
@@ -161,17 +213,13 @@ spec:
 
 上述定义创建了一个随机选择 IP，代理 TCP 3000 -> 443 端口的 Service。
 
-{{< image src="img1.png" >}}
-
 ### 4.2 NodePort
 
-NodePort 是对 ClusterIP 的增强，增加一个宿主机上端口到代理源端口的转发，使得集群外部也可以访问集群内部的服务。
+NodePort 是对 ClusterIP 的增强，增加一个宿主机上端口到代理源端口的转发，使得集群外部通过访问 Node 来访问集群内部的服务。
 
-{{< admonition note port-forward>}}
-当你执行 `kubectl port-forward svc/xxx` 命令时，其实也是增加了一个宿主端口到 Service 源端口转发，和 NodePort 一样。
-{{< /admonition >}}
+{{< image src="img2.png" height=270 >}}
 
-通过 `service.spec.ports[].nodePort` 指定映射的宿主机端口：
+Kubernetes 会在 `--service-node-port-range` 参数指定的范围内分配端口（默认 30000-32767）。也可以通过 `.spec.ports[*].nodePort` 来指定端口号。
 
 ```yaml
 apiVersion: v1
@@ -189,15 +237,13 @@ spec:
   type: NodePort
 ```
 
-上述定义在 ClusterIP 基础上，增加了宿主机 30080 的端口转发。
-
-{{< image src="img2.png" >}}
+Node 上的 `kube-proxy` 负责监听 NodePort 并转发，通过 `--nodeport-addresses` 或者配置文件可以配置 `kube-proxy` 监听的 IP 地址或者 IP Range。
 
 ### 4.3 LoadBalancer
 
-在云厂商环境下，Node 都是在云的托管集群中的，所以外网访问 k8s 集群内的路径为："外网 -> 云集群 -> k8s 集群"。而 NodePort 仅仅解决了 "云集群 -> k8s 集群" 这个问题。
+LoadBalancer Service 在 NodePort 基础上，提供了云厂商需要的负载均衡信息，而云厂商根据该信息配置好相应的 LB。进而外部通过访问 LB 就可以访问集群中的 Pod。
 
-因此，LoadBalancer Service 在 NodePort 基础上，提供了云厂商需要的负载均衡信息，而云厂商根据该信息设置好 "外网 -> 云集群" 的转发路径。
+对于 LB 如何将流量转发给 Pod，各个云厂商的实现可能不同。
 
 ```yaml
 apiVersion: v1
@@ -215,9 +261,13 @@ spec:
   type: LoadBalancer
   externalTrafficPolicy: Local
 ```
-* spec.externalTrafficPolicy 
 
-spec 中定义仅仅是约定的规范，不同厂商所需要的更加细节的 LoadBalancer 的参数，大多数是通过 `service.metadata.annotations` 来提供：
+{{< admonition note Note>}}
+LB Service 通常配置 `externalTrafficPolicy: Local`，因为 LB 能够直接将流量转发到对应 Pod 的 Node 上，不需要 Node 间转发流量了。
+{{< /admonition >}}
+
+spec 中定义仅仅是约定的规范，不同厂商所需要的更加细节的 LoadBalancer 的参数，大多数是通过 `service.metadata.annotations` 来提供。以 AWS LB 为例：
+
 ```yaml
     metadata:
       name: my-service
@@ -240,6 +290,8 @@ spec 中定义仅仅是约定的规范，不同厂商所需要的更加细节的
 
 因此，ExternalName Service 不再提供代理的功能，而是提供了**域名重定向**的功能。
 
+{{< image src="img3.png" height=270 >}}
+
 ```yaml
 kind: Service
 apiVersion: v1
@@ -256,46 +308,30 @@ spec:
 
 通过 `serivce.spec.externalName` 指定被代理的域名，而集群内部的 Pod 就可以通过该 Service 访问外部服务了。
 
-{{< image src="img3.png" >}}
+### 4.5 External IP
 
-## 5 Endpoint
+External IP 不是一种 Service 类型，而是用于标识该 Service 的外部 IP 地址。Kubernetes 不会管理外部 IP。
 
-当创建一个 Service 后，会根据 `service.spec.selector` 自动来匹配作为后端的 Pod。实际上，会对应一个 **`Endpoints`** 对象来代表其匹配到的代理目标，而其每一个被代理的 Pod 称之为 **`Endpoint`**。
-
-```shell
-$ kubectl get endpoints -A
-NAMESPACE     NAME                      ENDPOINTS                                                     AGE
-default       kubernetes                172.16.4.169:6443                                             3d1h
-kube-system   kube-dns                  10.36.0.4:53,10.36.0.5:53,10.36.0.4:53 + 3 more...            3d1h
-```
-
-当然，你也可以不提供 `service.spec.selector`，也不使用 ExternalName Service，而指定创建一个 Endpoints 对象。这样可以实现，**Service 只代理指定的地址**。
+集群管理员可以通过 Service 的 `spec.externalIPs` 表明 Service 的外部 IP。
 
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: plat-dev
+  name: my-service
 spec:
+  selector:
+    app.kubernetes.io/name: MyApp
   ports:
-    - port: 3306
+    - name: http
       protocol: TCP
-      targetPort: 3306
----
-apiVersion: v1
-kind: Endpoints
-metadata:
-  name: plat-dev
-subsets:
-  - addresses:
-      - ip: "10.5.10.109"
-    ports:
-      - port: 3306
+      port: 80
+      targetPort: 49152
+  externalIPs:
+    - 198.51.100.32
 ```
 
-同名的 Endpoint 与 Service 自动被认为是相绑定的。
-
-## 6 Headless Service
+## 5 Headless Service
 
 Service 会自动发现一组 Pod，并提供代理服务与负载均衡。不过有时候，Pod 中程序并不想使用 Service 的代理功能，而是仅仅想让 Service 作为一个服务发现的作用，例如，peer2peer 程序想要知道有哪些对端的程序。
 
@@ -336,30 +372,80 @@ Address: 10.0.95.12
 Name :mysql-balance-svc.mysql-space.svc.cluster.local
 ```
 
-通过 Headless Service，然后设置 Pod 的 hostname 与 subdomain，就可以实现通过固定 DNS 记录访问某个 Pod。也就是 StatefulSet 使用 Headless Service 的方式。
+通过 Headless Service，然后设置 Pod 的 `spec.hostname` 与 `spec.subdomain`，就可以实现通过固定 DNS 记录访问某个 Pod。也就是 StatefulSet 使用 Headless Service 的方式。
 
-这里提及一下，StatefulSet Pod 对应的 DNS 记录为：`<podname>.<service>.<namespace>.svc.cluster.local`。
-{{< admonition note "DNS 记录不是由 Headless Service 提供的">}}
-要注意，StatefulSet Pod 的 DNS 记录不是由 Headless Service 提供的。
-{{< /admonition >}}
+## 6 Endpoint 与 EndpointSlice
 
-## 7 EndpointSlice 与 Service Topology
-由前面知道，Service 后端是一组 Endpoint，随着集群规模的扩大，Endpoint 数量不断的增长，使得 kube-proxy 需要维护非常多的负载分发规则。
+### 6.1 Endpoint
 
-通过 EndpointSlice 与 Service Topology 配合，可以让 kube-proxy 仅仅转发部分的节点，实现对 Endpoint 的分片管理。
+当创建一个 Service 后，会根据 `service.spec.selector` 自动来匹配作为后端的 Pod。实际上，会对应一个 **`Endpoints`** 对象来代表其匹配到的代理目标，而其每一个被代理的 Pod 称之为 **`Endpoint`**。
 
-### 7.1 EndpointSlice
-1.16 版本引入了 **`EndpointSlice`** 机制，包括 EndpointSlice 资源对象和 EndpointSlice Controller。
-
-EndpointSlice 就是代表着一组 Endpoint，kube-proxy 可以使用 EndpointSlice 中的 Endpoint 进行路由转发。
-{{< find_img "img5.png" >}}
-
-{{< admonition tip "kube-proxy 开启 EndpointSlice">}}
-kube-proxy 默认仍然使用 Endpoint 对象，通过设置其启动参数 --feature-gates="EndpointSlice=true" 来让其使用 EndpointSlice 对象。
-{{< /admonition >}}
-
-默认情况下，创建一个 Service 后，就会存在对应的 EndpointSlice 对象，包含匹配到的 Endpoint 对象。
 ```shell
+$ kubectl get endpoints -A
+NAMESPACE     NAME                      ENDPOINTS                                                     AGE
+default       kubernetes                172.16.4.169:6443                                             3d1h
+kube-system   kube-dns                  10.36.0.4:53,10.36.0.5:53,10.36.0.4:53 + 3 more...            3d1h
+```
+
+当然，你也可以不提供 `service.spec.selector`，也不使用 ExternalName Service，而指定创建一个 Endpoints 对象。这样可以实现，**Service 只代理指定的地址**。
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: plat-dev
+spec:
+  ports:
+    - port: 3306
+      protocol: TCP
+      targetPort: 3306
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: plat-dev
+subsets:
+  - addresses:
+      - ip: "10.5.10.109"
+    ports:
+      - port: 3306
+```
+
+同名的 Endpoints 与 Service 自动被认为是相绑定的。
+
+### 6.2 EndpointSlice
+
+因为 Endpoints 对象结构的局限性，EndpointSlice 是新版的替代方案。
+
+EndpointSlice 在 Endpoints 的基础上，为每个 Endpoint 添加了额外的拓扑信息。并且每个 EndpointSlice 只能包含最大 100 个 Endpoint，如果超过后，Kubernetes 就会创建新的 EndpointSlice。
+
+在多个 EndpointSlice 的情况下，通过 Label `kubernetes.io/service-name` 来判断 EndpointSlice 属于哪一个 Service。
+
+```yaml
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: example-abc
+  labels:
+    kubernetes.io/service-name: example
+addressType: IPv4
+ports:
+  - name: http
+    protocol: TCP
+    port: 80
+endpoints:
+  - addresses:
+      - "10.1.2.3"
+    conditions:
+      ready: true
+    hostname: pod-1
+    nodeName: node-1
+    zone: us-west2-a
+```
+
+默认情况下，创建一个 Service 后，就会存在对应的 EndpointSlice 对象，包含匹配到的 Endpoint。
+
+```bash
 $ kubectl get endpointslices.discovery.k8s.io
 NAME                                                   ADDRESSTYPE   PORTS              ENDPOINTS                                         AGE
 my-tidb-cluster-dev-discovery-sm8ns                    IPv4          10262,10261        192.168.54.139                                    2d3h
@@ -367,39 +453,43 @@ my-tidb-cluster-dev-pd-dsktv                           IPv4          2379       
 my-tidb-cluster-dev-pd-peer-n6wbg                      IPv4          2380               192.168.135.18,192.168.166.186,192.168.54.140     2d3h
 ```
 
-### 7.2 Service Topology
+### 6.3 Topology Aware Hints
 
-Service Topology 可以根据业务需求对 Node 进行分组，设置有意义的指标值来标识 Node 是 “近” 或者 “远”。对于公有云环境来说，通常会进行 Zone 或 Region 的划分。
+大多数 Kubernetes 集群都是部署在 Mutli Zones 环境中。Topology Aware Hints 指的是：通过 EndpointSlice 将拓扑信息告知给 `kube-proxy`，并用这些来影响流量的路由（倾向于拓扑上相邻的 Endpoint）。
 
-通过 Service Topology 就实现了对 Endpoint 进行分组，也就是创建多个 EndpointSlice，进行分片管理。
+此特性启用分为两个组件：EndpointSlice Controller 和 kube-proxy。
 
-{{< admonition tip "开启 Service Topology">}}
-通过设置 kube-apiserver 和 kube-proxy 启动参数 *--feature-gates="ServiceTopology=true,EndpointSlice=true* 开启。
-{{< /admonition >}}
+1. 在 Service 中添加 Annotation `service.kubernetes.io/topology-aware-hints: auto`，表明开启功能。
 
-通过 Service 定义上的 `spec.topologyKeys` 字段来进行 Service 流量控制。转发流量时，会去按照 topologyKeys 字段顺序匹配 Node 的 label，同样的 key 对应的 value 算作匹配成功，那么才能将流量转发到该 Node 上。
-```yaml
-spec:
-  topologyKeys:
-  - "kubernetes.io/hostname"  # 匹配 Node 与要转发的 Node，该 key 的 label 相同才可以转发流量
----
-spec:
-  topologyKeys:
-  - "topology.kubernetes.io/zone"   # 优先转发到同 zone
-  - "topology.kubernetes.io/region" # 其次转发到同 region
-  - "*" # 最后随意转发
-```
+2. EndpointSlice Controller 会在 EndpointSlice 上设置提示信息。
 
-## 8 Ingress
+    ```yaml
+    # ...
+    endpoints:
+    - addresses:
+        - "10.1.2.3"
+      conditions:
+        ready: true
+      hostname: pod-1
+      zone: zone-a
+      hints:
+        forZones:
+          - name: "zone-a"
+    ```
+
+3. kube-proxy 根据 EndpointSlice 来路由流量。大多数场合下，kube-proxy 将流量路由到同 Zone 的 Endpoint。
+
+## 7 Ingress
 
 Service 提供了基于 4 层的代理，也就是基于 IP + Port 的代理。而 **`Ingress` 出现就是为了支持 7 层的代理**，典型的就是支持 HTTP/HTTPS 协议的代理。
-{{< find_img "img4.png" >}}
+
+{{< image src="img4.png" height=200 >}}
 
 Ingress 类似于 nginx 的配置，提供应用层的路由，将流量路由给基于传输层的 Service，而由 Service 将流量路由给底层的 Pod。
 
 不过 Ingress 类似于 Service，仅仅是一个规则的定义，其代理的实现依赖于 Ingress Controller。
 
-### 8.1 Ingress Controller
+### 7.1 Ingress Controller
 
 **`Ingress Controller`** 基于定义好的 Ingress 来**实现实际的路由**，可以理解为就是实际上的 nginx。
 
@@ -407,7 +497,7 @@ Ingress Controller 是不包含在 controller manager 默认启动的 controller
 
 当然，目前有着许多种的 Ingress Controller 的实现，具体见 [**Ingress Controller**](https://kubernetes.io/zh/docs/concepts/services-networking/ingress-controllers/#%E5%85%B6%E4%BB%96%E6%8E%A7%E5%88%B6%E5%99%A8)。
 
-### 8.2 Ingress 定义
+### 7.2 Ingress 定义
 
 Ingress 的配置和配置 nginx 类似，基于 HTTP path 路径进行路由的配置。
 

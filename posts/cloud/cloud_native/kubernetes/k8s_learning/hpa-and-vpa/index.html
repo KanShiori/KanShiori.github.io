@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-20T19:16:27+08:00" />
-<meta property="article:modified_time" content="2023-02-09T21:11:10+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/hpa-and-vpa\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  2636 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/hpa-and-vpa\/","datePublished": "2021-12-20T19:16:27+08:00","dateModified": "2023-02-09T21:11:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_learning\/hpa-and-vpa\/","datePublished": "2021-12-20T19:16:27+08:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -126,7 +126,7 @@
                 </div>
                 <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
   <ul>
-    <li><a href="#1-缩扩容算法">1 缩扩容算法</a>
+    <li><a href="#1-hpa-缩扩容算法">1 HPA 缩扩容算法</a>
       <ul>
         <li><a href="#11-容忍度">1.1 容忍度</a></li>
         <li><a href="#12-异常处理">1.2 异常处理</a></li>
@@ -137,7 +137,7 @@
       <ul>
         <li><a href="#21-缩扩容的目标">2.1 缩扩容的目标</a></li>
         <li><a href="#22-metric-指标">2.2 Metric 指标</a></li>
-        <li><a href="#23-behavior">2.3 Behavior</a>
+        <li><a href="#23-scaling-behavior">2.3 Scaling Behavior</a>
           <ul>
             <li><a href="#231-缩扩策略">2.3.1 缩扩策略</a></li>
             <li><a href="#232-缩扩策略选择">2.3.2 缩扩策略选择</a></li>
@@ -155,19 +155,16 @@
   </ul>
 </nav></div>
             </div><div class="content" id="content"><p>HPA 的核心原理就是就是从 Metric Server 采集指标数据，然后根据缩扩容算法进行计算，得到目标的 Pod 副本数量。当目标 Pod 副本数量与当前副本数量不同时，HPA Controller 调用指定的资源对象的 scale 操作，进行缩扩容。</p>
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/img1.png"/>
-
-
-
-<h2 id="1-缩扩容算法">1 缩扩容算法</h2>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/img1.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/img1.png, /posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/img1.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_learning/hpa-and-vpa/img1.png" width="1039" height="230" />
+    </a>
+<h2 id="1-hpa-缩扩容算法">1 HPA 缩扩容算法</h2>
 <p>从最根本上看，缩扩容算法按照以下的公式来计算目标的 Pod 副本数量。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -178,20 +175,32 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>currentReplicas - 当前 Pod 的副本数量</li>
-<li>currentMetricValue - 当前的 Metrics 值</li>
-<li>metricValue - 预定义的 Metric 值</li>
+<li>
+<p><code>currentReplicas</code> - 当前 Pod 的副本数量</p>
+</li>
+<li>
+<p><code>currentMetricValue</code> - 当前的 Metrics 值</p>
+</li>
+<li>
+<p><code>metricValue</code> - 预定义的 Metric 值</p>
+</li>
 </ul>
-<p><code>currentMetricValue</code> 与 <code>metricValue</code> 可以是按照固定值、平均值或者使用率的方向去计算。</p>
+<p><code>currentMetricValue</code> 与 <code>metricValue</code> 可以按照固定值、平均值或者使用率的方向去计算。</p>
 <ul>
-<li>Value - desiredMetricValue 为固定值，currentMetricValue 为采集到的值</li>
-<li>AverageValue - targetAverageValue 为固定值，currentMetricValue 为所有 Pod Metric 的平均值</li>
-<li>Utilization - targetAverageUtilization 为固定的比例，为固定值，currentMetricValue 将所有 Pod 的 Metric 值求平均后除以 Metric 总和</li>
+<li>
+<p><strong>Value</strong> - <code>desiredMetricValue</code> 为固定值，<code>currentMetricValue</code> 为采集到的值</p>
+</li>
+<li>
+<p><strong>AverageValue</strong> - <code>targetAverageValue</code> 为固定值，<code>currentMetricValue</code> 为所有 Pod Metric 的平均值</p>
+</li>
+<li>
+<p><strong>Utilization</strong> - <code>targetAverageUtilization</code> 为固定的比例，为固定值，<code>currentMetricValue</code> 将所有 Pod 的 Metric 值求平均后除以 Metric 总和</p>
+</li>
 </ul>
 <p>可以设置基于多个 metric 指标计算，HPA 会对每个 metric 算出各个 desiredReplicas，然后以全部结果的最大值作为最终结果。不过，如果其中一个 metric 无法算出 desiredReplicas，那么就会跳过本次缩扩容。</p>
 <h3 id="11-容忍度">1.1 容忍度</h3>
-<p>为 desiredReplicas 与 currentReplicas 比例接近于 1 时，可以设置 tolerance 值来让 HPA Controller 不进行缩扩容。</p>
-<p>默认下，tolerance 设置为 0.1（10%），那么当 desiredReplicas 与 currentReplicas 比例在 [-10%, +10%] 区间时，不会进行自动缩扩容。</p>
+<p>为 <code>desiredReplicas</code> 与 <code>currentReplicas</code> 比例接近于 1 时，可以设置 <code>tolerance</code> 值来让 HPA Controller 不进行缩扩容。</p>
+<p>默认下，<code>tolerance</code> 设置为 0.1（10%），那么当 <code>desiredReplicas</code> 与 <code>currentReplicas</code> 比例在 [-10%, +10%] 区间时，不会进行自动缩扩容。</p>
 <h3 id="12-异常处理">1.2 异常处理</h3>
 <p>当计算 desiredReplicas 时，如果部分 Pod 处于异常状态，那么对于这些 Pod 的数据会进行特殊的对待。</p>
 <p>Pod 的异常状态包括：</p>
@@ -207,7 +216,7 @@
 <li>在需要 Scaledown 计算时，认为 Pod 的 MetricValue 比例为 100%，以增大算出 desiredReplicas</li>
 </ul>
 <h3 id="13-冷却时间">1.3 冷却时间</h3>
-<p>HPA 计算目标副本数量时，可能因为指标的抖动导致 Pod 副本数量频繁变化。可以配置 kube-controller-manager 的启动参数 &ndash;horizontal-pod-autoscaler-downscale-stabilization 来设置两次缩扩容操作的间隔时间（默认该值为 5min）。</p>
+<p>HPA 计算目标副本数量时，可能因为指标的抖动导致 Pod 副本数量频繁变化。可以配置 kube-controller-manager 的启动参数 <code>--horizontal-pod-autoscaler-downscale-stabilization</code> 来设置两次缩扩容操作的间隔时间（默认该值为 5min）。</p>
 <p>当然需要理解，当该参数过小时，可能导致副本数量的抖动，当该参数过大时，HPA 可能不能很好的改变副本数量。</p>
 <h2 id="2-spec">2 Spec</h2>
 <p>HorizontalPodAutoscaler 基本的定义如下：</p>
@@ -258,11 +267,21 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>minReplicas - 定义自动缩扩容的最小副本值</li>
-<li>maxReplicas - 定义自动缩扩容的最大副本值</li>
-<li>scaleTargetRef - 指定 HPA 操作的资源，例如 Deployment/StatefulSet/ReplicaSet</li>
-<li>metrics - 用于计算副本值的数据，支持使用 Kubernetes 集群内部数据，或者来自于 metric 数据</li>
-<li>behavior - 控制缩容与扩容的行为</li>
+<li>
+<p>minReplicas - 定义自动缩扩容的最小副本值</p>
+</li>
+<li>
+<p>maxReplicas - 定义自动缩扩容的最大副本值</p>
+</li>
+<li>
+<p>scaleTargetRef - 指定 HPA 操作的资源，例如 Deployment/StatefulSet/ReplicaSet</p>
+</li>
+<li>
+<p>metrics - 用于计算副本值的数据，支持使用 Kubernetes 集群内部数据，或者来自于 metric 数据</p>
+</li>
+<li>
+<p>behavior - 控制缩容与扩容的行为</p>
+</li>
 </ul>
 <h3 id="21-缩扩容的目标">2.1 缩扩容的目标</h3>
 <p>HPA 在经过算法计算，需要实际进行缩扩容时，会调用定义的目标对象的 scale 接口。因此，只要实现了 scale 接口的资源都可以作为 HPA 操作的目标对象。例如 Deployment 和 StatefulSet，以及定义了 scale subresource 的 CRD。</p>
@@ -434,7 +453,7 @@
 <p>External -（External 指标）非 Kubernetes 原生对象的指标</p>
 </li>
 </ul>
-<h3 id="23-behavior">2.3 Behavior</h3>
+<h3 id="23-scaling-behavior">2.3 Scaling Behavior</h3>
 <p><code>spec.behavior</code> 字段用以控制 HPA Controller 进行缩扩容的行为。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -523,8 +542,8 @@
 </div><p><code>type</code> 表示策略的控制维度，<code>periodSeconds</code> 表示计算该策略的时间区间，<code>value</code> 表示最大数值。</p>
 <p>目前支持两种方式（type）的控制：</p>
 <ul>
-<li>Pods - 控制每次缩扩的最大允许数量</li>
-<li>Percent - 控制每次缩扩的最大比例</li>
+<li><strong>Pods</strong> - 控制每次缩扩的最大允许数量</li>
+<li><strong>Percent</strong> - 控制每次缩扩的最大比例</li>
 </ul>
 <p>以上述配置为例，第一个策略表示 <code>60s</code> 内最多允许缩容 <code>4</code> 个副本，第二个策略表示 <code>60s</code> 内最多缩容当前副本数的 <code>10%</code>。</p>
 <h4 id="232-缩扩策略选择">2.3.2 缩扩策略选择</h4>
@@ -535,7 +554,8 @@
 <li>Disabled - 不进行缩或者扩</li>
 </ul>
 <h4 id="233-稳定窗口">2.3.3 稳定窗口</h4>
-<p>当 Metric 持续抖动时，可以使用稳定窗口来限制副本数上下振动。缩扩算法在执行缩扩时，会考虑过去计算过的期望状态。<code>stabilizationWindowSeconds</code> 用于指定考虑过去多久的期望状态。</p>
+<p>当 Metric 持续抖动时，可以使用稳定窗口来限制副本数上下振动。缩扩算法在执行缩扩时，会考虑过去计算过的期望状态。</p>
+<p>字段 <code>stabilizationWindowSeconds</code> 用于指定考虑过去多久的期望状态。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -546,7 +566,7 @@
 </span><span class="w">  </span><span class="nt">stabilizationWindowSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">300</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><p>这里表示，过去 5min 的所有期望状态都会被计算。如果稳定窗口为 0 时，表明当前算法计算出缩容时会立即执行。</p>
+</div><p>这里表示，过去 5min 的所有期望状态都会被计算。如果稳定窗口为 0 时，表明当前算法计算出缩容时会立即执行。这可以避免扩缩算法频繁的删除 Pod 又重建 Pod。</p>
 <h2 id="3-status">3 Status</h2>
 <h3 id="31-condition">3.1 Condition</h3>
 <p><code>status.conditions</code> 字段展示了 HPA 是否能够执行缩扩，以及受到了哪些的限制。</p>
@@ -581,8 +601,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734: Post(Operator Desgin Notes) (#36)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cce6cda</a></span>
+                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

@@ -158,19 +158,40 @@ Content-Type: application/json
 
 当然，etcd 只会保存一定时间内的资源变更历史（**默认 5min**）。如果请求的历史版本不存在，那么会返回 HTTP Code `410 Gone`。因此 client 必须能够处理 410 错误，清理本地对象缓存，调用 list 操作，重新建立 watch。
 
-为了解决历史窗口太短的问题，为 event 引入了 [**bookmark event**](https://kubernetes.io/zh/docs/reference/using-api/api-concepts/#Watch-bookmark) 的概念。
+为了解决历史窗口太短的问题，为 event 引入了 [**bookmark event**](https://kubernetes.io/zh/docs/reference/using-api/api-concepts/#Watch-bookmark) 的概念。`BOOKMARK` 事件表明客户端请求的 `resourceVersion` 所有更改都已发送。
+
+通过查询时的 Query 参数 `allowWatchBookmarks=true` 可以查询 `BOOKMARK` 事件。
+
+```http
+GET /api/v1/namespaces/test/pods?watch=1&resourceVersion=10245&allowWatchBookmarks=true
+---
+200 OK
+Transfer-Encoding: chunked
+Content-Type: application/json
+
+{
+  "type": "ADDED",
+  "object": {"kind": "Pod", "apiVersion": "v1", "metadata": {"resourceVersion": "10596", ...}, ...}
+}
+...
+{
+  "type": "BOOKMARK",
+  "object": {"kind": "Pod", "apiVersion": "v1", "metadata": {"resourceVersion": "12746"} }
+}
+```
 
 {{< admonition note Reflector>}}
 当然，Client SDK 中的 **Reflector** 组件已经实现了这些逻辑，大部分情况下不需要我们实现。
 {{< /admonition >}}
 
-### 4.2 查询对象
+### 4.2 分块查询
 
 一般情况下，查询对象只需要使用 HTTP GET 请求对应的 URL 接口。
 
 不过当查询大量的对象时，可能返回的数据很大，使得浪费网络资源。从 1.9 开始，Kubernetes 支持 [**分段查询对象**](https://kubernetes.io/zh/docs/reference/using-api/api-concepts/#retrieving-large-results-sets-in-chunks)。在进行查询请求时，可以指定 `limit` 和 `continue` 参数。
 
 1. 查询 500 个 Pod，指定 "limit=500"。
+   
    ```http
    GET /api/v1/pods?limit=500
    ---
@@ -188,7 +209,9 @@ Content-Type: application/json
      "items": [...] // returns pods 1-500
    }
    ```
+
 2. 继续前面调用，查询剩余的 Pod，指定 **"continue=ENCODED_CONTINUE_TOKEN"** 表明继续上一次查询。
+  
    ```http
    GET /api/v1/pods?limit=500&continue=ENCODED_CONTINUE_TOKEN
    ---
@@ -222,15 +245,37 @@ Content-Type: application/json
 Accept: application/vnd.kubernetes.protobuf, application/json
 ```
 
-### 4.4 对象的删除
+### 4.4 表格查询
+
+通过 `Accept` Header 中添加 `as=Table` 可以让 APIServer 返回资源对应的表格输出（例如 CRD 定义的 columnDefinitions），而不是完整的资源信息。客户端有时可能更利于使用这种方式来输出。
+
+```http
+GET /api/v1/pods
+Accept: application/json;as=Table;g=meta.k8s.io;v=v1
+---
+200 OK
+Content-Type: application/json
+
+{
+    "kind": "Table",
+    "apiVersion": "meta.k8s.io/v1",
+    ...
+    "columnDefinitions": [
+        ...
+    ]
+}
+```
+
+
+### 4.5 对象的删除
 
 资源对象删除经过两个阶段：
 
-1. **finalization 终止**：资源的 `metadata.deletionTimestamp` 被设置，然后等待 [**Finalizers**](https://kubernetes.io/zh/docs/concepts/overview/working-with-objects/finalizers/) 结束。
+1. **Finalization 终止**：资源的 `metadata.deletionTimestamp` 被设置，然后等待 [**Finalizers**](https://kubernetes.io/zh/docs/concepts/overview/working-with-objects/finalizers/) 结束。
    
    该阶段体现在对象上仅仅是设置了 `deletionTimestamp` 字段，因此是一个 Update Event。
 
-2. **delete 删除**：当所有 Finalizers 执行结束后（`finalizer` 字段为空），资源才从 etcd 中被真正删除。
+2. **Delete 删除**：当所有 Finalizers 执行结束后（`finalizer` 字段为空），资源才从 etcd 中被真正删除。
    
    该阶段会真正删除对象，因此是一个 Delete Event。
 
@@ -256,6 +301,24 @@ Kubernetes 提供了很完善的 API 扩展机制，使得你不需要修改 Kub
 * API Aggregate ：用户需要编写额外的 API Server，对资源进行更细粒度的控制。
 
 更多细节见 [**CRD**](../crd/) 和 [**Custom APIServer**](../../k8s_programming/6-custom-api-server/)。
+
+## 7 Dryrun
+
+当发送修改的请求时（POST、PUT、PATCH 和 DELETE）时，可以通过 Dryrun 模式提交请求。Kubernetes 仅仅会评估请求，而不是真正的执行操作。
+
+请求中的查询参数 `dryRun=All` 来触发，所有请求的阶段都会正常执行，除了最初的存储阶段。
+
+```http
+POST /api/v1/namespaces/test/pods?dryRun=All
+Content-Type: application/json
+Accept: application/json
+```
+
+{{< admonition note Note>}}
+Admission Webhook 也会执行，所以 Webhook 有一个配置 `sideEffects` 来声明该 Webhook 是否要在 Dryrun 模式下运行，见 [**Side effects**](../../k8s_programming/7-admission-webhook/#13-side-effects)。
+{{< /admonition >}}
+
+当然，因为对象的部分属性是写入存储前自动生成的（例如 `creationTimestamp` `resourceVersion` 等），所以这些值在 Dryrun 模式下与实际的请求执行可能不同。
 
 ## 参考
 

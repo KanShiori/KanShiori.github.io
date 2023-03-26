@@ -68,7 +68,7 @@ EKS 的 Worker Node 可以分为三种类型：
 
 * <important>Self-Managed Node</important>
   
-  用户自行启动的 EC2 Instance，启动后再加入到 Kubernetes 集群。
+  用户自行启动的 EC2 Instance，启动后再加入到 Kubernetes 集群。比 Managed Node Group 有着更大的自定义和控制权。
 
 *  <important>AWS Fargate</important>
 
@@ -78,9 +78,23 @@ EKS 的 Worker Node 可以分为三种类型：
 
 EKS 支持两款 AutoScaling 产品：
 
-* Kubernetes 社区的 **`Cluster AutoScaler`** - 使用 [**AWS Scale Group**](https://docs.aws.amazon.com/zh_cn/autoscaling/ec2/userguide/AutoScalingGroup.html) 来实现 Instance 自动缩扩容
+* Kubernetes 社区的 **`Cluster AutoScaler`**
+  
+  使用 [**AWS Scale Group**](https://docs.aws.amazon.com/zh_cn/autoscaling/ec2/userguide/AutoScalingGroup.html) 来实现 Instance 自动缩扩容。这也意味着，AutoScaler 只能缩扩相同模板的 Node。
+
+  同样，因为使用了 ASG，AutoScaler 也需要周期性的调用 AWS API 来同步状态，集群庞大时可能会导致 API 限流等问题。
+ 
+  Cluster AutoScaler 通常根据 Pending Pod 和 Node Metric 来判断是否需要缩扩容 Node。
+
+  {{< image src="img-cluster-as.png" height=250 >}}
 
 * **`Karpenter`** - 使用 [**EC2 fleet**](https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ec2-fleet.html) 实现 Instance 自动缩扩容
+
+  Karpenter 取消了 Node Group 的概念，动态的计算 Pod 需要哪种 EC2 Instance，并启动。
+
+  Karpenter 仅仅在 Pod 创建和删除时调用 API，减少了 API 的吞吐量。
+
+  {{< image src="img-kp.png" height=250 >}}
 
 #### 2.1.1 Cluster AutoScaler
 
@@ -213,17 +227,17 @@ AWS Load Balancer Controller 也可以作为 EKS Addon 进行快速的安装。
   
   APIServer 会具有一个<important>域名 + 公网地址</important>，可以限制访问 APIServer 的 IP 白名单。
 
-  **当 Kubernetes 集群同 VPC 内请求 APIServer 时流量也会离开 VPC**（但是不会离开 AWS 网络）。
+  **来自 Kubernetes 集群内的 VPC 的请求 APIServer 时流量也会离开 VPC**（但是不会离开 AWS 网络）。
 
 * **`Public and Private`**
   
   APIServer 会具有一个<important>域名 + 公网地址</important>，可以限制访问 APIServer 的 IP 白名单。
 
-  与 Public 方式的区别在于，**同 VPC 内请求 APIServer 时流量不会离开 VPC**。
+  与 Public 方式的区别在于，**来自 Kubernetes 集群内的 VPC 的请求 APIServer 不会离开 VPC**。
 
 * **`Private`**
   
-  APIServer 具有<important>域名 + 私网地址</important>，必须只有**同 VPC 的流量才可以访问 APIServer**。
+  APIServer 具有<important>域名 + 私网地址</important>，必须只有**集群内 VPC 的流量才可以访问 APIServer**。
 
   > 域名可以被公网解析，但是解析后为 VPC 内的私网地址。
 
@@ -563,4 +577,5 @@ IRSA 指的是通过 Kubernetes 的资源 Service Account 来给 Pod 绑定 IAM 
 
 * Blog：[**IRSA 介绍**](https://aws.amazon.com/cn/blogs/opensource/introducing-fine-grained-iam-roles-service-accounts/)
 * 官方文档：[**EKS User Guide**](https://docs.aws.amazon.com/zh_cn/zh_cn/eks/latest/userguide/what-is-eks.html)
+* Blog：[**Karpenter : 新一代 Kubernetes auto scaling 工具**](https://aws.amazon.com/cn/blogs/china/karpenter-new-generation-kubernetes-auto-scaling-tools/)
 

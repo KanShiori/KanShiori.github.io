@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/vpc/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-06-25T14:13:47+00:00" />
-<meta property="article:modified_time" content="2023-02-09T21:11:10+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/vpc\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  2037 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/vpc\/","datePublished": "2021-06-25T14:13:47+00:00","dateModified": "2023-02-09T21:11:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/vpc\/","datePublished": "2021-06-25T14:13:47+00:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -151,19 +151,16 @@
 <li><important>VPC 是针对 Region 级别</important>，其由一个 CIDR Block 来指定 IP 地址范围。</li>
 <li><important>Subnet 是 VPC 网段的子网，AZ 级别资源</important>（无法跨 AZ 覆盖）。</li>
 </ul>
-<p>EC2 Instance 启动会加入一个 Subnet，这样才能完成网络的连接。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/aws_learning/vpc/img0.png"/>
-
-
-</p>
+<p>EC2 Instance 启动会加入一个 Subnet，这样才能完成网络的连接。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/vpc/img0.png" title="/posts/cloud/aws_learning/vpc/img0.png" data-thumbnail="/posts/cloud/aws_learning/vpc/img0.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/vpc/img0.png"
+            data-srcset="/posts/cloud/aws_learning/vpc/img0.png, /posts/cloud/aws_learning/vpc/img0.png 1.5x, /posts/cloud/aws_learning/vpc/img0.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/vpc/img0.png" width="563" height="270" />
+    </a>
 <h3 id="11-default-与-nondefault">1.1 Default 与 Nondefault</h3>
 <p>对于每个 Region，都会自动为账户创建一个 <strong><code>Default VPC</code></strong>。Default VPC 默认包含一下资源：</p>
 <ul>
@@ -203,27 +200,34 @@
 <h2 id="3-route-table">3 Route Table</h2>
 <p>VPC 内的路由规则都是由 <strong><code>Route Table</code></strong> 控制。</p>
 <ul>
-<li><strong><code>Main Route Table</code></strong> - VPC 创建后默认创建的全局路由表，所有未绑定 Route Table 的 Subnet 默认会使用 Main Route Table</li>
-<li><strong><code>Custom Route Table</code></strong> - 自定义的 Route Table</li>
+<li>
+<p><strong><code>Main Route Table</code></strong> - VPC 创建后默认创建的全局路由表，所有未绑定 Route Table 的 Subnet 默认会使用 Main Route Table</p>
+</li>
+<li>
+<p><strong><code>Custom Route Table</code></strong> - 自定义的 Route Table</p>
+</li>
 </ul>
-<p>如果一个 Subnet 绑定了 Custom Route Table，那么进出的流量就由该路由表控制，否则就由 Main Route Table 控制了。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/aws_learning/vpc/img1.png"/>
-
-
-</p>
+<p>如果一个 Subnet 绑定了 Custom Route Table，那么进出的流量就由该路由表控制，否则就由 Main Route Table 控制了。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/vpc/img1.png" title="/posts/cloud/aws_learning/vpc/img1.png" data-thumbnail="/posts/cloud/aws_learning/vpc/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/vpc/img1.png"
+            data-srcset="/posts/cloud/aws_learning/vpc/img1.png, /posts/cloud/aws_learning/vpc/img1.png 1.5x, /posts/cloud/aws_learning/vpc/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/vpc/img1.png" width="492" height="270" />
+    </a>
 <p>按照 Route Table 关联的对象不同，又分为：</p>
 <ul>
-<li><strong><code>Subnet Route Table</code></strong> ：关联到 Subnet</li>
-<li><strong><code>Gateway Route Table</code></strong> ：关联到 Internet Gateway</li>
-<li><strong><code>Local Gateway Route Table</code></strong> ：关联到 Local Gateway</li>
+<li>
+<p><strong><code>Subnet Route Table</code></strong> ：关联到 Subnet</p>
+</li>
+<li>
+<p><strong><code>Gateway Route Table</code></strong> ：关联到 Internet Gateway</p>
+</li>
+<li>
+<p><strong><code>Local Gateway Route Table</code></strong> ：关联到 Local Gateway</p>
+</li>
 </ul>
 <h3 id="31-route-rule">3.1 Route Rule</h3>
 <p>Route Table 由多个 Route Rule 组成。</p>
@@ -252,13 +256,15 @@
 </tbody>
 </table>
 <ul>
-<li><strong>Destination</strong> ：要匹配流量的目的地址范围，包括
+<li>
+<p><strong>Destination</strong> ：要匹配流量的目的地址范围，包括</p>
 <ul>
 <li>0.0.0.0/0 ：CIDR 地址范围</li>
 <li>pl-<em>id</em> ：Prefix Lists</li>
 </ul>
 </li>
-<li><strong>Target</strong> ：转发的目标，包括
+<li>
+<p><strong>Target</strong> ：转发的目标，包括</p>
 <table>
 <thead>
 <tr>
@@ -318,7 +324,9 @@
 </tbody>
 </table>
 </li>
-<li><strong>Propagated</strong> ：是否允许 Virtual Private Gateway 将路由传播到 Route Table</li>
+<li>
+<p><strong>Propagated</strong> ：是否允许 Virtual Private Gateway 将路由传播到 Route Table</p>
+</li>
 </ul>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -363,21 +371,18 @@
 </li>
 <li>
 <p>Outbound rules - 出 ENI 数据包的白名单。</p>
-<p><important>默认规则为允许所有出的流量</important>。一旦配置了规则了，默认会为拒绝所有出的流量。
-
-
-
-
-
-
-
-
-    <img src="/posts/cloud/aws_learning/vpc/img2.png"/><br>
-
-
-</p>
+<p><important>默认规则为允许所有出的流量</important>。一旦配置了规则了，默认会为拒绝所有出的流量。</p>
 </li>
 </ul>
+<a class="lightgallery" href="/posts/cloud/aws_learning/vpc/img2.png" title="/posts/cloud/aws_learning/vpc/img2.png" data-thumbnail="/posts/cloud/aws_learning/vpc/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/vpc/img2.png"
+            data-srcset="/posts/cloud/aws_learning/vpc/img2.png, /posts/cloud/aws_learning/vpc/img2.png 1.5x, /posts/cloud/aws_learning/vpc/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/vpc/img2.png" width="377" height="270" />
+    </a>
 <p>一个 Rule 类似于：</p>
 <table>
 <thead>
@@ -447,18 +452,15 @@
 <p>自定义 ACL - 用户手动创建的 ACL，默认拒绝所有出入流量。</p>
 </li>
 </ul>
-
-
-
-
-
-
-
-
-    <img src="/posts/cloud/aws_learning/vpc/img3.png"/><br>
-
-
-
+<a class="lightgallery" href="/posts/cloud/aws_learning/vpc/img3.png" title="/posts/cloud/aws_learning/vpc/img3.png" data-thumbnail="/posts/cloud/aws_learning/vpc/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/vpc/img3.png"
+            data-srcset="/posts/cloud/aws_learning/vpc/img3.png, /posts/cloud/aws_learning/vpc/img3.png 1.5x, /posts/cloud/aws_learning/vpc/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/vpc/img3.png" width="513" height="240" />
+    </a>
 <p>与 Security Group 不同，Network ACL 是无状态的，出入数据包都会完全经过 Inbound/Outbound rules 的过滤。</p>
 <p>Network ACL 的 Rule 类似于：</p>
 <table>
@@ -536,8 +538,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734: Post(Operator Desgin Notes) (#36)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cce6cda</a></span>
+                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

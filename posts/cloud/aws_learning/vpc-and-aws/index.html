@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-aws/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-11-29T13:15:05+00:00" />
-<meta property="article:modified_time" content="2023-02-09T21:11:10+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/vpc-and-aws\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  2354 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/vpc-and-aws\/","datePublished": "2021-11-29T13:15:05+00:00","dateModified": "2023-02-09T21:11:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  1932 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/vpc-and-aws\/","datePublished": "2021-11-29T13:15:05+00:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,8 +117,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">AWS - VPC 与 Service 通信</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>AWS 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-11-29">2021-11-29</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2354 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-11-29">2021-11-29</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1932 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 4 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -151,43 +151,31 @@
         <li><a href="#24-multicast">2.4 Multicast</a></li>
       </ul>
     </li>
-    <li><a href="#3-endpoint-与-private-link">3 Endpoint 与 Private Link</a>
-      <ul>
-        <li><a href="#31-gateway-endpoint">3.1 Gateway Endpoint</a></li>
-        <li><a href="#32-interface-endpoint">3.2 Interface Endpoint</a></li>
-        <li><a href="#33-gateway-load-balancer-endpoint">3.3 Gateway Load Balancer Endpoint</a></li>
-      </ul>
-    </li>
-    <li><a href="#4-endpoint-service">4 Endpoint Service</a></li>
+    <li><a href="#3-endpoint-与-private-link">3 Endpoint 与 Private Link</a></li>
     <li><a href="#参考">参考</a></li>
   </ul>
 </nav></div>
             </div><div class="content" id="content"><h2 id="1-vpc-peering">1 VPC Peering</h2>
 <p><strong><code>VPC Peering</code></strong> 用于<important>连接两个不同地址范围的 VPC，VPC 可以处于不同的 Region，甚至不同的 AWS 账户</important>。</p>
-<p>当 VPC Peering 连接两个 VPC 后，VPC 内部的资源（Instance、RDS 等）可以直接访问到对端 VPC 的资源。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/aws_learning/vpc-and-aws/img1.png"/>
-
-
-</p>
+<p>当 VPC Peering 连接两个 VPC 后，VPC 内部的资源（Instance、RDS 等）可以直接访问到对端 VPC 的资源。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/vpc-and-aws/img1.png" title="/posts/cloud/aws_learning/vpc-and-aws/img1.png" data-thumbnail="/posts/cloud/aws_learning/vpc-and-aws/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/vpc-and-aws/img1.png"
+            data-srcset="/posts/cloud/aws_learning/vpc-and-aws/img1.png, /posts/cloud/aws_learning/vpc-and-aws/img1.png 1.5x, /posts/cloud/aws_learning/vpc-and-aws/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/vpc-and-aws/img1.png" width="512" height="230" />
+    </a>
 <p>但是，VPC Peering 是<strong>不具有传递性的</strong>。以上图来说，VPC1 是无法通过 VPC2 与 VPC3 通信的。</p>
 <h3 id="11-使用-vpc-peering">1.1 使用 VPC Peering</h3>
 <p>使用 VPC Peering 连接 VPC 需要的工作：</p>
 <ol>
 <li>
-<p>由源端 VPC <strong>发起 VPC Peering</strong>，连接到对端 VPC。</p>
-<p>发起的称为 <strong><code>Requester VPC</code></strong>。</p>
+<p>由源端 VPC <strong>发起 VPC Peering</strong>，连接到对端 VPC。发起的称为 <strong><code>Requester VPC</code></strong>。</p>
 </li>
 <li>
-<p>对端 VPC <strong>接受 VPC Peering</strong>。</p>
-<p>对端的称为 <strong><code>Accepter VPC</code></strong>。</p>
+<p>对端 VPC <strong>接受 VPC Peering</strong>。对端的称为 <strong><code>Accepter VPC</code></strong>。</p>
 </li>
 <li>
 <p><strong>配置 Route Table</strong>，将对方 VPC 的数据包发往 VPC Peering。</p>
@@ -231,25 +219,25 @@
             data-src="/posts/cloud/aws_learning/vpc-and-aws/img2.png"
             data-srcset="/posts/cloud/aws_learning/vpc-and-aws/img2.png, /posts/cloud/aws_learning/vpc-and-aws/img2.png 1.5x, /posts/cloud/aws_learning/vpc-and-aws/img2.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/aws_learning/vpc-and-aws/img2.png" width="1007" height="527" />
+            alt="/posts/cloud/aws_learning/vpc-and-aws/img2.png" width="1007" height="230" />
     </a>
 <h3 id="13-vpc-peering-构建步骤">1.3 VPC Peering 构建步骤</h3>
 <p>使用 VPC Peering 联通两个 VPC 的大致流程如下：</p>
 <ol>
 <li>
-<p>构建 VPC Peering</p>
+<p><strong>构建 VPC Peering</strong></p>
 <p>VPC A 发起 VPC Peering 连接，而 VPC B 需要 Accept 该 VPC Peering。</p>
 </li>
 <li>
-<p>配置 Route Table</p>
+<p><strong>配置 Route Table</strong></p>
 <p>两个 VPC 或 Subnet 的 Route Table 都需要添加一项指向对方 VPC 子网的路由项，Destination 为 Peering ID <code>pcx-xxxx</code>。</p>
 </li>
 <li>
-<p>配置 Network ACL</p>
+<p><strong>配置 Network ACL</strong></p>
 <p>确保互相访问的 Subnet 的 Network ACL 不会拦截对方网段的数据包。</p>
 </li>
 <li>
-<p>配置 Security Group</p>
+<p><strong>配置 Security Group</strong></p>
 <p>确保互相访问的 Instance 的 Security Group 能够允许对方网段的数据包。</p>
 </li>
 </ol>
@@ -268,19 +256,19 @@
 <p>Transit Gateway 的基本概念如下：</p>
 <ul>
 <li>
-<p>Attachment</p>
+<p><strong>Attachment</strong></p>
 <p>Attachment 意味着将 VPC 或者网络设备连接到 TGW。</p>
 </li>
 <li>
-<p>Transit Gateway Route Table</p>
+<p><strong>Transit Gateway Route Table</strong></p>
 <p>TGW Route Table 决定了 TGW 如何转发数据报。</p>
 </li>
 <li>
-<p>Associations</p>
+<p><strong>Associations</strong></p>
 <p>Associations 代表 Attachment 与 Route Table 的关联关系。一个 Attachment 与一个 Route Table 关联，Route Table 可以有多个 Attachment 复用。</p>
 </li>
 <li>
-<p>Route propagation</p>
+<p><strong>Route propagation</strong></p>
 <p>对于部分 Attachment 那么支持动态将路由传播给 Route Table。</p>
 </li>
 </ul>
@@ -449,95 +437,7 @@
 <li>Gateway Load Balancer Endpoints</li>
 </ul>
 <p>其中，第一种流量会通过公网，而后两种不会通过公网，其实现技术称之为 <strong><code>Private Link</code></strong>。</p>
-<h3 id="31-gateway-endpoint">3.1 Gateway Endpoint</h3>
-<p>使用 <strong><code>Gateway Endpoint</code></strong> <strong>只能连接特定的 AWS 服务：S3 与 DynamoDB</strong>。或者说，当你创建 Endpoint 是连接的是 S3 或者 DynamoDB 服务，可以选择使用 Gateway Endpoint。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/aws_learning/vpc-and-aws/img3.png"/>
-
-
-</p>
-<p>使用 Gateway Endpoint 的步骤：</p>
-<ol>
-<li>
-<p><strong>创建 Endpoint</strong>，创建时选择目标服务为 Gateway 类型的 DynamoDB 或 S3。</p>
-</li>
-<li>
-<p>配置 Route Table，是流量能够指向对应 Endpoint 的 vpce-<em>id</em>。</p>
-<table>
-<thead>
-<tr>
-<th>Destination</th>
-<th>Target</th>
-<th>Status</th>
-<th>Propagated</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>pl-6ea54007</td>
-<td>vpc-a2984bc5</td>
-<td>Active</td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<p>Instance 通过 Service 域名来访问 Endpoint。</p>
-</li>
-</ol>
-<h3 id="32-interface-endpoint">3.2 Interface Endpoint</h3>
-<p>大多数 AWS Service 可以通过 <strong><code>Interface Endpoint</code></strong> 进行连接。创建 Interface Endpoint 相当于创建一个 Network Interface，有着 Private IP 与 Private DNS。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/aws_learning/vpc-and-aws/img4.png"/>
-
-
-</p>
-<p>使用 Interface Endpoint 的步骤：</p>
-<ol>
-<li><strong>创建 Endpoint</strong>，创建时选择需要的目标 AWS 服务。</li>
-<li>Instance <strong>通过 Private IP 或者 Private DNS 来访问 Service</strong>。</li>
-</ol>
-<div class="details admonition note open">
-        <div class="details-summary admonition-title">
-            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>支持 S3 与 DynamoDB<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
-        </div>
-        <div class="details-content">
-            <div class="admonition-content">Interface Endpoint 是支持连接 S3 与 DynamoDB Service 的。</div>
-        </div>
-    </div>
-<h3 id="33-gateway-load-balancer-endpoint">3.3 Gateway Load Balancer Endpoint</h3>
-<p>Gateway Load Balancer Endpoint 能够将流量路由到 Gateway Load Balancer，然后由 Load Balancer 负载均衡到下游的 Service。</p>
-<p>创建 Endpoint 的称为 Service Consumer，下游的 Service 称为 Service Provider。</p>
-<h2 id="4-endpoint-service">4 Endpoint Service</h2>
-<p>你也可以将自己的程序作为一个 <strong><code>Endpoint Service</code></strong>，<strong>使得别人可以通过 Interface Endpoint 来访问你的服务。</strong></p>
-<p>Endpoint Service 的入口是一个 LB：<strong>Network Load Balancer</strong> 或 <strong>Gateway Load Balancer</strong>。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/aws_learning/vpc-and-aws/img5.png"/>
-
-
-</p>
+<p>具体如何使用参考 <a href="../private-link/" rel=""><strong>AWS - Private Link</strong></a>。</p>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://docs.aws.amazon.com/vpc/latest/privatelink/endpoint-services-overview.html" target="_blank" rel="noopener noreffer"><strong>AWS PrivateLink and VPC endpoints</strong></a></li>
@@ -546,8 +446,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734: Post(Operator Desgin Notes) (#36)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cce6cda</a></span>
+                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

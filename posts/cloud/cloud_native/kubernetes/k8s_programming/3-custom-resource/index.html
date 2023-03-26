@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/3-custom-resource/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-08-17T14:55:49+00:00" />
-<meta property="article:modified_time" content="2023-02-09T21:11:10+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/3-custom-resource\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3335 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/3-custom-resource\/","datePublished": "2021-08-17T14:55:49+00:00","dateModified": "2023-02-09T21:11:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  3357 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/3-custom-resource\/","datePublished": "2021-08-17T14:55:49+00:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">K8s 编程 - 3 - Custom Resource</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 编程</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-08-17">2021-08-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3335 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-08-17">2021-08-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3357 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -165,20 +165,17 @@
 <p><strong>Kubernetes 编程系列</strong> 主要记录一些开发 Controller 所相关的知识，大部分内容来自于<a href="https://www.oreilly.com/library/view/programming-kubernetes/9781492047094/" target="_blank" rel="noopener noreffer">《Programming Kubernetes》</a>（推荐直接阅读）。</p>
 </blockquote>
 <h2 id="1-自定义资源定义">1 自定义资源定义</h2>
-<p>从 1.7 版本考试，Kubernetes 提供了 CR 的功能，CR 会与其他元素的 Kubernetes 资源存放在同一个 etcd 中，并由 APISever 为其提供 HTTP API 服务。</p>
-<p>具体实现上，APIServer 中的 <strong>apiextensions-apiserve</strong>r 会对 CR 相关的 HTTP 请求进行处理：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_programming/3-custom-resource/img1.png"/>
-
-
-</p>
+<p>从 1.7 版本开始，Kubernetes 提供了 CR 的功能，CR 会与其他元素的 Kubernetes 资源存放在同一个 etcd 中，并由 APISever 为其提供 HTTP API 服务。</p>
+<p>具体实现上，APIServer 中的 <strong>apiextensions-apiserver</strong> 会对 CR 相关的 HTTP 请求进行处理：</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/3-custom-resource/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_programming/3-custom-resource/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_programming/3-custom-resource/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/3-custom-resource/img1.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/3-custom-resource/img1.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/3-custom-resource/img1.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/3-custom-resource/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/3-custom-resource/img1.png" width="718" height="200" />
+    </a>
 <p>CR 由 <strong><code>CustomResourceDefinition</code></strong>（简称 CRD）来定义，其本身就是一种 Kubernetes 资源，用于描述可以在当前集群使用的 CR。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -237,7 +234,8 @@
 </code></pre></td></tr></table>
 </div>
 </div><ol>
-<li>kubectl 通过请求 APIServer 的 /apis 查询所有的 API Group。
+<li>
+<p>kubectl 通过请求 APIServer 的 /apis 查询所有的 API Group。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -291,7 +289,8 @@
 </span></code></pre></td></tr></table>
 </div>
 </div></li>
-<li>对于所有的 API Group，请求一次 /apis/group/version 查询该 GroupVersion 下支持的所有 Resource。找到符合命名对应的 Resource。
+<li>
+<p>对于所有的 API Group，请求一次 <code>/apis/group/version</code> 查询该 GroupVersion 下支持的所有 Resource。找到符合命名对应的 Resource。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -353,7 +352,8 @@
 </span></code></pre></td></tr></table>
 </div>
 </div></li>
-<li>kubectl 将获取到的信息转换为三元组：
+<li>
+<p>kubectl 将获取到的信息转换为三元组：</p>
 <ol>
 <li>Group（如 pingcap.com）</li>
 <li>Version（如 v1alpha1）</li>
@@ -367,7 +367,7 @@
             <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>kubectl 的缓存<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content"><p>kubectl 还会在 <em>&quot;~/.kube/cache&quot;</em> 目录中<strong>缓存一份 Resource 的列表，有效期为 10min</strong>。</p>
+            <div class="admonition-content"><p>kubectl 还会在 `~/.kube/cache&quot; 目录中<strong>缓存一份 Resource 的列表，有效期为 10min</strong>。</p>
 <p>所以如何 CRD 发生变化，最多需要 10min 才会在 CLI 中体现出来。</p>
 </div>
         </div>
@@ -440,15 +440,15 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </div>
 </div><h4 id="323-打印列">3.2.3 打印列</h4>
 <h4 id="324-subresource">3.2.4 SubResource</h4>
-<p>SubResource 是一个特殊的 HTTP Endpoint，在普通资源的 HTTP API Path 后加上一个后缀得到的，例如 /logs、/portforward、/exex 等。</p>
-<p>目前 CRD 支持两种 SubResource：/scale 与 /status。</p>
+<p>SubResource 是一个特殊的 HTTP Endpoint，在普通资源的 HTTP API Path 后加上一个后缀得到的，例如 <code>/logs</code>、<code>/portforward</code>、<code>/exec</code> 等。</p>
+<p>目前 CRD 支持两种 SubResource：<code>/scale</code> 与 <code>/status</code>。</p>
 <h5 id="1-status">(1) Status</h5>
-<p>/status 用于用户将 CR 实例的 spec 与 status 字段权限隔离。因为:</p>
+<p><code>/status</code> 用于用户将 CR 实例的 spec 与 status 字段权限隔离。因为:</p>
 <ul>
 <li>用户一般不会更新 status 字段。</li>
 <li>Controller 不应该更新 spec 字段。</li>
 </ul>
-<p>RBAC 无法做到控制这两个字段的权限，而引入 /status SubResource 用于解决这个问题。<strong>启用 status SubResource 后，status 的更新与读取就会基于 /status API，而 RBAC 可以做到控制 HTTP endpoint 的权限</strong>。</p>
+<p>RBAC 无法做到控制这两个字段的权限，而引入 <code>/status</code> SubResource 用于解决这个问题。<strong>启用 status SubResource 后，status 的更新与读取就会基于 <code>/status</code> API，而 RBAC 可以做到控制 HTTP endpoint 的权限</strong>。</p>
 <p>也就是说，RBAC + status SubResource 实现了 spec 与 status 字段的权限隔离。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -463,7 +463,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">rbac.authorization.k8s.io/v1 </span><span class="w">
 </span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Role </span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="c">#... </span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="c"># ... </span><span class="w">
 </span><span class="w"></span><span class="nt">rules</span><span class="p">:</span><span class="w"> 
 </span><span class="w"></span>- <span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;&#34;</span><span class="p">]</span><span class="w"> 
 </span><span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;ats/status&#34;</span><span class="p">]</span><span class="w"> 
@@ -498,7 +498,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
             <i class="icon fas fa-exclamation-triangle fa-fw" aria-hidden="true"></i>WARN<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content"><p>可以看到，启动 status 子资源会导致更新 status 字段的 HTTP API 发生变化。这就表明了，你不能开启 /status SubResource 后热更新 CRD，因为正在运行中的 Controller 还是会请求主 HTTP Endpoint 来更新 status 字段，而更新后这将失败。</p>
+            <div class="admonition-content"><p>可以看到，启动 status 子资源会导致更新 status 字段的 HTTP API 发生变化。这就表明了，你不能开启 <code>/status</code> SubResource 后热更新 CRD，因为正在运行中的 Controller 还是会请求主 HTTP Endpoint 来更新 status 字段，而更新后这将失败。</p>
 <p>对此，你可能需要升级 CRD 的版本。例如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -535,7 +535,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
     </div>
 <h5 id="2-scale">(2) Scale</h5>
 <p><strong><code>scale</code> 子资源用于查看或修改资源中定义的副本数量</strong>。这个子资源主要是用于类似 Deployment 和 ReplicaSet 这样有副本数的资源，通过它可以对资源进行扩容和缩容。</p>
-<p><code>kubectl scale</code> 就是通过 /scale 子资源来实现的。</p>
+<p><code>kubectl scale</code> 就是通过 <code>/scale</code> 子资源来实现的。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -566,8 +566,8 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="w">  </span><span class="l">...</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
-</div><p>当然，/scale 只能修改 replica 的值，而其具体的操作还是需要自定义 Controller 实现的。</p>
-<p>/scale HTTP Endpoint 读取或写入的对象 Kind 为 Scale，属于 autoscaling/v1 APIGroup。</p>
+</div><p>当然，<code>/scale</code> 只能修改 replica 的值，而其具体的操作还是需要自定义 Controller 实现的。</p>
+<p><code>/scale</code> HTTP Endpoint 读取或写入的对象 Kind 为 Scale，属于 <code>autoscaling/v1</code> APIGroup。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -656,16 +656,16 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>同样，/scale 子资源的更新也是乐观并发语义。</p>
+</div><p>同样，<code>/scale</code> 子资源的更新也是乐观并发语义。</p>
 <h2 id="4-代码中使用-cr">4 代码中使用 CR</h2>
 <p>在 Golang 中有着以下方式可以访问 CR：</p>
 <ul>
-<li>使用 client-go 的 dynamic client（无强类型）。</li>
-<li>kubernetes/controller-runtime 提供的 client，在 Operator SDK 与 Kubebuilder 中使用。</li>
+<li>使用 <code>client-go</code> 的 dynamic client（无强类型）。</li>
+<li><code>kubernetes/controller-runtime</code> 提供的 client，在 Operator SDK 与 Kubebuilder 中使用。</li>
 <li>client-gen 生成的 client，与 client-go 包中使用的一样。</li>
 </ul>
 <h3 id="41-dynamic-client">4.1 dynamic client</h3>
-<p><em>&ldquo;k8s.io/client-go/dynamic&rdquo;</em> 中提供了 client 可以对 GVK 完全无感知。它只会使用 <strong><code>unstructured.Unstructured</code></strong> 结构。</p>
+<p><code>k8s.io/client-go/dynamic</code> 中提供了 Client 可以对 GVK 完全无感知。它只会使用 <strong><code>unstructured.Unstructured</code></strong> 结构。</p>
 <p>dynamic client 不使用 Scheme 与 RESTMapper，需要手动进行 GVR 的注册。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -693,7 +693,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
   <span class="nf">Namespace</span><span class="p">(</span><span class="nx">namespace</span><span class="p">).</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;foo&#34;</span><span class="p">,</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">GetOptions</span><span class="p">{})</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>其输入与输出都是 <strong><code>*unstructured.Unstructured</code></strong> 对象，数据结构与 json.Unmarshal 反序列化后输出一样：</p>
+</div><p>其输入与输出都是 <strong><code>*unstructured.Unstructured</code></strong> 对象，数据结构与 <code>json.Unmarshal</code> 反序列化后输出一样：</p>
 <ul>
 <li>对象通过 <code>map[string]interface{}</code> 表示。</li>
 <li>数组通过 <code>[]interface{}</code> 表示。</li>
@@ -708,13 +708,13 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">name</span><span class="p">,</span> <span class="nx">found</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">unstructured</span><span class="p">.</span><span class="nf">NestedString</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Object</span><span class="p">,</span> <span class="s">&#34;metadata&#34;</span><span class="p">,</span> <span class="s">&#34;name&#34;</span><span class="p">)</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>可以看到，<strong>dynamic client 提供了一种抽象访问资源的方法，因此主要在通用类型的控制器中使用</strong>。例如垃圾回收控制器，可以删除任何资源进行操作，所以需要 dynamic client。</p>
+</div><p>可以看到，<strong>dynamic client 提供了一种抽象访问资源的方法，因此主要在通用类型的控制器中使用</strong>。例如垃圾回收控制器，可以删除任何资源进行操作，所以需要 <code>dynamic client</code>。</p>
 <h3 id="42-强类型-client">4.2 强类型 client</h3>
 <p>强类型 client 为每种 GVK 都采用了具体的 Golang 类。它们使用起来更方便，也能更加安全。不过因为其类都需要在编译期都确定，所以需要通过工具去生成对应的类。</p>
 <h4 id="421-类型风格">4.2.1 类型风格</h4>
-<p>对应资源的结构体通常与 Kind 相同名字命名，并且放在所属 GVK 的 Group + Version 对应包中。例如，group/verion.Kind 会放在包 <em>&ldquo;pkg/apis/group/version&rdquo;</em> 。</p>
-<p>通常，对应的结构体会放在 <em>&ldquo;types.go&rdquo;</em> 文件。如之前提到的，CR 的定义也要包含 TypeMeta 与 ObjectMeta 结构体，通常也会包含 Spec 与 Status 字段。</p>
-<p>例如 Deployment 对象放在 <em>&ldquo;k8s.io/kubernetes/apps/v1/types.go&rdquo;</em> 文件里：</p>
+<p>对应资源的结构体通常与 Kind 相同名字命名，并且放在所属 GVK 的 Group + Version 对应包中。例如，group/verion.Kind 会放在包 <code>pkg/apis/group/version</code>。</p>
+<p>通常，对应的结构体会放在 <code>types.go&quot;</code> 文件。如之前提到的，CR 的定义也要包含 <code>TypeMeta</code> 与 <code>ObjectMeta</code> 结构体，通常也会包含 Spec 与 Status 字段。</p>
+<p>例如 Deployment 对象放在 <code>k8s.io/kubernetes/apps/v1/types.go</code> 文件里：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -736,8 +736,8 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </code></pre></td></tr></table>
 </div>
 </div><h4 id="422-包结构">4.2.2 包结构</h4>
-<p>除了 types.go 文件，还需要了解一些其他文件。</p>
-<p><em>&ldquo;doc.go&rdquo;</em> 文件描述 API 的功能，并包含了一系列全局的代码生成标签：</p>
+<p>除了 <code>types.go</code> 文件，还需要了解一些其他文件。</p>
+<p><code>doc.go</code> 文件描述 API 的功能，并包含了一系列全局的代码生成标签：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -756,7 +756,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
 </span><span class="c1"></span><span class="kn">package</span> <span class="nx">v1alpha1</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>&ldquo;<em>register.go</em>&rdquo; 文件包含一些用于把 CRD 注册到 Scheme 中的辅助函数：</p>
+</div><p><code>register.go</code> 文件包含一些用于把 CRD 注册到 Scheme 中的辅助函数：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -843,8 +843,7 @@ namespaces         ns           v1         <span class="nb">false</span>        
 <span class="p">}</span> 
 </code></pre></td></tr></table>
 </div>
-</div><p><em>&ldquo;zz_generated.deepcopy.go&rdquo;</em> 为自定义资源对应的类定义了 DeepCopy() 方法，包括其所有的子结构体（例如 spec
-与 status）。</p>
+</div><p><code>zz_generated.deepcopy.go</code> 为自定义资源对应的类定义了 DeepCopy() 方法，包括其所有的子结构体（例如 spec 与 status）。</p>
 <h3 id="43-controller-runtime-client">4.3 controller-runtime client</h3>
 <p>controller-runtime 提供的 client 用于处理任何在 Scheme 中注册的 Kind，也就是说，它也是动态的。</p>
 <p>它使用 APIServer 提供的发现信息，将不同的 Kind 映射到不同的 HTTP API Path 上。</p>
@@ -978,8 +977,8 @@ namespaces         ns           v1         <span class="nb">false</span>        
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734: Post(Operator Desgin Notes) (#36)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cce6cda</a></span>
+                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

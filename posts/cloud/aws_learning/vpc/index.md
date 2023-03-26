@@ -4,11 +4,13 @@
 ## 1  VPC 与 Subnet
 
 云上的网络是由 [VPC]^(Virtual Private Cloud) 与 **`Subnet`** 组成的：
+
 * <important>VPC 是针对 Region 级别</important>，其由一个 CIDR Block 来指定 IP 地址范围。
 * <important>Subnet 是 VPC 网段的子网，AZ 级别资源</important>（无法跨 AZ 覆盖）。
 
 EC2 Instance 启动会加入一个 Subnet，这样才能完成网络的连接。
-{{< find_img "img0.png" >}}
+
+{{< image src="img0.png" height=270 >}}
 
 ### 1.1 Default 与 Nondefault
 
@@ -52,15 +54,21 @@ EC2 Instance 启动会加入一个 Subnet，这样才能完成网络的连接。
 ## 3 Route Table
 
 VPC 内的路由规则都是由 **`Route Table`** 控制。
+
 * **`Main Route Table`** - VPC 创建后默认创建的全局路由表，所有未绑定 Route Table 的 Subnet 默认会使用 Main Route Table
+  
 * **`Custom Route Table`** - 自定义的 Route Table
 
 如果一个 Subnet 绑定了 Custom Route Table，那么进出的流量就由该路由表控制，否则就由 Main Route Table 控制了。
-{{< find_img "img1.png" >}}
+
+{{< image src="img1.png" height=270 >}}
 
 按照 Route Table 关联的对象不同，又分为：
+
 * **`Subnet Route Table`** ：关联到 Subnet
+  
 * **`Gateway Route Table`** ：关联到 Internet Gateway
+
 * **`Local Gateway Route Table`** ：关联到 Local Gateway
 
 ### 3.1 Route Rule
@@ -73,9 +81,12 @@ Route Table 由多个 Route Rule 组成。
 | 0.0.0.0/0     | igw-3518715d | Active | No         |
 
 * **Destination** ：要匹配流量的目的地址范围，包括
+  
   * 0.0.0.0/0 ：CIDR 地址范围
   * pl-*id* ：Prefix Lists
+  
 * **Target** ：转发的目标，包括
+  
   | 格式              | 目标                           |
   | ----------------- | ------------------------------ |
   | local             | Subnet 内部                    |
@@ -90,6 +101,7 @@ Route Table 由多个 Route Rule 组成。
   | eni-*id*          | Network Interface              |
   | vpce-*id*         | Gateway Endpoint               |
   | vpc-endpoint-*id* | VPC Endpoint（网关路由表使用） |
+
 * **Propagated** ：是否允许 Virtual Private Gateway 将路由传播到 Route Table
   
 {{< admonition note "Route Table？">}}
@@ -103,6 +115,7 @@ Route Table 由多个 Route Rule 组成。
 [ENI]^(Elastic Network Interface) 是 VPC 网络中的虚拟网卡。无论 Private IP 还是 Public IP，其都是将其绑定到 ENI 上的。
 
 ENI 包含以下属性：
+
 * 一个或多个 Private IP
 * 一个或多个 Public/Elastic IP，每个 Public IP 都要对应一个 Private IP
 * 一个或多个 IPv6 地址
@@ -110,6 +123,7 @@ ENI 包含以下属性：
 * 一个或多个 Security Group
 
 每个 Instance 的第一个 ENI 称为 **`Primary Network Interface`**，可以来自于：
+
 * 自动创建 - Instance 创建时自动创建的 ENI
 * 指定 - Instance 创建时指定已经存在的 ENI 作为 Primary ENI
 
@@ -130,7 +144,8 @@ ENI 包含以下属性：
 * Outbound rules - 出 ENI 数据包的白名单。
 
    <important>默认规则为允许所有出的流量</important>。一旦配置了规则了，默认会为拒绝所有出的流量。
-{{< find_img "img2.png" 1 >}}
+
+{{< image src="img2.png" height=270 >}}
 
 一个 Rule 类似于：
 
@@ -146,6 +161,7 @@ ENI 包含以下属性：
   对于 Inbound Rule 就是 Source，对于 Outbound Rule 就是 Destination
 
 特别的注意，<important>Security Group 是有状态的</important>：
+
 * 对于 Outbound 流量，自动允许对应的 Inbound 流量
 * 对于 Inbound 流量，自动允许对应的 Outbound 流量
 
@@ -169,7 +185,7 @@ ENI 包含以下属性：
 
 * 自定义 ACL - 用户手动创建的 ACL，默认拒绝所有出入流量。
 
-{{< find_img "img3.png" 1 >}}
+{{< image src="img3.png" height=240 >}}
 
 与 Security Group 不同，Network ACL 是无状态的，出入数据包都会完全经过 Inbound/Outbound rules 的过滤。
 

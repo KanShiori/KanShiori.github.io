@@ -5,12 +5,14 @@
 
 ## 1 自定义资源定义
 
-从 1.7 版本考试，Kubernetes 提供了 CR 的功能，CR 会与其他元素的 Kubernetes 资源存放在同一个 etcd 中，并由 APISever 为其提供 HTTP API 服务。
+从 1.7 版本开始，Kubernetes 提供了 CR 的功能，CR 会与其他元素的 Kubernetes 资源存放在同一个 etcd 中，并由 APISever 为其提供 HTTP API 服务。
 
-具体实现上，APIServer 中的 **apiextensions-apiserve**r 会对 CR 相关的 HTTP 请求进行处理：
-{{< find_img "img1.png" >}}
+具体实现上，APIServer 中的 **apiextensions-apiserver** 会对 CR 相关的 HTTP 请求进行处理：
+
+{{< image src="img1.png" height=200 >}}
 
 CR 由 **`CustomResourceDefinition`**（简称 CRD）来定义，其本身就是一种 Kubernetes 资源，用于描述可以在当前集群使用的 CR。
+
 ```yaml
 apiVersion: apiextensions.k8s.io/v1beta1 
 kind: CustomResourceDefinition 
@@ -40,11 +42,13 @@ spec:
 当部署 CRD 后，kubectl 就可以发现对应的 CR 了。一个关键的问题是：kubectl 如何发现一个新的 CR 的？
 
 通过如下命令卡其 kubectl 执行日志，我们可以了解具体的细节：
+
 ```shell
 $ kubectl get tidbcluster -v=7
 ```
 
 1. kubectl 通过请求 APIServer 的 /apis 查询所有的 API Group。
+
     ```json
     $ curl -H "Authorization: Bearer $TOKEN" --insecure  $APISERVER/apis
     {
@@ -70,7 +74,9 @@ $ kubectl get tidbcluster -v=7
         },
     // ...
     ```
-2. 对于所有的 API Group，请求一次 /apis/group/version 查询该 GroupVersion 下支持的所有 Resource。找到符合命名对应的 Resource。
+
+2. 对于所有的 API Group，请求一次 `/apis/group/version` 查询该 GroupVersion 下支持的所有 Resource。找到符合命名对应的 Resource。
+
     ```json
     $ curl --insecure  -H "Authorization: Bearer $TOKEN" $APISERVER/apis/pingcap.com/v1alpha1
     {
@@ -100,7 +106,9 @@ $ kubectl get tidbcluster -v=7
         },
         // ...
     ```
+
 3. kubectl 将获取到的信息转换为三元组：
+
     1. Group（如 pingcap.com）
     2. Version（如 v1alpha1）
     3. Resource（如 tidbclusters）
@@ -108,11 +116,10 @@ $ kubectl get tidbcluster -v=7
 可以想到，这些映射关系在代码中都是靠着 [**RESTMapper**](../2-client-go/#73-rest-map) 实现的。
 
 {{< admonition tip "kubectl 的缓存">}}
-kubectl 还会在 *"~/.kube/cache"* 目录中**缓存一份 Resource 的列表，有效期为 10min**。
+kubectl 还会在 `~/.kube/cache" 目录中**缓存一份 Resource 的列表，有效期为 10min**。
 
 所以如何 CRD 发生变化，最多需要 10min 才会在 CLI 中体现出来。
 {{< /admonition >}}
-
 
 ## 3 CustomResourceDefinition
 
@@ -139,6 +146,7 @@ CRD 中的验证只能做到类型与值的合法性验证，**如果需要更�
 CRD 也可以使用 ShortName，也称为别名。一种资源可以由多个别名。
 
 `kubectl api-resource` 命令可以列出所有短名字：
+
 ```shell
 $ kubectl api-resource
 NAME               SHORTNAMES   APIVERSION NAMESPACED   KIND
@@ -152,6 +160,7 @@ namespaces         ns           v1         false        Namespace
 ```
 
 CRD 中也可以指定 **`categories`** 字段，加入一个类别。这样 `kubectl get <category>` 就可以列出一个类别下的所有资源了。
+
 ```yaml
 apiVersion: apiextensions.k8s.io/v1beta1 
 kind: CustomResourceDefinition 
@@ -167,24 +176,25 @@ spec:
 
 #### 3.2.4 SubResource
 
-SubResource 是一个特殊的 HTTP Endpoint，在普通资源的 HTTP API Path 后加上一个后缀得到的，例如 /logs、/portforward、/exex 等。
+SubResource 是一个特殊的 HTTP Endpoint，在普通资源的 HTTP API Path 后加上一个后缀得到的，例如 `/logs`、`/portforward`、`/exec` 等。
 
-目前 CRD 支持两种 SubResource：/scale 与 /status。
+目前 CRD 支持两种 SubResource：`/scale` 与 `/status`。
 
 ##### (1) Status
 
-/status 用于用户将 CR 实例的 spec 与 status 字段权限隔离。因为:
+`/status` 用于用户将 CR 实例的 spec 与 status 字段权限隔离。因为:
 
 * 用户一般不会更新 status 字段。
 * Controller 不应该更新 spec 字段。
 
-RBAC 无法做到控制这两个字段的权限，而引入 /status SubResource 用于解决这个问题。**启用 status SubResource 后，status 的更新与读取就会基于 /status API，而 RBAC 可以做到控制 HTTP endpoint 的权限**。
+RBAC 无法做到控制这两个字段的权限，而引入 `/status` SubResource 用于解决这个问题。**启用 status SubResource 后，status 的更新与读取就会基于 `/status` API，而 RBAC 可以做到控制 HTTP endpoint 的权限**。
 
 也就是说，RBAC + status SubResource 实现了 spec 与 status 字段的权限隔离。
+
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1 
 kind: Role 
-metadata: #... 
+metadata: # ... 
 rules: 
 - apiGroups: [""] 
   resources: ["ats/status"] 
@@ -192,11 +202,13 @@ rules:
 ```
 
 当你开启 status Resource 时，你需要注意的一些变化：
+
 * **主 HTTP Endpoint 上创建或更新资源时，会自动忽略 status 字段的值。**
 * **对应的， /status HTTP Endpoint 的任何操作都会忽略 status 字段以外的值。**
 * **当 metadata 和 status 以外的字段值发生变化时，才会递增 metadata.generation 字段的值（这表明了 spec 发生变化）。**
 
 你可以通过如下方式为 CRD 开启 status SubResource：
+
 ```yaml
 apiVersion: apiextensions.k8s.io/v1beta1 
 kind: CustomResourceDefinition 
@@ -206,9 +218,10 @@ spec:
 ```
 
 {{< admonition warning WARN>}}
-可以看到，启动 status 子资源会导致更新 status 字段的 HTTP API 发生变化。这就表明了，你不能开启 /status SubResource 后热更新 CRD，因为正在运行中的 Controller 还是会请求主 HTTP Endpoint 来更新 status 字段，而更新后这将失败。
+可以看到，启动 status 子资源会导致更新 status 字段的 HTTP API 发生变化。这就表明了，你不能开启 `/status` SubResource 后热更新 CRD，因为正在运行中的 Controller 还是会请求主 HTTP Endpoint 来更新 status 字段，而更新后这将失败。
 
 对此，你可能需要升级 CRD 的版本。例如：
+
 ```yaml
 apiVersion: apiextensions.k8s.io/v1beta1 
 kind: CustomResourceDefinition 
@@ -229,7 +242,8 @@ spec:
 
 **`scale` 子资源用于查看或修改资源中定义的副本数量**。这个子资源主要是用于类似 Deployment 和 ReplicaSet 这样有副本数的资源，通过它可以对资源进行扩容和缩容。
 
-`kubectl scale` 就是通过 /scale 子资源来实现的。
+`kubectl scale` 就是通过 `/scale` 子资源来实现的。
+
 ```yaml
 $ kubectl scale --replicas=3 your-custom-resource -v=7 
 I0429 21:17:53.138353   66743 round_trippers.go:383] PUT https://host/apis/group/v1/your-custom-resource/scale 
@@ -245,9 +259,10 @@ spec:
   ...
 ```
 
-当然，/scale 只能修改 replica 的值，而其具体的操作还是需要自定义 Controller 实现的。
+当然，`/scale` 只能修改 replica 的值，而其具体的操作还是需要自定义 Controller 实现的。
 
-/scale HTTP Endpoint 读取或写入的对象 Kind 为 Scale，属于 autoscaling/v1 APIGroup。
+`/scale` HTTP Endpoint 读取或写入的对象 Kind 为 Scale，属于 `autoscaling/v1` APIGroup。
+
 ```go
 // Scale represents a scaling request for a resource.
 type Scale struct {
@@ -291,20 +306,23 @@ type ScaleStatus struct {
 	TargetSelector string `json:"targetSelector,omitempty" protobuf:"bytes,3,opt,name=targetSelector"`
 }
 ```
-同样，/scale 子资源的更新也是乐观并发语义。
+
+同样，`/scale` 子资源的更新也是乐观并发语义。
 
 ## 4 代码中使用 CR
 
 在 Golang 中有着以下方式可以访问 CR：
-* 使用 client-go 的 dynamic client（无强类型）。
-* kubernetes/controller-runtime 提供的 client，在 Operator SDK 与 Kubebuilder 中使用。
+
+* 使用 `client-go` 的 dynamic client（无强类型）。
+* `kubernetes/controller-runtime` 提供的 client，在 Operator SDK 与 Kubebuilder 中使用。
 * client-gen 生成的 client，与 client-go 包中使用的一样。
 
 ### 4.1 dynamic client
 
-*"k8s.io/client-go/dynamic"* 中提供了 client 可以对 GVK 完全无感知。它只会使用 **`unstructured.Unstructured`** 结构。
+`k8s.io/client-go/dynamic` 中提供了 Client 可以对 GVK 完全无感知。它只会使用 **`unstructured.Unstructured`** 结构。
 
 dynamic client 不使用 Scheme 与 RESTMapper，需要手动进行 GVR 的注册。
+
 ```go
 gvr := schema.GroupVersionResource{ 
   Group: "apps", 
@@ -318,17 +336,19 @@ client.Resource(gvr).
   Namespace(namespace).Get("foo", metav1.GetOptions{})
 ```
 
-其输入与输出都是 **`*unstructured.Unstructured`** 对象，数据结构与 json.Unmarshal 反序列化后输出一样：
+其输入与输出都是 **`*unstructured.Unstructured`** 对象，数据结构与 `json.Unmarshal` 反序列化后输出一样：
+
 * 对象通过 `map[string]interface{}` 表示。
 * 数组通过 `[]interface{}` 表示。
 * 基础数据类型为：string、bool、float64、int64。
 
 `UnstructuredContent()` 提供了访问 unstructed 对象内部数据的功能：
+
 ```go
 name, found, err := unstructured.NestedString(u.Object, "metadata", "name")
 ```
 
-可以看到，**dynamic client 提供了一种抽象访问资源的方法，因此主要在通用类型的控制器中使用**。例如垃圾回收控制器，可以删除任何资源进行操作，所以需要 dynamic client。
+可以看到，**dynamic client 提供了一种抽象访问资源的方法，因此主要在通用类型的控制器中使用**。例如垃圾回收控制器，可以删除任何资源进行操作，所以需要 `dynamic client`。
 
 ### 4.2 强类型 client
 
@@ -336,11 +356,12 @@ name, found, err := unstructured.NestedString(u.Object, "metadata", "name")
 
 #### 4.2.1 类型风格
 
-对应资源的结构体通常与 Kind 相同名字命名，并且放在所属 GVK 的 Group + Version 对应包中。例如，group/verion.Kind 会放在包 *"pkg/apis/group/version"* 。
+对应资源的结构体通常与 Kind 相同名字命名，并且放在所属 GVK 的 Group + Version 对应包中。例如，group/verion.Kind 会放在包 `pkg/apis/group/version`。
 
-通常，对应的结构体会放在 *"types.go"* 文件。如之前提到的，CR 的定义也要包含 TypeMeta 与 ObjectMeta 结构体，通常也会包含 Spec 与 Status 字段。
+通常，对应的结构体会放在 `types.go"` 文件。如之前提到的，CR 的定义也要包含 `TypeMeta` 与 `ObjectMeta` 结构体，通常也会包含 Spec 与 Status 字段。
 
-例如 Deployment 对象放在 *"k8s.io/kubernetes/apps/v1/types.go"* 文件里：
+例如 Deployment 对象放在 `k8s.io/kubernetes/apps/v1/types.go` 文件里：
+
 ```go
 type Deployment struct { 
     metav1.TypeMeta `json:",inline"` 
@@ -353,9 +374,10 @@ type Deployment struct {
 
 #### 4.2.2 包结构
 
-除了 types.go 文件，还需要了解一些其他文件。
+除了 `types.go` 文件，还需要了解一些其他文件。
 
-*"doc.go"* 文件描述 API 的功能，并包含了一系列全局的代码生成标签：
+`doc.go` 文件描述 API 的功能，并包含了一系列全局的代码生成标签：
+
 ```go
 // Package v1alpha1 contains the cnat v1alpha1 API group
 //
@@ -365,7 +387,8 @@ type Deployment struct {
 package v1alpha1
 ```
 
-"*register.go*" 文件包含一些用于把 CRD 注册到 Scheme 中的辅助函数：
+`register.go` 文件包含一些用于把 CRD 注册到 Scheme 中的辅助函数：
+
 ```go
 package version 
  
@@ -409,8 +432,7 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 } 
 ```
 
-*"zz_generated.deepcopy.go"* 为自定义资源对应的类定义了 DeepCopy() 方法，包括其所有的子结构体（例如 spec
- 与 status）。
+`zz_generated.deepcopy.go` 为自定义资源对应的类定义了 DeepCopy() 方法，包括其所有的子结构体（例如 spec 与 status）。
 
 ### 4.3 controller-runtime client
 
@@ -445,9 +467,11 @@ cl, _ := runtimeclient.New(config, client.Options{
 podList := &corev1.PodList{} 
 err := cl.List(context.TODO(), client.InNamespace("default"), podList)
 ```
+
 * 可以看到，List() 方法可以作用于任意指定 Scheme 中注册过的，将结果解析到传递的类型中。
 
 对于 CR，通过自定义的 Scheme 创建 client 即可：
+
 ```go
 import ( 
     "flag" 
@@ -480,4 +504,5 @@ err := cl.List(context.TODO(), client.InNamespace("default"), list)
 ```
 
 ## 参考
+
 * [**《Programming Kubernetes》**](https://book.douban.com/subject/33393681/)
