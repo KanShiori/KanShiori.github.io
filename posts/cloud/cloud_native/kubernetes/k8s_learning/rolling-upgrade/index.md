@@ -488,80 +488,8 @@ metadata:
 
 那么 Controller 就会更新该 ControllerRevision 的 `spec.revision` 大小，表明该 ControllerRevision 是当前使用中的，然后以该 ControllerRevision 的 Pod Template 和 Hash 值去执行 Update 操作。
 
-## 4 PodDisruptionBudget
-
-根据 Pod 销毁的场景，Kubernetes 将其分为了两个概念：
-
-* Involuntary Disruptions
-  
-  Pod 环境出现异常，导致 Pod 不得不被销毁。例如：
-
-  * Node 硬件故障
-  * Node 失联
-  * Node 资源不足，导致 Pod 被驱逐
-
-* Voluntary Disruptions
-  
-  由 Pod 管理员或程序发起的主动操作。例如：
-
-  * 更新了 Deployment
-  * 执行了 Drain Node
-
-因为 Involuntary Disruptions 是未知的，因此只能通过一些高可用的方式来避免。而对于 Voluntary Disruptions，Kubernetes 提供了 PodDisruptionBudget 来作为一个全局的限制，后续称为 PDB。
-
-PDB 基于 Eviction API 来进行限制，因此只有驱逐操作时才会触发 PDB 的检查。因此，使用 PDB 后应该通过 Eviction API 来改变 Pod 数量。
-
-{{< admonition note Note>}}
-PDB 仅仅限制 Evict 的操作，典型的就是使用 Drain Node 操作。
-{{< /admonition >}}
-
-### 4.1 Spec 与 Status
-
-PDB 定义如下：
-
-```yaml
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: zk-pdb
-spec:
-  minAvailable: 2
-  selector:
-    matchLabels:
-      app: zookeeper
-```
-
-`selector` 就是用于筛选哪些 Pod 会收到管理。如果为空表明集群所有的 Pod。
-
-PDB 基于两种方式来控制 Pod 数量（只能选择其中一个）：
-
-* `minAvailable` - 驱逐后，必须保证可用的 Pod 最小数量，支持数值与百分比。
-
-* `maxUnavailable` - 驱逐后，允许不可用的 Pod 最大数量，支持数值与百分比。
-
-如果使用 Kubernetes 内置的 Workload（例如 Deployment、StatefulSet 等），那么上述两中方式都能使用。使用其他管理 Pod 方式时，有一些其他的限制：
-
-* 只允许使用 `minAvailable`，并且只能使用数值。
-
-PDB 的状态中可以看到一些相关的信息：
-
-```yaml
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: zk-pdb
-# …
-status:
-  currentHealthy: 3
-  desiredHealthy: 2
-  disruptionsAllowed: 1
-  expectedPods: 3
-  observedGeneration: 1
-```
-
 ## 参考
 
-* 官方文档：[**Pod Disruptions**](https://kubernetes.io/zh/docs/concepts/workloads/pods/disruptions/#pod-disruption-budgets)
 * 官方文档：[**Deployments**](https://kubernetes.io/zh/docs/concepts/workloads/controllers/deployment/)
 
 

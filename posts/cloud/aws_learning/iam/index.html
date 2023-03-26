@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/iam/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-01T13:47:56+00:00" />
-<meta property="article:modified_time" content="2023-02-09T21:11:10+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/iam\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  3468 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/iam\/","datePublished": "2021-12-01T13:47:56+00:00","dateModified": "2023-02-09T21:11:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/iam\/","datePublished": "2021-12-01T13:47:56+00:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -432,25 +432,30 @@
 <li><a href="#5-permission-boundary" rel=""><strong>Permission Boundary</strong></a></li>
 <li><a href="#24-service-control-policy" rel=""><strong>Service Control Policy</strong></a></li>
 </ul>
-<p>每个 IAM 检查 API 请求时，所有的设置了的 Policy 都会被评估，整体可以见下图：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/aws_learning/iam/img2.png"/>
-
-
-</p>
+<p>每个 IAM 检查 API 请求时，所有的设置了的 Policy 都会被评估，整体可以见下图：</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/iam/img2.png" title="/posts/cloud/aws_learning/iam/img2.png" data-thumbnail="/posts/cloud/aws_learning/iam/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/iam/img2.png"
+            data-srcset="/posts/cloud/aws_learning/iam/img2.png, /posts/cloud/aws_learning/iam/img2.png 1.5x, /posts/cloud/aws_learning/iam/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/iam/img2.png" width="1165" height="300" />
+    </a>
 <p>看着流程很复杂，但是可见总结一下其判断逻辑：</p>
 <ol>
-<li><strong>显式拒绝</strong> - 任何存在的 Policy，只要判断出 Deny，但是结果就是 Deny；</li>
-<li><strong>基于资源策略显式允许</strong> - 不存在显示拒绝情况下，如果 Resource-based Policy 是 Allow，那么结果是允许（不参考其他的 Policy）；</li>
-<li><strong>其他策略交集取允许</strong> - 其他策略要所有策略都需要显式的 Allow；</li>
-<li><strong>隐式拒绝</strong> - 所有策略没有显式 Allow，那么结果为 Deny；</li>
+<li>
+<p><strong>显式拒绝</strong> - 任何存在的 Policy，只要判断出 Deny，但是结果就是 Deny；</p>
+</li>
+<li>
+<p><strong>基于资源策略显式允许</strong> - 不存在显示拒绝情况下，如果 Resource-based Policy 是 Allow，那么结果是允许（不参考其他的 Policy）；</p>
+</li>
+<li>
+<p><strong>其他策略交集取允许</strong> - 其他策略要所有策略都需要显式的 Allow；</p>
+</li>
+<li>
+<p><strong>隐式拒绝</strong> - 所有策略没有显式 Allow，那么结果为 Deny；</p>
+</li>
 </ol>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
@@ -547,8 +552,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734: Post(Operator Desgin Notes) (#36)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cce6cda</a></span>
+                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

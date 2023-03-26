@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-08-22T07:32:49+00:00" />
-<meta property="article:modified_time" content="2023-02-09T21:11:10+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/6-custom-api-server\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  14862 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/6-custom-api-server\/","datePublished": "2021-08-22T07:32:49+00:00","dateModified": "2023-02-09T21:11:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  14802 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/6-custom-api-server\/","datePublished": "2021-08-22T07:32:49+00:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">K8s 编程 - 6 - Custom APIServer</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 编程</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-08-22">2021-08-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 14862 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-08-22">2021-08-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 14802 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 30 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -207,7 +207,7 @@
 <ul>
 <li>只能使用 Kubernetes 使用的存储方式（默认 etcd）</li>
 <li>不支持 protobuf，只支持 JSON</li>
-<li>仅仅支持 /status 和 /scale 两种子资源</li>
+<li>仅仅支持 <code>/status</code> 和 <code>/scale</code> 两种子资源</li>
 <li>不支持平滑删除，你需要靠 Finalizer 来模拟这个行为</li>
 <li>显著增加了 Kubernetes APIServer 的 CPU 负载，因为所有算法都用一个通用方式实现</li>
 <li>对 API HTTP Endpoint 仅仅实现了标准的 CRUD 语义，不能扩展</li>
@@ -217,11 +217,11 @@
 <ul>
 <li><strong>可以使用任何存储作为后端存储</strong></li>
 <li><strong>可以实现 Protobuf 支持</strong></li>
-<li><strong>可以提供任意自定义的子资源</strong>，例如 /exec、/logs、/port-forward 等</li>
+<li><strong>可以提供任意自定义的子资源</strong>，例如 <code>/exec</code>、<code>/logs</code>、<code>/port-forward</code> 等</li>
 <li><strong>可以实现平滑删除逻辑</strong></li>
 <li><strong>可以用 Go 高效的实现所有操作，包括验证、准入和转换</strong></li>
 <li><strong>可以自定义语义</strong>，即定义 CRUD 之外的 API</li>
-<li><strong>可以为相同存储机制的不同 APIGroup 或不同名称资源提供服务</strong>，例如 Deployment 最初存储在 extension/v1 组，后来挪到了 apps/v1</li>
+<li><strong>可以为相同存储机制的不同 APIGroup 或不同名称资源提供服务</strong>，例如 Deployment 最初存储在 <code>extension/v1</code> 组，后来挪到了 <code>apps/v1</code></li>
 </ul>
 <h2 id="2-架构">2 架构</h2>
 <p>自定义 APIServer 是为 APIGroup 提供服务的进程，通常会使用 <a href="https://github.com/kubernetes/apiserver" target="_blank" rel="noopener noreffer"><strong>k8s.io/apiserver</strong></a> 这个库来实现。</p>
@@ -232,25 +232,26 @@
 <ol>
 <li>kube-apiserver 收到请求。</li>
 <li>请求经过处理链处理，包括身份认证、审计日志、切换用户、限流、授权等流程。</li>
-<li>kube-apiserver 对相关 /apis/&lt;aggregate-API-group-name&gt; HTTP Path 下的请求进行拦截。</li>
+<li>kube-apiserver 对相关 <code>/apis/&lt;aggregate-API-group-name&gt;</code> HTTP Path 下的请求进行拦截。</li>
 <li>将拦截下来的请求转发给自定义 APIServer。</li>
 </ol>
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png"/>
-
-
-
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png" width="1453" height="300" />
+    </a>
 <p>总结一下，kube-aggregator 提供两种功能：</p>
 <ul>
-<li><strong>Proxy</strong> - 可以为某个 HTTP Path 下的一个特定版本提供代理服务，例如 <strong>&quot;/apis/group-name/version&quot;</strong></li>
-<li><strong>Discovery</strong> - kube-aggregator 可以为所有聚合的 APIServer 提供 Discovery Endpoint，也是就说，你可以通过 <strong>&quot;/apis&quot;</strong> 和 <strong>&quot;/apis/group-name&quot;</strong> 找到所有的自定义 APIServer。</li>
+<li>
+<p><strong>Proxy</strong> - 可以为某个 HTTP Path 下的一个特定版本提供代理服务，例如 <strong><code>/apis/group-name/version</code></strong></p>
+</li>
+<li>
+<p><strong>Discovery</strong> - kube-aggregator 可以为所有聚合的 APIServer 提供 Discovery Endpoint，也是就说，你可以通过 <strong><code>/apis</code></strong> 和 <strong><code>/apis/group-name</code></strong> 找到所有的自定义 APIServer。</p>
+</li>
 </ul>
 <h3 id="21-apiservice">2.1 APIService</h3>
 <p>如同 CRD 一样，为了让 Kubernetes APIServer 知道一个自定义 APIServer 的存在，必须创建一个 <strong><code>APIService</code></strong> 对象。</p>
@@ -290,17 +291,17 @@
 </div>
 </div><ul>
 <li>
-<p>spec.service - 指定自定义 APIServer 的 service，可以是集群内普通的 ClusterIP Service，也可以是外部的 ExternalName Service。</p>
+<p><code>spec.service</code> - 指定自定义 APIServer 的 service，可以是集群内普通的 ClusterIP Service，也可以是外部的 ExternalName Service。</p>
 </li>
 <li>
-<p>spec.caBundle - 用于设置访问自定义 APIServer 所需要的证书。</p>
+<p><code>spec.caBundle</code> - 用于设置访问自定义 APIServer 所需要的证书。</p>
 </li>
 <li>
-<p>spec.groupPriorityMinimum - Group 的优先级，如果多个不同版本 APIService 设置了不同的值，值最大的会实际生效。</p>
+<p><code>spec.groupPriorityMinimum</code> - Group 的优先级，如果多个不同版本 APIService 设置了不同的值，值最大的会实际生效。</p>
 <p>如果存在冲突的资源名称或者短名称，则拥有最大 groupPriorityMinimum 值的资源会生效。</p>
 </li>
 <li>
-<p>spec.versionPriority - 给 Group 下各个版本排序，用于决定客户端优先使用哪个版本。</p>
+<p><code>spec.versionPriority</code> - 给 Group 下各个版本排序，用于决定客户端优先使用哪个版本。</p>
 </li>
 </ul>
 <p>下面是 Kubernetes API 组的 groupPriorityMinimum 值：</p>
@@ -395,19 +396,16 @@
         </div>
     </div>
 <h3 id="22-custom-apiserver-的内部架构">2.2 Custom APIServer 的内部架构</h3>
-<p>Custom APIServer 大体上与 Kubernetes APIServer 相同，不过没有嵌入 kube-aggregator 和 apiextension-apiserver。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img2.png"/>
-
-
-</p>
+<p>Custom APIServer 大体上与 Kubernetes APIServer 相同，不过没有嵌入 kube-aggregator 和 apiextension-apiserver。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img2.png" title="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img2.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img2.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img2.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img2.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img2.png" width="736" height="400" />
+    </a>
 <p>总结一下自定义 APIServer 的特点：</p>
 <ul>
 <li><strong>与 Kubernetes APIServer 内部结构一致</strong>。</li>
@@ -422,15 +420,15 @@
 </ul>
 <h3 id="23-身份认证机制">2.3 身份认证机制</h3>
 <p>Custom APIServer 的处理在于 Kubernetes APIServer 之后，所以 <strong>Kubernetes APIServer 会先对请求进行认证，通过后再转发给自定义 APIServer</strong>。</p>
-<p>Kubernetes APIServer 会将身份认证的结果保存在 HTTP 请求头里，通常是 <strong><code>X-Remote-User</code></strong> 和 <strong><code>X-Remote-Group Head</code></strong>。
+<p>Kubernetes APIServer 会将身份认证的结果保存在 HTTP 请求头里，通常是 <strong><code>X-Remote-User</code></strong> 和 <strong><code>X-Remote-Group Head</code></strong>。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">通过 APIServer 的启动命令参数 <strong>&quot;&ndash;requestheader-username-headers&quot;</strong> 和 <strong>&quot;&ndash;requestheader-group-headers&quot;</strong> 可以配置。</div>
+            <div class="admonition-content">通过 APIServer 的启动命令参数 <strong><code>--requestheader-username-headers</code></strong> 和 <strong><code>--requestheader-group-headers</code></strong> 可以配置。</div>
         </div>
-    </div></p>
+    </div>
 <p>为了让 Custom APIServer 信任这两个 HTTP Head，Custom APIServer 会验证发送请求者的 CA。因此，需要<strong>通过一个 ConfigMap 配置 Kubernetes APIServer 的证书</strong>，证书要与 Custom APIServer 相同的根证书签名：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -485,7 +483,7 @@
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">上面这些过程主要是由 k8s.io/apiserver 库自动完成，我们只需要配置好证书。</div>
+            <div class="admonition-content">上面这些过程主要是由 <code>k8s.io/apiserver</code> 库自动完成，我们只需要配置好证书。</div>
         </div>
     </div>
 <h3 id="24-授权">2.4 授权</h3>
@@ -557,7 +555,8 @@
 </div>
 </div><ul>
 <li>status.allowed - 表明是否允许</li>
-<li>status.denied - 表明是否拒绝请求
+<li>status.denied - 表明是否拒绝请求</li>
+</ul>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -565,8 +564,7 @@
         <div class="details-content">
             <div class="admonition-content">allowed 与 denied 可能同时为 false，这表明 Kubernetes APIServer 无法对请求做出判断。这应该依靠自定义 APIServer 里的权限逻辑进行判断。</div>
         </div>
-    </div></li>
-</ul>
+    </div>
 <p>注意，处于性能方面考虑，<strong>委托授权机制在每个 Custom APIServer 中都维护了一个本地缓存</strong>：</p>
 <ul>
 <li>默认缓存 1024 个授权条目。</li>
@@ -578,24 +576,21 @@
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">可以通过 <strong>&quot;&ndash;authorization-webhook-cache-authorized-ttl&quot;</strong> 和 <strong>&quot;&ndash;authorization-webhook-cache-unauthorized-ttl&quot;</strong> 来进行配置。</div>
+            <div class="admonition-content">可以通过 <strong><code>--authorization-webhook-cache-authorized-ttl</code></strong> 和 <strong><code>--authorization-webhook-cache-unauthorized-ttl</code></strong> 来进行配置。</div>
         </div>
     </div>
 <h2 id="3-多版本类型实现">3 多版本类型实现</h2>
 <h3 id="31-处理流程">3.1 处理流程</h3>
-<p>每个 APIServer 都可以提供多个资源和版本的接口。为了让一个资源的多版本共存称为可能，<strong>APIServer 需要将资源在多个版本之间进行转换</strong>。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img3.png"/>
-
-
-</p>
+<p>每个 APIServer 都可以提供多个资源和版本的接口。为了让一个资源的多版本共存称为可能，<strong>APIServer 需要将资源在多个版本之间进行转换</strong>。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img3.png" title="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img3.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img3.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img3.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img3.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img3.png" width="726" height="300" />
+    </a>
 <p>APIServer 在真正实现 API 逻辑时，会使用一个 <strong><ruby>内部版本<rt>internal version</rt></ruby></strong>，也称为 <strong><ruby>中枢版本<rt>hub version</rt></ruby></strong>。它可以用作每个版本都可以与之转换的中间版本，所以内部 API 逻辑都是根据中枢版本实现的。</p>
 <p>所以，APIServer 中存在三个版本的概念：</p>
 <ul>
@@ -603,19 +598,16 @@
 <li><strong><code>Internal Version</code></strong> - 用于 External Version 之间转换的中间版本；</li>
 <li><strong><code>Storage Version</code></strong> - 保存到后端存储（etcd）的版本，属于 External Version 其中一个（通过 CRD 定义设置）；</li>
 </ul>
-<p>下图展示了 APIServer 在一个 API 请求的生命周期中，三个版本之间的转换情况：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img4.png"/>
-
-
-</p>
+<p>下图展示了 APIServer 在一个 API 请求的生命周期中，三个版本之间的转换情况：</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img4.png" title="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img4.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img4.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img4.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img4.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img4.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img4.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img4.png" width="738" height="400" />
+    </a>
 <ol>
 <li>用户发送一个特定版本的请求（例如 v1，但是可以是任何支持的版本）。<strong>[External Version]</strong></li>
 <li>APIServer 将请求解码，并转换为内部版本。<strong>[External Version -&gt; Internal Version]</strong></li>
@@ -625,19 +617,16 @@
 <li>结果转换为请求中的版本，例如 v1。<strong>[Internal Version -&gt; External Version]</strong></li>
 </ol>
 <p>从上图可以看到，一次写请求操作中，至少要做三次转换（步骤 2 5 6）。如果部署了 admission webhook，还会发生更多次的转换。</p>
-<p>除了转换，下图中展示了默认值会何时处理，Default 填充未设置值字段的过程。默认值处理总是和转换一起出现，并且总是在用户请求、etcd 或者 admission webhook 时的 External Version 进行（也就是只在<strong>External Version 转换到 Internal Version 时进行</strong>），不会发生在中枢版本向外部版本转换过程中。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img5.png"/>
-
-
-</p>
+<p>除了转换，下图中展示了默认值会何时处理，Default 填充未设置值字段的过程。默认值处理总是和转换一起出现，并且总是在用户请求、etcd 或者 admission webhook 时的 External Version 进行（也就是只在<strong>External Version 转换到 Internal Version 时进行</strong>），不会发生在中枢版本向外部版本转换过程中。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img5.png" title="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img5.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img5.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img5.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img5.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img5.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img5.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img5.png" width="702" height="400" />
+    </a>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -647,7 +636,7 @@
         </div>
     </div>
 <h3 id="32-internal-version-类型实现">3.2 Internal Version 类型实现</h3>
-<p>我们看下 Internal Version 实现，位于 <strong>&ldquo;pkg/apis/&lt;group&gt;/types.go&rdquo;</strong> 文件中：</p>
+<p>我们看下 Internal Version 实现，位于 <strong><code>pkg/apis/&lt;group&gt;/types.go</code></strong> 文件中：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -743,10 +732,10 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>除了基本的类型与对应的 DeepCopy 相关的实现，Internal Version 类型不需要更多的代码实现了。Convert 与 Default 相关都是针对特定的External Version 类型需要实现的。</p>
+</div><p>除了基本的类型与对应的 DeepCopy 相关的实现，Internal Version 类型不需要更多的代码实现了。Convert 与 Default 相关都是针对特定的 External Version 类型需要实现的。</p>
 <h3 id="33-external-version-类型实现">3.3 External Version 类型实现</h3>
-<p>在 sample-apiserver 中实现了 v1alpha1 v1beta1 两个 External Version。我们以 v1alpha1 版本主要说明。</p>
-<p>一个 External Version 类型放置于 <strong>&ldquo;pkg/apis/&lt;group&gt;/&lt;version&gt;/types.go&rdquo;</strong> 文件中。当然，其是必须包含 JSON 标签的。</p>
+<p>在 sample-apiserver 中实现了 <code>v1alpha1</code> <code>v1beta1</code> 两个 External Version。我们以 v1alpha1 版本主要说明。</p>
+<p>一个 External Version 类型放置于 <strong><code>pkg/apis/&lt;group&gt;/&lt;version&gt;/types.go</code></strong> 文件中。当然，其是必须包含 JSON 标签的。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -827,7 +816,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><h4 id="331-convert">3.3.1 Convert</h4>
-<p>在 <a href="#31-%e5%a4%84%e7%90%86%e6%b5%81%e7%a8%8b" rel=""><strong>3.1 处理流程</strong></a> 中看到，APIServer 处理请求过程中有着多次 External Version 与 Internal Version 双向的转换，因此其需要注册对应的转换函数，其注册函数会自动生成位于 <strong>&ldquo;pkg/apis/&lt;group&gt;/&lt;version&gt;/zz_generated.conversion.go&rdquo;</strong>。</p>
+<p>在 <a href="#31-%e5%a4%84%e7%90%86%e6%b5%81%e7%a8%8b" rel=""><strong>3.1 处理流程</strong></a> 中看到，APIServer 处理请求过程中有着多次 External Version 与 Internal Version 双向的转换，因此其需要注册对应的转换函数，其注册函数会自动生成位于 <strong><code>pkg/apis/\&lt;group&gt;/\&lt;version&gt;/zz_generated.conversion.go</code></strong>。</p>
 <p>可以看到，其类型转换函数通过 <code>Scheme.AddGeneratedConversionFunc()</code> 接口注册到 Scheme 中。而在 APIServer 抽象实现中，会按照 <a href="#31-%e5%a4%84%e7%90%86%e6%b5%81%e7%a8%8b" rel=""><strong>3.1 处理流程</strong></a> 中的请求处理流程调用 <code>Scheme.Convert()</code> 接口进行转换。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1013,7 +1002,7 @@
             <div class="admonition-content">上面这种转换方式也说明了，在转换后，源对象应该不要再修改了，否则会影响到转换后的对象。</div>
         </div>
     </div>
-<p><strong>对于版本之间不同的结构体，就需要我们自己实现对应的转换函数了</strong>。在 <strong>&ldquo;pkg/apis/&lt;group&gt;/&lt;version&gt;/conversion.go&rdquo;</strong> 文件中，我们按照对应的格式实现特殊的转换函数。而生成器判断到对应的转换函数已经存在，就会跳过自动生成。</p>
+<p><strong>对于版本之间不同的结构体，就需要我们自己实现对应的转换函数了</strong>。在 <strong><code>pkg/apis/&lt;group&gt;/&lt;version&gt;/conversion.go</code></strong> 文件中，我们按照对应的格式实现特殊的转换函数。而生成器判断到对应的转换函数已经存在，就会跳过自动生成。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1094,7 +1083,7 @@
     </div>
 <h4 id="331-default">3.3.1 Default</h4>
 <p>除了 Convert 函数之外，External Version 类型也可以设置 Default 函数。在 <a href="#31-%e5%a4%84%e7%90%86%e6%b5%81%e7%a8%8b" rel=""><strong>3.1.1 处理流程</strong></a> 中提到过，APIServer 会在 External Version 转换到 Internal Version 时进行默认值处理。</p>
-<p>同样，生成器也会自动生成 Default 相关函数，位于文件 <strong>&ldquo;pkg/apis/&lt;group&gt;/&lt;version&gt;/zz_generated.defaults.go&rdquo;</strong>，但是底层设置默认值的函数还是要我们自己编写。</p>
+<p>同样，生成器也会自动生成 Default 相关函数，位于文件 <strong><code>pkg/apis/\&lt;group&gt;/\&lt;version&gt;/zz_generated.defaults.go</code></strong>，但是底层设置默认值的函数还是要我们自己编写。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1135,7 +1124,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>自己编写的设置默认值的函数位于文件 <strong>&ldquo;pkg/apis/&lt;group&gt;/&lt;version&gt;/defaults.go&rdquo;</strong>:</p>
+</div><p>自己编写的设置默认值的函数位于文件 <strong><code>pkg/apis/&lt;group&gt;/&lt;version&gt;/defaults.go</code></strong>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1233,7 +1222,7 @@
 </span><span class="c1"></span><span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>所有版本的 AddToScheme 都是在 <strong>&ldquo;pkg/apis/&lt;group&gt;/install/install.go&rdquo;</strong> 中一个辅助函数 Install 中注册：</p>
+</div><p>所有版本的 AddToScheme 都是在 <strong><code>pkg/apis/&lt;group&gt;/install/install.go</code></strong> 中一个辅助函数 Install 中注册：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1289,7 +1278,7 @@
 </div>
 </div><h2 id="4-registry-与-strategy">4 Registry 与 Strategy</h2>
 <p>APIServer 本质上就是一个 HTTP Server，client 通过访问以 Resource 为单位的 RESTful 接口来进行交互。在 Custom APIServer 中，为了让 Custom APIServer 能够处理 CR 相关的接口，我们需要注册相关接口的 HTTP Handle。</p>
-<p>k8s.io/apiserver 库提供了该功能的高度封装，其核心就是 Registry。</p>
+<p><code>k8s.io/apiserver</code> 库提供了该功能的高度封装，其核心就是 Registry。</p>
 <h3 id="41-apiserver-对象">4.1 APIServer 对象</h3>
 <p>在 Custom APIServer 实现中，不需要自己定义 HTTP Server，可以直接内嵌提供的 <code>GenericAPIServer</code> 类。</p>
 <div class="highlight"><div class="chroma">
@@ -1387,7 +1376,7 @@
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">这里暂时不去深入了解 APIGroupInfo 是如何映射到 HTTP Handle 的，因为这是 k8s.io/apiserver 库提供的封装。（其实我也不懂）</div>
+            <div class="admonition-content">这里暂时不去深入了解 APIGroupInfo 是如何映射到 HTTP Handle 的，因为这是 <code>k8s.io/apiserver</code> 库提供的封装。（其实我也不懂）</div>
         </div>
     </div>
 <h3 id="42-apigroupinfo">4.2 APIGroupInfo</h3>
@@ -1939,27 +1928,34 @@
 </div><h3 id="45-总结">4.5 总结</h3>
 <p>兜兜绕绕了一圈，我们总结一下这个复杂的结构：</p>
 <ol>
-<li>整个 APIServer 就是一个 HTTP Server；</li>
-<li>HTTPServer 由多个 APIGroupInfo，每个 APIGroupInfo 代表了一组 HTTP 接口，即 <strong>&quot;/apis/&lt;group&gt;&quot;</strong>；</li>
-<li>每个 APIGroupInfo 包含多个版本，即 <strong>&quot;/apis/&lt;group&gt;/&lt;version&gt;&quot;</strong>；</li>
-<li>每个版本可以包含多个 Resource 对应的 rest.Storage 实现，一个 rest.Storage 就是该 Resource 的 REST HTTP Handle，即 <strong>&quot;/apis/&lt;group&gt;/&lt;version&gt;/&lt;resource&gt;&quot;</strong>。</li>
-<li>registry.Store 是 Kubernetes 库提供的实现了 rest.Storage 的类，其提供多个扩展点，扩展点就称为 Strategy。</li>
+<li>
+<p>整个 APIServer 就是一个 HTTP Server；</p>
+</li>
+<li>
+<p>HTTPServer 由多个 APIGroupInfo，每个 APIGroupInfo 代表了一组 HTTP 接口，即 <strong><code>/apis/\&lt;group&gt;</code></strong>；</p>
+</li>
+<li>
+<p>每个 APIGroupInfo 包含多个版本，即 <strong><code>/apis/\&lt;group&gt;/\&lt;version&gt;</code></strong>；</p>
+</li>
+<li>
+<p>每个版本可以包含多个 Resource 对应的 rest.Storage 实现，一个 rest.Storage 就是该 Resource 的 REST HTTP Handle，即 <strong><code>/apis/\&lt;group&gt;/\&lt;version&gt;/\&lt;resource&gt;</code></strong>。</p>
+</li>
+<li>
+<p>registry.Store 是 Kubernetes 库提供的实现了 rest.Storage 的类，其提供多个扩展点，扩展点就称为 Strategy。</p>
+</li>
 </ol>
-<p>我们再回头看，其实这样复杂的结构实现就是为能够实现了 <strong>/apis/&lt;group&gt;/&lt;version&gt;/&lt;resource&gt;</strong> 以及处理函数的抽象。</p>
+<p>我们再回头看，其实这样复杂的结构实现就是为能够实现了 <strong><code>/apis/&lt;group&gt;/&lt;version&gt;/&lt;resource&gt;</code></strong> 以及处理函数的抽象。</p>
 <h2 id="5-validate">5 Validate</h2>
-<p><strong>准入过程中的 Validate 能够实现针对字段动态验证</strong>，比 CRD 定义中的静态验证更加灵活。由下图可见，Validate 过程是在 Mutate Plugin 与 Validate Plugin 之间完成的。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png"/>
-
-
-</p>
+<p><strong>准入过程中的 Validate 能够实现针对字段动态验证</strong>，比 CRD 定义中的静态验证更加灵活。由下图可见，Validate 过程是在 Mutate Plugin 与 Validate Plugin 之间完成的。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png" width="1453" height="400" />
+    </a>
 <p>因此 Validate 只需要为 Internal Version 实现一次，不许为各个 External Version 分别实现。Registry 与 Strategy 为我们封装了上面的真个 Resource Handler，因此 Validate 的入口其实就是 Strategy 中对于 Create/Update 的检查。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -2018,19 +2014,16 @@
 </div>
 </div><p>由于 Validate 逻辑都是在代码中编写的，所以你可以对比多个字段来进行 Validate，灵活性页更高。</p>
 <h2 id="6-admission">6 Admission</h2>
-<p>还是下图，每个请求在经过反序列化、默认值处理、转换为 Internal Version 后，都会经过 <strong><code>Admission Plugin Chain</code></strong> 处理（图中的 Admission 一块）。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png"/>
-
-
-</p>
+<p>还是下图，每个请求在经过反序列化、默认值处理、转换为 Internal Version 后，都会经过 <strong><code>Admission Plugin Chain</code></strong> 处理（图中的 Admission 一块）。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/6-custom-api-server/img1.png" width="1453" height="400" />
+    </a>
 <p>Admission Plugin 因为两个阶段，也就是可以分为两类插件：</p>
 <ul>
 <li><strong>Mutate Plugin</strong></li>
@@ -2100,7 +2093,7 @@
 <li>DisablePlugins - 通过命令行参数 <code>--disable-admission-plugins</code> 关闭的 Plugin</li>
 <li>Plugins - 所有注册了的 Plugin</li>
 </ul>
-<p>与 Kubernetes APIServer 包含的 Plugin 不同，NewAdmissionOptions() 仅仅包含三个默认的 Plugin：</p>
+<p>与 Kubernetes APIServer 包含的 Plugin 不同，<code>NewAdmissionOptions()</code> 仅仅包含三个默认的 Plugin：</p>
 <ul>
 <li>NamespaceLifecycle - 根据 namespace 阶段来执行一些约束，包括：禁止在删除中的 namespace 中创建新对象，对不存在的 namespace 请求拒绝，禁止删除 default、kube-system、kube-public 三个 namespace。</li>
 <li>ValidatingAdmissionWebhook - 允许注册与使用 Validating Admission Webhook。</li>
@@ -2114,7 +2107,7 @@
             <div class="admonition-content">Kubernetes APIServer 提供了许多的 Admission Plugin，具体见 <a href="https://kubernetes.io/zh/docs/reference/access-authn-authz/admission-controllers/#%E6%AF%8F%E4%B8%AA%E5%87%86%E5%85%A5%E6%8E%A7%E5%88%B6%E5%99%A8%E7%9A%84%E4%BD%9C%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88" target="_blank" rel="noopener noreffer"><strong>使用准入控制器</strong></a></div>
         </div>
     </div>
-<p>代码中，在 APIServer 启动过程中的 <code>Complete()</code> 时会进行自定义 Plugin 的注册，调用 <code>*admission.Plugins.Register()</code> 即可</p>
+<p>代码中，在 APIServer 启动过程中的 <code>Complete()</code> 时会进行自定义 Plugin 的注册，调用 <code>*admission.Plugins.Register()</code> 即可:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -2164,11 +2157,11 @@
 </div><h3 id="62-admission-plugin-interface">6.2 Admission Plugin Interface</h3>
 <p>要实现一个 Admission Plugin 需要实现以下接口：</p>
 <ul>
-<li>addmission.Interface - 用于注册到 Plugin Chain 中</li>
-<li>addmission.MutatingInterface（可选）- 能够在 Mutate 阶段被调用</li>
-<li>addmission.ValidationInterface（可选）- 能够在 Validate 阶段被调用</li>
+<li><code>addmission.Interface</code> - 用于注册到 Plugin Chain 中</li>
+<li><code>addmission.MutatingInterface</code>（可选）- 能够在 Mutate 阶段被调用</li>
+<li><code>addmission.ValidationInterface</code>（可选）- 能够在 Validate 阶段被调用</li>
 </ul>
-<p>这三个接口都在 <strong>&ldquo;k8s.io/apiserver/pkg/admission&rdquo;</strong> 包中：</p>
+<p>这三个接口都在 <strong><code>k8s.io/apiserver/pkg/admission</code></strong> 包中：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -2289,10 +2282,14 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>admission.Handler - 内嵌 admission.Handler 的对象实现了 Interface.Handles() 方法，我们只需要注册我们感兴趣的 Operation（Create）；</li>
-<li>SetInternalWardleInformerFactory - 传入需要的 Lister</li>
+<li>
+<p><code>admission.Handler</code> - 内嵌 admission.Handler 的对象实现了 Interface.Handles() 方法，我们只需要注册我们感兴趣的 Operation（Create）；</p>
+</li>
+<li>
+<p><code>SetInternalWardleInformerFactory</code> - 传入需要的 Lister</p>
+</li>
 </ul>
-<p>Admit() 实现就很简单了，进行一些检查：</p>
+<p><code>Admit()</code> 实现就很简单了，进行一些检查：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -2490,10 +2487,18 @@
 </div><h3 id="65-总结">6.5 总结</h3>
 <p>又是一个复杂的框架搬的实现，看下重要的几个点：</p>
 <ol>
-<li><code>RecommendedOptions.Admission</code> 记录着所有需要执行的 Admission Plugin，自己编写的也是注册到其中。</li>
-<li><code>RecommendedOptions.ExtraAdmissionInitializers</code> 记录着初始化 Plugin 的实现，用于在代码中向各个 Plugin 传递 Informer 等基础组件。</li>
-<li>我们需要编写类实现 admission.Interface + admission.MutationInterface + admission.ValidationInterface。在 Admit() 函数中进行 Mutate，在 Validate() 函数中进行 Validate。</li>
-<li>如果我们的 Plugin 需要使用 Informer 这样的组件，还需要编写一个类实现 admission.PluginInitializer，用于传递 Informer。</li>
+<li>
+<p><code>RecommendedOptions.Admission</code> 记录着所有需要执行的 Admission Plugin，自己编写的也是注册到其中。</p>
+</li>
+<li>
+<p><code>RecommendedOptions.ExtraAdmissionInitializers</code> 记录着初始化 Plugin 的实现，用于在代码中向各个 Plugin 传递 Informer 等基础组件。</p>
+</li>
+<li>
+<p>我们需要编写类实现 admission.Interface + admission.MutationInterface + admission.ValidationInterface。在 Admit() 函数中进行 Mutate，在 Validate() 函数中进行 Validate。</p>
+</li>
+<li>
+<p>如果我们的 Plugin 需要使用 Informer 这样的组件，还需要编写一个类实现 admission.PluginInitializer，用于传递 Informer。</p>
+</li>
 </ol>
 <h2 id="7-初始化与启动">7 初始化与启动</h2>
 <p>看 main 函数，一切的入口是一个 Option:</p>
@@ -2962,7 +2967,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>可以看到，Option 转化为 Config 过程中，执行了之前讲过的向 Admission Plugin 传递基础组件的过程。</p>
-<p>k8s.io/apiserver 中，我们基于 RecommendOptions 来实现所有的选项。</p>
+<p><code>k8s.io/apiserver</code> 中，我们基于 RecommendOptions 来实现所有的选项。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -3294,10 +3299,10 @@
 <h3 id="81-部署清单">8.1 部署清单</h3>
 <p>清单：</p>
 <ul>
-<li>APIService</li>
-<li>Service</li>
-<li>Deployment</li>
-<li>ServiceAccount + ClusterRole + ClusterRoleBinding</li>
+<li><code>APIService</code></li>
+<li><code>Service</code></li>
+<li><code>Deployment</code></li>
+<li><code>ServiceAccount</code> + <code>ClusterRole</code> + <code>ClusterRoleBinding</code></li>
 </ul>
 <p>之前提到，APIService 对象向原生 Kubernetes APIServer 注册一个 Custom APISever。因此这是必须要部署的。</p>
 <div class="highlight"><div class="chroma">
@@ -3577,18 +3582,18 @@
 </div><h3 id="82-配置证书">8.2 配置证书</h3>
 <p>前面我们使用 APIService 中的 <code>spec.insecureSkipTLSVerify</code> 为 false 来让 Custom APIServer 与 Kubernetes APIServer 之前通信跳过 TLS 鉴权。</p>
 <p>如果需要配置 TLS，可以在 APIService 中的 <code>spec.caBundle</code> 字段配置 Custom APISever 的根证书，这样 Kubernetes APIServer 就会使用该证书来对 Custom APISever 进行鉴权。</p>
-<p>对于 Custom APIServer，我们创建好 Server 的证书与私钥后，创建一个 Secret 对象，然后将其挂载到 Pod 的 /var/run/apiserver/serving-cert/tls.{crt,key} 文件中。
+<p>对于 Custom APIServer，我们创建好 Server 的证书与私钥后，创建一个 Secret 对象，然后将其挂载到 Pod 的 <code>/var/run/apiserver/serving-cert/tls.{crt,key}</code> 文件中。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content"><p>/var/run/apiserver/serving-cert/tls.{crt,key} 是默认的放置 APIServer 证书与私钥的目录。</p>
-<p>你可以通过命令行参数 &ndash;cert-dir &ldquo;dir&rdquo; 指定证书与私钥的目录。</p>
-<p>或者，通过 &ndash;tls-cert-file &ldquo;file&rdquo; 与 &ndash;tls-private-key-file &ldquo;file&rdquo; 指定证书文件与私钥文件。</p>
+            <div class="admonition-content"><p><code>/var/run/apiserver/serving-cert/tls.{crt,key}</code> 是默认的放置 APIServer 证书与私钥的目录。</p>
+<p>你可以通过命令行参数 <code>--cert-dir &quot;dir&quot;</code> 指定证书与私钥的目录。</p>
+<p>或者，通过 <code>--tls-cert-file &quot;file&quot;</code> 与 <code>--tls-private-key-file &quot;file&quot;</code> 指定证书文件与私钥文件。</p>
 </div>
         </div>
-    </div></p>
+    </div>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://github.com/kubernetes/apiserver" target="_blank" rel="noopener noreffer"><strong>k8s.io/apiserver</strong></a></li>
@@ -3599,8 +3604,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734: Post(Operator Desgin Notes) (#36)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cce6cda</a></span>
+                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

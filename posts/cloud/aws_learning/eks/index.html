@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/eks/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-05-02T22:01:07+08:00" />
-<meta property="article:modified_time" content="2023-02-09T21:11:10+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  4165 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/","datePublished": "2022-05-02T22:01:07+08:00","dateModified": "2023-02-09T21:11:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  4384 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/eks\/","datePublished": "2022-05-02T22:01:07+08:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">AWS - EKS</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/aws-%E5%AD%A6%E4%B9%A0/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>AWS 学习</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-05-02">2022-05-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4165 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-05-02">2022-05-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4384 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 9 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -255,7 +255,7 @@
 </li>
 <li>
 <p><important>Self-Managed Node</important></p>
-<p>用户自行启动的 EC2 Instance，启动后再加入到 Kubernetes 集群。</p>
+<p>用户自行启动的 EC2 Instance，启动后再加入到 Kubernetes 集群。比 Managed Node Group 有着更大的自定义和控制权。</p>
 </li>
 <li>
 <p><important>AWS Fargate</important></p>
@@ -268,10 +268,33 @@
 <p>EKS 支持两款 AutoScaling 产品：</p>
 <ul>
 <li>
-<p>Kubernetes 社区的 <strong><code>Cluster AutoScaler</code></strong> - 使用 <a href="https://docs.aws.amazon.com/zh_cn/autoscaling/ec2/userguide/AutoScalingGroup.html" target="_blank" rel="noopener noreffer"><strong>AWS Scale Group</strong></a> 来实现 Instance 自动缩扩容</p>
+<p>Kubernetes 社区的 <strong><code>Cluster AutoScaler</code></strong></p>
+<p>使用 <a href="https://docs.aws.amazon.com/zh_cn/autoscaling/ec2/userguide/AutoScalingGroup.html" target="_blank" rel="noopener noreffer"><strong>AWS Scale Group</strong></a> 来实现 Instance 自动缩扩容。这也意味着，AutoScaler 只能缩扩相同模板的 Node。</p>
+<p>同样，因为使用了 ASG，AutoScaler 也需要周期性的调用 AWS API 来同步状态，集群庞大时可能会导致 API 限流等问题。</p>
+<p>Cluster AutoScaler 通常根据 Pending Pod 和 Node Metric 来判断是否需要缩扩容 Node。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/eks/img-cluster-as.png" title="/posts/cloud/aws_learning/eks/img-cluster-as.png" data-thumbnail="/posts/cloud/aws_learning/eks/img-cluster-as.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/eks/img-cluster-as.png"
+            data-srcset="/posts/cloud/aws_learning/eks/img-cluster-as.png, /posts/cloud/aws_learning/eks/img-cluster-as.png 1.5x, /posts/cloud/aws_learning/eks/img-cluster-as.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/eks/img-cluster-as.png" width="781" height="250" />
+    </a>
 </li>
 <li>
 <p><strong><code>Karpenter</code></strong> - 使用 <a href="https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ec2-fleet.html" target="_blank" rel="noopener noreffer"><strong>EC2 fleet</strong></a> 实现 Instance 自动缩扩容</p>
+<p>Karpenter 取消了 Node Group 的概念，动态的计算 Pod 需要哪种 EC2 Instance，并启动。</p>
+<p>Karpenter 仅仅在 Pod 创建和删除时调用 API，减少了 API 的吞吐量。</p>
+<a class="lightgallery" href="/posts/cloud/aws_learning/eks/img-kp.png" title="/posts/cloud/aws_learning/eks/img-kp.png" data-thumbnail="/posts/cloud/aws_learning/eks/img-kp.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/eks/img-kp.png"
+            data-srcset="/posts/cloud/aws_learning/eks/img-kp.png, /posts/cloud/aws_learning/eks/img-kp.png 1.5x, /posts/cloud/aws_learning/eks/img-kp.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/eks/img-kp.png" width="1205" height="250" />
+    </a>
 </li>
 </ul>
 <h4 id="211-cluster-autoscaler">2.1.1 Cluster AutoScaler</h4>
@@ -443,16 +466,16 @@
 <li>
 <p><strong><code>Public</code></strong>（默认）</p>
 <p>APIServer 会具有一个<important>域名 + 公网地址</important>，可以限制访问 APIServer 的 IP 白名单。</p>
-<p><strong>当 Kubernetes 集群同 VPC 内请求 APIServer 时流量也会离开 VPC</strong>（但是不会离开 AWS 网络）。</p>
+<p><strong>来自 Kubernetes 集群内的 VPC 的请求 APIServer 时流量也会离开 VPC</strong>（但是不会离开 AWS 网络）。</p>
 </li>
 <li>
 <p><strong><code>Public and Private</code></strong></p>
 <p>APIServer 会具有一个<important>域名 + 公网地址</important>，可以限制访问 APIServer 的 IP 白名单。</p>
-<p>与 Public 方式的区别在于，<strong>同 VPC 内请求 APIServer 时流量不会离开 VPC</strong>。</p>
+<p>与 Public 方式的区别在于，<strong>来自 Kubernetes 集群内的 VPC 的请求 APIServer 不会离开 VPC</strong>。</p>
 </li>
 <li>
 <p><strong><code>Private</code></strong></p>
-<p>APIServer 具有<important>域名 + 私网地址</important>，必须只有<strong>同 VPC 的流量才可以访问 APIServer</strong>。</p>
+<p>APIServer 具有<important>域名 + 私网地址</important>，必须只有<strong>集群内 VPC 的流量才可以访问 APIServer</strong>。</p>
 <blockquote>
 <p>域名可以被公网解析，但是解析后为 VPC 内的私网地址。</p>
 </blockquote>
@@ -1002,13 +1025,14 @@
 <ul>
 <li>Blog：<a href="https://aws.amazon.com/cn/blogs/opensource/introducing-fine-grained-iam-roles-service-accounts/" target="_blank" rel="noopener noreffer"><strong>IRSA 介绍</strong></a></li>
 <li>官方文档：<a href="https://docs.aws.amazon.com/zh_cn/zh_cn/eks/latest/userguide/what-is-eks.html" target="_blank" rel="noopener noreffer"><strong>EKS User Guide</strong></a></li>
+<li>Blog：<a href="https://aws.amazon.com/cn/blogs/china/karpenter-new-generation-kubernetes-auto-scaling-tools/" target="_blank" rel="noopener noreffer"><strong>Karpenter : 新一代 Kubernetes auto scaling 工具</strong></a></li>
 </ul>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734: Post(Operator Desgin Notes) (#36)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cce6cda</a></span>
+                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

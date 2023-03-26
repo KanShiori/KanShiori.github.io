@@ -4,7 +4,8 @@
 ## 1 LB 的基本模型
 
 不同的 LB 在使用上是基本相同的，都依据以下的模型：
-{{< find_img "img1.png" >}}
+
+{{< image src="img1.png" height=330 >}}
 
 * Domain - LB 拥有着一个唯一的域名，Client 通过该域名来访问 LB。
 
@@ -23,12 +24,14 @@
 ## 2 Domain
 
 LB 分为两种 Scheme：
-* Internet-facing - 面向公网的 LB，具有 Public IP，需要部署在 Publich Subnet
+
+* Internet-facing - 面向公网的 LB，具有 Public IP，需要部署在 Public Subnet
 * Internal - 内网 LB，仅仅具有 Private IP
 
 无论哪种 LB，创建后都会分配一个唯一的 Domain，用作访问 LB 的入口。该 Domain 会被解析为其服务的多个 Subnet 的 Public/Private IP。
 
 LB 的 Domain 格式为：
+
 ```
 <LB-id>-<hash>.elb.<region>.amazonaws.com
 ```
@@ -38,6 +41,7 @@ LB 的 Domain 格式为：
 Listener 将 Domain 访问根据 Protocol + Port 分为多个路由项。也就是说，访问 Domain 的请求根据 Protocol + Port 由不同的 Listener 来处理。
 
 每个 Listener 需要指定：
+
 * Protocol - 匹配的协议
   
   对于 ALB，Protocol 支持 HTTP 与 HTTPs。对于 NLB，Protocol 支持 TCP、TCP_UDP、TLS 与 UDP。
@@ -49,9 +53,11 @@ Listener 将 Domain 访问根据 Protocol + Port 分为多个路由项。也就�
 ### 3.1 Rule
 
 对于 ALB，在 Listener 范围下还可以添加 Rule，进一步的根据信息添加路由项。例如，你可以创建一个 HTTP 80 端口的 Listener，然后创建不同的 HTTP Path 的路由项。
-{{< find_img "img1-1.png" >}}
+
+{{< image src="img1-1.png" height=150 >}}
 
 每条 Rule 支持如下的方式进行组合：
+
 * Host Header
 * HTTP Header - 请求的 Header
 * HTTP Request Method - 请求的 Method
@@ -88,13 +94,16 @@ Listener 的 Port 用于判断是否处理请求，Target Group 的 Port 是访�
 创建 Target Group 时，需要指定 Health Check 机制。LB 会周期性对所有 Target 进行健康检查。
 
 Health Check 的状态变化是平滑的：
+
 * Healthy -> Unhealthy: 连续 Health Check 失败次数达到阈值 "Healthy threshold"
 * Unhealthy -> Healthy: 连续 Health Check 成功次数达到阈值 "Healthy threshold"
 
 当某个 Target 变为 Unhealthy 时，LB 就不会将流量路由到该 Target，直到重新变为 Healthy。
-{{< find_img "img1-2.png" >}}
+
+{{< image src="img1-2.png" height=200 >}}
 
 Health Check 支持以下协议：
+
 * TCP - 对于 TCP 端口发起连接请求，连接成功就表明健康检查成功
 * HTTP - 发起一个 HTTP Path 的请求，检查其回复的 HTTP Code
 * HTTP - 发起一个 HTTPs Path 的请求，检查其回复的 HTTP Code
@@ -106,7 +115,8 @@ Health Check 支持以下协议：
 ## 5 Application Load Balancer
 
 ALB 是基于七层的代理，创建时需要指定其所在的 VPC，以及指定至少两个 AZ 的 Subnet。LB 会在每个 Subnet 创建一个 ENI，用于作为 LB 域名解析后的 IP 之一。
-{{< find_img "img2.png" >}}
+
+{{< image src="img2.png" height=250 >}}
 
 {{< admonition note Note>}}
 使用 `nslookup <lb-addr>` 解析 LB 域名时，得到的就是各个 Subnet 的 ENI 的 IP 地址。
@@ -117,6 +127,7 @@ ALB 是基于七层的代理，创建时需要指定其所在的 VPC，以及指
 ### 5.1 LB 的状态
 
 LB 可能处于以下状态之一：
+
 * provisioning - 创建 LB 中
 * active - LB 已经就绪，并正常路由流量中
 * active_impaired - LB 正在路由流量，但是没有扩展所需的资源
@@ -129,6 +140,7 @@ ELB 可以提供 Access Log，用于查看发送到 LB 的请求的详细信息�
 Access Log 功能默认是关闭的，启用后 AWS 会将访问日志压缩，并存储到用户指定的 S3 bucket 路径。使用访问日志不需要额外的付费，只需要为 S3 的存储付费。
 
 ELB 默认每 5min 保存一次 LB 的 Access Log，存储的文件名格式如下：
+
 ```
 <bucket path>/AWSLogs/<aws-account-id>/elasticloadbalancing/<region>/<year>/<month>/<day>/<account_id>_elasticloadbalancing_<region>_<load-balancer-id>_<end-time>_<ip-address>_<random-string>.log.gz
 ```
@@ -136,6 +148,7 @@ ELB 默认每 5min 保存一次 LB 的 Access Log，存储的文件名格式如�
 每个访问请求的信息包括 请求时间、客户端 IP、延迟、服务器回复等等，完整的列表见：[**Access Log Entry**](https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-log-entry-format)。
 
 看一个例子，每个信息之间通过空格隔开：
+
 ```
 http 2018-07-02T22:23:00.186641Z app/my-loadbalancer/50dc6c495c0c9188 
 192.168.131.39:2817 10.0.0.1:80 0.000 0.001 0.000 200 200 34 366 
@@ -221,7 +234,8 @@ NLB 是基于四层的负载均衡，支持 TCP 与 UDP 协议。
 对于 UDP 流量，LB 基于协议、源 IP 地址、源端口、目标 IP 地址、目标端口，使用哈希算法选择 Target。如果 UDP 数据包有着相同的源地址和目标地址，那么就会路由到同一个 Target。
 
 创建 NLB 时需要指定其所在的 VPC，以及至少两个 AZ 的 Subnet。LB 会在每个 Subnet 创建一个 ENI，用于作为 LB 域名解析后的 IP 之一。
-{{< find_img "img2.png" >}}
+
+{{< image src="img2.png" height=250 >}}
 
 {{< admonition note Note>}}
 使用 `nslookup <lb-addr>` 解析 LB 域名时，得到的就是各个 Subnet 的 ENI 的 IP 地址。
@@ -232,6 +246,7 @@ NLB 是基于四层的负载均衡，支持 TCP 与 UDP 协议。
 ### 6.1 LB 的状态
 
 LB 可能处于以下状态之一：
+
 * provisioning - 创建 LB 中
 * active - LB 已经就绪，并正常路由流量中
 * failed - LB 无法创建
@@ -247,6 +262,7 @@ ELB 可以提供 TLS 请求的 Access Log，用于查看发送到 LB 的请求�
 Access Log 功能默认是关闭的，启用后 AWS 会将访问日志压缩，并存储到用户指定的 S3 bucket 路径。使用访问日志不需要额外的付费，只需要为 S3 的存储付费。
 
 ELB 默认每 5min 保存一次 LB 的 Access Log，存储的文件名格式如下：
+
 ```
 <bucket path>/AWSLogs/<aws-account-id>/elasticloadbalancing/<region>/<year>/<month>/<day>/<account_id>_elasticloadbalancing_<region>_<load-balancer-id>_<end-time>_<ip-address>_<random-string>.log.gz
 ```
@@ -254,6 +270,7 @@ ELB 默认每 5min 保存一次 LB 的 Access Log，存储的文件名格式如�
 每个访问请求的信息包括 请求时间、客户端 IP、延迟、服务器回复等等，完整的列表见：[**Access Log Entry**](https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-log-entry-format)。
 
 看一个例子，每个信息之间通过空格隔开：
+
 ```
 tls 2.0 2018-12-20T02:59:40 net/my-network-loadbalancer/c6e77e28c25b2234 g3d4b5e8bb8464cd 
 72.21.218.154:51341 172.100.100.185:443 5 2 98 246 - 
@@ -280,9 +297,11 @@ Gateway Load Balancer 作为一个透明网络的网关设备（网络中的所�
 GWLB 使用 GWLB Endpoint 来安全地跨 VPC 边界交换流量。进出 GWLB Endpoint 的流量使用 Route Table 进行配置。
 
 举一个实际的例子：
-{{< find_img "img3.png" >}}
+
+{{< image src="img3.png" height=350 >}}
 
 从 Internet 到 Application 的流量（蓝色箭头）：
+
 1. 流量进入 Internet Gateway 进入 Public VPC；
 2. 根据 Route Table，流量发送给了 GWLB Endpoint；
 3. GWLB Endpoint 将流量传输到了 GWLB；
@@ -290,6 +309,7 @@ GWLB 使用 GWLB Endpoint 来安全地跨 VPC 边界交换流量。进出 GWLB E
 5. 流量被发送到 Application；
 
 从 Application 到 Internet 的流量（橙色箭头）：
+
 1. 根据 Route Table 的默认路由， Application 发出的流量发送到了 GWLB Endpoint；
 2. 流量将发送到 GWLB，并经过了 Security Application 的检查；
 3. 检查后，流量发送回 GWLB Endpoint；
@@ -297,6 +317,7 @@ GWLB 使用 GWLB Endpoint 来安全地跨 VPC 边界交换流量。进出 GWLB E
 5. 流量发送到 Internet；
 
 使用 GWLB 时，通过对 Route Table 的配置，让 Application 所在的网段的流量都经过另一个 Subnet 的 GWLB Endpoint。例如：
+
 | Destination | Target              |
 | ----------- | ------------------- |
 | 10.0.0.0/16 | 本地                |
@@ -304,6 +325,7 @@ GWLB 使用 GWLB Endpoint 来安全地跨 VPC 边界交换流量。进出 GWLB E
 | 0.0.0.0/0   | internet-gateway-id |
 
 对于 Application 的路由表，将默认路由指向另一个 Subnet 的 GWLB Endpoint，从而让所有流量经过 GWLB。例如：
+
 | Destination | Target          |
 | ----------- | --------------- |
 | 10.0.0.0/16 | 本地            |
@@ -312,6 +334,7 @@ GWLB 使用 GWLB Endpoint 来安全地跨 VPC 边界交换流量。进出 GWLB E
 ### 7.1 LB 的状态
 
 LB 可能处于以下状态之一：
+
 * provisioning - 创建 LB 中
 * active - LB 已经就绪，并正常路由流量中
 * failed - LB 无法创建

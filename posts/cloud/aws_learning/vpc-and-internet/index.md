@@ -6,14 +6,16 @@
 **`Internet Gateway`** 用于将 VPC 的流量转发给外网，并将外网的主动访问转发给指定的 Instance。
 
 使用 Internet Gateway 的**必要操作**：
+
 1. 创建 Internet Gateway 并关联到 VPC 上。
 2. Instance 拥有公网 IP 地址：Public IP、Elastic IP 或者 IPv6。
 3. Route Table 能够将 Instance 的流量转发到 Internet Gateway。
 4. Security Group 与 Network ACL 不会拦截 Instance 的流量。
 
-{{< find_img "img1.png" 1 >}}
+{{< image src="img1.png" height=250 >}}
 
 Internet Gateway 内部会维护一份 Public IP 与 Private IP 的映射关系，其原理可以简单理解为：
+
 * 对于 Outbound 流量，Internet Gateway 会将数据包源地址从 Private IP 变为对应的 Public IP/Elastic IP。
 * 对于 Inbound 流量，Internet Gateway 会根据数据包源地址，匹配 Public IP/Elastic IP，然后将目的地址变为 Private IP 转发给 Instance。
 
@@ -37,4 +39,4 @@ Egress-only Internet Gateway 当然是有状态的，能将 response 转发给�
 
 NAT Device 是有状态的，当向实例发送回复时，会自动进行目标地址转换，并转发给指定的 Instance。
 
-{{< find_img "img3.png" >}}
+{{< image src="img3.png" height=250 >}}

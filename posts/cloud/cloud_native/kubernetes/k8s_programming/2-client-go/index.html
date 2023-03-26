@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-08-10T11:15:27+00:00" />
-<meta property="article:modified_time" content="2023-02-09T21:11:10+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/2-client-go\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  8188 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/2-client-go\/","datePublished": "2021-08-10T11:15:27+00:00","dateModified": "2023-02-09T21:11:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "k8s, 云计算","wordcount":  8197 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/cloud_native\/kubernetes\/k8s_programming\/2-client-go\/","datePublished": "2021-08-10T11:15:27+00:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">K8s 编程 - 2 - 编程基础</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kubernetes-%E7%BC%96%E7%A8%8B/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kubernetes 编程</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-08-10">2021-08-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 8188 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-08-10">2021-08-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 8197 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 17 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -186,7 +186,7 @@
 <p>client-go 与 Kubernetes 同时发布，对应 Kubernetes 1.x.y 版本就会有着对应的 client-go 版本。不过 client-go 还会发布独立的版本号，例如 client-go 9.0.0。</p>
 <h3 id="12-k8sioapi">1.2 k8s.io/api</h3>
 <p><a href="https://github.com/kubernetes/api" target="_blank" rel="noopener noreffer"><strong>k8s.io/api</strong></a> 库包含了<strong>所有 Kubernetes 基本对象的结构体</strong>，其按照 GroupVersion 进行组织。</p>
-<p>例如 Pod 一类的最基本的对象，包含在 core Group 中，因此放在 k8s.io/api/core/v1 包中的 types.go 文件中。其他对象也是类似。</p>
+<p>例如 Pod 一类的最基本的对象，包含在 core Group 中，因此放在 <code>k8s.io/api/core/v1</code> 包中的 types.go 文件中。其他对象也是类似。</p>
 <a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img1.png" title="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img1.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img1.png">
         <img
             class="lazyload"
@@ -249,7 +249,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>在项目中，所有的资源（包括 CR）都是通过 <strong><code>ClientSet</code></strong> 类的对象来访问。<strong>ClientSet 包含了多个 Group 多个 Version 的 Client</strong>。</p>
-<p>在集群内部 Pod 中，每个容器会挂载一个 ServiceAccount，路径为目录 <em>/var/run/secrets/kubernetes.io/serviceaccount</em>。通过该目录下提供的证书与 Token，可以替代 kubeconfig 文件来创建 ClientSet，用于访问 Kubernetes。</p>
+<p>在集群内部 Pod 中，每个容器会挂载一个 ServiceAccount，路径为目录 <code>/var/run/secrets/kubernetes.io/serviceaccount</code>。通过该目录下提供的证书与 Token，可以替代 kubeconfig 文件来创建 ClientSet，用于访问 Kubernetes。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -307,19 +307,16 @@
 </div>
 </div><h3 id="22-版本与兼容性">2.2 版本与兼容性</h3>
 <p>可以看到，ClientSet 使用的资源类型都是静态通过 api 库导入的，与 APIServer 使用的资源类型没有直接关系。也就是说，<strong>如果 client-go 库与 Kubernetes APIServer 对应的版本不同，那么就可能双方使用的资源定义不同</strong>。</p>
-<p>为此，client-go 仓库的 <a href="https://github.com/kubernetes/client-go#compatibility-matrix" target="_blank" rel="noopener noreffer"><strong>README</strong></a> 中，会发布一个兼容性矩阵。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img2.png"/>
-
-
-</p>
+<p>为此，client-go 仓库的 <a href="https://github.com/kubernetes/client-go#compatibility-matrix" target="_blank" rel="noopener noreffer"><strong>README</strong></a> 中，会发布一个兼容性矩阵。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img2.png" title="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img2.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img2.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img2.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img2.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img2.png" width="1698" height="250" />
+    </a>
 <ul>
 <li>√ 表示 client-go 与 Kubernetes 集群有着完全相同的 API 组版本。</li>
 <li>+ 表示 client-go 包含一些功能或者 API 对象，Kubernetes 集群还不支持。不过公共的部分还是能够正常工作。</li>
@@ -354,7 +351,7 @@
 </ul>
 <h2 id="3-kubernetes-对象">3 Kubernetes 对象</h2>
 <h3 id="31-object">3.1 Object</h3>
-<p>Go 语言中的 Kubernetes 对象都实现了 <strong><code>runtime.Object</code></strong> interface，该接口位于 <em>k8s.io/apimachinery/pkg/runtime</em> 包：</p>
+<p>Go 语言中的 Kubernetes 对象都实现了 <strong><code>runtime.Object</code></strong> interface，该接口位于 <code>k8s.io/apimachinery/pkg/runtime</code> 包：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -669,7 +666,7 @@
 <p>目前该资源没有被 APIServer 使用到。</p>
 </li>
 <li>
-<p><code>ManagedFields</code> - ??</p>
+<p><code>ManagedFields</code> - Server Side Apply 使用的字段管理</p>
 </li>
 </ul>
 <h3 id="34-spec-与-status">3.4 Spec 与 Status</h3>
@@ -879,8 +876,8 @@
 <ul>
 <li>
 <p><code>UpdateStatus</code></p>
-<p>Deployment 包含一个子资源 /status，前面的 UpdateStatus 接口就是通过请求 /status 的 HTTP API 访问的。</p>
-<p>举个例子，通过 <em>&quot;/apis/apps/v1beta1/namespace/&lt;ns&gt;/depolyments/&lt;name&gt;&quot;</em> HTTP Path <strong>只能修改该对象的 spec</strong>，而通过 <em>&quot;/apis/apps/v1beta1/namespace/&lt;ns&gt;/depolyments/&lt;name&gt;/status&quot;</em> <strong>可以修改该对象的 status</strong>。</p>
+<p>Deployment 包含一个子资源 <code>/status</code>，前面的 UpdateStatus 接口就是通过请求 <code>/status</code> 的 HTTP API 访问的。</p>
+<p>举个例子，通过 <code>/apis/apps/v1beta1/namespace/&lt;ns&gt;/depolyments/&lt;name&gt;</code> HTTP Path <strong>只能修改该对象的 spec</strong>，而通过 <code>/apis/apps/v1beta1/namespace/&lt;ns&gt;/depolyments/&lt;name&gt;/status</code> <strong>可以修改该对象的 status</strong>。</p>
 <p>默认情况下，生成 client 代码时会自动生成 UpdateStatus 方法的，但是不代表该资源可以支持修改 status。</p>
 </li>
 <li>
@@ -929,7 +926,7 @@
 </ul>
 <h4 id="41-clientset-option">4.1 ClientSet Option</h4>
 <p>下面看下在生成 ClientSet 时可以配置的一些选项。</p>
-<p>为了能够区分访问 APIServer 的不同 client，可以设置配置中的 User Agent 字段标识不同的 client。它的默认值为 binary/version (os/arch) kubernetes/commit，例如 kubectl 设置的 User Agent 为 kubectl/v1.14.0 (darwin/amd64) kubernetes/d654b49。</p>
+<p>为了能够区分访问 APIServer 的不同 client，可以设置配置中的 <code>User Agent</code> 字段标识不同的 client。它的默认值为 <code>binary/version (os/arch) kubernetes/commit</code>，例如 kubectl 设置的 <code>User Agent</code> 为 <code>kubectl/v1.14.0 (darwin/amd64) kubernetes/d654b49</code>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -987,21 +984,18 @@
 </div>
 </div><p>虽然 Client 默认没有设置请求的超时时间，但是 APIServer 会对非长时间运行请求有着 60s 的超时时间。</p>
 <h2 id="5-informer">5 Informer</h2>
-<p>Controller 如果每次需要查询就去访问 APIServer，会造成比较大的压力。Informer 提供了对象的 <strong><code>内存缓存</code></strong>，而<strong>通过 Watch 机制来监听对象的即时变化</strong>。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img3.png"/>
-
-
-</p>
+<p>Controller 如果每次需要查询就去访问 APIServer，会造成比较大的压力。Informer 提供了对象的 <strong><code>内存缓存</code></strong>，而<strong>通过 Watch 机制来监听对象的即时变化</strong>。</p>
+<a class="lightgallery" href="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img3.png" title="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img3.png" data-thumbnail="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img3.png"
+            data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img3.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img3.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img3.png" width="1099" height="150" />
+    </a>
 <p><strong><code>Informer</code></strong> 内部实现了<strong>完善的错误处理能力</strong>：当与 APIServer Watch 的长连接发生断开时，它会通过一个新的 Watch 请求尝试恢复，从事件中找到正确的事件继续处理。也就是不会丢失事件。如果连接断开时间很长，Informer 会获取完整的对象列表重新构建缓存。</p>
-<p>Informer 还提供了 <strong>resync</strong> 的机制：没经过一定的时间，它就会<strong>调用注册过的事件处理函数（Update 回调）</strong>，提供完成的对象列表。
+<p>Informer 还提供了 <strong>resync</strong> 的机制：没经过一定的时间，它就会<strong>调用注册过的事件处理函数（Update 回调）</strong>，提供完成的对象列表。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -1009,7 +1003,7 @@
         <div class="details-content">
             <div class="admonition-content">resync 也是基于 Informer 内存缓存提供的对象列表，不会向 APIServer 发起请求。</div>
         </div>
-    </div></p>
+    </div>
 <p>为了减少程序中使用多个 Informer 带来的开销，可以通过 <strong><code>SharedInformerFactory</code></strong> 来方便地对 Informer 进行复用。<strong>SharedInformerFactory 允许在一个应用程序中复用 Informer，这样底层只有一个与 APIServer 构建的 Watch 连接</strong>。</p>
 <p>通过 ClientSet 可以很方便的创建一个 SharedInformerFactory：</p>
 <div class="highlight"><div class="chroma">
@@ -1073,7 +1067,7 @@
         </div>
     </div>
 <h2 id="6-workqueue">6 WorkQueue</h2>
-<p>client-go 库中在 <em>&ldquo;k8s.io/client-go/util/workqueue&rdquo;</em> 中提供了一种强大的优先队列，可以实现让控制变得更加方便。</p>
+<p>client-go 库中在 <code>k8s.io/client-go/util/workqueue</code> 中提供了一种强大的优先队列，可以实现让控制变得更加方便。</p>
 <p>所有的 WorkQueue 都实现了下面的 interface：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1098,10 +1092,10 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>Add(item) - 用于添加一个元素，反复添加同一个未出队的 item 只会对该元素打上标记。</li>
-<li>Len() - 返回队列的当前长度。</li>
-<li>Get() - 返回一个最高优先级的元素，Get() 并不代表元素从队列中取出。</li>
-<li>Done(item) - 表明元素处理完成，从队列中移出。</li>
+<li><code>Add(item)</code> - 用于添加一个元素，反复添加同一个未出队的 item 只会对该元素打上标记。</li>
+<li><code>Len()</code> - 返回队列的当前长度。</li>
+<li><code>Get()</code> - 返回一个最高优先级的元素，Get() 并不代表元素从队列中取出。</li>
+<li><code>Done(item)</code> - 表明元素处理完成，从队列中移出。</li>
 </ul>
 <p><strong><code>DelayingInterface</code></strong> 是基于基础 interface 的扩展，<strong>用于延迟添加元素</strong>。这适用于很方便地把处理失败的元素延时重新加入队列。</p>
 <div class="highlight"><div class="chroma">
@@ -1171,10 +1165,10 @@
 </ul>
 <p>client-go 提供了多种方式的限频算法，包括：</p>
 <ul>
-<li>BucketRateLimiter</li>
-<li>ItemExponentialFailureRateLimiter</li>
-<li>ItemFastSlowRateLimiter</li>
-<li>MaxOfRateLimiter</li>
+<li><strong>BucketRateLimiter</strong></li>
+<li><strong>ItemExponentialFailureRateLimiter</strong></li>
+<li><strong>ItemFastSlowRateLimiter</strong></li>
+<li><strong>MaxOfRateLimiter</strong></li>
 </ul>
 <p>不过大部分情况下，我们都只需要使用</p>
 <div class="highlight"><div class="chroma">
@@ -1198,16 +1192,22 @@
             data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img4.png"
             data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img4.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img4.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img4.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img4.png" width="421" height="610" />
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img4.png" width="421" height="230" />
     </a>
 <ol>
-<li>代码中，我们得到一个对象，可以通过 <a href="#74-scheme" rel=""><strong>Scheme</strong></a> 得到对应的 <a href="#71-groupversionkind" rel=""><strong>GroupVersionKind</strong></a></li>
-<li>从 GroupVersionKind，通过 <a href="#73-rest-map" rel=""><strong>RESTMapper</strong></a> 可以映射到对应的 <a href="#72-groupversionresource" rel=""><strong>GroupVersionResource</strong></a></li>
-<li>client 基于 GroupVersionResource 就可以请求对应的 HTTP API Path</li>
+<li>
+<p>代码中，我们得到一个对象，可以通过 <a href="#74-scheme" rel=""><strong>Scheme</strong></a> 得到对应的 <a href="#71-groupversionkind" rel=""><strong>GroupVersionKind</strong></a></p>
+</li>
+<li>
+<p>从 GroupVersionKind，通过 <a href="#73-rest-map" rel=""><strong>RESTMapper</strong></a> 可以映射到对应的 <a href="#72-groupversionresource" rel=""><strong>GroupVersionResource</strong></a></p>
+</li>
+<li>
+<p>client 基于 GroupVersionResource 就可以请求对应的 HTTP API Path</p>
+</li>
 </ol>
 <h3 id="71-groupversionkind">7.1 GroupVersionKind</h3>
-<p>在 <a href="../1-basic/#221-kind" rel=""><strong>API 基本概念 - Kind</strong></a> 中说过，Kind 表示一个对象的类型。因为对象都是基于 GroupVersion 来说的，所以在代码中，Kind 的代表就是核心概念：<strong><code>GroupVersionKind</code></strong>，简写为 <strong><code>GVK</code></strong>。
-看下具体的结构：</p>
+<p>在 <a href="../1-basic/#221-kind" rel=""><strong>API 基本概念 - Kind</strong></a> 中说过，Kind 表示一个对象的类型。因为对象都是基于 GroupVersion 来说的，所以在代码中，Kind 的代表就是核心概念：<strong><code>GroupVersionKind</code></strong>，简写为 <strong><code>GVK</code></strong>。</p>
+<p>看下具体的结构：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1264,7 +1264,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>每个 GVR 都对应了一个 HTTP API Path。例如 apps/v1.deployments 这个 GVR 对应于 HTTP APi /apis/apps/v1/$namespace/deployments。</p>
+</div><p>每个 GVR 都对应了一个 HTTP API Path。例如 <code>apps/v1.deployments</code> 这个 GVR 对应于 HTTP APi <code>/apis/apps/v1/$namespace/deployments</code>。</p>
 <h3 id="73-rest-map">7.3 REST Map</h3>
 <p>大多数 Kind 与 Resource 存在着一一对应的关系，<strong>用于记录 GVK 与 GVR 之间的映射关系</strong>被称为 <strong><code>REST Map</code></strong>。</p>
 <p>代码中 <strong><code>RestMapper</code></strong> 为记录 RESTMap 的抽象 interface，其<strong>提供多个用于 GVK 与 GVR 之间转换的方法</strong>：</p>
@@ -1337,12 +1337,12 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>KindFor() - 部分 GVR 转换为单个 GVK</li>
-<li>KindsFor() - 部分 GVR 转换为所有 GVK</li>
-<li>ResourceFor() - 部分 GVR 转换为单个 GVR</li>
-<li>ResourcesFor() - 部分 GVR 转换为所有 GVR</li>
-<li>RESTMapping() - 从一个 Kind 得到对应最优先的 RestMapping</li>
-<li>RESTMappings() - 从一个 Kind 得到所有对应的 RestMapping</li>
+<li><code>KindFor()</code> - 部分 GVR 转换为单个 GVK</li>
+<li><code>KindsFor()</code> - 部分 GVR 转换为所有 GVK</li>
+<li><code>ResourceFor()</code> - 部分 GVR 转换为单个 GVR</li>
+<li><code>ResourcesFor()</code> - 部分 GVR 转换为所有 GVR</li>
+<li><code>RESTMapping()</code> - 从一个 Kind 得到对应最优先的 RestMapping</li>
+<li><code>RESTMappings()</code> - 从一个 Kind 得到所有对应的 RestMapping</li>
 </ul>
 <div class="details admonition tip open">
         <div class="details-summary admonition-title">
@@ -1402,7 +1402,7 @@
     </div>
 <h4 id="741-类型转换">7.4.1 类型转换</h4>
 <p>Scheme 提供 GVK 与特定类型转换功能。</p>
-<p>首先，我们需要通过 Scheme.AddKnownTypes 接口来注册 Golang 类型与 GroupVersion。通常，代码生成器会在 register.go 文件中生成该代码。</p>
+<p>首先，我们需要通过 Scheme.AddKnownTypes 接口来注册 Golang 类型与 GroupVersion。通常，代码生成器会在 <code>register.go</code> 文件中生成该代码。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1537,7 +1537,7 @@
             data-src="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img5.png"
             data-srcset="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img5.png, /posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img5.png 1.5x, /posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img5.png 2x"
             data-sizes="auto"
-            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img5.png" width="669" height="720" />
+            alt="/posts/cloud/cloud_native/kubernetes/k8s_programming/2-client-go/img5.png" width="669" height="250" />
     </a>
 <p>而 Scheme 也是保存着各个版本之间转换的地方（因为其知道所有版本的类型），通过以下函数提供功能：</p>
 <div class="highlight"><div class="chroma">
@@ -1609,7 +1609,7 @@
     </div>
 <p>我们将在后面的 Custom APIServer 编写中看到何时使用这些函数。</p>
 <h4 id="744-原生的-scheme">7.4.4 原生的 Scheme</h4>
-<p>client-go 中有着一些预定义的 Scheme，位于 k8s.io/client-go/kubernetes/scheme 包中。其包含了 Kubernetes 所有的核心类型，也就是原生类型都已经注册到了该 Scheme 中（包括 Convert 与 Default 相关）。</p>
+<p>client-go 中有着一些预定义的 Scheme，位于 <code>k8s.io/client-go/kubernetes/scheme</code> 包中。其包含了 Kubernetes 所有的核心类型，也就是原生类型都已经注册到了该 Scheme 中（包括 Convert 与 Default 相关）。</p>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://book.douban.com/subject/33393681/" target="_blank" rel="noopener noreffer"><strong>《Programming Kubernetes》</strong></a></li>
@@ -1618,8 +1618,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734: Post(Operator Desgin Notes) (#36)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cce6cda</a></span>
+                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

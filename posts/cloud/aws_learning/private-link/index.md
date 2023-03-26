@@ -99,7 +99,7 @@
 
 Gateway Endpoint 可用于访问 S3 与 DynamoDB 两个服务，并且没有使用 Private Link。
 
-{{< image src="img4.png" height=100 >}}
+{{< image src="img4.png" height=250 >}}
 
 在使用方式上，Gateway Endpoint 与 Interface Endpoint 也不同：基于 Route Table 来将流量发送到 Gateway Endpoint，从而访问服务。
 

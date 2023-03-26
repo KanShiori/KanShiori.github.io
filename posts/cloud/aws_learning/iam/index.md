@@ -205,6 +205,7 @@ Assume 成功后，User/Service 会得到一个 AK/SK + Token 等信息，同时
 ## 6 Policy 评估
 
 总结一下前面提到的所有 IAM 会评估的 Policy：
+
 * [**Identity-based Policy**](#31-policy-的类型)
 * [**Resource-based Policy**](#31-policy-的类型)
 * [**Session Policy**](#42-session-policy)
@@ -212,12 +213,17 @@ Assume 成功后，User/Service 会得到一个 AK/SK + Token 等信息，同时
 * [**Service Control Policy**](#24-service-control-policy)
 
 每个 IAM 检查 API 请求时，所有的设置了的 Policy 都会被评估，整体可以见下图：
-{{< find_img "img2.png" >}}
+
+{{< image src="img2.png" height=300 >}}
 
 看着流程很复杂，但是可见总结一下其判断逻辑：
+
 1. **显式拒绝** - 任何存在的 Policy，只要判断出 Deny，但是结果就是 Deny；
+   
 2. **基于资源策略显式允许** - 不存在显示拒绝情况下，如果 Resource-based Policy 是 Allow，那么结果是允许（不参考其他的 Policy）；
+   
 3. **其他策略交集取允许** - 其他策略要所有策略都需要显式的 Allow；
+
 4. **隐式拒绝** - 所有策略没有显式 Allow，那么结果为 Deny；
 
 {{< admonition note Note>}}
@@ -225,6 +231,7 @@ Assume 成功后，User/Service 会得到一个 AK/SK + Token 等信息，同时
 {{< /admonition >}}
 
 以伪代码方式看：
+
 ```go
 if anyDeny {
   return Deny  // 显式拒绝

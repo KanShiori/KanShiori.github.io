@@ -23,7 +23,7 @@ SSD 类型的 EBS 又可以分为几个类别：
 
 * General Purpose SSD - 性价比高的类型，大多数 Instance 使用这种类型。具体包括
   
-  * **gp3** - 无论 Volume 的大小，gp3 提供了标准的性能：3000 IOPS 与 125 MiB/s。当然，EBS–optimized Instance 可以提高更高的性能。
+  * **gp3** - 无论 Volume 的大小，gp3 提供了标准的性能。当然，EBS–optimized Instance 可以提高更高的性能。
 
   * **gp2** - gp2 的性能与使用情况有关，基于令牌桶的实现：
 

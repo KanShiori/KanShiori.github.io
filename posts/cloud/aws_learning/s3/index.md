@@ -59,7 +59,8 @@ S3 Lifecycle 可以通过多种方式配置。例如使用 CLI 配置 JSON 文�
 #### 2.1.1 Transition
 
 Transition 支持自动在不同 Storage Type 转换，以节省存储成本。
-{{< find_img "img1.png" >}}
+
+{{< image src="img1.png" height=300 >}}
 
 #### 2.1.2 Expiration
 
@@ -230,9 +231,9 @@ Batch Operation 支持的操作包括：
 
 他人要访问私有的 S3 资源，可以通过授予 `Identity-based Policy` 或者 `Resource-based Policy`。
 
-Resource-base Policy 就是基于基本的 IAM 来授予用户调用 S3 相关接口的权限。
+Identity-based Policy 就是基于基本的 IAM 来授予用户调用 S3 相关接口的权限。
 
-Identity-based Policy 是以 S3 资源为对象，提供给被授予者相关 S3 资源的权限。包含两种方式：ACL 与 Bucket Policy。
+Resource-base Policy 是以 S3 资源为对象，提供给被授予者相关 S3 资源的权限。包含两种方式：ACL 与 Bucket Policy。
 
 #### 3.1.1 S3 中的资源
 

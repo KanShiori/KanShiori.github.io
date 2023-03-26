@@ -8,16 +8,23 @@
 在 [**Custom APIServer/Admission**](../6-custom-api-server/#6-admission) 一节中看到，APISever 提供了 Admission Plugin 机制来进行 Mutating 与 Validating 的插件式扩展。不过 Admission Plugin 是要重新编译 APISever 来实现的，因此 APISever 提供了更加灵活的 Admission Webhook。
 
 **Admission Webhook 的调用时机在 Admission Plugin 的尾部，在 Quota Plugin 之前**。
-{{< find_img "img1.png" >}}
+
+{{< image src="img1.png" height=400 >}}
 
 Admission Webhook 的使用包含：
+
 * 部署 **`Webhook Server`**，用于 APISever 转发请求；
+
 * 部署 **`ValidatingWebhookConfiguration`**/**`MutatingWebhookConfiguration`** 资源，向 APISever 注册 Webhook Server；
+
 * RBAC（如果 Webhook Server 需要）
 
 ## 1 WebhookConfiguration
 
-通过部署 **`ValidatingWebhookConfiguration`**/**`MutatingWebhookConfiguration`** 来**向 APIServer 注册 Validating/Mutating Webhook Server**。下面是一个 ValidatingWebhookConfiguration 示例，而 MutatingWebhookConfiguration 是类似的。
+通过部署 **`ValidatingWebhookConfiguration`**/**`MutatingWebhookConfiguration`** 来**向 APIServer 注册 Validating/Mutating Webhook Server**。
+
+下面是一个 ValidatingWebhookConfiguration 示例，而 MutatingWebhookConfiguration 是类似的。
+
 ```yaml
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
@@ -52,6 +59,7 @@ webhooks:
   reinvocationPolicy: IfNeeded
   failurePolicy: Fail
 ```
+
 * webhooks: 定义一个或者多个 webhook servers
   * name - 定义多个 webhook 情况下，需要定义一个唯一的 name
   * clientConfig - 定义 APIServer 转发的目标，可以为 URL 或者 Service
@@ -69,7 +77,10 @@ webhooks:
 
 #### 1.1.1 rules
 
-**每个 webhook 必须指定一组 `rules`，用以让 APIServer 决定是否转发请求给 webhook server**。当一个请求能够匹配 operation、group、version、resource、scope，那么请求就会转发。
+**每个 webhook 必须指定一组 `rules`，用以让 APIServer 决定是否转发请求给 webhook server**。
+
+当一个请求能够匹配 operation、group、version、resource、scope，那么请求就会转发。
+
 ```yaml
   rules:
   - apiGroups:   [""]
@@ -94,6 +105,7 @@ webhooks:
 **通过 `objectSelector` 根据请求操作的 object 的 label 来筛选请求，成功匹配的请求才会被转发**。
 
 下面示例中，经过 rules 匹配后的请求，还会经过 objectSelector 筛选（需要包含 label foo:bar）。
+
 ```yaml
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
@@ -115,6 +127,7 @@ webhooks:
 #### 1.1.3 namespaceSelector 
 
 **通过 `namespaceSelector` 根据请求操作的 object 的 namespace 来筛选请求**。
+
 ```yaml
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
@@ -137,13 +150,15 @@ webhooks:
 
 #### 1.1.4 matchPolicy
 
-一个资源可能属于多个 API Group，这在升级资源版本时很常见。例如，Deployment 支持 extensions/v1beta1，apps/v1beta1 等。
+一个资源可能属于多个 API Group，这在升级资源版本时很常见。例如，Deployment 支持 `extensions/v1beta1`，`apps/v1beta1` 等。
 
 **`matchPolicy`** 用于定义 rules 如何匹配请求，其值可以为：
+
 * **Exact** - 表示请求需要完全匹配
 * **Equivalent**（默认值） - **表示请求可以匹配不同 APIGroup 的相同资源**
 
-例如下面示例，通过 matchPolicy 也可以匹配 extensions/v1beta1 的 Deployment 了。
+例如下面示例，通过 matchPolicy 也可以匹配 `extensions/v1beta1` 的 Deployment 了。
+
 ```yaml
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
@@ -168,7 +183,8 @@ webhooks:
 
 #### 1.2.1 URL
 
-**URL 为一个 webhook server 地址，以标准的 URL 格式**。但是，不允许使用用户或者基本身份认证（例如 URL 中的 user:password@），也不允许 URL 中使用 # 和 ? 传参。
+**URL 为一个 webhook server 地址，以标准的 URL 格式**。但是，不允许使用用户或者基本身份认证（例如 URL 中的 user:password@），也不允许 URL 中使用 `#` 和 `?` 传参。
+
 ```yaml
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
@@ -176,13 +192,14 @@ kind: MutatingWebhookConfiguration
 webhooks:
 - name: my-webhook.example.com
   clientConfig:
-    url: " https://my-webhook.example.com:9443/my-webhook-path"
+    url: "https://my-webhook.example.com:9443/my-webhook-path"
   # ...
 ```
 
 #### 1.2.2 Service
 
 **如果 Webhook Server 运行在集群中，可以指定 Service 来转发请求**。其 port 默认为 443，path 默认为 "/"。
+
 ```yaml
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
@@ -204,6 +221,7 @@ webhooks:
 有些情况下，Webhook Server 不仅仅是处理 AdmissionReview 对象，而要进行一些 **“带外” 操作**（指操作实际的资源），这也被称为 **`Side effect`**。
 
 **`sideEffects`** 字段用于**指定 Webhook Server 能否处理 dryRun 的 请求**（dryRun:true）。值可以为：
+
 * **Unknown** - 未知，对于 dryRun 请求要转发给 Webhook 的，直接视为请求失败。
 * **None** - 表明 Webhook 没有 Side effect。
 * **Some** - 表明 Webhook 有一些 side effect，对于 dryRun 请求要转发给 Webhook 的，将直接视为请求失败。
@@ -226,6 +244,7 @@ webhooks:
 而 1.15 后，**如果 Mutating Webhook 更改对象，内置的 Mutating Admission Plugin 会重跑**。
 
 **`reinvocationPolicy` 字段可以控制 Webhook Server 在这种情况下，是否需要重跑**。值可以为：
+
 * **Never** - 一次中 Admission Control 不能多次调用 Webhook。
 * **IfNeeded** - Webhook 调用后的对象又被其他 Admission Plugin 修改了，那么 Webhook 会再次重跑。
 
@@ -240,6 +259,7 @@ webhooks:
 ```
 
 不过需要注意：
+
 * 不保证额外调用次数是一次
 * 如果额外调用，导致对象再一次被修改，那么不保证还会再次调用 Webhook
 * 使用此选项的 Webhook 可能会被重新排序，以减少额外调用数。
@@ -250,6 +270,7 @@ webhooks:
 ### 1.5 Failure policy
 
 **`failurePolicy`** 字段定义了，**当 APIServer 请求 Webhook 失败后，如何处理（包括超时错误**）。
+
 * **Ignore** - Webhook 返回的错误会被忽略，API 请求继续
 * **Fail**（默认） - Webhook 返回错误，API 请求被拒绝
 
@@ -263,75 +284,75 @@ webhooks:
   # ...
 ```
 
-
 ## 2 Request 与 Response
 
 ### 2.1 Request
 
 APIServer 发送 POST HTTP 请求，其设置了 HTTP Header 中 `Content-Type: application/json`，**body 内容为 AdmissionReview 对象的 JSON 格式，设置了其中的 "request" 字段**。
 
-下面示例展示了对于 apps/v1 Deployment scale 子资源的调用请求，对应的 AdmissionReview 对象内容。
+下面示例展示了对于 `apps/v1` Deployment scale 子资源的调用请求，对应的 AdmissionReview 对象内容。
+
 ```json
 {
   "apiVersion": "admission.k8s.io/v1",
   "kind": "AdmissionReview",
   "request": {
-    # 随机 uid，用于标识这次 admission 调用
+    // 随机 uid，用于标识这次 admission 调用
     "uid": "705ab4f5-6393-11e8-b7cc-42010a800002",
 
-    # 请求中对象的 GVK
+    // 请求中对象的 GVK
     "kind": {"group":"autoscaling","version":"v1","kind":"Scale"},
-    # 请求中对象的 GVR
+    // 请求中对象的 GVR
     "resource": {"group":"apps","version":"v1","resource":"deployments"},
-    # 请求对象的 subresource
+    // 请求对象的 subresource
     "subResource": "scale",
 
-    # 请求源对象的 GVK
-    # 因为 `matchPolicy: Equivalent` 可能会让请求转变，而这里保存转变前的 GVK
+    // 请求源对象的 GVK
+    // 因为 `matchPolicy: Equivalent` 可能会让请求转变，而这里保存转变前的 GVK
     "requestKind": {"group":"autoscaling","version":"v1","kind":"Scale"},
-    # 请求源对象的 GVR
-    # 因为 `matchPolicy: Equivalent` 可能会让请求转变，而这里保存转变前的 GVR
-    # Fully-qualified group/version/kind of the resource being modified in the original request to the API server.
-    # This only differs from `resource` if the webhook specified `matchPolicy: Equivalent` and the
-    # original request to the API server was converted to a version the webhook registered for.
+    // 请求源对象的 GVR
+    // 因为 `matchPolicy: Equivalent` 可能会让请求转变，而这里保存转变前的 GVR
+    // Fully-qualified group/version/kind of the resource being modified in the original request to the API server.
+    // This only differs from `resource` if the webhook specified `matchPolicy: Equivalent` and the
+    // original request to the API server was converted to a version the webhook registered for.
     "requestResource": {"group":"apps","version":"v1","resource":"deployments"},
-    # 请求源对象的 subresource
-    # 因为 `matchPolicy: Equivalent` 可能会让请求转变，而这里保存转变前的 subresource
+    // 请求源对象的 subresource
+    // 因为 `matchPolicy: Equivalent` 可能会让请求转变，而这里保存转变前的 subresource
     "requestSubResource": "scale",
 
-    # 请求对象的 name
+    // 请求对象的 name
     "name": "my-deployment",
-    # 请求对象的 namespace
+    // 请求对象的 namespace
     "namespace": "my-namespace",
 
-    # 请求的操作，CREATE UPDATE DELETE CONNECT
+    // 请求的操作，CREATE UPDATE DELETE CONNECT
     "operation": "UPDATE",
 
     "userInfo": {
-      # APIServer 身份认证的 username
+      // APIServer 身份认证的 username
       "username": "admin",
-      # APIServer 身份认证的 uid
+      // APIServer 身份认证的 uid
       "uid": "014fbff9a07c",
-      # APIServer 身份认证的 group
+      // APIServer 身份认证的 group
       "groups": ["system:authenticated","my-admin-group"],
-      # Arbitrary extra info associated with the user making the request to the API server.
-      # This is populated by the API server authentication layer and should be included
-      # if any SubjectAccessReview checks are performed by the webhook.
+      // Arbitrary extra info associated with the user making the request to the API server.
+      // This is populated by the API server authentication layer and should be included
+      // if any SubjectAccessReview checks are performed by the webhook.
       "extra": {
         "some-key":["some-value1", "some-value2"]
       }
     },
 
-    # 请求操作的对象，可以通过 scheme 解析为具体的结构
+    // 请求操作的对象，可以通过 scheme 解析为具体的结构
     "object": {"apiVersion":"autoscaling/v1","kind":"Scale",...},
-    # 当前集群中的对象
-    # It is null for CREATE and CONNECT operations.
+    // 当前集群中的对象
+    // It is null for CREATE and CONNECT operations.
     "oldObject": {"apiVersion":"autoscaling/v1","kind":"Scale",...},
-    # 操作的 Option，包含 CreateOptions、UpdateOptions、DeleteOptions
+    // 操作的 Option，包含 CreateOptions、UpdateOptions、DeleteOptions
     "options": {"apiVersion":"meta.k8s.io/v1","kind":"UpdateOptions",...},
 
-    # dryRun 表明请求是否是 dry run mode
-    # See http://k8s.io/docs/reference/using-api/api-concepts/#make-a-dry-run-request for more details.
+    // dryRun 表明请求是否是 dry run mode
+    // See http://k8s.io/docs/reference/using-api/api-concepts/#make-a-dry-run-request for more details.
     "dryRun": false
   }
 }
@@ -342,6 +363,7 @@ APIServer 发送 POST HTTP 请求，其设置了 HTTP Header 中 `Content-Type: 
 Webhook server 应该**返回 200 HTTP code**，并设置了 HTTP Header 中 `Content-Type: application/json`，**body 内容为 AdmissionReview 对象的 JSON 格式，设置了其中的 "response" 字段**。
 
 不同的操作可能有着不同的 response，不过至少其必须包含以下字段：
+
 ```json
 {
   "apiVersion": "admission.k8s.io/v1",
@@ -352,10 +374,12 @@ Webhook server 应该**返回 200 HTTP code**，并设置了 HTTP Header 中 `Co
   }
 }
 ```
+
 * **`uid`** - 复制 request.uid
 * **`allowed`** - 设置为 true 或者 false，表明允许或者禁止
 
 拒绝请求时，通过 **`status`** 字段可以**提供需要 APIServer 返回给 client 的 HTTP code 与 message**。
+
 ```json
 {
   "apiVersion": "admission.k8s.io/v1",
@@ -372,6 +396,7 @@ Webhook server 应该**返回 200 HTTP code**，并设置了 HTTP Header 中 `Co
 ```
 
 对于 MutatingWebhook 可以对对象进行修改，这是通过 [**JSON Patch**](http://jsonpatch.com/) 实现的。
+
 ```json
 {
   "apiVersion": "admission.k8s.io/v1",
@@ -384,10 +409,12 @@ Webhook server 应该**返回 200 HTTP code**，并设置了 HTTP Header 中 `Co
   }
 }
 ```
+
 * **`patchType`** - 指定 patch 类型，目前仅仅支持 JSONPatch
 * **`patch`** - patch 操作的 base64 编码，示例中为 "[{"op": "add", "path": "/spec/replicas", "value": 3}]"
 
 1.19 后，也可以选择返回一个 WARN 信息，通过 **`warnings`** 字段。
+
 ```json
 {
   "apiVersion": "admission.k8s.io/v1",
@@ -404,16 +431,33 @@ Webhook server 应该**返回 200 HTTP code**，并设置了 HTTP Header 中 `Co
 ```
 * warn 信息不能超过 120 字节
 
+## 3 与 APIServer 的身份认证
 
-## 3 与 APIServer 的鉴权方式
+### 3.1 APIServer 验证 Webhook 身份
 
-Admission Webhook 与 APIServer 支持三种鉴权方式：basic auth、bearer token、cert。
+APIServer 基于证书认证的方式来验证 Webhook 身份，通过使用  [**WebhookConfiguration**](#1-webhookconfiguration) 的`clientConfig.caBundle` 字段配置的 CA 证书来验证 Webhook 的证书。
+
+```yaml
+# ...
+  clientConfig:
+    service:
+      namespace: "example-namespace"
+      name: "example-service"
+    caBundle: OMIT
+```
+
+### 3.2 Webhook 验证 APIServer 身份
+
+如果 Webhook 需要认证 APIServer 身份，可以提供给 APIServer 一个 kubeconfig，APIServer 会使用 kubeconfig 文件中的配置作为访问凭证。
 
 需要三个阶段来进行配置：
-1. 启动 APIServer 时，通过 **"--admission-control-config-file"** 参数**指定 Admission Control 配置文件**。
+
+1. 启动 APIServer 时，通过 **`--admission-control-config-file`** 参数**指定 Admission Control 配置文件**。
+
 2. 在 Admission Control 配置文件中，指定 MutatingAdmissionWebhook Controller 与 ValidatingAdmissionWebhook  Controller 读取的证书。
    
    在配置文件，通过 `kubeConfigFile` 字段指定对应的 **`kubeconfig`** 文件。
+
     ```yaml
     apiVersion: apiserver.config.k8s.io/v1
     kind: AdmissionConfiguration
@@ -431,6 +475,7 @@ Admission Webhook 与 APIServer 支持三种鉴权方式：basic auth、bearer t
     ```
 
 3. 在指定的 kubeConfig 文件中，提供需要的证书
+
    ```yaml
     apiVersion: v1
     kind: Config
@@ -481,7 +526,6 @@ Admission Webhook 与 APIServer 支持三种鉴权方式：basic auth、bearer t
 配置中仅仅配置了 client 证书与私钥，而在 ValidatingWebhookConfiguration/MutatingWebhookConfiguration 定义中指定了 CA Bundle，即 CA 证书。
 {{< /admonition >}}
 
-
 ## 4 实现
 
 接下来我们来看 Webhook Server 的实现，幸运的是，其比 Custom APIServer 要简单的多。
@@ -489,6 +533,7 @@ Admission Webhook 与 APIServer 支持三种鉴权方式：basic auth、bearer t
 ### 4.1 HTTP Server
 
 Webhook Server 本质上就是一个 HTTP Server，因此其 main 函数中，主要就是启动了一个 HTTP Server。
+
 ```go
 func main(cmd *cobra.Command, args []string) {
 	config := Config{
@@ -530,6 +575,7 @@ func main(cmd *cobra.Command, args []string) {
 ### 4.2 通用处理逻辑 serve
 
 所有的 HTTP Endpoint HandleFunc 都是基于 **`serve`** 的调用，例如：
+
 ```go
 func serveAlwaysAllowDelayFiveSeconds(w http.ResponseWriter, r *http.Request) {
 	serve(w, r, newDelegateToV1AdmitHandler(alwaysAllowDelayFiveSeconds))
@@ -537,6 +583,7 @@ func serveAlwaysAllowDelayFiveSeconds(w http.ResponseWriter, r *http.Request) {
 ```
 
 因为所有的 Webhook 有着最**基本的编解码的逻辑**，这一部分是相同的，而 server 就是处理这部分逻辑的。
+
 ```go
 // serve 处理 HTTP 请求，从 body 中解析得到 AdmissionReview，然后调用 admit 回调处理，最后将结果回复
 func serve(w http.ResponseWriter, r *http.Request, admit admitHandler) {
@@ -634,6 +681,7 @@ func serve(w http.ResponseWriter, r *http.Request, admit admitHandler) {
 ```
 
 从中我们也可以总结出基本的 Webhook 处理逻辑：
+
 1. 读取 HTTP 请求的 body。
 2. 检查 HTTP 请求的 Content-Type 是否为 application/json。
 3. 将 body 解析为 AdmissionReview 对象。
@@ -644,6 +692,7 @@ func serve(w http.ResponseWriter, r *http.Request, admit admitHandler) {
 ### 4.3 业务处理逻辑 admitHandler 
 
 在 serve 中看到，抽象了 **`admitHandler`** 来进行业务逻辑的处理。其包含处理 v1beta1 与 v1 版本的 AdmissionReview 对象的回调。
+
 ```go
 // admitv1beta1Func handles a v1beta1 admission
 type admitv1beta1Func func(v1beta1.AdmissionReview) *v1beta1.AdmissionResponse
@@ -659,6 +708,7 @@ type admitHandler struct {
 ```
 
 为了让大部分的处理函数仅仅只需要支持 v1 版本的 AdmissionReview 对象，内置了 `newDelegateToV1AdmitHandler` 函数：
+
 ```go
 // newDelegateToV1AdmitHandler 返回能够自动支持 v1beta1 版本 AdmissionReview 的 Handler
 func newDelegateToV1AdmitHandler(f admitv1Func) admitHandler {
@@ -721,6 +771,7 @@ func convertAdmissionResponseToV1beta1(r *v1.AdmissionResponse) *v1beta1.Admissi
 #### 4.4.1 Validate
 
 对请求进行 Validate，并允许请求。核心就是设置 **`Reponse.Allowed`** 字段：
+
 ```go
 // alwaysAllowDelayFiveSeconds 是一个 v1 AdmissionReview Handler，sleep 5s 后返回 allowed response
 func alwaysAllowDelayFiveSeconds(ar v1.AdmissionReview) *v1.AdmissionResponse {
@@ -735,6 +786,7 @@ func alwaysAllowDelayFiveSeconds(ar v1.AdmissionReview) *v1.AdmissionResponse {
 ```
 
 拒绝请求也是类似：
+
 ```go
 // alwaysDeny 拒绝所有请求
 func alwaysDeny(ar v1.AdmissionReview) *v1.AdmissionResponse {
@@ -747,6 +799,7 @@ func alwaysDeny(ar v1.AdmissionReview) *v1.AdmissionResponse {
 ```
 
 复杂一点，就需要通过编码器对 **`Request.Object.Raw`** 进行解析，得到一个具体的 Resource 对象。
+
 ```go
 // admitPods 检查 Pod 的 image
 func admitPods(ar v1.AdmissionReview) *v1.AdmissionResponse {
@@ -796,6 +849,7 @@ func admitPods(ar v1.AdmissionReview) *v1.AdmissionResponse {
 ```
 
 对于 Subresource 的请求，就需要用到 **`Request.SubResource`**，以及明确 HTTP body 的内容：
+
 ```go
 // denySpecificAttachment 检查 Pod attch 参数
 func denySpecificAttachment(ar v1.AdmissionReview) *v1.AdmissionResponse {
@@ -842,6 +896,7 @@ func denySpecificAttachment(ar v1.AdmissionReview) *v1.AdmissionResponse {
 #### 4.4.2 Mutate
 
 Mutate 可以在 Validate 基础上可以对对象进行修改，核心是设置好 **`Response.Patch`** 与 **`Response.PatchType`** 字段。
+
 ```go
 const (
 	podsInitContainerPatch string = `[
@@ -888,5 +943,6 @@ func applyPodPatch(ar v1.AdmissionReview, shouldPatchPod func(*corev1.Pod) bool,
 ```
 
 ## 参考
+
 * [**《Programming Kubernetes》**](https://book.douban.com/subject/33393681/)
 * [**Dynamic Admission Control**](https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/)

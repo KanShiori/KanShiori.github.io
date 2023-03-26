@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/cloud/aws_learning/vpc-and-internet/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-11-29T13:12:48+00:00" />
-<meta property="article:modified_time" content="2023-02-09T21:11:10+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/vpc-and-internet\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "aws","wordcount":  565 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/vpc-and-internet\/","datePublished": "2021-11-29T13:12:48+00:00","dateModified": "2023-02-09T21:11:10+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/cloud\/aws_learning\/vpc-and-internet\/","datePublished": "2021-11-29T13:12:48+00:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -140,18 +140,15 @@
 <li>Route Table 能够将 Instance 的流量转发到 Internet Gateway。</li>
 <li>Security Group 与 Network ACL 不会拦截 Instance 的流量。</li>
 </ol>
-
-
-
-
-
-
-
-
-    <img src="/posts/cloud/aws_learning/vpc-and-internet/img1.png"/><br>
-
-
-
+<a class="lightgallery" href="/posts/cloud/aws_learning/vpc-and-internet/img1.png" title="/posts/cloud/aws_learning/vpc-and-internet/img1.png" data-thumbnail="/posts/cloud/aws_learning/vpc-and-internet/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/vpc-and-internet/img1.png"
+            data-srcset="/posts/cloud/aws_learning/vpc-and-internet/img1.png, /posts/cloud/aws_learning/vpc-and-internet/img1.png 1.5x, /posts/cloud/aws_learning/vpc-and-internet/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/vpc-and-internet/img1.png" width="635" height="250" />
+    </a>
 <p>Internet Gateway 内部会维护一份 Public IP 与 Private IP 的映射关系，其原理可以简单理解为：</p>
 <ul>
 <li>对于 Outbound 流量，Internet Gateway 会将数据包源地址从 Private IP 变为对应的 Public IP/Elastic IP。</li>
@@ -174,24 +171,21 @@
 <h2 id="3-nat-device">3 NAT Device</h2>
 <p><strong><code>NAT Device</code></strong> 允许 Private Subnet 中的 Instance 访问 Internet，NAT Device 会将数据包的源地址 IP 替换为 NAT Device 的 Elastic IP。</p>
 <p>NAT Device 是有状态的，当向实例发送回复时，会自动进行目标地址转换，并转发给指定的 Instance。</p>
-
-
-
-
-
-
-
-
-    <br><img src="/posts/cloud/aws_learning/vpc-and-internet/img3.png"/>
-
-
-
+<a class="lightgallery" href="/posts/cloud/aws_learning/vpc-and-internet/img3.png" title="/posts/cloud/aws_learning/vpc-and-internet/img3.png" data-thumbnail="/posts/cloud/aws_learning/vpc-and-internet/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/cloud/aws_learning/vpc-and-internet/img3.png"
+            data-srcset="/posts/cloud/aws_learning/vpc-and-internet/img3.png, /posts/cloud/aws_learning/vpc-and-internet/img3.png 1.5x, /posts/cloud/aws_learning/vpc-and-internet/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/cloud/aws_learning/vpc-and-internet/img3.png" width="635" height="250" />
+    </a>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-02-09&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) cce6cdaa228e3a058ee0c6c86ffb8bd366b9d734: Post(Operator Desgin Notes) (#36)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>cce6cda</a></span>
+                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
