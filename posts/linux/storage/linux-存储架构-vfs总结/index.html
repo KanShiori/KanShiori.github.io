@@ -163,21 +163,18 @@
 </blockquote>
 <p>本文是对 Linux 存储架构中的 VFS 层的一个总结，基本内容来源于网络的学习，以及自己观摩了下源码。</p>
 <h2 id="1-vfs-整体模型">1 VFS 整体模型</h2>
-<p><strong><ruby>虚拟文件系统<rt>Virtual File System</rt></ruby></strong> 是在用户进程与文件系统之间的一个<strong>抽象层</strong>，使得用户进程无需关系文件系统的实现，而通过相同的 IO 接口就可以进行数据的读写。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img1.png"/>
-
-
-</p>
+<p><strong><ruby>虚拟文件系统<rt>Virtual File System</rt></ruby></strong> 是在用户进程与文件系统之间的一个<strong>抽象层</strong>，使得用户进程无需关系文件系统的实现，而通过相同的 IO 接口就可以进行数据的读写。</p>
+<a class="lightgallery" href="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img1.png" title="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img1.png" data-thumbnail="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img1.png"
+            data-srcset="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img1.png, /posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img1.png 1.5x, /posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img1.png" width="605" height="200" />
+    </a>
 <p>当用户程序对一个 fd 调用 IO 系统调用时，VFS 根据其对应的文件系统，调用其各个函数的实现。</p>
-<p>可以将其想象问，你定义了一个 Golang interface VFS，而不同的文件系统实现了其 interface 的操作。上层只需要调用 VFS 的各个接口即可。
+<p>可以将其想象问，你定义了一个 Golang interface VFS，而不同的文件系统实现了其 interface 的操作。上层只需要调用 VFS 的各个接口即可。</p>
 <div class="details admonition tip open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>Tip<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -185,15 +182,23 @@
         <div class="details-content">
             <div class="admonition-content"><strong>“一切的抽象层都是为了解耦”</strong></div>
         </div>
-    </div></p>
+    </div>
 <h2 id="2-vfs-的通用文件模型">2 VFS 的通用文件模型</h2>
 <p>为了管理不同的文件系统，VFS 需要一个<strong>通用的文件模型来抽象整个文件系统的模型</strong>，而不同的文件系统需要通过自身的实现来满足这个模型。</p>
 <p>VFS 的通用文件模型主要包含 4 个对象：</p>
 <ul>
-<li><strong><code>superblock</code></strong>：保存<strong>文件系统的基本元数据</strong>，一个文件系统有着一个 superblock 对象，包含文件系统类型、大小、状态等信息；</li>
-<li><strong><code>inode</code></strong>：保存一个<strong>文件或目录相关的元信息</strong>，代表着一个文件或目录，包含文件访问权限、文件类型、大小等（不包括文件名）；</li>
-<li><strong><code>file</code></strong>：<strong>进程打开文件后，文件的表示</strong>，进程所看见的文件；</li>
-<li><strong><code>dentry</code></strong>：保存<strong>文件名（目录名）与其 inode 的对应关系</strong>，用于加速文件的查询；</li>
+<li>
+<p><strong><code>superblock</code></strong>：保存<strong>文件系统的基本元数据</strong>，一个文件系统有着一个 superblock 对象，包含文件系统类型、大小、状态等信息；</p>
+</li>
+<li>
+<p><strong><code>inode</code></strong>：保存一个<strong>文件或目录相关的元信息</strong>，代表着一个文件或目录，包含文件访问权限、文件类型、大小等（不包括文件名）；</p>
+</li>
+<li>
+<p><strong><code>file</code></strong>：<strong>进程打开文件后，文件的表示</strong>，进程所看见的文件；</p>
+</li>
+<li>
+<p><strong><code>dentry</code></strong>：保存<strong>文件名（目录名）与其 inode 的对应关系</strong>，用于加速文件的查询；</p>
+</li>
 </ul>
 <h3 id="21-inode">2.1 inode</h3>
 <p><strong><code>inode</code></strong> 是针对文件系统维度而言的，是<strong>每个文件或目录在文件系统的唯一标识</strong>，并包含其相关的元信息。可以想到，inode 需要持久化在具体的存储设备上，用以机器重启后恢复文件信息。</p>
@@ -412,7 +417,7 @@
 </ul>
 <p>从上面可以看到，任何文件系统上的每一个单元（普通文件、目录、设备、管道等等），在 VFS 都由一个 inode 来抽象。</p>
 <p>因此，对于每个进程，所有的操作都是相同的，即基于文件系统某个“文件”的增删改查等等，接口是统一的。<strong>而各个文件系统就要实现自身的 i_op、i_fop 操作</strong>。</p>
-<p>例如，对于网络 IO，也是通过 VFS 层操作的，而需要网络子系统实现一个走网络的 i_fop 操作。
+<p>例如，对于网络 IO，也是通过 VFS 层操作的，而需要网络子系统实现一个走网络的 i_fop 操作。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -420,7 +425,7 @@
         <div class="details-content">
             <div class="admonition-content">“一切皆文件”</div>
         </div>
-    </div></p>
+    </div>
 <h4 id="211-文件系统对-inode-操作">2.1.1 文件系统对 inode 操作</h4>
 <p>看一下文件系统对 inode 的操作 <strong><code>inode_operations</code></strong>：</p>
 <div class="highlight"><div class="chroma">
@@ -687,19 +692,16 @@
 </ul>
 <h3 id="23-file">2.3 file</h3>
 <p><strong><code>file</code></strong> 是<strong>文件在进程中的表示</strong>，当进程通过 <code>open()</code> 打开一个文件得到文件描述符后，内核就会有一个 file 对象来表示这个“打开”。</p>
-<p>如下图所示，每个进程所打开的每个 fd，就对应这一个 file 结构对象。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img2.png"/>
-
-
-</p>
+<p>如下图所示，每个进程所打开的每个 fd，就对应这一个 file 结构对象。</p>
+<a class="lightgallery" href="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img2.png" title="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img2.png" data-thumbnail="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img2.png"
+            data-srcset="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img2.png, /posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img2.png 1.5x, /posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img2.png" width="605" height="280" />
+    </a>
 <p>看下具体的 file 对象：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -938,19 +940,16 @@
 <p>首先从内核角度看，一个已经挂载的<strong>文件系统就是由 superblock + inode 组成</strong>的。文件系统信息保存在 superblock 中，每个文件由 inode 表示。</p>
 <p><strong>对于一个文件的读写，就是找到对应文件的 inode，然后调用底层文件系统的 read/write 接口。一个目录 inode 对应的数据，就是其子文件或者目录的命名。</strong></p>
 <p>因为文件的读写增删是非常频繁的，为了在目录树中更快速的查找 inode，<strong>内核维护了 dentry 结构树，dentry 包含了文件名与 inode 的映射关系，使得不用依靠读写磁盘来查找文件对应的 inode</strong>。</p>
-<p>从进程角度看，<strong>每个进程可以打开多文件，因此使用 file 结构代表了每个进程打开的文件</strong>，从 file -&gt; dentry -&gt; inode 来找到其对应的文件。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img3.png"/>
-
-
-</p>
+<p>从进程角度看，<strong>每个进程可以打开多文件，因此使用 file 结构代表了每个进程打开的文件</strong>，从 file -&gt; dentry -&gt; inode 来找到其对应的文件。</p>
+<a class="lightgallery" href="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img3.png" title="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img3.png" data-thumbnail="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img3.png"
+            data-srcset="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img3.png, /posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img3.png 1.5x, /posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/linux/storage/linux-%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84-vfs%E6%80%BB%E7%BB%93/img3.png" width="581" height="300" />
+    </a>
 <h2 id="3-文件操作实现">3 文件操作实现</h2>
 <h3 id="31-挂载">3.1 挂载</h3>
 <p>文件系统的挂载有 mount 系统调用触发，<strong>当文件系统挂载到一个目录时，挂载点的内容就被替换为了被挂载的文件系统中的根目录的内容</strong>。前一个目录消失，无法访问，当挂载点被取消挂载后又会重新出现，并且数据不会改变。</p>
@@ -1098,9 +1097,9 @@
 <li>MS_SHARED：挂载信息在同一个 peer group 的不同挂载点之间共享传播；</li>
 <li>MS_PRIVATE：挂载信息不共享，设置 private 的挂载点不属于任何的 peer group；</li>
 <li>MS_SLAVE：传播是单向的，同一个 peer group 中，master 的挂载点下面发生变化会共享到 slave。反之，slave 下变化不会影响 master；</li>
-<li>MS_UNBINDABLE：和 MS_PRIVATE 相同，只是这种类型挂载点不能作为 bind mount；
-可以看到，peer cgroup 的概念就是 mount 结构中的 mnt_group_id，各个不同的 type 的子挂载，会被保存在不同的 mount 的链表中。</li>
+<li>MS_UNBINDABLE：和 MS_PRIVATE 相同，只是这种类型挂载点不能作为 bind mount；</li>
 </ul>
+<p>可以看到，peer cgroup 的概念就是 mount 结构中的 mnt_group_id，各个不同的 type 的子挂载，会被保存在不同的 mount 的链表中。</p>
 <blockquote>
 <p>有个大神给出了清晰的示例与解释，见：<a href="https://segmentfault.com/a/1190000006899213" target="_blank" rel="noopener noreffer">Shared subtrees</a></p>
 </blockquote>

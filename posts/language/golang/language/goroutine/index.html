@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/language/goroutine/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-01-23T17:45:55+08:00" />
-<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-04-11T22:25:25+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/goroutine\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  14980 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/goroutine\/","datePublished": "2021-01-23T17:45:55+08:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  14984 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/goroutine\/","datePublished": "2021-01-23T17:45:55+08:00","dateModified": "2023-04-11T22:25:25+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Go 并发调度总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/golang/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Golang</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-01-23">2021-01-23</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 14980 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-01-23">2021-01-23</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 14984 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 30 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -212,7 +212,7 @@
 <h3 id="11-进程-线程-协程">1.1 进程 线程 协程</h3>
 <p>看协程的实现之前，绕不开的需要知道进程与线程，以及它们之间的比较。</p>
 <p><strong><ruby>进程<rt>progress</rt></ruby></strong> 就是程序执行的实例。在内核角度上看，进程是<strong>分配系统资源的实体</strong>。</p>
-<p>而这也可以推出，所谓的进程切换的消耗，也就是切换分配的系统资源，包括<strong>虚拟内存（页表等）</strong>、<strong>寄存器的值</strong>等。
+<p>而这也可以推出，所谓的进程切换的消耗，也就是切换分配的系统资源，包括<strong>虚拟内存（页表等）</strong>、<strong>寄存器的值</strong>等。</p>
 <div class="details admonition tip open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>Tip<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -220,7 +220,7 @@
         <div class="details-content">
             <div class="admonition-content">据说每次上下文切换需要几十纳秒到微秒的 CPU 时间。</div>
         </div>
-    </div></p>
+    </div>
 <p><strong><ruby>线程<rt>thread</rt></ruby></strong> 是<strong>内核调度的基本单元</strong>，在 Linux 上，线程就是 “轻量级进程”，因为它与进程在内核的看来都一样，仅仅是共享了一些资源，包括：</p>
 <ul>
 <li>内存地址空间；</li>
@@ -229,7 +229,7 @@
 <li>信号处理；</li>
 <li>等等</li>
 </ul>
-<p>所以相对于进程间切换，同一个进程下的线程切换，可以<strong>省略这些共享的资源的切换</strong>。因此，线程间切换速度快于进程间切换。
+<p>所以相对于进程间切换，同一个进程下的线程切换，可以<strong>省略这些共享的资源的切换</strong>。因此，线程间切换速度快于进程间切换。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -237,7 +237,7 @@
         <div class="details-content">
             <div class="admonition-content">所谓进程切换就是不同进程间的线程切换，所以下面所说的线程间的切换、线程上下文都是指同进程下的线程。</div>
         </div>
-    </div></p>
+    </div>
 <p>上面所说的调度、切换都是站在内核的角度看线程。而站在线程的角度，它可以认为自己是 <strong>“完全” 占用 CPU 的</strong>。如果线程阻塞等待，就等于 CPU 在 <del>空闲</del> 浪费。</p>
 <p>所以，写代码往往会使用异步 API，<strong>通过回调/通知来使得线程阻塞的更加少</strong>（典型的 epoll），这时候 CPU 原来阻塞的时间可以执行其他的代码。</p>
 <p>但是，回调的代码不是同一个函数里线性执行的，会有一些缺点，具体例子，A 函数最初的执行流为：</p>
@@ -249,19 +249,16 @@
 <li>A 函数：执行 -&gt; 异步 -&gt; 返回</li>
 <li>回调函数：读取数据 -&gt; 执行。</li>
 </ul>
-<p>首先，单个函数的执行流变为了两个不同函数，代码写法上串行的思维要变为分割的思维。并且，如果这个操作还是有状态的，那么还涉及到了 “A 函数将状态传递到回调函数” 等问题。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/goroutine/img1.png"/>
-
-
-</p>
+<p>首先，单个函数的执行流变为了两个不同函数，代码写法上串行的思维要变为分割的思维。并且，如果这个操作还是有状态的，那么还涉及到了 “A 函数将状态传递到回调函数” 等问题。</p>
+<a class="lightgallery" href="/posts/language/golang/language/goroutine/img1.png" title="/posts/language/golang/language/goroutine/img1.png" data-thumbnail="/posts/language/golang/language/goroutine/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/goroutine/img1.png"
+            data-srcset="/posts/language/golang/language/goroutine/img1.png, /posts/language/golang/language/goroutine/img1.png 1.5x, /posts/language/golang/language/goroutine/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/goroutine/img1.png" width="648" height="230" />
+    </a>
 <p>因此，<strong><ruby>协程<rt>routine</rt></ruby></strong> 出现，上面的例子的执行流还是：</p>
 <ul>
 <li>执行 -&gt; 读取数据 -&gt; 执行</li>
@@ -301,31 +298,48 @@
 <h2 id="2-gmp-模型">2 GMP 模型</h2>
 <p>先从整体模型入手，整个协程实现有着三个最主要的对象：</p>
 <ul>
-<li><strong><code>G</code></strong> ：表示 Goroutine，<strong>保存并发任务的状态（上下文）</strong>；</li>
-<li><strong><code>M</code></strong> ：表示<strong>系统线程，必须在绑定 P 后，执行 G 任务</strong>；</li>
-<li><strong><code>P</code></strong> ：处理器，作用类似于 CPU 核，<strong>控制并发执行任务数量</strong>；</li>
-<li><strong><code>schedt</code></strong> ：全局的链表，包括<strong>全局的 G 可运行链表、空闲 M 链表、空闲 P 链表</strong>；</li>
+<li>
+<p><strong><code>G</code></strong> ：表示 Goroutine，<strong>保存并发任务的状态（上下文）</strong>；</p>
+</li>
+<li>
+<p><strong><code>M</code></strong> ：表示<strong>系统线程，必须在绑定 P 后，执行 G 任务</strong>；</p>
+</li>
+<li>
+<p><strong><code>P</code></strong> ：处理器，作用类似于 CPU 核，<strong>控制并发执行任务数量</strong>；</p>
+</li>
+<li>
+<p><strong><code>schedt</code></strong> ：全局的链表，包括<strong>全局的 G 可运行链表、空闲 M 链表、空闲 P 链表</strong>；</p>
+</li>
 </ul>
-<p>而大致的运行的模型如下：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/goroutine/img2.png"/>
-
-
-</p>
+<p>而大致的运行的模型如下：</p>
+<a class="lightgallery" href="/posts/language/golang/language/goroutine/img2.png" title="/posts/language/golang/language/goroutine/img2.png" data-thumbnail="/posts/language/golang/language/goroutine/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/goroutine/img2.png"
+            data-srcset="/posts/language/golang/language/goroutine/img2.png, /posts/language/golang/language/goroutine/img2.png 1.5x, /posts/language/golang/language/goroutine/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/goroutine/img2.png" width="782" height="400" />
+    </a>
 <ul>
-<li>每个 P 绑定一个 M，与一个正在运行的 G；</li>
-<li>每个 P 包含自己本地的可运行的 G 的链表；</li>
-<li>全局的 G 的可运行链表，用以提供给无 G 可以执行的 P；</li>
-<li>一些 M 与 G 的绑定，因为系统调用阻塞而解绑了 P，M 阻塞结束后还是会进入调度循环；</li>
-<li>一些 G 主动进入 waiting 状态，等待唤醒后重新加入某个可运行队列（典型的，读取 channel 阻塞，这是一个用户空间的阻塞，由发送 channel 时将其唤醒）；</li>
-<li>空闲 M 链表，空闲 P 链表，空闲 G 链表等；</li>
+<li>
+<p>每个 P 绑定一个 M，与一个正在运行的 G；</p>
+</li>
+<li>
+<p>每个 P 包含自己本地的可运行的 G 的链表；</p>
+</li>
+<li>
+<p>全局的 G 的可运行链表，用以提供给无 G 可以执行的 P；</p>
+</li>
+<li>
+<p>一些 M 与 G 的绑定，因为系统调用阻塞而解绑了 P，M 阻塞结束后还是会进入调度循环；</p>
+</li>
+<li>
+<p>一些 G 主动进入 waiting 状态，等待唤醒后重新加入某个可运行队列（典型的，读取 channel 阻塞，这是一个用户空间的阻塞，由发送 channel 时将其唤醒）；</p>
+</li>
+<li>
+<p>空闲 M 链表，空闲 P 链表，空闲 G 链表等；</p>
+</li>
 </ul>
 <h3 id="21-g">2.1 G</h3>
 <p><strong><code>g 结构</code></strong>（runtime/runtime2.go）代表一个 G，包含了某个任务的上下文，M 切换 G 执行时，当前 G 的上下文就保存在了 g 结构中。</p>
@@ -512,19 +526,16 @@
 </tr>
 </tbody>
 </table>
-<p>其状态轮转如下图所示：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/goroutine/img3.png"/>
-
-
-</p>
+<p>其状态轮转如下图所示：</p>
+<a class="lightgallery" href="/posts/language/golang/language/goroutine/img3.png" title="/posts/language/golang/language/goroutine/img3.png" data-thumbnail="/posts/language/golang/language/goroutine/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/goroutine/img3.png"
+            data-srcset="/posts/language/golang/language/goroutine/img3.png, /posts/language/golang/language/goroutine/img3.png 1.5x, /posts/language/golang/language/goroutine/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/goroutine/img3.png" width="614" height="220" />
+    </a>
 <h4 id="212-g-的创建">2.1.2 G 的创建</h4>
 <p>在代码中调用 go 语句时，编译器会将其翻译为 <code>newproc()</code> 调用，这也就是创建 G 的开端：</p>
 <div class="highlight"><div class="chroma">
@@ -1275,7 +1286,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>上面的关键就是，<strong>M 最后绑定 P，调用 schedule() 进入调度循环</strong>，并且不会再返回。
+</div><p>上面的关键就是，<strong>M 最后绑定 P，调用 schedule() 进入调度循环</strong>，并且不会再返回。</p>
 <div class="details admonition tip open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>m0<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -1283,7 +1294,7 @@
         <div class="details-content">
             <div class="admonition-content">m0 是程序启动的 main M</div>
         </div>
-    </div></p>
+    </div>
 <h4 id="223-m-的退出">2.2.3 M 的退出</h4>
 <p>前面 <code>mexit()</code> 就是用于<strong>释放 M 资源，m 结构记录在 <code>sched.freem</code>，并使得线程退出</strong>。</p>
 <p>但是，M 进入调度循环后，就不会返回了，所以需要使用调用 g0 保存的栈帧实现。</p>
@@ -2085,19 +2096,16 @@
 <li><code>freem</code> ：等待释放的 M 的链表，当 M 新建时会将其释放，并复用 m 对象；</li>
 </ul>
 <h2 id="3-调度循环">3 调度循环</h2>
-<p>前面 M 的启动看到，每个 M 创建后会进入 <code>schedule()</code> 的调度循环，并且不会返回，每个 M 执行大致流程如下：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/goroutine/img4.png"/>
-
-
-</p>
+<p>前面 M 的启动看到，每个 M 创建后会进入 <code>schedule()</code> 的调度循环，并且不会返回，每个 M 执行大致流程如下：</p>
+<a class="lightgallery" href="/posts/language/golang/language/goroutine/img4.png" title="/posts/language/golang/language/goroutine/img4.png" data-thumbnail="/posts/language/golang/language/goroutine/img4.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/goroutine/img4.png"
+            data-srcset="/posts/language/golang/language/goroutine/img4.png, /posts/language/golang/language/goroutine/img4.png 1.5x, /posts/language/golang/language/goroutine/img4.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/goroutine/img4.png" width="259" height="200" />
+    </a>
 <ol>
 <li>执行 <code>schedule()</code>， <strong>使得 M 找到一个可用的 G，并绑定</strong>；</li>
 <li>执行 <code>execute()</code>，<strong>完成执行 G.fn 的准备工作</strong>；</li>
@@ -2653,19 +2661,16 @@
 <li>将 <strong>SP 设置为 <code>gobuf.sp</code></strong>。如果 G 没有执行过，那么值就是创建 g 结构时填入的 <code>goexit()</code> 函数的地址。</li>
 <li>代码流通过 <strong>JMP 指令跳转到 <code>gobuf.pc</code></strong>。如果 G 没有执行过，那么就是 G 对应代码的地址。</li>
 </ul>
-<p>这里我们也可以知道了，因为函数调用就是将 返回函数、参数 压栈的过程。而这里将栈顶设置为 <code>goexit()</code> 函数，<strong>所以当 G 对应用户代码执行完后，就会继续执行 <code>goexit()</code> 函数</strong>。这就是 M 不断执行调度循环的关键。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/goroutine/img5.png"/>
-
-
-</p>
+<p>这里我们也可以知道了，因为函数调用就是将 返回函数、参数 压栈的过程。而这里将栈顶设置为 <code>goexit()</code> 函数，<strong>所以当 G 对应用户代码执行完后，就会继续执行 <code>goexit()</code> 函数</strong>。这就是 M 不断执行调度循环的关键。</p>
+<a class="lightgallery" href="/posts/language/golang/language/goroutine/img5.png" title="/posts/language/golang/language/goroutine/img5.png" data-thumbnail="/posts/language/golang/language/goroutine/img5.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/goroutine/img5.png"
+            data-srcset="/posts/language/golang/language/goroutine/img5.png, /posts/language/golang/language/goroutine/img5.png 1.5x, /posts/language/golang/language/goroutine/img5.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/goroutine/img5.png" width="266" height="170" />
+    </a>
 <h3 id="33-goexit">3.3 goexit()</h3>
 <p><code>goexit()</code> 在 G 用户代码执行后，执行的汇编代码，其最后通过切换到 g0 栈调用 <code>goexit0()</code> 函数：</p>
 <div class="highlight"><div class="chroma">
@@ -2805,25 +2810,17 @@
 <h3 id="41-切换时机">4.1 切换时机</h3>
 <p>先大体总结一下可能的切换时机：</p>
 <ul>
-<li><strong>主动挂起</strong>
-<ul>
-<li>遇到 runtime 级别阻塞（例如 channel 读写阻塞）</li>
-</ul>
+<li>
+<p><strong>主动挂起</strong> - 遇到 runtime 级别阻塞（例如 channel 读写阻塞）</p>
 </li>
-<li><strong>主动调度</strong>
-<ul>
-<li>调用 <code>runtime.Gosched()</code> 主动进行调度</li>
-</ul>
+<li>
+<p><strong>主动调度</strong> - 调用 <code>runtime.Gosched()</code> 主动进行调度</p>
 </li>
-<li><strong>系统调用</strong>
-<ul>
-<li>系统调用结束后，M 可能进行 G 的切换；</li>
-</ul>
+<li>
+<p><strong>系统调用</strong> - 系统调用结束后，M 可能进行 G 的切换；</p>
 </li>
-<li><strong>抢占</strong>
-<ul>
-<li>sysmon 判断 G 运行时间大于 10ms，进行抢占；</li>
-</ul>
+<li>
+<p><strong>抢占</strong> - sysmon 判断 G 运行时间大于 10ms，进行抢占；</p>
 </li>
 </ul>
 <h3 id="42-主动挂起">4.2 主动挂起</h3>
@@ -3053,7 +3050,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>最后会调用 <code>goschedImpl()</code>，将 G 由 _Grunning -&gt; _Grunnable 状态，M 与 G 解绑，并将其放到全局运行队列。
+</div><p>最后会调用 <code>goschedImpl()</code>，将 G 由 _Grunning -&gt; _Grunnable 状态，M 与 G 解绑，并将其放到全局运行队列。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -3061,14 +3058,18 @@
         <div class="details-content">
             <div class="admonition-content">因为调用 <code>goschedImpl()</code> 是要切换正在运行的 G，所以放到全局队列。</div>
         </div>
-    </div></p>
+    </div>
 <h3 id="44-系统调用">4.4 系统调用</h3>
 <p>Go 通过 <code>syscall.Syscall</code> 和 <code>syscall.RawSyscall</code> 来封装系统的所有系统调用。</p>
 <ul>
-<li><code>syscall.Syscall</code> <strong>针对可能长时间阻塞的系统调用</strong>，例如 IO 操作。<br>
-使得在陷入系统调用之间，系统调用结束后，可以触发一些准备和情况工作。</li>
-<li><code>syscall.RawSyscall</code> <strong>针对不太会长时间阻塞的系统调用</strong>，例如 读取时间等。<br>
-直接进行系统调用，不做其他处理。</li>
+<li>
+<p><code>syscall.Syscall</code> <strong>针对可能长时间阻塞的系统调用</strong>，例如 IO 操作。<br>
+使得在陷入系统调用之间，系统调用结束后，可以触发一些准备和情况工作。</p>
+</li>
+<li>
+<p><code>syscall.RawSyscall</code> <strong>针对不太会长时间阻塞的系统调用</strong>，例如 读取时间等。<br>
+直接进行系统调用，不做其他处理。</p>
+</li>
 </ul>
 <div class="details admonition tip open">
         <div class="details-summary admonition-title">
@@ -3256,8 +3257,12 @@
 <p>每个运行中的 G 会有一个运行的时间片，而 sysmon 会<strong>周期性检查部分 G，如果其执行时间大于 10ms，就会触发抢占</strong>。</p>
 <p>抢占包括两种方式：</p>
 <ul>
-<li><strong><code>抢占标志</code></strong>：通过设置 <code>g.stackguard0=stackPreempt</code>。这必然会导致 G 执行下次函数调用时触发栈扩容逻辑，从而走到切换调度的逻辑；</li>
-<li><strong><code>信号抢占</code></strong>（v1.14）：信号抢占会使得 M 线程触发信号中断，执行信号处理函数，从而重新进入调度循环。</li>
+<li>
+<p><strong><code>抢占标志</code></strong>：通过设置 <code>g.stackguard0=stackPreempt</code>。这必然会导致 G 执行下次函数调用时触发栈扩容逻辑，从而走到切换调度的逻辑；</p>
+</li>
+<li>
+<p><strong><code>信号抢占</code></strong>（v1.14）：信号抢占会使得 M 线程触发信号中断，执行信号处理函数，从而重新进入调度循环。</p>
+</li>
 </ul>
 <h4 id="451-触发抢占时机">4.5.1 触发抢占时机</h4>
 <p>sysmon 会重启执行 <code>retake()</code> 函数，判断哪些正在运行的 G 是需要抢占的。</p>
@@ -3637,7 +3642,7 @@
 <p>相对于 <a href="../memory-manager/" rel=""><strong>内存管理</strong></a> 与 <a href="../garbage-collection/" rel=""><strong>垃圾收集</strong></a>，竟然感觉并发调度的结构还算简单。</p>
 <p>需要弄清楚的有以下几点：</p>
 <ul>
-<li><a href="#11-%e8%bf%9b%e7%a8%8b%e7%ba%bf%e7%a8%8b%e4%b8%8e%e5%8d%8f%e7%a8%8b" rel=""><strong>协程出现的意义</strong></a></li>
+<li><a href="#11-%e8%bf%9b%e7%a8%8b-%e7%ba%bf%e7%a8%8b-%e5%8d%8f%e7%a8%8b" rel=""><strong>协程出现的意义</strong></a></li>
 <li><a href="#12-%e8%b0%83%e5%ba%a6%e5%99%a8" rel=""><strong>调度器的工作</strong></a></li>
 <li><a href="#2-gmp-%e6%a8%a1%e5%9e%8b" rel=""><strong>GMP 模型整体框架</strong></a></li>
 <li><a href="#2-gmp-%e6%a8%a1%e5%9e%8b" rel=""><strong>G、M、P 代表的意义</strong></a></li>
@@ -3666,8 +3671,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
+                <span>更新于 2023-04-11&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/50df73f55844b4f66d11489f27129cc58f99871c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 50df73f55844b4f66d11489f27129cc58f99871c: Post(all): optimize (#38)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>50df73f</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

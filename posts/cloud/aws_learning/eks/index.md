@@ -403,7 +403,7 @@ IRSA 指的是通过 Kubernetes 的资源 Service Account 来给 Pod 绑定 IAM 
 
 大致步骤如下：
 
-1. 为集群创建 IAM OIDC Provider
+1. 为集群创建 IAM OIDC Provider，表示允许 EKS APIServer 作为 OIDC Provider，其颁发的 ID Token 能够换取 IAM Role 凭证。
    
    ```bash
    eksctl utils associate-iam-oidc-provider \
@@ -416,6 +416,27 @@ IRSA 指的是通过 Kubernetes 的资源 Service Account 来给 Pod 绑定 IAM 
 2. 创建 IAM Role，关联相应的 IAM Policy，并且配置 Role 的 Trust Relationship
    
    具体流程参考 [**Configuring a Kubernetes service account to assume an IAM role**](https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html)。
+
+   ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Federated": "arn:aws:iam::$account_id:oidc-provider/$oidc_provider"  // 检查 OIDC
+          },
+          "Action": "sts:AssumeRoleWithWebIdentity",
+          "Condition": {
+            "StringEquals": {
+              "$oidc_provider:aud": "sts.amazonaws.com",
+              "$oidc_provider:sub": "system:serviceaccount:$namespace:$service_account"
+            }
+          }
+        }
+      ]
+    }
+   ```
 
 3. 将 IAM Role 与 Pod 将使用的 ServiceAccount 关联
    

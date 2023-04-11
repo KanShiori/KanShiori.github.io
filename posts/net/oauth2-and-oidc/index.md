@@ -1,245 +1,222 @@
-# OAuth2 与 OIDC
+# OAuth 2.0 与 OIDC
 
 
-## 1 Why
+## 1 OAuth 2.0
 
-OAuth 2 与 OIDC 都是解决一个问题：解决面向 [第三方应用]^(Third-Party Application) 的认证授权问题。
+OAuth 2.0 是一个标准的 Authz 协议（没有 Authn 功能）。如果期望将 Resource 授权给第三方应用，那么就可以使用 OAuth 2.0。
 
-以一个实际的例子来说：CI 需要访问我的 GitHub 去进行打包，而问题就在于 CI 如何访问到我的 GitHub。最简单的方法就是：我将账号密码告知 CI，但是这样显然导致了密码泄露，并且还无法很好的回收权限。
+OAuth 2.0 协议中主要有四个角色：
 
-对于这个问题的解决核心思想是，**使用 Token 代替账号密码作为访问凭证**。
+- Resource Owner - 能够授权 Client 访问资源的角色。最典型的就是 User。
+- Resource Server - 存放 Resource 的服务器，能够验证 Access Token 来决定是否返回 Resource
+- Authz Sever - 对 Resource Owner 进行认证，并负责颁发 Access Token。
+- Client - 第三方应用，得到 Resource Owner 授权后，请求访问 Resource
 
-使用 Token 的好处在于：
+其他一些重要概念：
 
-* 哪怕令牌泄露，也不会导致密码泄露；
-* 令牌可以设定访问资源的范围，以及时效性；
-* 每个应用都有独立的令牌，其中一个泄露不会导致其他应用收到影响；
+- Grant - Resource Owner 授予 Client 凭证，用它来访问 Authz Server
+- Access Token - 由 Authz Server 颁发的 Token，通过 Token 来访问 Resource Server
+- Refresh Token（可选）- 用于 Access Token 过期后获取一个新的 Access Token。
 
-<important>对于 OAuth 2，Resource Server 通过颁发 Access Token 来授予 Third-Party 访问资源的权限。</important>
+可以看到，Authz Server 集中了鉴权的功能。通过给 Client 颁发 Token，使得 Client 在不知道账户密码的情况下，能够访问 Resource Server 获取资源。
 
-<important>对于 OIDC，OpenID Provider 通过颁发 ID Token + Access Token 来授予 Third-Party 获取用户信息的权限。</important>
+## 2 OIDC
 
-在围绕着这个基本模式上，针对如何验证 User 身份，如何颁发 Token 引入了多种的授权方式。
+OIDC 是基于 OAuth 2.0 的 Authn 协议，增加了 ID Token 的概念。OIDC 也指定了 OAuth 2.0 中未定义的部分，包括：scope、服务发现、用户信息字段等。
 
-## 2 OAuth 2
+OIDC 中的角色如下：
 
-OAuth 2 是一个开放授权标准，定义了第三方用户如何访问系统。
+- End User - 终端用户，对应于 OAuth 2.0 中的 Resource Owner，ID Token 中会包含 End User 相关的信息
+- Relying Party - 第三方应用，对应于 OAuth 2.0 中的 Client
+- OpenID Provider - Auth Server，负责签发 ID Token 与 Access Token
+- Resource Server
 
-### 2.1 基本概念
+其他一些重要概念：
 
-一些基本概念如下：
+- ID Token - 由 OpenID Provider 颁发的 Token，包含了 EU 的身份信息
+- Claim - ID Token 中 EU 信息相关的字段
+- UserInfo Endpoint - OpenID Provider 提供的获取 EU 更多信息的接口
 
-* [Resource Owner]^(资源拥有者) - 拥有着资源访问凭证（例如账户密码），例子中的 “我”
-* [Resource Server]^(资源服务器) - 保证这资源的服务器，例子中的 GitHub
-* [Client]^(第三方应用) - 需要得到授权，访问资源的引用，例子中的 CI
-* [Authorization Server]^(授权服务器) - 根据 Resource Owner 意愿颁发 Access Token 的服务器
-* [Authorization Grant]^(授权许可) - Resource Owner 授予 Client 访问 Authz Server 的凭证
-* [Access Token]^(访问令牌) - Authz Server 授予 Client 访问 Resource Server 的凭证
-
-可以看到，Authz Server 是中间层，通过颁发 Token 给 Client，使得 Client 在不知道账户密码情况下就可以访问 Resource Server 获取资源。
+OIDC 提供的 Authz 流程与 OAuth 2.0 一样，主要区别在于 OIDC 在 Authz 过程中会额外返回 ID Token。
 
 {{< admonition note Note>}}
-Authz Server 和 Resource Server 可以是同一个。例如例子中往往我们会使用 GitHub 提供授权的功能。
+可以这样理解，OIDC 与 OAuth 2.0 的流程基本相同，只是 OIDC 基于 ID Token 提供了更多额外功能。
 {{< /admonition >}}
 
-基本的访问流程如下图：
+## 3 Authz 流程
+
+### 3.1 基本流程
+
+最基本的访问流程如下：
 
 {{< image src="img1.png" height=300 >}}
 
-1. Client 访问 Resource Owner，发起授权请求。
-2. Resource Owner 返回 [Grant]^(授权许可) 给 Client，表示允许。
-3. Client 使用 Grant 访问 Authz Server，申请 Token。
-4. Authz Server 验证 Grant，允许后返回 Token。
-5. Client 使用 Token 访问 Resource Server；
-6. Resource Server 验证 Token 以及权限检查，返回 Resource；
+1. App 请求 Resource Owner，获取 Grant。
+2. App 携带 Grant 访问 Authz Server，获取 Access Token 与 ID Token。
+3. App 携带 Token 访问 Resource Server，获取 Resource。
 
-上述只是基本的流程，其中“如何获取 Grant”、“如何获取 Access Token” 等都是可以扩展的地方。为此 OAuth 2 提出了四种方式：
+基于三个步骤扩展出来，OAuth 2.0 提出了四种授权方式。
 
-* Authorization Code
-* Implicit
-* Resource Owner Password Credentials
-* Client Credentials
+### 3.2 Authz Code 授权码模式
 
-### 2.2 四种授权模式
+Authz Code 是最严格但最常见的方式，考虑了几乎所有的敏感信息泄漏的预防和后果。对于基本流程的第 1 步以及第 2 步都有了扩展。
 
-#### 2.2.1 Authorization Code
-
-[Authorization Code]^(授权码模式) 是最严格但是最常用的的方式，考虑了几乎所有的敏感信息泄漏的预防和后果。
-
-在 Client 获取 Token 时，做了严格的控制，要求必须由 Resource Owner 手动允许。并且要求 Client 有着自己的服务器，使得能够将 Authz Code 从 Resource Owner 传递到 Client。
+- App 往往是一个后端服务，必须提供回调 URL（预先提供给 Authz Server）。通过访问 URL 能够将 Authz Code 传递给 App，然后 App 自己存储 Authz Code。
+- Resource Owner 需要手动登陆 Authz Server 的登录页面。
 
 {{< image src="img2.png" height=400 >}}
 
-开始授权前，Client 先要到 Authz Server 注册，从 Authz Server 中获得 Client 专属的 ClientID 和 ClientSecret。
+1. 获取 Grant（Authz Code）
+   
+    1. App 发起授权请求
+    2. Authz Server 将请求重定向到授权页面
+    3. Resource Owner 手动登陆 Authz Server 的授权页面，表示允许 Grant。
+    4. Authz Server 返回的 URL 和 Authz Code，浏览器通过重定向访问 URL，也就是访问后端服务，将 Authz Code 传输给 App。
+   
+2. 获取 Access Token
+   
+    1. Client 拿到 Authz Code 后，就能够使用 Authz Code 访问 Authz Server，这样来申请 Access Token 与 ID Token。
+        
+        如果需要，还会返回 Refresh Token。
+        
+3. 通过 Token 访问 Resource Server
 
-1. Client 将 Resource Owner 导向到 Resource Server 的授权页面，由 Resource Owner 手动允许授权。同时，也会带有 ClientID 以及 Client Secret。
-2. Resource Owner 同意后，Authz Server 就收到了允许授权的请求，并验证 Client 的相关权限。
-3. Resource Server 返回给 User Agent 对应的 Client URL 以及 Authz Code。
-4. User Agent 访问 Client URL，传输 Authz Code 给 Client。
-5. Client 拿到 Authz Code 后，使用 Authz Code 访问 Resource Server，以申请 Access Token。
-6. Resource Server 返回 Token，后续由 Client 使用 Token 获取资源。
+### 3.3 Implicit 隐式授权模式
 
-后续还有一些关于 Token 的过期，刷新的机制。
-
-#### 2.2.2 Implicit
-
-[Implicit]^(隐式授权模式) 省略了 Authz 颁发 Authz Code 的步骤，并且明确禁止发放刷新令牌。适用于 Client 没有服务器来处理 Authz Code 的情况。
+Implicit 省略了 Authz Server 颁发 Authz Code 的步骤，并且明确禁止发放 Refresh Token。该模式适用于 App 无法存储 Authz Code 的情况。
 
 {{< image src="img3.png" height=300 >}}
 
-可以看到，授权服务器不会验证第三方应用的身份，在得到用户授权后，直接返回访问令牌给第三方引用。显然，这样减低了安全性，但是无需注册提升了灵活性。
+App 发起请求时，会指定接收 Token 的 URL。完成 Grant 后，Authz Server 会回调 URL 来提供 Token。
 
-另外，RFC 6749 中明确说明令牌必须是通过 URI 的 Fragment 带回的。
+{{< admonition note Note>}}
+与 Authz Code 最大的区别是，没有 Authz Code，而是直接返回 Token。
+{{< /admonition >}}
 
-#### 2.2.3 Resource Owner Password Credentials
+### 3.4 Resource Owner Password Credentials 密码模式
 
-[Resource Owner Password Credentials]^(密码模式) 整合了认证和授权的过程。Client 直接拿着 Resource Owner 密码向 Authz Server 换取 Token。
-
-因为 Client 直接使用了 Resource Owner 凭证，因此这种情况一般用于 Client 被高度信任的情况下。
+Resource Owner Password Credentials 整合了 Authn 与 Authz 的过程。Resource Owner 直接提供账号密码给 App，App 使用账号密码去 Authz Server 获取 Token。
 
 {{< image src="img4.png" height=250 >}}
 
-#### 2.2.4 Client Credentials
+因为 Client 直接拿着密码，所以这种模式适用于 Client 高度可信的情况下。
 
-[客户端模式]^(Client Credentials) 指 Client 直接以 Resource Owner 名义，向 Authz Server 申请 Token。该模式通常用于管理操作或者自动处理的场景中，即常用于服务间认证授权。
+### 3.5 Client Credentials 客户端模式
+
+Client Credentials 指的是：App 直接使用 Resource Owner 提供的 Credentials，向 Authz Server 申请 Token。
+
+该模式常用于 CICD 与服务间的认证授权（M2M 授权）。
 
 {{< image src="img5.png" height=250 >}}
 
-### 2.3 Refresh Token
-
-上述得到 Access Token 同时，一般也会提供给 Client 一个 Timeout 和 Refresh Token。当 Access Token 过期时，Client 可以使用 Refresh Token 再次获取新的 Access Token，而不用让用户再次登陆授权。
-
-### 2.4 传递 Token
-
-在 RFC6750 定义了，Client 拿到 Access Token 后，如何传递 Resource Server。
-
-包括三种方式：
-
-* URI Query Parameter - 基于 Parameter 参数传递
-
-  ```http
-  GET /resource?access_token=mF_9.B5f-4.1JqM HTTP/1.1
-  Host: server.example.com
-  ```
-
-  注意添加 `Cache-Control:no-store` 防止中间件缓存。
-
-* Authorization Request Header Field - 基于专用的 Header Authorization
-  
-  ```http
-  GET /resource HTTP/1.1
-  Host: server.example.com
-  Authorization: Bearer mF_9.B5f-4.1JqM
-  ```
-
-  其中，Bearer 是固定的前缀信息。
-
-* Form-Encoded Body Parameter - 基于 Body
-  
-  ```http
-  POST /resource HTTP/1.1
-  Host: server.example.com
-  Content-Type: application/x-www-form-urlencoded
-  
-  access_token=mF_9.B5f-4.1JqM
-  ```
-
-  同时，`Content-Type: application/x-www-form-urlencoded` 是必须的，并且不可以使用 GET 访问。
-
-## 3 OIDC
-
-[OIDC]^(OpenID Connect) 是基于 OAuth 2 的身份认证协议，是 OAuth 2 的超集。也就是说搭建了一个 OIDC 的服务后，完全可以当做一个 OAuth2 来使用。
-
-OIDC 在 OAuth 2 上构建了适用任何客户端的身份层，用于身份认证。后续流程使用 OAuth 2 负责授权。
-
-### 3.1 基本概念
-
-OIDC 在 Access Token 基础上引入了 ID Token，提供用户信息。
-
-基本概念如下：
-
-* End User - 个人用户
-* Relying Party - 第三方应用，即 Client
-* OpenID Provider - 有能力提供 EU 认证的服务，为 RP 颁发 ID Token 与 Access Token
-* ID Token - JWT 格式的 Token，包含 EU 的身份标识
-* UserInfo Endpoint - 用户信息接口，由于 RP 请求获取用户信息
-
 {{< admonition note Note>}}
-OpenID Provider 也称为 Identity Provider。
+Client Credentials 因为没有获取 Grant 的步骤，因此也不支持 Refresh Token。
 {{< /admonition >}}
 
-基本的流程如下：
+### 3.6 Hybrid 混合模式
 
-{{< image src="img6.png" height=400 >}}
+完成 Grant 后，Auth Server 同时返回 Token 与 Authz Code。App 可以直接使用 Token，后续可以使用 Authz Code 重新获取 Token。
 
-1. PR 发送身份认证请求给 OP。
-2. OP 需要对 EU 进行身份认证，并请求授权。通常会导向到 EU 的登录页面。
-3. OP 将 ID Token 与 Access Token 返回给 RP。
-4. RP 使用 Access Token 请求 UserInfo Endpoint，根据 ID Token 获取 User 相关信息；
-5. OP 返回 User 信息；
+## 4 Token
 
-根据如何获取 ID Token，OIDC 扩展出了三种方式：
+### 4.1 Access Token
 
-* Authorization Code Flow
-* Implicit Flow
-* Hybrid Flow
-
-### 3.2 ID Token
-
-ID Token 是 JWT 格式的数据结构，基于 JWT 的防篡改机制，使得 ID Token 可以安全的传递给 RP，用于后续 RP 请求 EU 信息时进行验证。
-
-ID Token 的主要构成如下：
+通常 Access Token 是 JWT Base64 编码。其中包含了常见的鉴权使用的字段：
 
 ```json
 {
-  "iss": "https://oidc.eks.us-west-2.amazonaws.com/id/12312312",
-  "sub": "system:serviceaccount:default:controller"
-  "aud": [
-    "sts.amazonaws.com"
-  ],
-  "nonce": "xxxx",
-  "exp": 1666838679,
-  "iat": 1666752279,
-  "auth_time": 1311280969,
-  "acr": "xxxx"
+  "jti": "3YByyfvL0xoMP5wpMulgL",
+  "sub": "60194296801dc7bc2a1b2735",
+  "iat": 1612444871,
+  "exp": 1613654471,
+  "iss": "https://steam-talk.authing.cn/oidc",
+  "aud": "60193c610f9117e7cb049159",
+  "scope": "openid email message"  // 细节控制权限范围
 }
 ```
 
-* iss (Issuer Identifier) - ID 颁发者（Identity Provider）的唯一标识，一般是个 HTTPS URL
-* sub（Subject Identifier）- iss 提供的 EU 标识信息，RP 可以同它来标识唯一的 User
-* aud（Audience）- 标识 ID Token 的目前受众，也就是哪些服务能够处理 ID Token
-* exp（Expiration time）- Token 的过期时间
-* iat（Issued At Time）- Token 的构建时间
-* auth_time（Authentication Time）-（可选）EU 完成认证的时间
-* acr（Authentication Context Class Reference）-（可选）标识一个上下文
+### 4.2 ID Token
 
-### 3.3 授权方式
+OIDC 对 OAuth 2.0 最主要的扩展就是 ID Token。ID Token 相当于用户的身份凭证。应用可以通过校验 ID Token 以确定用户身份。
 
-#### 3.3.1 Authorization Code Flow
+ID Token 本质上是 `JWT Token` ，包含用户信息的 K/V 键值对。
 
-[Authorization Code Flow]^(授权码) 使用 OAuth 2 的授权码方式，来换取 ID Token 与 Access Token。
+```json
+{
+   "iss": "https://server.example.com",  // identity provider 标识，往往是用于验证身份的 URL 
+   "sub": "24400320",                    // 用户的唯一标识信息
+   "aud": "s6BhdRkqt3",                  // 表示 ID Token 受众，也就是哪些服务能够处理 ID Token
+   "nonce": "n-0S6_WzA2Mj",              // 随机值，用于防止重放攻击
+   "exp": 1311281970,                    // Token 过期时间
+   "iat": 1311280970,                    // Token 颁发时间
+   "auth_time": 1311280969,              // 用户进行身份认证的时间
+   "acr": "urn:mace:incommon:iap:silver" // 用户认证的上下文引用
+}
+```
 
-#### 3.3.2 Implicit Flow
+可以看到，ID Token 通过 JWT Token 直接承载了用户信息。但是因为 JWT Token 无法承载太多信息，因此协议定义了 UserInfo Endpoint 接口来用于获取更多的用户信息。
 
-[Implicit Flow]^(隐式授权) 在 OAtuh 2 的 Implicit 颁发 Access Token 时，同时加上 ID Token。
+当 RP 收到 OP 提供的 ID Token 与 Access Token 后，可以调用 UserInfo Endpoint 获取更多用户信息。
 
-#### 3.3.3 Hybrid Flow
+### 4.3 Refresh Token
 
-[Hybrid Flow]^(混合授权) 同时使用 Authorization Code + Implicit。
+Access Token 以及 ID Token 的有效期比较短。失效后，Client 需要重新获取 Grant，然后重新去 Authz Server 获取一个新的 Access Token。
 
-### 3.4 UserInfo Endpoint
+为了让 Client 跳过获取 Grant 的流程，Authz Server 提供 Access Token 同时也会提供 Refresh Token。
 
-UserInfo Endpoint 是 OP 提供的一个接口，也可以看做受到 OAuth 2 保护的资源。因为 RP 需要使用 Access Token 才可以请求该资源。
+Client 携带 Refresh Token 能够重新从 Authz Server 获取一个 Access Token，而不需要再次获取 Grant。
 
-为了防止 ID Token 承载太多的信息，所以抽出 UserInfo Endpoint 接口用以获得 User 的具体信息。并且规定，该接口必须使用 TLS。
+### 4.4 如何验证 Token
 
-当 RP 收到 OP 提供的 ID Token 与 Access Token 后，就可以调用 UserInfo Endpoint 去获取更多的信息或者资源。
+当 Resource Server 收到 Access/ID Token，通过 JWT 的 `Signature` 信息来验证 Token 是否合法。
 
-## 参考
+- 例如使用 RS256 算法（非对称加密），Auth Server 会使用 Private Key 对 `Header` 与 `Payload` 进行加密。应用收到 Token 后就可以使用 Public Key 来解密验证 `Signature` 。
+- 例如使用 HS256 算法（对称加密），Auth Server 会使用 Secret 对 `Header` 与 `Payload` 进行加密。应用需要先从 Auth Server 获取 Secret，然后收到 Token 后解密来验证（或者调用 Auth Server 接口验证）。
 
-* Blog：[**OAuth2 授权**](https://www.cnblogs.com/linianhui/p/oauth2-authorization.html)
-* Blog：[**OIDC 身份认证**](https://www.cnblogs.com/linianhui/p/openid-connect-core.html#auto-id-9)
-* [**OpenIDConnect**](https://openidconnect.net/)
+### 4.5 传递 Token
 
+RFC 6750 定义了 Client 如何将 Access Token 传递给 Resource Server。
 
+- **URI Query Parameter** - 基于 Param 传递
+    
+    ```http
+    GET /resource?access_token=mF_9.B5f-4.1JqM HTTP/1.1
+    Host: server.example.com
+    ```
+    
+    > 注意添加 `Cache-Control:no-store` 防止中间件缓存。
+    > 
 
+- **HTTP Header** - 基于 HTTP Header `Authorization`
+    
+    ```http
+    GET /resource HTTP/1.1
+    Host: server.example.com
+    Authorization: Bearer mF_9.B5f-4.1JqM
+    ```
+    
+    最常见的方式，其中 `Bearer` 是固定的前缀。
+    
+- HTTP Body - 基于 HTTP Body
+    
+    ```http
+    POST /resource HTTP/1.1
+    Host: server.example.com
+    Content-Type: application/x-www-form-urlencoded
+    
+    access_token=mF_9.B5f-4.1JqM
+    ```
+    
+    不允许使用 `Get` 方式，并且必须设置 `Content-Type: application/x-www-form-urlencoded` 。
+
+## 5 Federation Auth
+
+Auth 流程中描述的都是 Authz Server 负责了 Authn 功能，来颁发 ID Token。一些场景下，可能 App 想复用互联网产品的账号来进行身份认证，例如网站支持使用 QQ 登陆。这种情况下，可以使用 Federation Auth。
+
+{{< image src="img7.png" height=350 >}}
+
+通常，Identity Provider 分为三类：
+
+- Social Identity Provider - Identity Provider 为第三方社交平台，例如微信、QQ、Google 等；
+- Enterprise Identity Provider - Identity Provider 为办公应用（例如飞书、企业微信）或标准协议应用（例如 OIDC、SAML、CAS 等标准协议）；
+- Database Identity Provider - 提供给 Authz Server 一个数据库，用于存放身份信息；

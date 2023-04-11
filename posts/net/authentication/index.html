@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/net/authentication/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-10-23T15:20:07+00:00" />
-<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-04-11T22:25:25+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/net\/authentication\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "security","wordcount":  2365 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/net\/authentication\/","datePublished": "2021-10-23T15:20:07+00:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/net\/authentication\/","datePublished": "2021-10-23T15:20:07+00:00","dateModified": "2023-04-11T22:25:25+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -190,7 +190,8 @@
     </div>
 <p>PKI 中的证书格式是 X.509 格式，除了公钥内容外还包含了用户信息：</p>
 <ul>
-<li>版本号 Version - 证书使用哪个版本的 X.509 标准，目前版本为 3。
+<li>
+<p>版本号 Version - 证书使用哪个版本的 X.509 标准，目前版本为 3。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -200,7 +201,8 @@
 </code></pre></td></tr></table>
 </div>
 </div></li>
-<li>序列号 Serial Number - 给证书分配的唯一标识符。
+<li>
+<p>序列号 Serial Number - 给证书分配的唯一标识符。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -210,7 +212,8 @@
 </code></pre></td></tr></table>
 </div>
 </div></li>
-<li>签名算法标识符 Signature Algorithm ID - 签名证书算法标识，包含非对称加密算法与摘要算法。
+<li>
+<p>签名算法标识符 Signature Algorithm ID - 签名证书算法标识，包含非对称加密算法与摘要算法。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -220,8 +223,11 @@
 </code></pre></td></tr></table>
 </div>
 </div></li>
-<li>认证机构的数字签名 Certificate Signature - 证书颁发者使用私钥对证书的签名。</li>
-<li>认证机构 Issuer Name - 证书颁发者的名字。
+<li>
+<p>认证机构的数字签名 Certificate Signature - 证书颁发者使用私钥对证书的签名。</p>
+</li>
+<li>
+<p>认证机构 Issuer Name - 证书颁发者的名字。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -231,7 +237,8 @@
 </code></pre></td></tr></table>
 </div>
 </div></li>
-<li>有效期限 Validity Period - 证书起始日期和时间，以及终止日期和时间。
+<li>
+<p>有效期限 Validity Period - 证书起始日期和时间，以及终止日期和时间。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -245,7 +252,8 @@
 </code></pre></td></tr></table>
 </div>
 </div></li>
-<li>主题信息 Subject - 证书持有人的唯一标识符。
+<li>
+<p>主题信息 Subject - 证书持有人的唯一标识符。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -255,31 +263,34 @@
 </code></pre></td></tr></table>
 </div>
 </div></li>
-<li>公钥信息 Public Key - 证书持有者的公钥，算法标识符和其他密钥参数。</li>
+<li>
+<p>公钥信息 Public Key - 证书持有者的公钥，算法标识符和其他密钥参数。</p>
+</li>
 </ul>
 <h2 id="2-http-认证">2 HTTP 认证</h2>
 <p>RFC 7235 中定义了 HTTP 协议的通用认证框架：在未授权用户访问保护区域的资源时，服务器应返回 401 Unauthorized 的状态码，同时在回复 Header 中附带以下两个 Header 之一，告知客户端采取何种方式进行认证。</p>
 <ul>
-<li>WWW-Authenticate: &lt;认证方案&gt; realm=&lt;保护区域描述信息&gt;</li>
-<li>Proxy-Authenticate: &lt;认证方案&gt; realm=&lt;保护区域描述信息&gt;</li>
+<li>
+<p><code>WWW-Authenticate: &lt;认证方案&gt; realm=&lt;保护区域描述信息&gt;</code></p>
+</li>
+<li>
+<p><code>Proxy-Authenticate: &lt;认证方案&gt; realm=&lt;保护区域描述信息&gt;</code></p>
+</li>
 </ul>
 <p>客户端收到回复后，遵循服务器指定的认证方案，在请求的 Header 中加入身份凭证信息。服务端验证通过后返回资源，否则将返回 403 Forbidden 错误。请求 Header 中包含以下 Header 之一：</p>
 <ul>
-<li>Authorization: &lt;认证方案&gt; &lt;凭证内容&gt;</li>
-<li>Proxy-Authorization: &lt;认证方案&gt; &lt;凭证内容&gt;</li>
+<li><code>Authorization: &lt;认证方案&gt; &lt;凭证内容&gt;</code></li>
+<li><code>Proxy-Authorization: &lt;认证方案&gt; &lt;凭证内容&gt;</code></li>
 </ul>
-
-
-
-
-
-
-
-
-    <br><img src="/posts/net/authentication/img1.png"/>
-
-
-
+<a class="lightgallery" href="/posts/net/authentication/img1.png" title="/posts/net/authentication/img1.png" data-thumbnail="/posts/net/authentication/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/net/authentication/img1.png"
+            data-srcset="/posts/net/authentication/img1.png, /posts/net/authentication/img1.png 1.5x, /posts/net/authentication/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/net/authentication/img1.png" width="466" height="350" />
+    </a>
 <p>以简单的家有路由器为例，登陆路由器时，浏览器会收到服务端基于 HTTP Basic 认证的回复：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -319,8 +330,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
+                <span>更新于 2023-04-11&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/50df73f55844b4f66d11489f27129cc58f99871c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 50df73f55844b4f66d11489f27129cc58f99871c: Post(all): optimize (#38)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>50df73f</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -340,7 +351,7 @@
     </div>
 
     <div class="post-nav"><a href="/posts/net/cache-mechanism/" class="prev" rel="prev" title="Cache 机制"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Cache 机制</a>
-            <a href="/posts/net/oauth2-and-oidc/" class="next" rel="next" title="OAuth2 与 OIDC">OAuth2 与 OIDC<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+            <a href="/posts/net/oauth2-and-oidc/" class="next" rel="next" title="OAuth 2.0 与 OIDC">OAuth 2.0 与 OIDC<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

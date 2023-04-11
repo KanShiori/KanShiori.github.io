@@ -56,49 +56,67 @@
 {{< /admonition >}}
 
 PKI 中的证书格式是 X.509 格式，除了公钥内容外还包含了用户信息：
+
 * 版本号 Version - 证书使用哪个版本的 X.509 标准，目前版本为 3。
+  
   ```
   Version: 3 (0x2)
   ``` 
+
 * 序列号 Serial Number - 给证书分配的唯一标识符。
+  
   ```
   Serial Number: 04:00:00:00:00:01:15:4b:5a:c3:94
   ```
+
 * 签名算法标识符 Signature Algorithm ID - 签名证书算法标识，包含非对称加密算法与摘要算法。
+  
   ```
   Signature Algorithm: sha1WithRSAEncryption
   ```
+
 * 认证机构的数字签名 Certificate Signature - 证书颁发者使用私钥对证书的签名。
+
 * 认证机构 Issuer Name - 证书颁发者的名字。
+  
   ```
   Issuer: C=BE, O=GlobalSign nv-sa, CN=GlobalSign Organization Validation CA - SHA256 - G2
   ```
+
 * 有效期限 Validity Period - 证书起始日期和时间，以及终止日期和时间。
+  
   ```
   Validity
 	Not Before: Nov 21 08:00:00 2020 GMT
 	Not After : Nov 22 07:59:59 2021 GMT
   ```
+
 * 主题信息 Subject - 证书持有人的唯一标识符。
+  
   ```
   Subject: C=CN, ST=GuangDong, L=Zhuhai, O=Awosome-Fenix, CN=*.icyfenix.cn
   ```
+
 * 公钥信息 Public Key - 证书持有者的公钥，算法标识符和其他密钥参数。
 
 
 ## 2 HTTP 认证
 
 RFC 7235 中定义了 HTTP 协议的通用认证框架：在未授权用户访问保护区域的资源时，服务器应返回 401 Unauthorized 的状态码，同时在回复 Header 中附带以下两个 Header 之一，告知客户端采取何种方式进行认证。
-* WWW-Authenticate: <认证方案> realm=<保护区域描述信息>
-* Proxy-Authenticate: <认证方案> realm=<保护区域描述信息>
+
+* `WWW-Authenticate: <认证方案> realm=<保护区域描述信息>`
+
+* `Proxy-Authenticate: <认证方案> realm=<保护区域描述信息>`
 
 客户端收到回复后，遵循服务器指定的认证方案，在请求的 Header 中加入身份凭证信息。服务端验证通过后返回资源，否则将返回 403 Forbidden 错误。请求 Header 中包含以下 Header 之一：
-* Authorization: <认证方案> <凭证内容>
-* Proxy-Authorization: <认证方案> <凭证内容>
 
-{{< find_img "img1.png" >}}
+* `Authorization: <认证方案> <凭证内容>`
+* `Proxy-Authorization: <认证方案> <凭证内容>`
+
+{{< image src="img1.png" height=350 >}}
 
 以简单的家有路由器为例，登陆路由器时，浏览器会收到服务端基于 HTTP Basic 认证的回复：
+
 ```HTTP
 HTTP/1.1 401 Unauthorized
 Date: Mon, 24 Feb 2020 16:50:53 GMT

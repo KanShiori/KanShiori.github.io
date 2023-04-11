@@ -20,20 +20,20 @@
     <description><![CDATA[主机使用 IP 地址作为通信地址是很难记忆的，用户更愿意使用比较容易记忆的 Hostname。而 Domain Name System（DNS）就是用于将 Domain 转换为 IP 地址。]]></description>
 </item>
 <item>
-    <title>Cookie-Session 与 JWT</title>
-    <link>https://KanShiori.github.io/posts/net/credentials/</link>
+    <title>JSON Web Token</title>
+    <link>https://KanShiori.github.io/posts/net/jwt/</link>
     <pubDate>Mon, 25 Oct 2021 13:16:57 &#43;0000</pubDate>
     <author>Shiori</author>
-    <guid>https://KanShiori.github.io/posts/net/credentials/</guid>
-    <description><![CDATA[在授权过程中，基本每种授权模式目的就是为了得到一个令牌，令牌就是 <strong><ruby>凭证<rt>Credential</rt></ruby></strong>。目前主流有两种令牌实现方式： Cookie-Session JWT 1 Cookie-Session 1.1 基]]></description>
+    <guid>https://KanShiori.github.io/posts/net/jwt/</guid>
+    <description><![CDATA[JWT 是目前广泛使用的令牌格式，能够确保传输信息不被中间人篡改。 JWT 一般用于 Identity Provider 与 Service 之间传递认证后的用户信息。 1 基于 Session 的认证 HTTP 是无状态的，为了让 Server]]></description>
 </item>
 <item>
-    <title>OAuth2 与 OIDC</title>
+    <title>OAuth 2.0 与 OIDC</title>
     <link>https://KanShiori.github.io/posts/net/oauth2-and-oidc/</link>
     <pubDate>Sun, 24 Oct 2021 09:05:39 &#43;0000</pubDate>
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/net/oauth2-and-oidc/</guid>
-    <description><![CDATA[1 Why OAuth 2 与 OIDC 都是解决一个问题：解决面向 <strong><ruby>第三方应用<rt>Third-Party Application</rt></ruby></strong> 的认证授权问题。 以一个实际的例子来说：CI 需要访问我的 GitHub 去进]]></description>
+    <description><![CDATA[1 OAuth 2.0 OAuth 2.0 是一个标准的 Authz 协议（没有 Authn 功能）。如果期望将 Resource 授权给第三方应用，那么就可以使用 OAuth 2.0。 OAuth 2.0 协议中主要有四个角色： Resource Owner - 能够授权 Client]]></description>
 </item>
 <item>
     <title>认证机制 Authentication</title>
@@ -57,7 +57,7 @@
     <pubDate>Sat, 01 May 2021 15:09:13 &#43;0000</pubDate>
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/net/ssl-tls-cert/</guid>
-    <description><![CDATA[1 密码套件 SSL 在握手的第一步就是确认所使用的<strong><ruby>密码套件<rt>Cipher Suite</rt></ruby></strong>，使得首先 client 与 server 使用相同的算法进行通信。其中包含三个组件：]]></description>
+    <description><![CDATA[1 密码套件 SSL 在握手的第一步就是确认所使用的<strong><ruby>密码套件<rt>Cipher Suite</rt></ruby></strong>，使得首先 Client 与 Server 使用相同的算法进行通信。其中包含三个组件：]]></description>
 </item>
 </channel>
 </rss>
