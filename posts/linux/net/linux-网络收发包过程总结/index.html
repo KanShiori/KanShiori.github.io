@@ -457,19 +457,16 @@ Interrupt <span class="m">70</span> is allowed on CPUs <span class="m">31</span>
 <p>当然，你也可以通过 irqbalance 来均衡各个 CPU 的中断，动态的改变中断与绑定的 CPU。不过，irqbalance 不仅仅针对网卡队列中断，还会调整其他的。</p>
 <p>如果你的网卡不支持多队列，可以尝试配置 <a href="#331-rps" rel=""><strong>RPS</strong></a>。</p>
 <h3 id="22-接收数据">2.2 接收数据</h3>
-<p>先来看第一个阶段，网卡接收到数据是如何处理的。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img2.png"/>
-
-
-</p>
+<p>先来看第一个阶段，网卡接收到数据是如何处理的。</p>
+<a class="lightgallery" href="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img2.png" title="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img2.png" data-thumbnail="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img2.png"
+            data-srcset="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img2.png, /posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img2.png 1.5x, /posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img2.png" width="605" height="360" />
+    </a>
 <ol>
 <li>
 <p>packet 进入物理网卡，物理网卡会根据目的 mac <strong>判断是否丢弃</strong>（除非混杂模式）；</p>
@@ -495,19 +492,16 @@ Interrupt <span class="m">70</span> is allowed on CPUs <span class="m">31</span>
 <p>网卡多队列就是在这里生效，网卡会将 packet 放置到不同的 ringbuffer，不同的 ringbuffer 会中断不同的 CPU（如果设置了中断亲和性），使得各个 CPU 的队列硬中断是均衡的。</p>
 <h3 id="23-发送数据">2.3 发送数据</h3>
 <p>网络设备通过驱动函数发送数据后，就归网卡驱动管了，不同的驱动有着不同的处理方式。</p>
-<p>大致的流程如下：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img3.png"/>
-
-
-</p>
+<p>大致的流程如下：</p>
+<a class="lightgallery" href="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img3.png" title="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img3.png" data-thumbnail="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img3.png"
+            data-srcset="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img3.png, /posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img3.png 1.5x, /posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img3.png" width="605" height="360" />
+    </a>
 <ol>
 <li>将 <strong>sk_buff 放入 TX ringbuff</strong>。</li>
 <li><strong>通知网卡</strong>发送数据。</li>
@@ -651,7 +645,7 @@ docker0  enp0s3  enp0s8  lo  lxcbr0  vethea62395
 <li>ingress_queue ：ingress 队列；</li>
 <li>其他包含一些 XDP 相关，统计相关等字段；</li>
 </ul>
-<p>大多数的统计信息都可以在对应设备的 sysfs 目录中找到。
+<p>大多数的统计信息都可以在对应设备的 sysfs 目录中找到。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>网卡命名<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -659,7 +653,7 @@ docker0  enp0s3  enp0s8  lo  lxcbr0  vethea62395
         <div class="details-content">
             <div class="admonition-content">linux 内核启动过程中，会默认给网卡以 ethx 方式命名，后面 systemd 回去 rename 网卡名称。</div>
         </div>
-    </div></p>
+    </div>
 <h3 id="32-gro">3.2 GRO</h3>
 <p><strong><ruby>GRO<rt>Generic Receive Offloading</rt></ruby></strong> 用于将 jumbo frame（超过 1500B）的多个分片合并，然后将给上层处理，以减少上层处理数据包的数量。</p>
 <p>通过 <code>ethtool -k/K &lt;nic&gt;</code> 查和设置 GRO。</p>
@@ -674,19 +668,16 @@ docker0  enp0s3  enp0s8  lo  lxcbr0  vethea62395
             <div class="admonition-content">RPS 的设置是针对单个 ringbuffer 的，与网卡多队列处理不是同一个阶段，也不是冲突的。</div>
         </div>
     </div>
-<p>开启 RPS 后，数据会由经由被中断 CPU 转发，由其他 CPU 处理。流程如下：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img1.png"/>
-
-
-</p>
+<p>开启 RPS 后，数据会由经由被中断 CPU 转发，由其他 CPU 处理。流程如下：</p>
+<a class="lightgallery" href="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img1.png" title="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img1.png" data-thumbnail="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img1.png"
+            data-srcset="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img1.png, /posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img1.png 1.5x, /posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img1.png" width="605" height="350" />
+    </a>
 <ol>
 <li>当网卡收到数据存入 ring buffer 后，还是通知指定 CPUx 从 ringbuffer 取出数据；</li>
 <li>不过接下来，CPUx 会为每个 packet 哈希放入其他 CPU 的 input_pkt_queue 中。</li>
@@ -855,19 +846,16 @@ $ <span class="nb">echo</span> <span class="m">2048</span> &gt; /sys/class/net/e
 <li><code>data</code>，<code>tail</code> 为当前层对应的数据的头尾内存地址；</li>
 <li>transport_header，network_header，mac_header 传输层、网络层、链路层 header 的内存地址；</li>
 </ul>
-<p>看图可能更好理解，sk_buff 通过指针将数据包各个区域表示出来了，而在各个协议层之间移动则是移动 data 与 tail 指针。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img4.png"/>
-
-
-</p>
+<p>看图可能更好理解，sk_buff 通过指针将数据包各个区域表示出来了，而在各个协议层之间移动则是移动 data 与 tail 指针。</p>
+<a class="lightgallery" href="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img4.png" title="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img4.png" data-thumbnail="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img4.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img4.png"
+            data-srcset="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img4.png, /posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img4.png 1.5x, /posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img4.png 2x"
+            data-sizes="auto"
+            alt="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img4.png" width="763" height="150" />
+    </a>
 <p>sk_buff_head 表示 sk_buff 组成的链表，这个结构就是 RPS 各个 CPU 的队列，以及 socket buffer 的实现。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -894,8 +882,8 @@ $ <span class="nb">echo</span> <span class="m">2048</span> &gt; /sys/class/net/e
 </code></pre></td></tr></table>
 </div>
 </div><h3 id="42-netfilter">4.2 netfilter</h3>
-<p>netfilter 是一个在内核框架，位于网络层，可以根据动态的条件过滤或操作分组。
-主要包含如下功能：</p>
+<p>netfilter 是一个在内核框架，位于网络层，可以根据动态的条件过滤或操作分组。</p>
+<p>主要包含如下功能：</p>
 <ul>
 <li>filter：根据分组元信息，对不同数据流进行分组过滤；</li>
 <li>NAT：根据规则来转换 source ip 或者 destination ip；</li>
@@ -909,19 +897,16 @@ $ <span class="nb">echo</span> <span class="m">2048</span> &gt; /sys/class/net/e
             <div class="admonition-content">iptables 是用于提供给用户配置防火墙、分组过滤等功能，使用的就是 netfilter 框架。</div>
         </div>
     </div>
-<p>针对不同的阶段，内核代码中会存在不同的 hook 点，如下图：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img5.png"/>
-
-
-</p>
+<p>针对不同的阶段，内核代码中会存在不同的 hook 点，如下图：</p>
+<a class="lightgallery" href="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img5.png" title="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img5.png" data-thumbnail="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img5.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img5.png"
+            data-srcset="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img5.png, /posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img5.png 1.5x, /posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img5.png 2x"
+            data-sizes="auto"
+            alt="/posts/linux/net/linux-%E7%BD%91%E7%BB%9C%E6%94%B6%E5%8F%91%E5%8C%85%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/img5.png" width="605" height="280" />
+    </a>
 <h3 id="43-接收数据">4.3 接收数据</h3>
 <p>接受数据到这里，数据包的网络层协议已经解析过了，看一下网络层处理数据报的步骤：</p>
 <ol>

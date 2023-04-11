@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/net/ssl-tls-cert/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-05-01T15:09:13+00:00" />
-<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-04-11T22:25:25+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/net\/ssl-tls-cert\/"
-        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "network, security","wordcount":  3406 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/net\/ssl-tls-cert\/","datePublished": "2021-05-01T15:09:13+00:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "network, security","wordcount":  3652 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/net\/ssl-tls-cert\/","datePublished": "2021-05-01T15:09:13+00:00","dateModified": "2023-04-11T22:25:25+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -117,8 +117,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">SSL/TLS 总结</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/network/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Network</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-05-01">2021-05-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3406 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-05-01">2021-05-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3652 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -152,7 +152,7 @@
   </ul>
 </nav></div>
             </div><div class="content" id="content"><h2 id="1-密码套件">1 密码套件</h2>
-<p>SSL 在握手的第一步就是确认所使用的<strong><ruby>密码套件<rt>Cipher Suite</rt></ruby></strong>，使得首先 client 与 server 使用相同的算法进行通信。其中包含三个组件：</p>
+<p>SSL 在握手的第一步就是确认所使用的<strong><ruby>密码套件<rt>Cipher Suite</rt></ruby></strong>，使得首先 Client 与 Server 使用相同的算法进行通信。其中包含三个组件：</p>
 <ul>
 <li><strong><code>非对称加密算法</code></strong>：表明传输秘钥使用的非对称加密算法，例如 RSA、DHE_RSA 等；</li>
 <li><strong><code>对称加密算法</code></strong>：加密握手后，传输数据使用的加密算法，例如 AES_128_CBC 等；</li>
@@ -274,7 +274,7 @@
 <ol>
 <li>
 <p><strong><code>ClientHello</code></strong>：客户端<strong>发起建立 TLS 连接请求</strong>（TCP 连接已经建立）</p>
-<p>client 发送的消息中，会表明其自身支持的 TLS 以及密码套件，让 server 可以选择合适的算法。</p>
+<p>Client 发送的消息中，会表明其自身支持的 TLS 以及密码套件，让 Server 可以选择合适的算法。</p>
 <p>即包括几个重要信息：</p>
 <ul>
 <li>支持的 TLS 最高版本；</li>
@@ -286,44 +286,44 @@
 </li>
 <li>
 <p><strong><code>ServerHello</code></strong>：服务端<strong>选出合适的密码套件</strong></p>
-<p>server 根据 client 的 hello 消息，在自己的证书中查找合适的证书（证书里包含了非对称加密算法和摘要算法），并挑选出合适的对称加密算法，也就得到了密码套件。同时，也会返回一个随机串。</p>
+<p>Server 根据 Client 的 hello 消息，在自己的证书中查找合适的证书（证书里包含了非对称加密算法和摘要算法），并挑选出合适的对称加密算法，也就得到了密码套件。同时，也会返回一个随机串。</p>
 <p>如果 TLS 版本，或者密码套件无法匹配，那么直接会连接失败。</p>
 </li>
 <li>
-<p><strong><code>Certificate</code></strong>：服务端<strong>发送自己的证书，让 client 检查</strong></p>
+<p><strong><code>Certificate</code></strong>：服务端<strong>发送自己的证书，让 Client 检查</strong></p>
 </li>
 <li>
 <p><strong><code>ServerKeyExchange</code></strong>（可选）：发送非对接加密 premaster 生成所需的参数（如果算法需要的话）</p>
-<p>对于一些非对称加密算法（DHE_RSA），需要 server 传递一些特殊的参数，用以生成【准密码（premaster）】，因此需要传递一些特殊参数。</p>
+<p>对于一些非对称加密算法（DHE_RSA），需要 Server 传递一些特殊的参数，用以生成【准密码（premaster）】，因此需要传递一些特殊参数。</p>
 </li>
 <li>
-<p><strong><code>CertificateRequest</code></strong>（可选）：如果服务端开启双向认证，那么就发送请求，<strong>要求 client 提供证书</strong></p>
-<p>在内部服务的 HTTPS 中，有时候 server 需要去验证 client 是否是内部的，也就是需要进行双向认证，这就需要 server 去检查 client 的证书。</p>
-<p>当然，大部分 Web 服务不需要，而 client 认证是通过账号密码来决定的。</p>
+<p><strong><code>CertificateRequest</code></strong>（可选）：如果服务端开启双向认证，那么就发送请求，<strong>要求 Client 提供证书</strong></p>
+<p>在内部服务的 HTTPS 中，有时候 Server 需要去验证 Client 是否是内部的，也就是需要进行双向认证，这就需要 Server 去检查 Client 的证书。</p>
+<p>当然，大部分 Web 服务不需要，而 Client 认证是通过账号密码来决定的。</p>
 </li>
 <li>
 <p><strong><code>ServerHelloDone</code></strong>：服务端表明结束</p>
 </li>
 <li>
-<p><strong><code>Certificate</code></strong>（可选）：<strong>client 发送自己的证书</strong></p>
-<p>如果第 5 步发生，那么 client 需要发送自己的证书。就算 client 没有证书，也要发送空的消息，让 server 决定是否继续。</p>
+<p><strong><code>Certificate</code></strong>（可选）：<strong>Client 发送自己的证书</strong></p>
+<p>如果第 5 步发生，那么 Client 需要发送自己的证书。就算 Client 没有证书，也要发送空的消息，让 Server 决定是否继续。</p>
 </li>
 <li>
 <p><strong><code>ClientKeyExchange</code></strong>：<strong>验证完毕证书后，生成 premaster，通过证书中公钥加密后发送</strong></p>
-<p>client 验证完毕 server 证书后，生成非对称加密算法的 premaster，然后通过证书的公钥发送。</p>
+<p>Client 验证完毕 Server 证书后，生成非对称加密算法的 premaster，然后通过证书的公钥发送。</p>
 <p>如果算法需要，会使用第 4 步接收的相关参数进行生成。</p>
 </li>
 <li>
-<p><strong><code>CertificateVerify</code></strong>（可选）：发送 client 校验码 + 私钥加密校验码的数据，让 server 尝试解密并验证，来验证 client 证书确实是属性 client 的</p>
-<p>如果第 7 步执行，那么为了防止 client 发送一个不属于自身的证书，所以需要进行一次非对称加密通信，使得 server 确保证书是属于 client 的（client 拥有着私钥）。</p>
+<p><strong><code>CertificateVerify</code></strong>（可选）：发送 Client 校验码 + 私钥加密校验码的数据，让 Server 尝试解密并验证，来验证 Client 证书确实是属性 Client 的</p>
+<p>如果第 7 步执行，那么为了防止 Client 发送一个不属于自身的证书，所以需要进行一次非对称加密通信，使得 Server 确保证书是属于 Client 的（client 拥有着私钥）。</p>
 </li>
 <li>
 <p><strong><code>Finished</code></strong> ：根据密码套件，双方算出 master 密码，并且使用对称加密算法进行一次通信，来验证密码无误。</p>
-<p>根据加密套件 + premaster，并且使用 client 随机串 + server 随机串，client server 各独立生成 master 密码，并且是一样的。</p>
-<p>接着 client 与 server 都会使用缓存的校验码，使用 master 密码进行对称加密，然后发送给对方，让对方使用 master 密码进行解密。这样来验证 master 密码双方使用的是一样的。</p>
+<p>根据加密套件 + premaster，并且使用 Client 随机串 + Server 随机串，client Server 各独立生成 master 密码，并且是一样的。</p>
+<p>接着 Client 与 Server 都会使用缓存的校验码，使用 master 密码进行对称加密，然后发送给对方，让对方使用 master 密码进行解密。这样来验证 master 密码双方使用的是一样的。</p>
 </li>
 </ol>
-<p>TLS 完成后，client server 就得到了相同的 master 密码，作为后续对称加密通信的密码。</p>
+<p>TLS 完成后，client Server 就得到了相同的 master 密码，作为后续对称加密通信的密码。</p>
 <h3 id="23-为何安全">2.3 为何安全</h3>
 <p>在上面的流程中可以看到，Client Server 使用了非对称加密算法来进行 premaster 的交换（第 8 步使用公钥加密后发送），而最终的 master 密码生成需要使用 premaster 作为一个参数。</p>
 <p>Client 发送给 Server 的 premaster 是必须使用私钥才能解密得到的。而在整个 TLS 过程中，私钥是完全不会离开 Server 的，因此这个 premaster 是安全的。即使公钥泄漏，仅仅也只能得到 Server 传输给 Client 的 premaster，无法得到最终生成的对称密钥。</p>
@@ -352,7 +352,7 @@
 <li>证书年限</li>
 <li>等</li>
 </ul>
-<p><strong>在浏览器与服务器中，会内置世界上所有 CA 的根证书，也就是包含了 CA 的公钥</strong>。通过证书公钥对 server 证书进行解密，并且判断其中的信息，就可以判断出该证书是否是 CA 签署的。</p>
+<p><strong>在浏览器与服务器中，会内置世界上所有 CA 的根证书，也就是包含了 CA 的公钥</strong>。通过证书公钥对 Server 证书进行解密，并且判断其中的信息，就可以判断出该证书是否是 CA 签署的。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -363,7 +363,7 @@
     </div>
 <h3 id="32-自签名">3.2 自签名</h3>
 <p>当我们内部服务，仅仅需要自签名时，其实就是自己生成了称为了一个 CA，得到了根证书与私钥。</p>
-<p>而后使用私钥给 server 签证书，将根证书内置给 client 使用，就可以进行自签名的 TLS 通信。</p>
+<p>而后使用私钥给 Server 签证书，将根证书内置给 Client 使用，就可以进行自签名的 TLS 通信。</p>
 <p>下面进行一次自签名的过程：</p>
 <ol>
 <li>
@@ -380,7 +380,7 @@ openssl req -new -x509 -days <span class="m">3650</span> -key root.key -out ca.c
 </div>
 </div></li>
 <li>
-<p>生成 server 证书与私钥，并使用根证书私钥签名</p>
+<p>生成 Server 证书与私钥，并使用根证书私钥签名</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -393,7 +393,7 @@ openssl x509 -req -extfile &lt;<span class="o">(</span><span class="nb">printf</
 </div>
 </div></li>
 <li>
-<p>（可选）如果需要双向认证，那么要生成 client 的证书，并使用相同的根证书签名。</p>
+<p>（可选）如果需要双向认证，那么要生成 Client 的证书，并使用相同的根证书签名。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -410,53 +410,168 @@ openssl x509 -req  -days <span class="m">3650</span> -in client.csr -CA root.crt
 <p>换个角度看，为了实现自签名，双向 TLS，两边需要的文件</p>
 <ul>
 <li>
-<p>server 端需要</p>
+<p>Server 端需要</p>
 <ul>
-<li>server.key - server 端私钥</li>
-<li>server.crt - 通过 server.csr，由 CA 签名后的证书</li>
+<li>server.key - Server 端私钥</li>
+<li>server.crt - 通过 server.csr，由 Server CA 签名后的证书</li>
+<li>ca.crt - Client 端的 CA 证书</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">certfile</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">global</span><span class="p">.</span><span class="nf">ConfDir</span><span class="p">(),</span> <span class="s">&#34;server.crt&#34;</span><span class="p">)</span>
-<span class="nx">keyfile</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">global</span><span class="p">.</span><span class="nf">ConfDir</span><span class="p">(),</span> <span class="s">&#34;server.key&#34;</span><span class="p">)</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"> <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 加载服务器证书和私钥
+</span><span class="c1"></span>    <span class="nx">serverCert</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">tls</span><span class="p">.</span><span class="nf">LoadX509KeyPair</span><span class="p">(</span><span class="s">&#34;server.crt&#34;</span><span class="p">,</span> <span class="s">&#34;server.key&#34;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+       <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
 
-<span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">server</span><span class="p">.</span><span class="nf">ListenAndServeTLS</span><span class="p">(</span><span class="nx">certfile</span><span class="p">,</span> <span class="nx">keyfile</span><span class="p">)</span>
+    <span class="c1">// 加载客户端 CA 证书
+</span><span class="c1"></span>    <span class="nx">caCert</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadFile</span><span class="p">(</span><span class="s">&#34;ca.crt&#34;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+       <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="nx">caCertPool</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">NewCertPool</span><span class="p">()</span>
+    <span class="nx">caCertPool</span><span class="p">.</span><span class="nf">AppendCertsFromPEM</span><span class="p">(</span><span class="nx">caCert</span><span class="p">)</span>
+
+    <span class="c1">// 创建一个 HTTP 服务器，使用双向认证和客户端 CA 证书验证
+</span><span class="c1"></span>    <span class="nx">server</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Server</span><span class="p">{</span>
+       <span class="nx">Addr</span><span class="p">:</span> <span class="s">&#34;:443&#34;</span><span class="p">,</span>
+       <span class="nx">TLSConfig</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">tls</span><span class="p">.</span><span class="nx">Config</span><span class="p">{</span>
+          <span class="nx">Certificates</span><span class="p">:</span> <span class="p">[]</span><span class="nx">tls</span><span class="p">.</span><span class="nx">Certificate</span><span class="p">{</span><span class="nx">serverCert</span><span class="p">},</span>
+          <span class="nx">ClientCAs</span><span class="p">:</span>    <span class="nx">caCertPool</span><span class="p">,</span>
+          <span class="nx">ClientAuth</span><span class="p">:</span>   <span class="nx">tls</span><span class="p">.</span><span class="nx">RequireAndVerifyClientCert</span><span class="p">,</span>
+       <span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 启动 HTTPS 服务器
+</span><span class="c1"></span>    <span class="nx">err</span> <span class="p">=</span> <span class="nx">server</span><span class="p">.</span><span class="nf">ListenAndServeTLS</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+       <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+ <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
 </div></li>
 <li>
-<p>client 端需要</p>
+<p>Client 端需要</p>
 <ul>
-<li>client.key - client 端私钥</li>
+<li>client.key - Client 端私钥</li>
 <li>client.crt - 通过 client.csr，由 CA 签名后的证书</li>
-<li>ca.crt - CA 证书，因为是自签名</li>
+<li>ca.crt - Server 端的 CA 证书</li>
 </ul>
-</li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+   <span class="c1">// 加载客户端证书和私钥
+</span><span class="c1"></span>   <span class="nx">clientCert</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">tls</span><span class="p">.</span><span class="nf">LoadX509KeyPair</span><span class="p">(</span><span class="s">&#34;client.crt&#34;</span><span class="p">,</span> <span class="s">&#34;client.key&#34;</span><span class="p">)</span>
+   <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+      <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+   <span class="p">}</span>
+
+   <span class="c1">// 加载服务端 CA 证书
+</span><span class="c1"></span>   <span class="nx">caCert</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadFile</span><span class="p">(</span><span class="s">&#34;ca.crt&#34;</span><span class="p">)</span>
+   <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+      <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+   <span class="p">}</span>
+
+   <span class="nx">caCertPool</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">NewCertPool</span><span class="p">()</span>
+   <span class="nx">caCertPool</span><span class="p">.</span><span class="nf">AppendCertsFromPEM</span><span class="p">(</span><span class="nx">caCert</span><span class="p">)</span>
+
+   <span class="c1">// 创建一个 HTTP 客户端，使用双向认证和服务端 CA 证书验证
+</span><span class="c1"></span>   <span class="nx">client</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Client</span><span class="p">{</span>
+      <span class="nx">Transport</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Transport</span><span class="p">{</span>
+         <span class="nx">TLSClientConfig</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">tls</span><span class="p">.</span><span class="nx">Config</span><span class="p">{</span>
+            <span class="nx">Certificates</span><span class="p">:</span> <span class="p">[]</span><span class="nx">tls</span><span class="p">.</span><span class="nx">Certificate</span><span class="p">{</span><span class="nx">clientCert</span><span class="p">},</span>
+            <span class="nx">RootCAs</span><span class="p">:</span>      <span class="nx">caCertPool</span><span class="p">,</span>
+         <span class="p">},</span>
+      <span class="p">},</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
 </ul>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
         </div>
         <div class="details-content">
-            <div class="admonition-content">如果是单向 TLS，那么就不需要 client 私钥与证书，CA 证书还是需要内置。</div>
+            <div class="admonition-content">如果是单向 TLS，那么就不需要 Client 私钥与证书，CA 证书还是需要内置。</div>
         </div>
     </div>
-<p>而验证就是 client 使用公钥正常解密数据，然后检查下数据。</p>
-<p>所以证书，<strong>其实就是给 server “盖了一个章”，表明其是权威机构认证的</strong>。而 client 内置的根证书使得 client 可以认到这个权威机构。</p>
+<p>而验证就是 Client 使用公钥正常解密数据，然后检查下数据。</p>
+<p>所以证书，<strong>其实就是给 Server “盖了一个章”，表明其是权威机构认证的</strong>。而 Client 内置的根证书使得 Client 可以认到这个权威机构。</p>
 <h2 id="参考">参考</h2>
 <p><a href="https://segmentfault.com/a/1190000009002353" target="_blank" rel="noopener noreffer"><strong>Blog：SSL/TLS 及证书概述</strong></a></p>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
+                <span>更新于 2023-04-11&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/50df73f55844b4f66d11489f27129cc58f99871c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 50df73f55844b4f66d11489f27129cc58f99871c: Post(all): optimize (#38)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>50df73f</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

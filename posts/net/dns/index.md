@@ -174,6 +174,8 @@ MX 类型的出现是历史的原因，现在理论上可以使用 A 类型记�
 
 NS 类型记录，表示该 Domain 需要继续访问其他的 Name Server 进行解析，即该 DNS Record 会**返回另一个 Name Server 的域名**。
 
+{{< image src="img5.png" height=300 >}}
+
 以访问 `qq.com`，当 DNS 请求发到 `com` Name Server 时，`com` 根据自身的 NS 记录告知应该去哪个 Name Server 继续进行 DNS 解析。
 
 因此，NS 类型实际上实现了 Domain 的层级结构，并形成了迭代的 DNS 解析流程。

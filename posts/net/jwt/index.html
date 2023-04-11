@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>JSON Web Token - Shiori&#39;s Blog</title><meta name="Description" content="JWT"><meta property="og:title" content="JSON Web Token" />
+<meta property="og:description" content="JWT" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://KanShiori.github.io/posts/net/jwt/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-10-25T13:16:57+00:00" />
+<meta property="article:modified_time" content="2023-04-11T22:25:25+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
+
+<meta name="twitter:title" content="JSON Web Token"/>
+<meta name="twitter:description" content="JWT"/>
+<meta name="application-name" content="Shiori&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="Shiori&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/icons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://KanShiori.github.io/posts/net/jwt/" /><link rel="prev" href="https://KanShiori.github.io/posts/net/oauth2-and-oidc/" /><link rel="next" href="https://KanShiori.github.io/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "JSON Web Token",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/KanShiori.github.io\/posts\/net\/jwt\/"
+        },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "security","wordcount":  1161 ,
+        "url": "https:\/\/KanShiori.github.io\/posts\/net\/jwt\/","datePublished": "2021-10-25T13:16:57+00:00","dateModified": "2023-04-11T22:25:25+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "Shiori"
+            },"description": "JWT"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="http://kanshiori.cn" rel="noopener noreffer" target="_blank"> 主页 </a><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Shiori&#39;s Blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/icons/favicon-32x32.png"
+        data-srcset="/icons/favicon-32x32.png, /icons/favicon-32x32.png 1.5x, /icons/favicon-32x32.png 2x"
+        data-sizes="auto"
+        alt="/icons/favicon-32x32.png"
+        title="/icons/favicon-32x32.png" />Shiori&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="http://kanshiori.cn" title="" rel="noopener noreffer" target="_blank">主页</a><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/KanShiori/KanShiori.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">JSON Web Token</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Shiori</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/network/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Network</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-10-25">2021-10-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1161 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-基于-session-的认证">1 基于 Session 的认证</a></li>
+    <li><a href="#2-基于-jwt-的认证">2 基于 JWT 的认证</a></li>
+    <li><a href="#2-认证流程">2 认证流程</a>
+      <ul>
+        <li><a href="#21-client-携带-jwt-token-的方式">2.1 Client 携带 JWT Token 的方式</a></li>
+        <li><a href="#22-如何验证-jwt-token">2.2 如何验证 JWT Token</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-session-对比-jwt">3 Session 对比 JWT</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p><strong>JWT</strong> 是目前广泛使用的令牌格式，<strong>能够确保传输信息不被中间人篡改。</strong></p>
+<p>JWT 一般用于 Identity Provider 与 Service 之间传递认证后的用户信息。</p>
+<h2 id="1-基于-session-的认证">1 基于 Session 的认证</h2>
+<p>HTTP 是无状态的，为了让 Server 接收 HTTP 请求时知晓相关上下文，RFC 在 HTTP 协议中增加了 <code>Set-Cooike</code> 指令。</p>
+<p><code>Set-Cooike</code> 指令的含义是：Server 以 K/V 方式向 Client 发送一组信息。后续 Client 在 HTTP 请求中将信息放在 <code>Cooike</code> 的 Header 中，Server 可以根据 <code>Cookie</code> 来区分 Client 的身份。</p>
+<a class="lightgallery" href="/posts/net/jwt/img0.png" title="/posts/net/jwt/img0.png" data-thumbnail="/posts/net/jwt/img0.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/net/jwt/img0.png"
+            data-srcset="/posts/net/jwt/img0.png, /posts/net/jwt/img0.png 1.5x, /posts/net/jwt/img0.png 2x"
+            data-sizes="auto"
+            alt="/posts/net/jwt/img0.png" width="496" height="400" />
+    </a>
+<ol>
+<li>
+<p>Client 向 Server 第一次发起请求，Server 为其创建了一个 Session。</p>
+</li>
+<li>
+<p>Server 给 Client 的回复中，通过 <code>Set-Cookie</code> 提供给了 Client 它的 Session ID，以及超时信息。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="err">Set-Cookie: id=1678; Expires=Wed, 21 Feb 2020 07:28:00 GMT; Secure; HttpOnly
+</span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>Client 再次访问 Server 时，在 <code>Cookie</code> Header 带上了 Session ID。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="nf">GET</span> <span class="nn">/index.html</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">2.0</span>
+<span class="n">Cookie</span><span class="o">:</span> <span class="l">id=1678</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>Server 根据读到的 Session ID，从 DB 中读取用户信息。</p>
+</li>
+</ol>
+<h2 id="2-基于-jwt-的认证">2 基于 JWT 的认证</h2>
+<p>JWT 传输时以 <code>Base64</code> 编码传输，原文是 JSON 格式。总共分为三个部分，每个部分都过 <code>.</code> 号分隔。</p>
+<a class="lightgallery" href="/posts/net/jwt/img1.png" title="/posts/net/jwt/img1.png" data-thumbnail="/posts/net/jwt/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/net/jwt/img1.png"
+            data-srcset="/posts/net/jwt/img1.png, /posts/net/jwt/img1.png 1.5x, /posts/net/jwt/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/net/jwt/img1.png" width="1112" height="400" />
+    </a>
+<p>包含：</p>
+<ul>
+<li>
+<p><code>Header</code> - 表明 JWT 使用的协议信息</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;alg&#34;</span><span class="p">:</span> <span class="s2">&#34;RS256&#34;</span><span class="p">,</span>  <span class="c1">// 签名的算法
+</span><span class="c1"></span>  <span class="nt">&#34;typ&#34;</span><span class="p">:</span> <span class="s2">&#34;JWT&#34;</span>     <span class="c1">// Token 类型
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><code>Payload</code> - Token 传输的内容</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+	<span class="c1">// well known fields (optional)
+</span><span class="c1"></span>  <span class="nt">&#34;iss&#34;</span><span class="p">:</span> <span class="s2">&#34;https://dxxxx.auth0.com/&#34;</span><span class="p">,</span>  <span class="c1">// issuer - 签发者     
+</span><span class="c1"></span>  <span class="nt">&#34;sub&#34;</span><span class="p">:</span> <span class="s2">&#34;xxxx&#34;</span><span class="p">,</span>                      <span class="c1">// subject - Token 请求者 
+</span><span class="c1"></span>  <span class="nt">&#34;aud&#34;</span><span class="p">:</span> <span class="s2">&#34;/api/order&#34;</span><span class="p">,</span>                <span class="c1">// audience - Token 受众
+</span><span class="c1"></span>  <span class="nt">&#34;iat&#34;</span><span class="p">:</span> <span class="mi">1680703634</span><span class="p">,</span>                  <span class="c1">// issued at - Token 签发时间
+</span><span class="c1"></span>  <span class="nt">&#34;exp&#34;</span><span class="p">:</span> <span class="mi">1680790034</span><span class="p">,</span>                  <span class="c1">// expired at - Token 过期时间
+</span><span class="c1"></span>	<span class="nt">&#34;nbf&#34;</span><span class="p">:</span> <span class="mi">1680703634</span><span class="p">,</span>                  <span class="c1">// not before at - Token 生效时间
+</span><span class="c1"></span>  <span class="nt">&#34;jti&#34;</span><span class="p">:</span> <span class="s2">&#34;xxxx&#34;</span><span class="p">,</span>                      <span class="c1">// jwt token id - Token ID
+</span><span class="c1"></span>	<span class="c1">// customized fields
+</span><span class="c1"></span>  <span class="nt">&#34;permissions&#34;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><code>Signature</code> - Token 签名</p>
+<p>通过 <code>Header</code> 中定义的算法，通过 Key 或 Secret（Auth Server 保管）对 <code>Header</code> 与 <code>Payload</code> 进行签名。</p>
+<p>例如使用 RS256 算法（非对称加密），Auth Server 会使用 Private Key 对 <code>Header</code> 与 <code>Payload</code> 进行加密。应用收到 Token 后就可以使用 Public Key 来解密验证 <code>Signature</code> 。</p>
+<p>例如使用 HS256 算法（对称加密），Auth Server 会使用 Secret 对 <code>Header</code> 与 <code>Payload</code> 进行加密。应用需要先从 Auth Server 获取 Secret，然后收到 Token 后解密来验证（或者调用 Auth Server 接口验证）。</p>
+</li>
+</ul>
+<h2 id="2-认证流程">2 认证流程</h2>
+<p>使用 JWT Token 的一般认证流程如下：</p>
+<a class="lightgallery" href="/posts/net/jwt/img3.png" title="/posts/net/jwt/img3.png" data-thumbnail="/posts/net/jwt/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/net/jwt/img3.png"
+            data-srcset="/posts/net/jwt/img3.png, /posts/net/jwt/img3.png 1.5x, /posts/net/jwt/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/net/jwt/img3.png" width="876" height="300" />
+    </a>
+<ol>
+<li>
+<p>User（或者 Client） 携带 Credentials 来请求 Auth Server，以获取一个 Access Token（JWT 格式）。</p>
+<p>这个 Credentials 可能是多种方式：</p>
+<ul>
+<li>账号密码</li>
+<li>邮箱验证码</li>
+<li>等</li>
+</ul>
+</li>
+<li>
+<p>Auth Server 验证 Credentials 是否正确，成功后返回一个 Access Token。</p>
+</li>
+<li>
+<p>Client 每次访问 Resource 时，都会携带 Access Token。</p>
+</li>
+<li>
+<p>Resource Server 验证 Access Token，成功后返回 Resource。</p>
+</li>
+</ol>
+<h3 id="21-client-携带-jwt-token-的方式">2.1 Client 携带 JWT Token 的方式</h3>
+<p>通常，Client 会在 HTTP Header <strong><code>Authorization</code></strong> 包含 JWT Token 内容，其前缀为 <code>Bearer</code> 。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="nf">GET</span> <span class="nn">/restful/products/1</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="n">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJpY3lmZW5peCIsInNjb3BlIjpbIkFMTCJdLCJleHAiOjE1ODQ5NDg5NDcsImF1dGhvcml0aWVzIjpbIlJPTEVfVVNFUiIsIlJPTEVfQURNSU4iXSwianRpIjoiOWQ3NzU4NmEtM2Y0Zi00Y2JiLTk5MjQtZmUyZjc3ZGZhMzNkIiwiY2xpZW50X2lkIjoiYm9va3N0b3JlX2Zyb250ZW5kIiwidXNlcm5hbWUiOiJpY3lmZW5peCJ9.539WMzbjv63wBtx4ytYYw_Fo1ECG_9vsgAn8bheflL8</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="22-如何验证-jwt-token">2.2 如何验证 JWT Token</h3>
+<p>以使用 RS256 算法为例，Auth Server 会使用 Private Key 来将 JWT Token 内容签名，也就是 JWT Token 中的 <strong><code>Signature</code></strong> 字段。</p>
+<p>在本地收到 JWT Token 后，我们就可以使用预先配置的 Public Key 来尝试解密 <strong><code>Signature</code></strong> ，成功解密旧表明认证成功。</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">例如对于 Auth0，可以请求 <code>https://&lt;your_domain&gt;/.well-known/jwks.json</code> 来获取 Public Key。</div>
+        </div>
+    </div>
+<h2 id="3-session-对比-jwt">3 Session 对比 JWT</h2>
+<table>
+<thead>
+<tr>
+<th>Session</th>
+<th>JWT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用户信息存储在 Server 端，安全性高</td>
+<td>用户信息由 Client 端保存，Server 端无状态</td>
+</tr>
+<tr>
+<td>在 Server 端能保持大量信息，包括敏感信息</td>
+<td>在 Client 端只能保存少量关键信息，不能包含敏感信息</td>
+</tr>
+<tr>
+<td>Server 端多节点时，节点间 Session 同步是个问题</td>
+<td>信息存在 Client 端，不需要考虑分布式问题</td>
+</tr>
+<tr>
+<td>未提供 Client 任何凭证，因此可以实现回收权限</td>
+<td>Token 签发后就是有效的，并且无法回收</td>
+</tr>
+</tbody>
+</table>
+<p>Session 遇到多节点问题的常见方案</p>
+<ul>
+<li>负载均衡 - 特定用户只分配到特定 Server</li>
+<li>状态同步 - 每个 Server 将 Session 变动同步到其他 Server</li>
+<li>单点 - Session 集群存放在单点服务器，Server 无状态</li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2023-04-11&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/50df73f55844b4f66d11489f27129cc58f99871c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 50df73f55844b4f66d11489f27129cc58f99871c: Post(all): optimize (#38)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>50df73f</a></span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/net/jwt/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://KanShiori.github.io/posts/net/jwt/" data-title="JSON Web Token" data-hashtags="security"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://KanShiori.github.io/posts/net/jwt/" data-hashtag="security"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://KanShiori.github.io/posts/net/jwt/" data-title="JSON Web Token"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://KanShiori.github.io/posts/net/jwt/" data-title="JSON Web Token"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://KanShiori.github.io/posts/net/jwt/" data-title="JSON Web Token"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 百度" data-sharer="baidu" data-url="https://KanShiori.github.io/posts/net/jwt/" data-title="JSON Web Token"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@6.20.0/icons/baidu.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://KanShiori.github.io/posts/net/jwt/" data-title="JSON Web Token"><i class="fab fa-evernote fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/security/">security</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/net/oauth2-and-oidc/" class="prev" rel="prev" title="OAuth 2.0 与 OIDC"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>OAuth 2.0 与 OIDC</a>
+            <a href="/posts/cloud/cloud_native/kubernetes/k8s_learning/volume-design/" class="next" rel="next" title="Kubernetes - 存储设计">Kubernetes - 存储设计<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2020 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Shiori</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.1/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.4.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":35},"comment":{},"lightgallery":true,"search":{"algoliaAppID":"9NJS0VQU0I","algoliaIndex":"blog","algoliaSearchKey":"85d62ea65a7f7445fbfb413bdca088f2","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

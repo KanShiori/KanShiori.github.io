@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/net/dns/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-23T20:55:43+08:00" />
-<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-04-11T22:25:25+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/net\/dns\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "network","wordcount":  2030 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/net\/dns\/","datePublished": "2021-12-23T20:55:43+08:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/net\/dns\/","datePublished": "2021-12-23T20:55:43+08:00","dateModified": "2023-04-11T22:25:25+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -401,6 +401,15 @@ qq.com.                 <span class="m">0</span>       IN      MX      <span cla
     </div>
 <h3 id="45-ns-类型">4.5 NS 类型</h3>
 <p>NS 类型记录，表示该 Domain 需要继续访问其他的 Name Server 进行解析，即该 DNS Record 会<strong>返回另一个 Name Server 的域名</strong>。</p>
+<a class="lightgallery" href="/posts/net/dns/img5.png" title="/posts/net/dns/img5.png" data-thumbnail="/posts/net/dns/img5.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/net/dns/img5.png"
+            data-srcset="/posts/net/dns/img5.png, /posts/net/dns/img5.png 1.5x, /posts/net/dns/img5.png 2x"
+            data-sizes="auto"
+            alt="/posts/net/dns/img5.png" width="582" height="300" />
+    </a>
 <p>以访问 <code>qq.com</code>，当 DNS 请求发到 <code>com</code> Name Server 时，<code>com</code> 根据自身的 NS 记录告知应该去哪个 Name Server 继续进行 DNS 解析。</p>
 <p>因此，NS 类型实际上实现了 Domain 的层级结构，并形成了迭代的 DNS 解析流程。</p>
 <div class="highlight"><div class="chroma">
@@ -459,8 +468,8 @@ qq.com.                 <span class="m">0</span>       IN      NS      ns3.qq.co
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
+                <span>更新于 2023-04-11&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/50df73f55844b4f66d11489f27129cc58f99871c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 50df73f55844b4f66d11489f27129cc58f99871c: Post(all): optimize (#38)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>50df73f</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

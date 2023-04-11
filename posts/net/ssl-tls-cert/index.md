@@ -3,7 +3,7 @@
 
 ## 1 密码套件
 
-SSL 在握手的第一步就是确认所使用的[密码套件]^(Cipher Suite)，使得首先 client 与 server 使用相同的算法进行通信。其中包含三个组件：
+SSL 在握手的第一步就是确认所使用的[密码套件]^(Cipher Suite)，使得首先 Client 与 Server 使用相同的算法进行通信。其中包含三个组件：
 
  * **`非对称加密算法`**：表明传输秘钥使用的非对称加密算法，例如 RSA、DHE_RSA 等；
  * **`对称加密算法`**：加密握手后，传输数据使用的加密算法，例如 AES_128_CBC 等；
@@ -85,7 +85,7 @@ SSH 使用非对称加密技术 RSA 加密了所有传输的数据。使用了�
 
 1. **`ClientHello`**：客户端**发起建立 TLS 连接请求**（TCP 连接已经建立）
 
-   client 发送的消息中，会表明其自身支持的 TLS 以及密码套件，让 server 可以选择合适的算法。
+   Client 发送的消息中，会表明其自身支持的 TLS 以及密码套件，让 Server 可以选择合适的算法。
 
    即包括几个重要信息：
    * 支持的 TLS 最高版本；
@@ -96,45 +96,45 @@ SSH 使用非对称加密技术 RSA 加密了所有传输的数据。使用了�
   
 2. **`ServerHello`**：服务端**选出合适的密码套件**
 
-    server 根据 client 的 hello 消息，在自己的证书中查找合适的证书（证书里包含了非对称加密算法和摘要算法），并挑选出合适的对称加密算法，也就得到了密码套件。同时，也会返回一个随机串。
+    Server 根据 Client 的 hello 消息，在自己的证书中查找合适的证书（证书里包含了非对称加密算法和摘要算法），并挑选出合适的对称加密算法，也就得到了密码套件。同时，也会返回一个随机串。
 
 	如果 TLS 版本，或者密码套件无法匹配，那么直接会连接失败。
 
-3. **`Certificate`**：服务端**发送自己的证书，让 client 检查**
+3. **`Certificate`**：服务端**发送自己的证书，让 Client 检查**
 
 4. **`ServerKeyExchange`**（可选）：发送非对接加密 premaster 生成所需的参数（如果算法需要的话）
 
-	对于一些非对称加密算法（DHE_RSA），需要 server 传递一些特殊的参数，用以生成【准密码（premaster）】，因此需要传递一些特殊参数。
+	对于一些非对称加密算法（DHE_RSA），需要 Server 传递一些特殊的参数，用以生成【准密码（premaster）】，因此需要传递一些特殊参数。
 
-5. **`CertificateRequest`**（可选）：如果服务端开启双向认证，那么就发送请求，**要求 client 提供证书**
+5. **`CertificateRequest`**（可选）：如果服务端开启双向认证，那么就发送请求，**要求 Client 提供证书**
 
-	在内部服务的 HTTPS 中，有时候 server 需要去验证 client 是否是内部的，也就是需要进行双向认证，这就需要 server 去检查 client 的证书。
+	在内部服务的 HTTPS 中，有时候 Server 需要去验证 Client 是否是内部的，也就是需要进行双向认证，这就需要 Server 去检查 Client 的证书。
 	
-	当然，大部分 Web 服务不需要，而 client 认证是通过账号密码来决定的。
+	当然，大部分 Web 服务不需要，而 Client 认证是通过账号密码来决定的。
 
 6. **`ServerHelloDone`**：服务端表明结束
 
-7. **`Certificate`**（可选）：**client 发送自己的证书**
+7. **`Certificate`**（可选）：**Client 发送自己的证书**
 
-	如果第 5 步发生，那么 client 需要发送自己的证书。就算 client 没有证书，也要发送空的消息，让 server 决定是否继续。
+	如果第 5 步发生，那么 Client 需要发送自己的证书。就算 Client 没有证书，也要发送空的消息，让 Server 决定是否继续。
 
 8. **`ClientKeyExchange`**：**验证完毕证书后，生成 premaster，通过证书中公钥加密后发送**
 
-   client 验证完毕 server 证书后，生成非对称加密算法的 premaster，然后通过证书的公钥发送。
+   Client 验证完毕 Server 证书后，生成非对称加密算法的 premaster，然后通过证书的公钥发送。
 	
    如果算法需要，会使用第 4 步接收的相关参数进行生成。
 
-9. **`CertificateVerify`**（可选）：发送 client 校验码 + 私钥加密校验码的数据，让 server 尝试解密并验证，来验证 client 证书确实是属性 client 的
+9. **`CertificateVerify`**（可选）：发送 Client 校验码 + 私钥加密校验码的数据，让 Server 尝试解密并验证，来验证 Client 证书确实是属性 Client 的
 
-   如果第 7 步执行，那么为了防止 client 发送一个不属于自身的证书，所以需要进行一次非对称加密通信，使得 server 确保证书是属于 client 的（client 拥有着私钥）。
+   如果第 7 步执行，那么为了防止 Client 发送一个不属于自身的证书，所以需要进行一次非对称加密通信，使得 Server 确保证书是属于 Client 的（client 拥有着私钥）。
 
 10. **`Finished`** ：根据密码套件，双方算出 master 密码，并且使用对称加密算法进行一次通信，来验证密码无误。
    
-    根据加密套件 + premaster，并且使用 client 随机串 + server 随机串，client server 各独立生成 master 密码，并且是一样的。
+    根据加密套件 + premaster，并且使用 Client 随机串 + Server 随机串，client Server 各独立生成 master 密码，并且是一样的。
 	
-    接着 client 与 server 都会使用缓存的校验码，使用 master 密码进行对称加密，然后发送给对方，让对方使用 master 密码进行解密。这样来验证 master 密码双方使用的是一样的。
+    接着 Client 与 Server 都会使用缓存的校验码，使用 master 密码进行对称加密，然后发送给对方，让对方使用 master 密码进行解密。这样来验证 master 密码双方使用的是一样的。
 
-TLS 完成后，client server 就得到了相同的 master 密码，作为后续对称加密通信的密码。
+TLS 完成后，client Server 就得到了相同的 master 密码，作为后续对称加密通信的密码。
 
 ### 2.3 为何安全
 
@@ -167,7 +167,7 @@ Client 发送给 Server 的 premaster 是必须使用私钥才能解密得到的
  * 证书年限
  * 等
 
-**在浏览器与服务器中，会内置世界上所有 CA 的根证书，也就是包含了 CA 的公钥**。通过证书公钥对 server 证书进行解密，并且判断其中的信息，就可以判断出该证书是否是 CA 签署的。
+**在浏览器与服务器中，会内置世界上所有 CA 的根证书，也就是包含了 CA 的公钥**。通过证书公钥对 Server 证书进行解密，并且判断其中的信息，就可以判断出该证书是否是 CA 签署的。
 
 {{< admonition note Note>}}
 xx.crt 是证书文件，xx.crs 是申请文件
@@ -176,7 +176,7 @@ xx.crt 是证书文件，xx.crs 是申请文件
 ### 3.2 自签名
 当我们内部服务，仅仅需要自签名时，其实就是自己生成了称为了一个 CA，得到了根证书与私钥。
 
-而后使用私钥给 server 签证书，将根证书内置给 client 使用，就可以进行自签名的 TLS 通信。
+而后使用私钥给 Server 签证书，将根证书内置给 Client 使用，就可以进行自签名的 TLS 通信。
 
 下面进行一次自签名的过程：
 
@@ -187,14 +187,14 @@ xx.crt 是证书文件，xx.crs 是申请文件
    openssl req -new -x509 -days 3650 -key root.key -out ca.crt
    ```
 
-1. 生成 server 证书与私钥，并使用根证书私钥签名
+1. 生成 Server 证书与私钥，并使用根证书私钥签名
 
    ```bash
    openssl req -newkey rsa:2048 -nodes -keyout server.key -out server.csr
    openssl x509 -req -extfile <(printf "subjectAltName=DNS:caliper.xycloud.com") -days 3650 -in server.csr -CA root.crt -CAkey root.key -CAcreateserial -out server.crt
    ```
 
-1. （可选）如果需要双向认证，那么要生成 client 的证书，并使用相同的根证书签名。
+1. （可选）如果需要双向认证，那么要生成 Client 的证书，并使用相同的根证书签名。
 
    ```bash
    openssl req -newkey rsa:2048 -nodes -keyout client.key -out client.csr
@@ -205,29 +205,89 @@ xx.crt 是证书文件，xx.crs 是申请文件
 
 换个角度看，为了实现自签名，双向 TLS，两边需要的文件
 
-* server 端需要
-  * server.key - server 端私钥
-  * server.crt - 通过 server.csr，由 CA 签名后的证书
+* Server 端需要
+  
+  * server.key - Server 端私钥
+  * server.crt - 通过 server.csr，由 Server CA 签名后的证书
+  * ca.crt - Client 端的 CA 证书
 
   ```go
-  certfile := filepath.Join(global.ConfDir(), "server.crt")
-  keyfile := filepath.Join(global.ConfDir(), "server.key")
+   func main() {
+      // 加载服务器证书和私钥
+      serverCert, err := tls.LoadX509KeyPair("server.crt", "server.key")
+      if err != nil {
+         panic(err)
+      }
 
-  err := s.server.ListenAndServeTLS(certfile, keyfile)
+      // 加载客户端 CA 证书
+      caCert, err := ioutil.ReadFile("ca.crt")
+      if err != nil {
+         panic(err)
+      }
+
+      caCertPool := x509.NewCertPool()
+      caCertPool.AppendCertsFromPEM(caCert)
+
+      // 创建一个 HTTP 服务器，使用双向认证和客户端 CA 证书验证
+      server := &http.Server{
+         Addr: ":443",
+         TLSConfig: &tls.Config{
+            Certificates: []tls.Certificate{serverCert},
+            ClientCAs:    caCertPool,
+            ClientAuth:   tls.RequireAndVerifyClientCert,
+         },
+      }
+
+      // 启动 HTTPS 服务器
+      err = server.ListenAndServeTLS("", "")
+      if err != nil {
+         panic(err)
+      }
+   }
   ```
 
-* client 端需要
-  * client.key - client 端私钥
+* Client 端需要
+
+  * client.key - Client 端私钥
   * client.crt - 通过 client.csr，由 CA 签名后的证书
-  * ca.crt - CA 证书，因为是自签名
+  * ca.crt - Server 端的 CA 证书
+
+   ```go
+   func main() {
+      // 加载客户端证书和私钥
+      clientCert, err := tls.LoadX509KeyPair("client.crt", "client.key")
+      if err != nil {
+         panic(err)
+      }
+
+      // 加载服务端 CA 证书
+      caCert, err := ioutil.ReadFile("ca.crt")
+      if err != nil {
+         panic(err)
+      }
+
+      caCertPool := x509.NewCertPool()
+      caCertPool.AppendCertsFromPEM(caCert)
+
+      // 创建一个 HTTP 客户端，使用双向认证和服务端 CA 证书验证
+      client := &http.Client{
+         Transport: &http.Transport{
+            TLSClientConfig: &tls.Config{
+               Certificates: []tls.Certificate{clientCert},
+               RootCAs:      caCertPool,
+            },
+         },
+      }
+   }
+   ```
 
 {{< admonition note Note>}}
-如果是单向 TLS，那么就不需要 client 私钥与证书，CA 证书还是需要内置。
+如果是单向 TLS，那么就不需要 Client 私钥与证书，CA 证书还是需要内置。
 {{< /admonition >}}
 
-而验证就是 client 使用公钥正常解密数据，然后检查下数据。
+而验证就是 Client 使用公钥正常解密数据，然后检查下数据。
 
-所以证书，**其实就是给 server “盖了一个章”，表明其是权威机构认证的**。而 client 内置的根证书使得 client 可以认到这个权威机构。
+所以证书，**其实就是给 Server “盖了一个章”，表明其是权威机构认证的**。而 Client 内置的根证书使得 Client 可以认到这个权威机构。
 
 ## 参考
 

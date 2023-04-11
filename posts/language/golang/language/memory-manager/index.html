@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://KanShiori.github.io/posts/language/golang/language/memory-manager/" /><meta property="og:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-01-05T18:28:41+08:00" />
-<meta property="article:modified_time" content="2023-03-26T14:26:12+08:00" /><meta property="og:site_name" content="My cool site" />
+<meta property="article:modified_time" content="2023-04-11T22:25:25+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://KanShiori.github.io/icons/favicon-16x16.png"/>
@@ -29,7 +29,7 @@
             "@type": "WebPage",
             "@id": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/memory-manager\/"
         },"image": ["https:\/\/KanShiori.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Golang, Golang 原理","wordcount":  15444 ,
-        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/memory-manager\/","datePublished": "2021-01-05T18:28:41+08:00","dateModified": "2023-03-26T14:26:12+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "https:\/\/KanShiori.github.io\/posts\/language\/golang\/language\/memory-manager\/","datePublished": "2021-01-05T18:28:41+08:00","dateModified": "2023-04-11T22:25:25+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/KanShiori.github.io\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -205,19 +205,16 @@
 <p>下面代码都是基于 go 1.15.6。</p>
 <h2 id="1-linux-内存模型">1 Linux 内存模型</h2>
 <p>所有语言的内存管理，在 Linux 上都是在以基本的进程内存模型基础上实现的，首先需要知道 Linux 进程内存布局。</p>
-<p>在进程角度，看到的所有内存就是 <strong><ruby>虚拟地址空间<rt>virtual address space</rt></ruby></strong> ，整个是一个线性的存储地址。其中一部分高地址区域用户态无法访问，是内核地址空间。而另一部分就是由栈、mmap、堆等内存区域组成的用户地址空间。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/memory-manager/img1.png"/>
-
-
-</p>
+<p>在进程角度，看到的所有内存就是 <strong><ruby>虚拟地址空间<rt>virtual address space</rt></ruby></strong> ，整个是一个线性的存储地址。其中一部分高地址区域用户态无法访问，是内核地址空间。而另一部分就是由栈、mmap、堆等内存区域组成的用户地址空间。</p>
+<a class="lightgallery" href="/posts/language/golang/language/memory-manager/img1.png" title="/posts/language/golang/language/memory-manager/img1.png" data-thumbnail="/posts/language/golang/language/memory-manager/img1.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/memory-manager/img1.png"
+            data-srcset="/posts/language/golang/language/memory-manager/img1.png, /posts/language/golang/language/memory-manager/img1.png 1.5x, /posts/language/golang/language/memory-manager/img1.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/memory-manager/img1.png" width="605" height="300" />
+    </a>
 <p>上面进程可以自己分配与管理的进程，就是 mmap 与 堆，对应的系统调用为 <strong><code>mmap()</code></strong> 与 <strong><code>brk()</code></strong>，因此所有语言的内存管理都是基于这两个内存区域在进一步实现的（包括 glibc 的 malloc() 与 free()）。</p>
 <p>mmap 最基本有两个用途：</p>
 <ul>
@@ -235,19 +232,16 @@
 <p>不过，因为 goroutine 切换时，必须要保存当前 goroutine 的上下文，也就是栈里的变量。因此，goroutine 栈肯定是不能使用 Linux 进程栈了（因为进程栈有上限，也无法实现“保存”这种功能）。所以所说的<strong>协程栈，都是基于 mmap 申请内存空间</strong>（基于 Go 内存管理，内存管理基于 mmap），然后<strong>切换时修改 SP 寄存器地址实现的</strong>。</p>
 <p>这也是为什么 goroutine 栈可以“无限大”的原因了。</p>
 <h2 id="3-goroutine-栈">3 Goroutine 栈</h2>
-<p>整体的一个 G 的栈如下图所示：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/memory-manager/img2.png"/>
-
-
-</p>
+<p>整体的一个 G 的栈如下图所示：</p>
+<a class="lightgallery" href="/posts/language/golang/language/memory-manager/img2.png" title="/posts/language/golang/language/memory-manager/img2.png" data-thumbnail="/posts/language/golang/language/memory-manager/img2.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/memory-manager/img2.png"
+            data-srcset="/posts/language/golang/language/memory-manager/img2.png, /posts/language/golang/language/memory-manager/img2.png 1.5x, /posts/language/golang/language/memory-manager/img2.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/memory-manager/img2.png" width="510" height="340" />
+    </a>
 <ul>
 <li><code>stack.lo</code>： G 栈的最大低地址（也就是上限）；</li>
 <li><code>stack.hi</code>：G 栈的初始地址；</li>
@@ -524,7 +518,7 @@
 </span><span class="c1"></span>  <span class="nx">main</span><span class="p">.</span><span class="k">go</span><span class="p">:</span><span class="mi">3</span> <span class="mh">0x45dcd4</span> <span class="nx">MP</span> <span class="nx">main</span><span class="p">.</span><span class="nf">test</span><span class="p">(</span><span class="nx">SB</span><span class="p">)</span>                   <span class="c1">// 执行结束后，重新执行当前函数	
 </span></code></pre></td></tr></table>
 </div>
-</div><p>逻辑很简单，如果 SP &lt;= stackguard0，那么就执行栈的扩容，扩容结束重新执行当前函数。
+</div><p>逻辑很简单，如果 SP &lt;= stackguard0，那么就执行栈的扩容，扩容结束重新执行当前函数。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -535,7 +529,7 @@
 <p>如果函数中使用的空间大过保护区时，比较时就会让 SP 减去当前函数使用空间再比较了。</p>
 </div>
         </div>
-    </div></p>
+    </div>
 <h4 id="332-扩容">3.3.2 扩容</h4>
 <p>扩容逻辑大致分为三步：</p>
 <ol>
@@ -780,8 +774,8 @@
 </div><h3 id="34-栈的释放">3.4 栈的释放</h3>
 <p>stackfree 栈的释放与申请相反，放入 stackpool，或者直接调用内存管理删除，重点还是内存管理的活，所以这里不展开。</p>
 <h3 id="35-栈的切换">3.5 栈的切换</h3>
-<p>切换应该是属于 goroutine 调度的内容，不过这里可以关注一下栈时如何切换的。
-当 M 执行的 G 需要切换，或者一个新创建 G 执行时，最后都会调用 <code>execute()</code> 函数，而 execute() 函数会调用 gogo 汇编实现的函数。</p>
+<p>切换应该是属于 goroutine 调度的内容，不过这里可以关注一下栈时如何切换的。</p>
+<p>当 M 执行的 G 需要切换，或者一个新创建 G 执行时，最后都会调用 <code>execute()</code> 函数，而 execute() 函数会调用 gogo 汇编实现的函数。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -859,7 +853,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>可以看到，m 的 g0 属性还是使用的 <a href="#31-%e6%96%b0-g-%e7%9a%84%e6%a0%88" rel=""><strong>malg() 函数</strong></a> 去创建的，与普通的 g 创建一样，只不过初始大小为 8KB。malg() 流程上面有说到，就是走内存管理分配 mspan 作为栈的方式。</p>
-<p>不过，g0 的栈还是有些不同的，不会进行栈的扩容（因为仅仅内部管理时用到，不需要进行自动扩容），在栈扩容的 <a href="#morestack" rel=""><strong>morestack 汇编代码</strong></a> 里可以看到。</p>
+<p>不过，g0 的栈还是有些不同的，不会进行栈的扩容（因为仅仅内部管理时用到，不需要进行自动扩容），在栈扩容的 <strong>morestack 汇编代码</strong> 里可以看到。</p>
 <h2 id="4-内存模型">4 内存模型</h2>
 <h3 id="41-概览">4.1 概览</h3>
 <p>Golang 内存管理包含四个组件：</p>
@@ -871,7 +865,7 @@
 <li><strong><code>runtime.mcentral</code></strong> ：按照不同大小的 mspan 分组的管理链表，为 mcache 提供空闲 mspan</li>
 <li><strong><code>runtime.mheap</code></strong> ：保存闲置的 mspan 与 largerspan 链表，与操作系统申请与释放内存；</li>
 </ol>
-<p>上面的组件也可以看做分层，普通对象（object）的申请与释放就是按照上下层顺序申请与释放的。
+<p>上面的组件也可以看做分层，普通对象（object）的申请与释放就是按照上下层顺序申请与释放的。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -879,23 +873,20 @@
         <div class="details-content">
             <div class="admonition-content">下面<del>不会说</del>（后面再说）具体的 object 分配流程，而是说明各个层次时的申请与释放操作。</div>
         </div>
-    </div></p>
+    </div>
 <h3 id="42-mspan">4.2 mspan</h3>
 <p>每个 mspan 由多个 8KB 的 page 组成，所有的 mspan 会以 list 的方式构建，而不同的模块（mcache、mcentral）通过引用指针，来不同方式来组织不同的 mspan。</p>
 <p>每个 mspan 管理多个固定大小的 object，通过编号 (index) 方式来寻找 object 的地址。</p>
-<p>结构如下图所示：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/memory-manager/img3.png"/>
-
-
-</p>
+<p>结构如下图所示：</p>
+<a class="lightgallery" href="/posts/language/golang/language/memory-manager/img3.png" title="/posts/language/golang/language/memory-manager/img3.png" data-thumbnail="/posts/language/golang/language/memory-manager/img3.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/memory-manager/img3.png"
+            data-srcset="/posts/language/golang/language/memory-manager/img3.png, /posts/language/golang/language/memory-manager/img3.png 1.5x, /posts/language/golang/language/memory-manager/img3.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/memory-manager/img3.png" width="857" height="200" />
+    </a>
 <p>其数据结构如下（省略部分）：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1327,33 +1318,33 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>可以看到，经过 GC 的 <code>mspan.gcmarkBits</code> 会变为 <code>mspan.allocBits</code>，标识哪些 object 是可以使用的，而没有使用的 object 后面就会被新的覆盖了。
-而调用 <code>mcentral.freeSpan()</code> 或者 <code>mheap_.freeSpan()</code> 接口，是为了其结构的调整，或者对于完全空的 mspan 真正回收内存。</p>
+</div><p>可以看到，经过 GC 的 <code>mspan.gcmarkBits</code> 会变为 <code>mspan.allocBits</code>，标识哪些 object 是可以使用的，而没有使用的 object 后面就会被新的覆盖了。</p>
+<p>而调用 <code>mcentral.freeSpan()</code> 或者 <code>mheap_.freeSpan()</code> 接口，是为了其结构的调整，或者对于完全空的 mspan 真正回收内存。</p>
 <h3 id="43-mcache">4.3 mcache</h3>
 <p>每个 P 拥有一个 mcache，mcache 中保存着具有空闲空间的 mspan，用于分配 object 时，不需要加锁即可从 mspan 分配对象。</p>
 <p>有两种 object 走 mcache 分配：</p>
 <ul>
-<li><strong><code>tiny object</code></strong>：mcache 还单独使用一个 mspan 进行<strong>非指针微小对象</strong>的分配。与普通 object 对象分配不同的是，tiny object 不是固定大小分配的，而是通过 mcache 记录其 offset 偏移量，让 tiny object &ldquo;挤在&rdquo; 同一个 mspan 中。</li>
-<li><strong><code>normal object</code></strong>：普通大小的 object，会使用 <code>mcache.alloc</code> 进行分配。<code>mcache.alloc</code> 包含 134 个数组项（67 sizeclass * 2），对于每个大小规格的 mspan 有着两个类型：
+<li>
+<p><strong><code>tiny object</code></strong>：mcache 还单独使用一个 mspan 进行<strong>非指针微小对象</strong>的分配。与普通 object 对象分配不同的是，tiny object 不是固定大小分配的，而是通过 mcache 记录其 offset 偏移量，让 tiny object &ldquo;挤在&rdquo; 同一个 mspan 中。</p>
+</li>
+<li>
+<p><strong><code>normal object</code></strong>：普通大小的 object，会使用 <code>mcache.alloc</code> 进行分配。<code>mcache.alloc</code> 包含 134 个数组项（67 sizeclass * 2），对于每个大小规格的 mspan 有着两个类型：</p>
 <ul>
 <li><strong>scan</strong>：包含指针的对象</li>
 <li><strong>noscan</strong>：不包含指针的对象，GC 时无需进一步扫描是否引用着其他活跃对象</li>
 </ul>
 </li>
 </ul>
-<p>mcache &ldquo;永远&rdquo; 有空闲的 mspan 用于 object 的分配，当 mcache 缓存的 mspan 没有空闲空间时，就会<strong>找 mcentral 去申请新的 mspan 用于使用</strong>。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/memory-manager/img4.png"/>
-
-
-</p>
+<p>mcache &ldquo;永远&rdquo; 有空闲的 mspan 用于 object 的分配，当 mcache 缓存的 mspan 没有空闲空间时，就会<strong>找 mcentral 去申请新的 mspan 用于使用</strong>。</p>
+<a class="lightgallery" href="/posts/language/golang/language/memory-manager/img4.png" title="/posts/language/golang/language/memory-manager/img4.png" data-thumbnail="/posts/language/golang/language/memory-manager/img4.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/memory-manager/img4.png"
+            data-srcset="/posts/language/golang/language/memory-manager/img4.png, /posts/language/golang/language/memory-manager/img4.png 1.5x, /posts/language/golang/language/memory-manager/img4.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/memory-manager/img4.png" width="934" height="200" />
+    </a>
 <p>数据结构如下（runtime/mcache.go）：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1512,8 +1503,12 @@
 </code></pre></td></tr></table>
 </div>
 </div><ol>
-<li>如果当前 <strong>tinyoffset+size &lt; 16B</strong>（因为每个 tiny span 的大小为 32B，而每个 tiny object 最大为 16，所以比较 16 即可），那么表明<strong>当前的 tiny span 肯定可以放下</strong>，那么移动 <code>c.tinyoffset</code> 偏移即可；</li>
-<li>如果没有，那么就需要<strong>重新申请</strong> tinySpanClass=5 的 span（32B），并替换当前 <code>c.tiny</code> 与 <code>c.tinyoffset</code>（当前 object 可以放在老的 span 或者新的 span）。</li>
+<li>
+<p>如果当前 <strong>tinyoffset+size &lt; 16B</strong>（因为每个 tiny span 的大小为 32B，而每个 tiny object 最大为 16，所以比较 16 即可），那么表明<strong>当前的 tiny span 肯定可以放下</strong>，那么移动 <code>c.tinyoffset</code> 偏移即可；</p>
+</li>
+<li>
+<p>如果没有，那么就需要<strong>重新申请</strong> tinySpanClass=5 的 span（32B），并替换当前 <code>c.tiny</code> 与 <code>c.tinyoffset</code>（当前 object 可以放在老的 span 或者新的 span）。</p>
+</li>
 </ol>
 <p>接着看下普通大小的 object 的分配，在外层函数计算好 spanClass 后，就会调用 <strong><code>nextFree()</code></strong> 函数（runtime/malloc.go）：</p>
 <div class="highlight"><div class="chroma">
@@ -1704,19 +1699,16 @@
 <li><strong><code>nonempty</code></strong> ：包含空闲空间的 mspan 组成的链表；</li>
 <li><strong><code>empty</code></strong> ：不包含空闲空间，或者被 mcache 申请的 mspan 组成的链表（判断是否被 mcache 使用是通过 mspan.sweepgen 属性来判断）；</li>
 </ul>
-<p>当 mcache 要申请某大小的 mspan 时，会回去指定大小的 mcentral 实例上申请。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/memory-manager/img5.png"/>
-
-
-</p>
+<p>当 mcache 要申请某大小的 mspan 时，会回去指定大小的 mcentral 实例上申请。</p>
+<a class="lightgallery" href="/posts/language/golang/language/memory-manager/img5.png" title="/posts/language/golang/language/memory-manager/img5.png" data-thumbnail="/posts/language/golang/language/memory-manager/img5.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/memory-manager/img5.png"
+            data-srcset="/posts/language/golang/language/memory-manager/img5.png, /posts/language/golang/language/memory-manager/img5.png 1.5x, /posts/language/golang/language/memory-manager/img5.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/memory-manager/img5.png" width="943" height="400" />
+    </a>
 <p>数据结构如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -2246,32 +2238,26 @@
 <li><code>spanalloc</code>、<code>cachealloc</code> 等 ：各个数据结构的空闲链表分配器，通过连接空闲的 mspan、mcache 等对象，调用 fixalloc.alloc() 函数就获取下一个空闲的内存空间；</li>
 </ul>
 <h4 id="451-虚拟内存布局">4.5.1 虚拟内存布局</h4>
-<p>网上大部分文章还是说 mheap 管理的虚拟内存以 spans+bitmap+arena 管理，如下图：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/memory-manager/img6.png"/>
-
-
-</p>
-<p>但是从 go 1.11 开始，Go 开始使稀疏内存方式管理，即管理相互之间不连续的连续的内存区域，如下图（<strong>图片来自 《Golang 设计与实现》</strong>）：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/memory-manager/img7.png"/>
-
-
-</p>
+<p>网上大部分文章还是说 mheap 管理的虚拟内存以 spans+bitmap+arena 管理，如下图：</p>
+<a class="lightgallery" href="/posts/language/golang/language/memory-manager/img6.png" title="/posts/language/golang/language/memory-manager/img6.png" data-thumbnail="/posts/language/golang/language/memory-manager/img6.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/memory-manager/img6.png"
+            data-srcset="/posts/language/golang/language/memory-manager/img6.png, /posts/language/golang/language/memory-manager/img6.png 1.5x, /posts/language/golang/language/memory-manager/img6.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/memory-manager/img6.png" width="810" height="100" />
+    </a>
+<p>但是从 go 1.11 开始，Go 开始使稀疏内存方式管理，即管理相互之间不连续的连续的内存区域，如下图（<strong>图片来自 《Golang 设计与实现》</strong>）：</p>
+<a class="lightgallery" href="/posts/language/golang/language/memory-manager/img7.png" title="/posts/language/golang/language/memory-manager/img7.png" data-thumbnail="/posts/language/golang/language/memory-manager/img7.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/memory-manager/img7.png"
+            data-srcset="/posts/language/golang/language/memory-manager/img7.png, /posts/language/golang/language/memory-manager/img7.png 1.5x, /posts/language/golang/language/memory-manager/img7.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/memory-manager/img7.png" width="717" height="280" />
+    </a>
 <p>使用的就是 <code>mheap.arenas</code>，一个二维的 heapArena 数组。</p>
 <p>不同平台的 heapArena 管理的 arena 大小不同，在 Linux 64bit 平台下，每个 heapArena 管理着 64MB 的 arena 内存区域。</p>
 <div class="highlight"><div class="chroma">
@@ -2450,25 +2436,28 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li><code>bitmap</code>：表示该 arena 区域中哪些地址保存了对象，<strong>每个字节的前 4bit 的每个 bit 表示一个 8B 内存（4 个指针大小）是否被扫描，后 4bit 每个 bit 表示是否包含指针</strong>。<br>
-因此，一个字节就代表了 32B（4 个指针，每个 8B）内存的状态。<strong>（图片来自《知乎：图解 Go 语言内存分配》）</strong></li>
-<li><code>spans</code>：每个 mspan 对应的指针，因为管理 64 MB，所以数组长度为 8192（64MB / 8KB）。<br>
-其数组编号就是对应的 page 编号，例如 spans[0] 就代表第一个 page 内存区域大小，执行对应的 mspan 。当然，mspan 可能有多个 page 组成，那么对应的多个数组项就指向的同一个 mspan 对象。</li>
-<li><code>zeroedBase</code> 记录管理的 arena 的内存基地址。
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/memory-manager/img8.png"/>
-
-
+<li>
+<p><code>bitmap</code>：表示该 arena 区域中哪些地址保存了对象，<strong>每个字节的前 4bit 的每个 bit 表示一个 8B 内存（4 个指针大小）是否被扫描，后 4bit 每个 bit 表示是否包含指针</strong>。</p>
+<p>因此，一个字节就代表了 32B（4 个指针，每个 8B）内存的状态。<strong>（图片来自《知乎：图解 Go 语言内存分配》）</strong></p>
+</li>
+<li>
+<p><code>spans</code>：每个 mspan 对应的指针，因为管理 64 MB，所以数组长度为 8192（64MB / 8KB）。</p>
+<p>其数组编号就是对应的 page 编号，例如 spans[0] 就代表第一个 page 内存区域大小，执行对应的 mspan 。当然，mspan 可能有多个 page 组成，那么对应的多个数组项就指向的同一个 mspan 对象。</p>
+</li>
+<li>
+<p><code>zeroedBase</code> 记录管理的 arena 的内存基地址。</p>
 </li>
 </ul>
-<p>在一个 heapAreana 空间下，<strong>对于任意一个内存地址 addr，(addr - zeroedBase)/8KB 我们能够计算出对应的 page 编号，那么通过 heapAreana.spans[index] 就可以找到对应的 mspan</strong>。
+<a class="lightgallery" href="/posts/language/golang/language/memory-manager/img8.png" title="/posts/language/golang/language/memory-manager/img8.png" data-thumbnail="/posts/language/golang/language/memory-manager/img8.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/memory-manager/img8.png"
+            data-srcset="/posts/language/golang/language/memory-manager/img8.png, /posts/language/golang/language/memory-manager/img8.png 1.5x, /posts/language/golang/language/memory-manager/img8.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/memory-manager/img8.png" width="784" height="200" />
+    </a>
+<p>在一个 heapAreana 空间下，<strong>对于任意一个内存地址 addr，(addr - zeroedBase)/8KB 我们能够计算出对应的 page 编号，那么通过 heapAreana.spans[index] 就可以找到对应的 mspan</strong>。</p>
 <div class="details admonition note open">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -2476,7 +2465,7 @@
         <div class="details-content">
             <div class="admonition-content">这个非常重要，在垃圾收集和许多地方都需要通过一个内存地址得到其对应的 mspan。</div>
         </div>
-    </div></p>
+    </div>
 <h4 id="452-mheap-初始化">4.5.2 mheap 初始化</h4>
 <p>在 runtime 初始化时，会镜像 mheap 的初始化，执行 <code>mheap.init()</code> 函数：</p>
 <div class="highlight"><div class="chroma">
@@ -2933,19 +2922,16 @@
 <li>经过地址检查后，<code>sysMap()</code> 将其转为可读可写，就可以使用该内存了；</li>
 </ol>
 <h3 id="46-总结">4.6 总结</h3>
-<p>粗略地看完整个内存模型后，大概内存的结构如下：
-
-
-
-
-
-
-
-
-    <br><img src="/posts/language/golang/language/memory-manager/img9.png"/>
-
-
-</p>
+<p>粗略地看完整个内存模型后，大概内存的结构如下：</p>
+<a class="lightgallery" href="/posts/language/golang/language/memory-manager/img9.png" title="/posts/language/golang/language/memory-manager/img9.png" data-thumbnail="/posts/language/golang/language/memory-manager/img9.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/language/golang/language/memory-manager/img9.png"
+            data-srcset="/posts/language/golang/language/memory-manager/img9.png, /posts/language/golang/language/memory-manager/img9.png 1.5x, /posts/language/golang/language/memory-manager/img9.png 2x"
+            data-sizes="auto"
+            alt="/posts/language/golang/language/memory-manager/img9.png" width="915" height="400" />
+    </a>
 <p>其中比较核心的就是：<strong>内存被切分为 page，多个 page 组成不同大小的 mspan，而在 mspan 上又分割为固定大小的 object</strong>。</p>
 <p>而上层的 mcache、mcentral 只是以不同的方式组织 mspan，<strong>通过多级缓存的思想，使得并发的获取一个可用的 mspan 更快</strong>。</p>
 <ul>
@@ -3269,9 +3255,11 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>通过系统调用 <strong><code>madvise()</code></strong> 告知操作系统某段内存不适用，建议内核回收对应物理内存。<br>
-当然，内核在物理内存充足情况下可能不会实际回收内存，以减少无谓的回收消耗。<br>
-而当再次使用此内存块时，会引发缺页异常，内核会自动重新关联物理内存页。</li>
+<li>
+<p>通过系统调用 <strong><code>madvise()</code></strong> 告知操作系统某段内存不适用，建议内核回收对应物理内存。</p>
+<p>当然，内核在物理内存充足情况下可能不会实际回收内存，以减少无谓的回收消耗。</p>
+<p>而当再次使用此内存块时，会引发缺页异常，内核会自动重新关联物理内存页。</p>
+</li>
 </ul>
 <h3 id="62-释放时机">6.2 释放时机</h3>
 <p><code>scavenge()</code> 有两个地方会被调用：</p>
@@ -3290,8 +3278,8 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2023-03-26&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/bfe87111649e7975198d9b269ae7633e095159dd" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) bfe87111649e7975198d9b269ae7633e095159dd: optimize (#37)">
-                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>bfe8711</a></span>
+                <span>更新于 2023-04-11&nbsp;<a class="git-hash" href="https://github.com/KanShiori/KanShiori.github.io/commit/50df73f55844b4f66d11489f27129cc58f99871c" target="_blank" title="commit by Shiori(yshshihaoren@qq.com) 50df73f55844b4f66d11489f27129cc58f99871c: Post(all): optimize (#38)">
+                                    <i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>50df73f</a></span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

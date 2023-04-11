@@ -33,7 +33,7 @@
     <pubDate>Sat, 01 May 2021 15:09:13 &#43;0000</pubDate>
     <author>Shiori</author>
     <guid>https://KanShiori.github.io/posts/net/ssl-tls-cert/</guid>
-    <description><![CDATA[1 密码套件 SSL 在握手的第一步就是确认所使用的<strong><ruby>密码套件<rt>Cipher Suite</rt></ruby></strong>，使得首先 client 与 server 使用相同的算法进行通信。其中包含三个组件：]]></description>
+    <description><![CDATA[1 密码套件 SSL 在握手的第一步就是确认所使用的<strong><ruby>密码套件<rt>Cipher Suite</rt></ruby></strong>，使得首先 Client 与 Server 使用相同的算法进行通信。其中包含三个组件：]]></description>
 </item>
 </channel>
 </rss>

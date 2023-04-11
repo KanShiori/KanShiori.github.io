@@ -12,16 +12,19 @@
 ## 1 背景知识
 
 ### 1.1 进程 线程 协程
+
 看协程的实现之前，绕不开的需要知道进程与线程，以及它们之间的比较。
 
 [进程]^(progress) 就是程序执行的实例。在内核角度上看，进程是**分配系统资源的实体**。
 
 而这也可以推出，所谓的进程切换的消耗，也就是切换分配的系统资源，包括**虚拟内存（页表等）**、**寄存器的值**等。
+
 {{< admonition tip Tip>}}
 据说每次上下文切换需要几十纳秒到微秒的 CPU 时间。
 {{< /admonition >}}
 
 [线程]^(thread) 是**内核调度的基本单元**，在 Linux 上，线程就是 “轻量级进程”，因为它与进程在内核的看来都一样，仅仅是共享了一些资源，包括：
+
 * 内存地址空间；
 * 进程的基础信息；
 * 打开的文件描述符；
@@ -29,6 +32,7 @@
 * 等等
 
 所以相对于进程间切换，同一个进程下的线程切换，可以**省略这些共享的资源的切换**。因此，线程间切换速度快于进程间切换。
+
 {{< admonition note Note>}}
 所谓进程切换就是不同进程间的线程切换，所以下面所说的线程间的切换、线程上下文都是指同进程下的线程。
 {{< /admonition >}}
@@ -38,17 +42,20 @@
 所以，写代码往往会使用异步 API，**通过回调/通知来使得线程阻塞的更加少**（典型的 epoll），这时候 CPU 原来阻塞的时间可以执行其他的代码。
 
 但是，回调的代码不是同一个函数里线性执行的，会有一些缺点，具体例子，A 函数最初的执行流为：
+
 * 执行 -> 读取数据 -> 执行
 
 如果使用异步 API，其执行流程变为：
+
 * A 函数：执行 -> 异步 -> 返回
 * 回调函数：读取数据 -> 执行。
 
 首先，单个函数的执行流变为了两个不同函数，代码写法上串行的思维要变为分割的思维。并且，如果这个操作还是有状态的，那么还涉及到了 “A 函数将状态传递到回调函数” 等问题。
-{{< find_img "img1.png" >}}
 
+{{< image src="img1.png" height=230 >}}
 
 因此，[协程]^(routine) 出现，上面的例子的执行流还是：
+
 * 执行 -> 读取数据 -> 执行
 
 但是，**在读取数据这一步，协程会主动让出 CPU，等待数据到来时再次切换到该协程**，继续执行。因此，写法不变，功能相同。
@@ -56,13 +63,16 @@
 并且，在一些用户空间的生产消费模型实现上（channel），协程的阻塞不需要线程阻塞，而在用户空间就完成了协程的切换。
 
 ### 1.2 调度器
+
 [调度器]^(scheduler) 是为了在决定在有限的 CPU 上，选择哪些任务（进程/线程/协程）执行使得系统运行更高效，所以主要有两个工作：
+
 1. **决定为各个任务决定其运行多长时间，以及何时切换到下个任务执行**；
 1. **在切换任务 A 至任务 B 时，必须保存任务 A 的运行环境，并且任务 B 的运行环境与上次其被切换时完全相同**；
 
 第 1 个工作涉及到的就是 **`调度算法`**，如何调度使得系统运行的最高效。
 
 第 2 个工作涉及到的就是 **`上下文切换`**，这里再说一下进程、线程、协程的上下文：
+
 * 进程：虚拟内存、寄存器的值、内核对应进程信息等；（内核完成上下文切换）
 * 线程：寄存器的值、内核对应的进程信息等；（内核完成上下文切换）
 * 协程：寄存器的值、用户空间对应的协程信息等；（用户空闲 runtime 完成协程上下文切换）
@@ -82,6 +92,7 @@
 所以，可以想到，当需要切换执行的 goroutine，调用 JMP 指令跳转到 G 对应的代码。
 
 #### 1.3.2 SP
+
 [栈顶指针 SP]^(stack pointer) 是**保存栈顶地址的寄存器**，我们平时所说的临时变量在栈上，就是将临时变量的值写入 SP 保存的内存地址，然后 SP 保存的地址减小（栈是从高地址向低地址变化），然后临时变量销毁时，SP 地址又变为高地址。
 
 不过，因为 goroutine 切换时，必须要保存当前 goroutine 的上下文，也就是栈里的变量。因此，goroutine 栈肯定是不能使用 Linux 进程栈了（因为进程栈有上限，也无法实现“保存”这种功能）。所以所说的**协程栈，都是基于 mmap 申请内存空间**（基于 Go 内存管理，内存管理基于 mmap），然后**切换时修改 SP 寄存器地址实现的**。
@@ -89,24 +100,37 @@
 这也是为什么 goroutine 栈可以“无限大”的原因了。
 
 ## 2 GMP 模型
+
 先从整体模型入手，整个协程实现有着三个最主要的对象：
+
 * **`G`** ：表示 Goroutine，**保存并发任务的状态（上下文）**；
+  
 * **`M`** ：表示**系统线程，必须在绑定 P 后，执行 G 任务**；
+  
 * **`P`** ：处理器，作用类似于 CPU 核，**控制并发执行任务数量**；
+  
 * **`schedt`** ：全局的链表，包括**全局的 G 可运行链表、空闲 M 链表、空闲 P 链表**；
 
 而大致的运行的模型如下：
-{{< find_img "img2.png" >}}
+
+{{< image src="img2.png" height=400 >}}
 
 * 每个 P 绑定一个 M，与一个正在运行的 G；
+  
 * 每个 P 包含自己本地的可运行的 G 的链表；
+  
 * 全局的 G 的可运行链表，用以提供给无 G 可以执行的 P；
+  
 * 一些 M 与 G 的绑定，因为系统调用阻塞而解绑了 P，M 阻塞结束后还是会进入调度循环；
+  
 * 一些 G 主动进入 waiting 状态，等待唤醒后重新加入某个可运行队列（典型的，读取 channel 阻塞，这是一个用户空间的阻塞，由发送 channel 时将其唤醒）；
+  
 * 空闲 M 链表，空闲 P 链表，空闲 G 链表等；
 
 ### 2.1 G
+
 **`g 结构`**（runtime/runtime2.go）代表一个 G，包含了某个任务的上下文，M 切换 G 执行时，当前 G 的上下文就保存在了 g 结构中。
+
 ```go
 type g struct {
         // Stack parameters.
@@ -136,6 +160,7 @@ type g struct {
         …
 }
 ```
+
 * `stack`：G 对应栈空间的地址，见（内存管理模型-Goroutine 的栈）；
 * **`stackguar0`**：扩容栈的地址，也可以用于判断 G 是否应该被抢占；当 stackguard0 == stackpreempt 就表明当前 G 被抢占了；
 * `_panic`：G 下的 panic 链表；
@@ -148,6 +173,7 @@ type g struct {
 * **`lockedm`**：记录 G 被锁定的 M，实现 runtime.LockOSThread()
 
 其中 g.sched 是一个非常重要的结构，需要看一下其 **`gobuf`** 的实现（runtime/runtime2.go）：
+
 ```go
 type gobuf struct {
         // The offsets of sp, pc, and g are known to (hard-coded in) libmach.
@@ -170,13 +196,16 @@ type gobuf struct {
         …
 }
 ```
+
 * **`sp`**：当前 G 的 SP 指针地址，在创建 G 时默认设置为 goexit 函数地址；
 * **`pc`**：当前 G 的 PC 指针地址；
 * `g`：gobuf 所属的 g 结构地址；
 * `ret`：系统调用的返回值；
 
 #### 2.1.1 G 的状态
+
 目前 G 可能处于以下 9 种状态：
+
 状态 | 值 | 含义
 -|-|- 
 _Gidle |0 | G 刚分配，并且还没有被初始化
@@ -190,11 +219,13 @@ _Gpreempted |7 |由于抢占而被阻塞，没有执行，等待唤醒
 _Gscan |8 | GC 正在扫描 G 的栈，可与其他状态同时存在
 
 其状态轮转如下图所示：
-{{< find_img "img3.png" >}}
 
+{{< image src="img3.png" height=220 >}}
 
 #### 2.1.2 G 的创建
+
 在代码中调用 go 语句时，编译器会将其翻译为 `newproc()` 调用，这也就是创建 G 的开端：
+
 ```go
 func newproc(siz int32, fn *funcval) {
         argp := add(unsafe.Pointer(&fn), sys.PtrSize)
@@ -288,6 +319,7 @@ func newproc1(fn *funcval, argp unsafe.Pointer, narg int32, callergp *g, callerp
         return newg
 }
 ```
+
 1. 构建 G 对应的 g 结构；
     1. 尝试**从 `P.gFree` 链表中获取** _GDead 的 G。如果没有，走 `mlag()` **分配一个新的 g**；
     1. 拷贝 fn 函数的所有参数到栈上；
@@ -296,9 +328,11 @@ func newproc1(fn *funcval, argp unsafe.Pointer, narg int32, callergp *g, callerp
 1. `runqput()` 将新的 **G 放入 P 或者全局的可运行队列**；
 
 #### 2.1.3 G 上下文的保存
+
 在切换 G 之间，一个必要的操作就是将 G 的 PC/SP 指针保存到 `g.sched` 中，在源码中有两个函数负责这个行为。
 
 **`mcall()`** 用于在 runtime 运行期间，将一个 M 绑定的 G 切换。**它将 M 切换到 g0 栈，然后执行 G 上下文的保存**，其实现是一段汇编代码：
+
 ```go
 // func mcall(fn func(*g))
 // Switch to m->g0's stack, call fn(g).
@@ -335,10 +369,12 @@ TEXT runtime·mcall(SB), NOSPLIT, $0-8
 	        JMP        AX
 	                RET
 ```
+
 1. **保存当前的 SP、PC 至 `g.sched` 属性中**；
 1. **切换到 m.g0 栈，执行传入的函数**；
 
 `save()` 用于 G 进入系统调用阻塞前，保存 G 的上下文，**用于系统调用结束后，进行相关信息的恢复**。
+
 ```go
 func save(pc, sp uintptr) {
         _g_ := getg()
@@ -358,7 +394,9 @@ func save(pc, sp uintptr) {
 ```
 
 ### 2.2 M
+
 M 代表的就是一个操作系统线程，由 **`m 结构`** 表示（runtime/runtime2.go）：
+
 ```go
 type m struct {
         g0      *g     // goroutine with scheduling stack
@@ -378,6 +416,7 @@ type m struct {
         lockedInt     uint32      // tracking for internal lockOSThread
 }
 ```
+
 * **`g0`** : M 私有的 g0；
 * `gsignal` ：用于处理操作系统信号的 G；
 * **`curg`** ：当前 M 正在执行的 G；
@@ -388,7 +427,9 @@ type m struct {
 * **`lockedg`** ：保存 M 锁定的 G，实现 runtime.LockOSThread()；
 
 #### 2.2.1 M 的创建
+
 在创建 G 或者其他地方，当 G 变为 runnable 后，就会调用 `wakep()` 触发一次 P 执行 G 的过程。其会调用 `startm()` **选择/创建 一个 M 绑定 P**，并执行一个 G。
+
 ```go
 // Tries to add one more P to execute G's.
 // Called when a G is made runnable (newproc, ready).
@@ -451,9 +492,11 @@ func startm(_p_ *p, spinning bool) {
         notewakeup(&mp.park)
 }
 ```
+
 * 当存在空闲的 P，但是没有空闲的 M 时，就会调用 `newm()` 创建一个 M；
 
 `newm()` 就是**创建 m 结构，以及启动系统线程的地方**（runtime/proc.go）：
+
 ```go
 // Create a new m. It will start off with a call to fn, or else the scheduler.
 // fn needs to be static and not a heap allocated closure.
@@ -496,10 +539,12 @@ func newosproc(mp *m) {
         }
 }
 ```
+
 1. 获取 m 对象，来自于 `sched.freem` 或者新创建一个；
 1. 通过 `clone()` 系统调用创建一个系统线程，执行的函数为 `mstart()`；
 
 看一下 clone 的 flags：
+
 ```go
 var (
         cloneFlags = _CLONE_VM | /* share memory */
@@ -512,7 +557,9 @@ var (
 ```
 
 #### 2.2.2 M 的启动
+
 前面看到，M 线程启动后执行 `mstart()` 函数：
+
 ```go
 func mstart() {
         _g_ := getg()
@@ -578,12 +625,15 @@ func mstart1() {
         schedule()
 }
 ```
+
 上面的关键就是，**M 最后绑定 P，调用 schedule() 进入调度循环**，并且不会再返回。
+
 {{< admonition tip m0>}}
 m0 是程序启动的 main M
 {{< /admonition >}}
 
 #### 2.2.3 M 的退出
+
 前面 `mexit()` 就是用于**释放 M 资源，m 结构记录在 `sched.freem`，并使得线程退出**。
 
 但是，M 进入调度循环后，就不会返回了，所以需要使用调用 g0 保存的栈帧实现。
@@ -593,6 +643,7 @@ m0 是程序启动的 main M
 {{< admonition note 线程是否会减少>}}
 Linux 上 go 进程的线程数量可能减少，当你调用 LockOSThread() 而没有解锁，执行完 groutine 代码后，对应线程会退出。
 {{< /admonition >}}
+
 ```go
 // mexit tears down and exits the current thread.
 //
@@ -608,9 +659,11 @@ func mexit(osStack bool)
 ```
 
 #### 2.2.4 M 与 G 的锁定
+
 通过 `runtime.LockOSThread()` 与 `runtime.UnlockOSThread()` 实现将 M 与 G 的锁定与解锁。
 
 锁定后，该 M 只能执行锁定的 G，并且不会执行其他的 G 与被调度。
+
 ```go
 func LockOSThread() {
         if atomic.Load(&newmHandoff.haveTemplateThread) == 0 && GOOS != "plan9" {
@@ -637,12 +690,15 @@ func dolockOSThread() {
         _g_.lockedm.set(_g_.m)
 }
 ```
+
 将 G 记录在 `m.lockedg`，将 M 记录在 `g.lockedm` 实现了 M 与 G 的映射关系，实现锁定的功能。
 
 ### 2.3 P
+
 P 是 M 与 G 的中间层，没有了 P，M 与 G 实际上就是一个线程池。**通过 P 来分片所有可运行的 G，使得运行效率更加的高**。
 
 **`p`** 是 P 的结构体表示（runtime/runtime2.go）：
+
 ```go
 type p struct {
         id          int32
@@ -677,6 +733,7 @@ type p struct {
         sudogbuf   [128]*sudog
 }
 ```
+
 * `status` ：P 的状态；
 * **`m`** ：当前绑定的 M；
 * `mcache` ：P 唯一的 mcache，将【内存管理】；
@@ -689,6 +746,7 @@ type p struct {
 P 还包含大量与 GC 内存管理相关的字段，这里暂时省略。
 
 #### 2.3.1 P 的状态
+
 状态 | 值 | 含义
 -|-|- 
 _Pidle |0 | P 没有任何 G 可以执行，被空闲 P 链表持有着
@@ -700,9 +758,11 @@ _Pdead |4 | P 不在被使用，由于 GOMAXPROCS 缩小
 可以看到，_Pidle 与 _Psyscall 都属于 P 可以被其他 M 绑定的状态。
 
 #### 2.3.2 P 的创建/销毁
+
 前面可以看到，G 是由 `go` 命令创建的，而 M 是按需创建的。P 的创建不同，因为其代表的是并发个数，所以其创建是**在程序启动时创建**。
 
 在执行用户 main 函数之间的 `scheinit()` 中进行 runtime 的初始化，其中一项就是初始化 P:
+
 ```go
 // The bootstrap sequence is:
 //
@@ -728,6 +788,7 @@ func schedinit() {
 ```
 
 `procresize()` 用于改变 P 的数量（runtime/proc.go）：
+
 ```go
 // Change number of processors. The world is stopped, sched is locked.
 // gcworkbufs are not being modified by either the GC or
@@ -831,7 +892,9 @@ func procresize(nprocs int32) *p {
 ```
 
 #### 2.3.3 P 数量调整
+
 通过 `runtime.GOMAXPROCS()` 接口可以动态调整程序的并发数，也就是 P 的数量，看一下其实现（runtime/debug.go）：
+
 ```go
 func GOMAXPROCS(n int) int {
         lock(&sched.lock)
@@ -853,12 +916,15 @@ func GOMAXPROCS(n int) int {
         return ret
 }
 ```
+
 1. stopTheWorld；
 1. 调整全局变量 `newprocs` 的值，而该值后续在恢复时会被使用；
 1. startTheWorld 恢复，恢复中一个步骤就是根据 `newprocs` 调用 `procresize()` 函数进行调整；
 
 #### 2.3.4 P 的可运行队列
+
 `p.runq` 保存着 P 独有的 runnable G，`p.runnext` 为最高优先级的 G。在下面源码中，经常可以看到调用 `runqget()` 从可运行队列得到一个 G:
+
 ```go
 // Get g from local runnable queue.
 // If inheritTime is true, gp should inherit the remaining time in the
@@ -893,6 +959,7 @@ func runqget(_p_ *p) (gp *g, inheritTime bool) {
 ```
 
 当一个 G 新创建，或者从 _Gwaiting -> _Grunning 时，G 会有加入到 P 的可运行队列，调用 `runqput()` 函数：
+
 ```go
 // runqput tries to put g on the local runnable queue.
 // If next is false, runqput adds g to the tail of the runnable queue.
@@ -936,12 +1003,15 @@ retry:
 	goto retry
 }
 ```
+
 1. 如果指定，放置到 `q.runnext`；
 1. 放置到 `q.runq`；
 1. 如果**本地队列满了，那么放置到全局运行队列** `sched.runq`。为了优化效率，**每次会转移一半的本地队列 G**；
 
 ### 2.4 schedt
+
 **`schedt`** 是一个单例全局变量，包含一些全局的链表（runtime/runtime2.go）：
+
 ```go
 var sched schedt
 
@@ -992,6 +1062,7 @@ type schedt struct {
         freem *m
 }
 ```
+
 * **`midle`** ：**空闲的 M 的链表**；
 * **`pidle`** ：**空闲的 P 的链表**；
 * **`runq`** ：**全局的可运行的 G 队列**；
@@ -999,8 +1070,11 @@ type schedt struct {
 * `freem` ：等待释放的 M 的链表，当 M 新建时会将其释放，并复用 m 对象；
 
 ## 3 调度循环
+
 前面 M 的启动看到，每个 M 创建后会进入 `schedule()` 的调度循环，并且不会返回，每个 M 执行大致流程如下：
-{{< find_img "img4.png" >}}
+
+{{< image src="img4.png" height=200 >}}
+
 1. 执行 `schedule()`， **使得 M 找到一个可用的 G，并绑定**；
 1. 执行 `execute()`，**完成执行 G.fn 的准备工作**；
 1. **调用 G 的函数**；
@@ -1009,7 +1083,9 @@ type schedt struct {
 当然，上面是正常 G 执行并退出的逻辑，多数情况下 G 执行的过程中都会经历抢占与调度，也就是说会 M 可能会切换 P、切换 G 执行。
 
 ### 3.1 schedule()
+
 `schedule()` 是调度循环的第一步，M 会在这里尽力寻找一个 runnable G，然后进入 `execute() `执行 G 的代码：
+
 ```go
 // One round of scheduler: find a runnable goroutine and execute it.
 // Never returns.
@@ -1105,6 +1181,7 @@ top:
         execute(gp, inheritTime)
 }
 ```
+
 1. M 有锁定的 G，**执行锁定 G 代码**；
 1. 从各个地方得到一个 runnable G，包括：
     1. **GCWork 的 G**，见：
@@ -1114,7 +1191,9 @@ top:
 1. 最终，获取到一个 G 后，`execute()` 执行 G 的代码；
 
 #### 3.1.1 fundrunnable()
+
 为了找到可以运行的 G，findrunnable() 会尝试各个手段。但是这个代码比较复杂，这里捡最关键的点看（runtime/proc.go）：
+
 ```go
 // Finds a runnable goroutine to execute.
 // Tries to steal from other P's, get g from local or global queue, poll network.
@@ -1230,13 +1309,16 @@ stop:
         goto top
 }
 ```
+
 1. 从绑定的 **P 本地队列获取**；
 1. 从**全局队列获取**；
 1. **检查 netpoll 是否有就绪的 G**（会执行一次非阻塞的 epollwait()）；
 1. 通过 `runtime.runqsteal()` 从**其他的 P 的运行中偷取 G**，还可能同时把 P 的 timer 获取了；
 
 ### 3.2 execute()
+
 `execute()` 让当前线程执行 G 的代码，并且不会返回：
+
 ```go
 // Schedules gp to run on the current M.
 // If inheritTime is true, gp inherits the remaining time in the
@@ -1264,6 +1346,7 @@ func execute(gp *g, inheritTime bool) {
 ```
 
 不过 `execute()` 执行的是一些初始化的操作，切换 PC、SP 等操作只能通过汇编的 `gogo` 实现，注意关键的 `g.sched` 结构（`gobuf` 结构）的传参。
+
 ```go
 // func gogo(buf *gobuf)
 // restore state from Gobuf; longjmp
@@ -1284,15 +1367,20 @@ TEXT runtime·gogo(SB), NOSPLIT, $16-8
         MOVQ        gobuf_pc(BX), BX  // 将 BX 寄存器设置为 gobuf.pc。第一次执行 G 时，这里是 G 的函数地址
         JMP        BX  // JMP gobuf.pc，开始执行
 ```
+
 这里最关键的就是切换为 G 的执行上下文：
+
 * 将 **SP 设置为 `gobuf.sp`**。如果 G 没有执行过，那么值就是创建 g 结构时填入的 `goexit()` 函数的地址。
 * 代码流通过 **JMP 指令跳转到 `gobuf.pc`**。如果 G 没有执行过，那么就是 G 对应代码的地址。
 
 这里我们也可以知道了，因为函数调用就是将 返回函数、参数 压栈的过程。而这里将栈顶设置为 `goexit()` 函数，**所以当 G 对应用户代码执行完后，就会继续执行 `goexit()` 函数**。这就是 M 不断执行调度循环的关键。
-{{< find_img "img5.png" >}}
+
+{{< image src="img5.png" height=170 >}}
 
 ### 3.3 goexit()
+
 `goexit()` 在 G 用户代码执行后，执行的汇编代码，其最后通过切换到 g0 栈调用 `goexit0()` 函数：
+
 ```go
 // goexit continuation on g0.
 func goexit0(gp *g) {
@@ -1354,6 +1442,7 @@ func goexit0(gp *g) {
         schedule()
 }
 ```
+
 1. G 状态由 _Grunning 变为 _Gdead；
 1. 重置 G 的属性；
 1. 通过 `dropg()` **解除 M 与 G 的绑定**；
@@ -1362,21 +1451,25 @@ func goexit0(gp *g) {
 1. **重新进入 `schedule()` 调度循环**；
 
 ## 4 调度切换
+
 当前，调度循环中描述的情况是一个 M 执行 G 不被抢占与调度的情况。大多数情况下，当 M 执行 G.fn 的过程中就会被切换，执行其他的 G 的情况。
 
 ### 4.1 切换时机
+
 先大体总结一下可能的切换时机：
-* **主动挂起**
-    * 遇到 runtime 级别阻塞（例如 channel 读写阻塞）
-* **主动调度**
-    * 调用 `runtime.Gosched()` 主动进行调度
-* **系统调用**
-    * 系统调用结束后，M 可能进行 G 的切换；
-* **抢占**
-    * sysmon 判断 G 运行时间大于 10ms，进行抢占；
+
+* **主动挂起** - 遇到 runtime 级别阻塞（例如 channel 读写阻塞）
+  
+* **主动调度** - 调用 `runtime.Gosched()` 主动进行调度
+  
+* **系统调用** - 系统调用结束后，M 可能进行 G 的切换；
+  
+* **抢占** - sysmon 判断 G 运行时间大于 10ms，进行抢占；
 
 ### 4.2 主动挂起
+
 在 G 遇到非系统调用的阻塞前，就会调用 `gopark()`，**将 G 由 _Grunning -> _Gwaiting，而 M 解绑 G，重新进入调度循环**：
+
 ```go
 // Puts the current goroutine into a waiting state and calls unlockf.
 // If unlockf returns false, the goroutine is resumed.
@@ -1424,6 +1517,7 @@ func park_m(gp *g) {
         schedule()
 }
 ```
+
 {{< admonition note Note>}}
 上面没有任何地方记录 _Gwaiting 状态的 G，Why？
 
@@ -1431,6 +1525,7 @@ func park_m(gp *g) {
 {{< /admonition >}}
 
 当进入 _Gwaiting 状态的 G 需要恢复时，调用 `goready()` / `goparkunlock()` 函数进行恢复：
+
 ```go
 func goready(gp *g, traceskip int) {
         systemstack(func() {
@@ -1459,6 +1554,7 @@ func ready(gp *g, traceskip int, next bool) {
 ```
 
 调用 `gopark()` 的地方有许多，列出主要的几个地方：
+
 * **channel 的发送/接受阻塞**；
 * **select 所有 case 不满足，陷入阻塞**；
 * **time.Sleep 使得 goroutine 进入阻塞**；
@@ -1466,7 +1562,9 @@ func ready(gp *g, traceskip int, next bool) {
 * **main goroutine 挂起并且不会被唤醒**；
 
 ### 4.3 主动调度
+
 标准库接口 `runtime.Gosched()` 可以在用户代码中使 G 主动让出 M：
+
 ```go
 func Gosched() {
         checkTimeouts()
@@ -1495,14 +1593,18 @@ func goschedImpl(gp *g) {
 ```
 
 最后会调用 `goschedImpl()`，将 G 由 _Grunning -> _Grunnable 状态，M 与 G 解绑，并将其放到全局运行队列。
+
 {{< admonition note Note>}}
 因为调用 `goschedImpl()` 是要切换正在运行的 G，所以放到全局队列。
 {{< /admonition >}}
 
 ### 4.4 系统调用
+
 Go 通过 `syscall.Syscall` 和 `syscall.RawSyscall` 来封装系统的所有系统调用。
+
 * `syscall.Syscall` **针对可能长时间阻塞的系统调用**，例如 IO 操作。<br>
 使得在陷入系统调用之间，系统调用结束后，可以触发一些准备和情况工作。
+
 * `syscall.RawSyscall` **针对不太会长时间阻塞的系统调用**，例如 读取时间等。<br>
 直接进行系统调用，不做其他处理。
 
@@ -1533,12 +1635,15 @@ ok:
         CALL        runtime·exitsyscall(SB) // 结束调用 exitsyscall()
         RET
 ```
+
 1. 系统调用前，执行 `entersyscall()`；
 1. 执行系统调用；
 1. 系统调用后，执行 `exitsyscall()`；
 
 #### 4.4.1 系统调用前的准备
+
 `entersyscall()` 会调用 `reentersyscall()` 函数，执行进入系统调用前的准备工作：
+
 ```go
 func reentersyscall(pc, sp uintptr) {
         _g_ := getg()
@@ -1565,6 +1670,7 @@ func reentersyscall(pc, sp uintptr) {
         _g_.m.locks--
 }
 ```
+
 1. 禁止线程上发生的抢占，防止出现内存不一致的问题；
 1. 保证当前函数不会触发栈分裂或者增长；
 1. 通过 `save()` 保存 PC、SP 值至 g.sched；
@@ -1576,7 +1682,9 @@ func reentersyscall(pc, sp uintptr) {
 因此，P 代表的是并发数，而不是线程数。
 
 #### 4.4.2 系统调用后的恢复
+
 系统调用结束后，执行 `exitsyscall()` 进行恢复操作。
+
 ```go
 func exitsyscall() {
         _g_ := getg()
@@ -1598,6 +1706,7 @@ func exitsyscall() {
         _g_.throwsplit = false
 }
 ```
+
 1. **M 尝试获取一个空闲的 P**，从两个地方：
     * 如果 `m.oldp` 还是为 _Psyscall 状态，说明没被人使用，那么记录使用阻塞前的 P；
     * 从全局空闲 P `sched.pidle` 链表中获取一个 P；
@@ -1605,14 +1714,19 @@ func exitsyscall() {
 1. 无论如何，**最后 M 都会调用 `schedule()` 重启进入调度循环**，切换一个 G 执行。
 
 ### 4.5 抢占
+
 每个运行中的 G 会有一个运行的时间片，而 sysmon 会**周期性检查部分 G，如果其执行时间大于 10ms，就会触发抢占**。
 
 抢占包括两种方式：
+
 * **`抢占标志`**：通过设置 `g.stackguard0=stackPreempt`。这必然会导致 G 执行下次函数调用时触发栈扩容逻辑，从而走到切换调度的逻辑；
+  
 * **`信号抢占`**（v1.14）：信号抢占会使得 M 线程触发信号中断，执行信号处理函数，从而重新进入调度循环。
 
 #### 4.5.1 触发抢占时机
+
 sysmon 会重启执行 `retake()` 函数，判断哪些正在运行的 G 是需要抢占的。
+
 ```go
 func retake(now int64) uint32 {
         n := 0
@@ -1668,11 +1782,14 @@ func retake(now int64) uint32 {
         return uint32(n)
 }
 ```
+
 1. 运行中的 G 运行超过 10ms，调用 `preemptone()` 进行抢占；
 1. 对于 _Psyscall 中的 P，将其解绑 M，使得其他 M 可以绑定该 P；
 
 #### 4.5.2 触发抢占
+
 `preemptone()` 触发抢占，通过上面所述的两种方式。
+
 ```go
 func preemptone(_p_ *p) bool {
         mp := _p_.m.ptr()
@@ -1696,6 +1813,7 @@ func preemptone(_p_ *p) bool {
         return true
 }
 ```
+
 1. **设置 G 的抢占标志，gp.stackguard0 = stackPreempt**；
 1. **执行 `preemptM()` 进行信号抢占**；
 
@@ -1751,10 +1869,13 @@ func gopreempt_m(gp *g) {
         goschedImpl(gp)
 }
 ```
+
 判断到 `gp.stackguard0 = stackPreempt` 后，无论如何都会走重新调度的逻辑，M 重新进入调度循环。
 
 #### 4.5.4 信号抢占
+
 执行 `preemptM()` 会对 M 进行信号抢占，**通过发送 SIGURG 信号触发 M 线程的信号处理函数**。
+
 ```go
 const sigPreempt = _SIGURG
 
@@ -1779,6 +1900,7 @@ func preemptM(mp *m) {
 ```
 
 M 会执行信号处理函数 `asyncPreempt()`，最后调用到 `asyncPreempt2()`，使得 M 进入重新调度：
+
 ```go
 // asyncPreempt saves all user registers and calls asyncPreempt2.
 //
@@ -1800,6 +1922,7 @@ func asyncPreempt2() {
 	gp.asyncSafePoint = false
 }
 ```
+
 无论是走 `preemptPark()` 还是 `gopreempt_m()`，最后都会使得 **M 解绑当前 G，执行 `schedule()`，开始调度循环**。
 
 {{< admonition tip 处理信号的时机>}}
@@ -1813,7 +1936,7 @@ func asyncPreempt2() {
 相对于 [**内存管理**](../memory-manager/) 与 [**垃圾收集**](../garbage-collection/)，竟然感觉并发调度的结构还算简单。
 
 需要弄清楚的有以下几点：
-* [**协程出现的意义**](#11-进程线程与协程)
+* [**协程出现的意义**](#11-进程-线程-协程)
 * [**调度器的工作**](#12-调度器)
 * [**GMP 模型整体框架**](#2-gmp-模型)
 * [**G、M、P 代表的意义**](#2-gmp-模型)

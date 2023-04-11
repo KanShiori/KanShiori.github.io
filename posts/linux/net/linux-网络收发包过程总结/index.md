@@ -18,11 +18,13 @@
 对于异步中断，因为会停止当前执行的进程，所以内核要确保中断处理程序尽快完成，尽快返还 CPU。同样，也会阻塞 IO 设备的下一次中断，Linux 将异步中断分为了 **硬件中断** 与 **中断下半部**。
 
 #### 1.1.1 硬件中断
+
 [硬件中断]^(hardware interrupt) 指硬件设备发起信号中断 CPU 执行，CPU 立即进行中断的处理。
 
 实际上，为了不长时间阻塞与中断处理，硬中断往往启动到的是一个通知的作用。例如网卡收到数据包，并通过 DMA 写入 ringbuffer 后，会通过硬中断通知 CPU 从 ringbuffer 读取并处理数据。
 
 通过 `/proc/interrupts` 可以看到硬中断的触发次数：
+
 ```bash
 $ cat /proc/interrupts
 # …
@@ -35,6 +37,7 @@ $ cat /proc/interrupts
 105:  0       IR-PCI-MSI  35651589-edge p2p1-TxRx-5
 106:  0       IR-PCI-MSI  35651590-edge p2p1-TxRx-6
 ```
+
 * 第一行：IRQ 编号；
 * 第二行：每个 CPU 的中断次数；
 * 第三行：中断的类型；
@@ -44,7 +47,9 @@ $ cat /proc/interrupts
 平时可能只需要关注第五行设备名称就行，因为可能要过滤出网卡对应队列的中断，然后将其绑定触发的 CPU，见 [**网卡多队列**](#21-网卡多队列)。
 
 #### 1.1.2 中断下半部
+
 [中断下半部]^(bottom half) 包含三种处理方式：
+
 * **`软中断 softirq`**：固定的 32 个接口，只留给对时间要求最严格的下半部使用。
 
   查看 `/proc/softirqs` 文件 可以看到目前支持的软中断：
@@ -60,7 +65,9 @@ $ cat /proc/interrupts
   SCHED   | 内核调度
   HRTIMER |
   RCU     | RCU 锁
+
 * **`tasklet`**：因为软中断只有固定的 32 个，为了支持扩展，tasklet 基于软中断时间，在不同处理器上运行，并且支持通过代码动态注册；
+  
 * **`工作队列 work queue`**：将一个中断的部分工作推后，可以实现一些 tasklet 不能实现的工作（比如可以睡眠）。
 
   一些内核线程会不断处理工作队列的数据，其运行在进程上下文中，并且可以睡眠以及被重新调度。目前，**`kworker 内核线程`** 负责处理这个工作。
@@ -76,8 +83,11 @@ $ cat /proc/interrupts
 当网卡收到帧时，会**通过哈希来决定将帧放在哪个 ring buffer 上，然后通过硬中断通知其对应的 CPU 处理**。
 
 默认下，处理环形队列数据由 CPU0 负责，可以通过配置 **`中断亲和性`**，或者通过开启 **irqbalance service** 将中断均衡到各个 CPU 上。
+
 #### 2.1.1 配置网卡队列
+
 通过 `ethool -l/-L <nic>` 命令查看与配置网卡的队列数，通常配置的与机器 CPU 个数一样（如果网卡支持的话）：
+
 ```bash
 $ ethtool -l eth0
 Channel parameters for eth0:
@@ -96,12 +106,14 @@ $ ethtool -L eth0 combined 8
 ```
 
 设置后，你在 `/sys/class/net/<nic>/queues/` 可以看到对应的收发队列目录：
+
 ```bash
 $ ls /sys/class/net/eth0/queues/
 rx-0  rx-1  rx-2  rx-3  rx-4  rx-5  rx-6  rx-7  tx-0  tx-1  tx-2  tx-3  tx-4  tx-5  tx-6  tx-7
 ```
 
 在 `/proc/interrupts` 中也可以看到各个队列对各个 CPU 的中断次数：
+
 ```bash
 $ cat /proc/interrupts | grep eth0
 # … 这里只打印了一个 CPU 中断
@@ -118,6 +130,7 @@ $ cat /proc/interrupts | grep eth0
 ```
 
 通过 `ethtool -g/-G <nic>` 可以查看与配置 ring buffer 的长度：
+
 ```bash
 $ ethtool -g eth0
 Ring parameters for eth0:
@@ -134,7 +147,9 @@ TX:             256
 ```
 
 #### 2.1.2 配置中断亲和性
+
 如果你发现 CPU0 的中断很高，那么就很有可能所有网卡队列的中断都打到了 CPU0 上。可以通过 `/proc/irq/<id>/smp_affinity_list` 查看指定编号的中断的对应允许的 CPU。
+
 ```bash
 $ for i in {62..70}; do echo -n "Interrupt $i is allowed on CPUs "; cat /proc/irq/$i/smp_affinity_list; done
 Interrupt 62 is allowed on CPUs 4
@@ -147,6 +162,7 @@ Interrupt 68 is allowed on CPUs 5
 Interrupt 69 is allowed on CPUs 2
 Interrupt 70 is allowed on CPUs 31
 ```
+
 * 62-70 的网卡队列中断都打到了不同的 CPU 上；
 
 通过写入 `echo "<bitmark>" > /proc/irq/<id>/smp_affinity` 可以中断绑定的 CPU，bitmark 的每个位对应一个 CPU，例如 "0x1111" 表示 CPU 0-3 都可以处理这个中断。
@@ -156,27 +172,36 @@ Interrupt 70 is allowed on CPUs 31
 如果你的网卡不支持多队列，可以尝试配置 [**RPS**](#331-rps)。
 
 ### 2.2 接收数据
+
 先来看第一个阶段，网卡接收到数据是如何处理的。
-{{< find_img "img2.png" >}}
+
+{{< image src="img2.png" height=360 >}}
 
 1. packet 进入物理网卡，物理网卡会根据目的 mac **判断是否丢弃**（除非混杂模式）；
-1. 网卡通过 DMA 方式将 packet **写入到 ringbuffer**
+   
+2. 网卡通过 DMA 方式将 packet **写入到 ringbuffer**
 
    ringbuffer 由网卡驱动程序分配并初始化。
-1. 网卡通过**硬中断通知 CPU**，有数据来了。
-1. CPU 根据**中断执行中断处理函数**，该函数会调用网卡驱动函数。
-1. 驱动程序**先禁用网卡中断**（NAPI），表示网卡下次直接写到 ringbuffer 即可，不需要中断通知了。
+
+3. 网卡通过**硬中断通知 CPU**，有数据来了。
+   
+4. CPU 根据**中断执行中断处理函数**，该函数会调用网卡驱动函数。
+   
+5. 驱动程序**先禁用网卡中断**（NAPI），表示网卡下次直接写到 ringbuffer 即可，不需要中断通知了。
 
    这样避免 CPU 不断被中断。
-1. 驱动程序启动软中断，让 CPU 执行软中断处理函数**不断从 ringbuffer 读取并处理 packet**。
+
+6. 驱动程序启动软中断，让 CPU 执行软中断处理函数**不断从 ringbuffer 读取并处理 packet**。
 
 网卡多队列就是在这里生效，网卡会将 packet 放置到不同的 ringbuffer，不同的 ringbuffer 会中断不同的 CPU（如果设置了中断亲和性），使得各个 CPU 的队列硬中断是均衡的。
 
 ### 2.3 发送数据
+
 网络设备通过驱动函数发送数据后，就归网卡驱动管了，不同的驱动有着不同的处理方式。
 
 大致的流程如下：
-{{< find_img "img3.png" >}}
+
+{{< image src="img3.png" height=360 >}}
 
 1. 将 **sk_buff 放入 TX ringbuff**。
 1. **通知网卡**发送数据。
@@ -186,16 +211,20 @@ Interrupt 70 is allowed on CPUs 31
 当然，网卡驱动还有一些与 net_device 打交道的地方，比如网卡的队列满了，需要告诉上层不要再发了，等队列有空闲的时候，再通知上层接着发数据。
 
 ## 3 网络访问层
+
 ### 3.1 net_device
+
 每个网络设备都表示为 **`net_device`** 一个实例。不同类型的网络设备都会有 net_device 表示，而其相关操作函数的实现不同。
 
 net_device 是针对于 namespace 的，通过 sysfs 你可以看到当前命名空间下所有的 net_device。
+
 ```bash
 $ ls /sys/class/net
 docker0  enp0s3  enp0s8  lo  lxcbr0  vethea62395
 ```
 
 net_device 包含了设备相关的所有信息，定义很长， 下面经过简化：
+
 ```c
 struct net_device {
 	char			name[IFNAMSIZ];
@@ -249,6 +278,7 @@ struct net_device {
 	unsigned int		tx_queue_len;
 };
 ```
+
 * name\[IFNAMSIZ] ：设备命名；
 * irq ：irq 编号；
 * ifindex ：设备编号；
@@ -262,11 +292,13 @@ struct net_device {
 * 其他包含一些 XDP 相关，统计相关等字段；
 
 大多数的统计信息都可以在对应设备的 sysfs 目录中找到。
+
 {{< admonition note 网卡命名>}}
 linux 内核启动过程中，会默认给网卡以 ethx 方式命名，后面 systemd 回去 rename 网卡名称。
 {{< /admonition >}}
 
 ### 3.2 GRO
+
 [GRO]^(Generic Receive Offloading) 用于将 jumbo frame（超过 1500B）的多个分片合并，然后将给上层处理，以减少上层处理数据包的数量。
 
 通过 `ethtool -k/K <nic>` 查和设置 GRO。
@@ -282,13 +314,16 @@ RPS 的设置是针对单个 ringbuffer 的，与网卡多队列处理不是同�
 {{< /admonition >}}
 
 开启 RPS 后，数据会由经由被中断 CPU 转发，由其他 CPU 处理。流程如下：
-{{< find_img "img1.png" >}}
+
+{{< image src="img1.png" height=350 >}}
+
 1. 当网卡收到数据存入 ring buffer 后，还是通知指定 CPUx 从 ringbuffer 取出数据；
 1. 不过接下来，CPUx 会为每个 packet 哈希放入其他 CPU 的 input_pkt_queue 中。
 1. CPUx 通过 Inter-processor Interrupt (IPI)  中断告知其他 CPU，处理自己的 input_pkt_queue ；
 1. 其他 CPU 从各个的 input_pkt_queue 中取出数据包，并处理之后的流程；
 
 可以看到，**RPS 不是用于减少 CPU 软中断的次数，而是用于将数据包处理时间均摊到各个 CPU 上，也就是减少单个 CPU 的软中断执行时间（%soft）**。
+
 ```bash
 # 配置该 ringbuffer 使用 CPU0 CPU1 的队列
 $ echo "0x11" > /sys/class/net/eth0/queues/rx-0/rps_cpus
@@ -298,11 +333,13 @@ $ sysctl -w net.core.netdev_max_backlog=1000
 ```
 
 #### 3.3.2 RFS
+
 [RFS]^(Receive Flow Steering) 一般和 RPS 配合工作。
 
 RPS 将受到的 packet 经过哈希发配到不同的 CPU input_pkt_queue。而 RFS 会根据 packet 的数据流，发送到对应被处理的 CPU input_pkt_queue 上，即**同一个数据流的 packet 会被路由到处理当前数据流的 CPU 上**，从而提高 CPU cache 的命中率。
 
 RFS 默认是关闭的，需要通过配置生效，一般推荐的配置如下：
+
 ```bash
 # 配置系统期望的活跃连接数
 $ sysctl -w net.core.rps_sock_flow_entries=32768
@@ -312,9 +349,11 @@ $ echo 2048 > /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
 ```
 
 #### 3.3.3 XPS
+
 [XPS]^(Transmit Packet Steering) 则是发送时的多队列处理。
 
 ### 3.4 接收数据
+
 在网卡层中，最后由异步的软中断处理函数来异步的从里 ringbuffer 的数据。而这由内核线程 ksoftirqd 来调用对应的网络软中断函数处理。
 
 **所以，在数据包到达 [**socket buffer**](#51-sock) 前，数据处理都是由 ksoftirqd 线程执行的，也就是算在软中断处理时间里的。**
@@ -322,11 +361,15 @@ $ echo 2048 > /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
 1. ksoftirqd 调用**驱动程序的 poll 函数来一个个处理 packet**。
 
    如果没有 packet 的话，就会重新启动网卡硬中断，等待下一次重新的流程。
+
 1. poll 函数将读取的每个 packet，**转换为 sk_buff 数据格式，并分析其传输层协议**。
-1. （可选）如果开启了 GRO，那么进行 **GRO 的处理**。
-1. 如果开启了 RPS，那么进行 **RPS 的处理**，否则放入当前 CPU 的 input_pkt_queue。
+   
+2. （可选）如果开启了 GRO，那么进行 **GRO 的处理**。
+   
+3. 如果开启了 RPS，那么进行 **RPS 的处理**，否则放入当前 CPU 的 input_pkt_queue。
 
    RPS 处理的流程如下：
+
    1. 当前 CPU 将 sk_buff 放到其他 CPU 的 input_pkt_queue 中。如果 input_pkt_queue 满的话，packet 会被丢弃。
    2. CPU 通过 IPI 硬中断通知其他 CPU 处理自己的 input_pkt_queue，也就是走 11 步流程。
 
@@ -336,14 +379,18 @@ $ echo 2048 > /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
 1. 调用对应协议栈的函数，将数据包解析出网络层协议，并交给对应的协议栈处理。
 
 ### 3.5 发送数据
+
 接受到网络层的数据后，来到网络访问层会经过一个非常重要的系统：Traffic Controller。这是接收数据时不会经过。
+
 1. 根据 sk_buff 中的设备信息，获取对应 net_device.qdisc。
    
    如果 qdisc 存在的话，走流量控制系统，可能会丢弃包：
    
    TODO
+
 1. 拷贝一份 sk_buff 给 "packet taps"。
-1. 调用具体驱动的发送数据的函数发送。
+   
+2. 调用具体驱动的发送数据的函数发送。
 
 {{< admonition note Note>}}
 注意，发送数据时并没有 CPU 的 "outputqueue"，因为流量控制系统已经进行了流量控制。
@@ -362,6 +409,7 @@ $ echo 2048 > /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
 网卡接受到的数据包，整个在内核中传递使用的都是 sk_buff 数据结构。网络的各个层都是使用的同一个 sk_buff 对象，而无需进行数据的复制，使得性能更高。
 
 sk_buff 包含各个指针执行对应数据的内存区域，并且表示其协议的 head data 等区域。
+
 ```C
 // <sk_buff.h>
 struct sk_buff {
@@ -388,14 +436,17 @@ struct sk_buff {
         *data;
 };
 ```
+
 * `head`，`end` 为整个数据包的头尾内存地址；
 * `data`，`tail` 为当前层对应的数据的头尾内存地址；
 * transport_header，network_header，mac_header 传输层、网络层、链路层 header 的内存地址；
 
 看图可能更好理解，sk_buff 通过指针将数据包各个区域表示出来了，而在各个协议层之间移动则是移动 data 与 tail 指针。
-{{< find_img "img4.png" >}}
+
+{{< image src="img4.png" height=150 >}}
 
 sk_buff_head 表示 sk_buff 组成的链表，这个结构就是 RPS 各个 CPU 的队列，以及 socket buffer 的实现。
+
 ```C
 // <sk_buff.h>
 struct sk_buff_head {
@@ -409,8 +460,11 @@ struct sk_buff_head {
 ```
 
 ### 4.2 netfilter
+
 netfilter 是一个在内核框架，位于网络层，可以根据动态的条件过滤或操作分组。
+
 主要包含如下功能：
+
 * filter：根据分组元信息，对不同数据流进行分组过滤；
 * NAT：根据规则来转换 source ip 或者 destination ip；
 * mangle: 根据特定分组拆分与修改；
@@ -420,10 +474,13 @@ iptables 是用于提供给用户配置防火墙、分组过滤等功能，使�
 {{< /admonition >}}
 
 针对不同的阶段，内核代码中会存在不同的 hook 点，如下图：
-{{< find_img "img5.png" >}}
+
+{{< image src="img5.png" height=280 >}}
 
 ### 4.3 接收数据
+
 接受数据到这里，数据包的网络层协议已经解析过了，看一下网络层处理数据报的步骤：
+
 1. 如果其数据包的 MAC 地址不是当前网卡，那么丢弃（可能由于网卡混杂模式进来的，还是无法经过协议栈处理）。
 1. 经过 `netfilter.PREROUTING` 阶段回调。
 1. 进行路由判断：如果目的 IP 是本机 IP，那么接受该包。如果不是本机 IP，判断是否要路由。
@@ -433,19 +490,24 @@ iptables 是用于提供给用户配置防火墙、分组过滤等功能，使�
 可以看到，如果仅仅是简单的接收数据包很简单，只要经过 netfilter 的回调即可。
 
 ### 4.4 路由数据
+
 当接受数据时发现数据包不是发往本机时，就会判断是否需要进行路由。
 
 路由的前提是：机器开启了 **ip forward** 功能，否则会直接丢包。
+
 ```bash
 # 开启 ip forward
 sysctl -w net.ipv4.ip_forward=1
 ```
+
 看一下路由对数据包的处理：
+
 1. 检查是否开启 ip forward 功能，没有开启的话数据包会执行丢弃。
 1. 经过 `netfilter.FORWARD` 阶段回调。
 1. 走正常的发包流程发送数据包（会经过 `netfilter.POSTROUTING` 阶段回调）
 
 ### 4.5 发送数据
+
 1. 在 sk_buff 指向的数据区设置好 IP 报文头。
 1. 调用 `netfilter.LOCALOUT` 阶段回调。
 1. 调用相关协议的发送函数（IP 协议或其他），将出口网卡设备信息写入 sk_buff。
